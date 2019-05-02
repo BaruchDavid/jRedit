@@ -1,0 +1,10 @@
+@NoArgsConstructor  //Lombok generiert Default-Konstruktor
+@RequiredArgsConstructor //arbeitet dann, wenn es an den Klassen-Feldern @NotNull vom Lombok gesetzt sind
+						// diese @NotNull Felder müssen einen Wert haben.
+						// mit der Annotation RequiredArgsConstructor wird ein Konstruktor generiert,
+						// der für alle @NotNull Felder einen Konstruktor baut
+@Data				//Ist eine Zusammenfassende Annotation @ToString, @EqualsAndHashCode, @Getter on all fields, and @Setter
+					//and @RequiredArgsConstructor
+public class Link{
+..
+}

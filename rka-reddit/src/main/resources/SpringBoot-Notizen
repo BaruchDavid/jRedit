@@ -1,0 +1,8 @@
+/***Profile steuern***/
+Steuerung erfolgt über die Haupt-Property Datei application.properties
+mit der Angabe: spring.profiles.active=dev
+Hierbei muss es im Resourcen-Ordner eine property-datei application-dev.properties geben.
+In dieser application-dev.properties Datei gibt es keinen Eintrag: spring.profiles.active
+
+Steuerung von Profle über Startparam: In der Run-Konfiguration im Abteil Spring Boot App im Reiter Environment
+									  muss eine Variable definiert werden mit namen: --spring.profiles.active und dem Wert: test
