@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,7 @@ public class Comment {
 	private long createBy;
 	private String comment;
 	private LocalDateTime createdOn;
+	
+	@ManyToOne
+	private Link link;
 }
