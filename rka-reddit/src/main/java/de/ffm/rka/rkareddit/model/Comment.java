@@ -7,13 +7,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import de.ffm.rka.rkareddit.model.audit.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @Data
-public class Comment {
+public class Comment extends Auditable{
 	
 	@Id
 	@GeneratedValue

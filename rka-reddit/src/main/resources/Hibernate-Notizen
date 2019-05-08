@@ -1,0 +1,5 @@
+/***Autiditing in JPA***/
+@MappedSuperclass -Klasse wird keine seperate Tabelle
+				   in der DB erzeugen. Dessen Felder werden
+				   auf die Entity angewand, wo diese Klasse
+				   entsprechend extended wird
