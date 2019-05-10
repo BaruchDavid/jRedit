@@ -35,4 +35,6 @@ public class Comment extends Auditable{
 	
 	@ManyToOne
 	private Link link;
+	
+	
 }
