@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,9 +20,17 @@ public class Comment extends Auditable{
 	@Id
 	@GeneratedValue
 	private long commentId;
+	
+	@Column
 	private long linkId;
+	
+	@Column
 	private long createBy;
+	
+	@Column
 	private String comment;
+	
+	@Column
 	private LocalDateTime createdOn;
 	
 	@ManyToOne

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -21,9 +22,17 @@ public class Link extends Auditable{
 	@Id
 	@GeneratedValue
 	private long linkId;
+	
+	@Column
 	private long createdBy;
+	
+	@Column
 	private String title;
+	
+	@Column
 	private String url;
+	
+	@Column
 	private LocalDateTime createOn;
 	
 	@OneToMany(mappedBy="link")
