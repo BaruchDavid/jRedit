@@ -33,7 +33,7 @@ public class Link extends Auditable{
 	private String url;
 	
 	@Column
-	private LocalDateTime createOn;
+	private LocalDateTime createdOn;
 	
 	@OneToMany(mappedBy="link")
 	private List<Comment> comments = new ArrayList<>();

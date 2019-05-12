@@ -6,3 +6,8 @@ In dieser application-dev.properties Datei gibt es keinen Eintrag: spring.profil
 
 Steuerung von Profle über Startparam: In der Run-Konfiguration im Abteil Spring Boot App im Reiter Environment
 									  muss eine Variable definiert werden mit namen: --spring.profiles.active und dem Wert: test
+									  
+Initialisierung in der Testumgebung:
+Laden von Tabellen anhand der Entities im Package:  de.ffm.rka.rkareddit.model
+Laden von Daten in die erzeugte Entities mit Angabe von spring.datasource.data=classpath:data-h2.sql
+Da in der Testumgebung h2 als DB gilt, lädt er nur data-h2.sql nach dem anhand der Entities die Tabellen erstellt wurden
