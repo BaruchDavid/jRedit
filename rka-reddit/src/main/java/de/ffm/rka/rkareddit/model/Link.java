@@ -21,22 +21,22 @@ public class Link extends Auditable{
 
 	@Id
 	@GeneratedValue
-	private long linkId;
+	private Long linkId;
 	
-	@Column
-	private long createdBy;
 	
-	@Column
+	private long userId;
 	private String title;
-	
-	@Column
 	private String url;
-	
-	@Column
 	private LocalDateTime createdOn;
 	
 	@OneToMany(mappedBy="link")
 	private List<Comment> comments = new ArrayList<>();
+
+	
+	
+	public Link() {
+	}
+
 
 	public Link(String title, String url) {
 

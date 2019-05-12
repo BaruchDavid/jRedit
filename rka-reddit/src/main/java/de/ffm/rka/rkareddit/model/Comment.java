@@ -20,17 +20,9 @@ public class Comment extends Auditable{
 	@Id
 	@GeneratedValue
 	private long commentId;
-	
-	@Column
 	private long linkId;
-	
-	@Column
-	private long createBy;
-	
-	@Column
+	private long userId;
 	private String comment;
-	
-	@Column
 	private LocalDateTime createdOn;
 	
 	@ManyToOne

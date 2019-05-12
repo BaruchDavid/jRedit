@@ -17,7 +17,7 @@ public class Vote {
 	@Id
 	@GeneratedValue
 	private long voteId;
-	private long linkId;
+	private long userId;
 	private long createdBy;
 	private  LocalDateTime commentOn;
 	
