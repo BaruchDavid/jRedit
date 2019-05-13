@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.model;
+package de.ffm.rka.rkareddit.domain;
 
 import java.time.LocalDateTime;
 
