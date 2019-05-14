@@ -18,7 +18,7 @@
             </div>
             <div class="col-11">
                 <p class="title">
-                    <a class="title " th:href="@{'/link/' + ${link.getLinkId()}}" th:text="${link.title}">
+                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.title}">
                         Title Goes Here
                     </a>
                     <span class="domain">(<a th:href="${link.url}" th:text="${link.getDomainName()}" target="_blank">therealdanvega.com</a>)</span>
@@ -29,7 +29,7 @@
                     <a th:href="@{'/u/' + ${link.getUserId()}}" class="author" th:text="${link.getUserId()}">therealdanvega</a>
                 </p>
                 <p>
-                    <a th:href="@{'/link/' + ${link.getLinkId()} + '#comments'}" class="comments" th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+                    <a th:href="@{'/links/link/' + ${link.getLinkId()} + '#comments'}" class="comments" th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
                     <a href="/" class="share"><i class="fas fa-share-square"></i> share</a>
                 </p>
             </div>

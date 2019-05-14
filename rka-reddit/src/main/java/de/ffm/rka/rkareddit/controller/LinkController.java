@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
@@ -45,12 +45,21 @@ public class LinkController {
 		return linkRepository.save(link);
 	}
 	
-	@GetMapping("/{linkId}")
-	public Optional<Link> read(Model model, @PathVariable Long linkId) {		
-		return linkRepository.findById(linkId);
+	@GetMapping("link/{linkId}")
+	public String read(Model model, @PathVariable Long linkId) {		
+		Optional<Link> link = linkRepository.findById(linkId);
+		if(link.isPresent()) {
+			model.addAttribute("link",link.get());
+			return "link/link_view";
+		}else {
+			return "redirect:/";
+		}
+
+		
+		
 	}
 	
-	@PutMapping("/{linkId}")
+	@PutMapping("/link/{linkId}")
 	public Link update(@ModelAttribute Link link) {		
 		return linkRepository.saveAndFlush(link);
 	}
