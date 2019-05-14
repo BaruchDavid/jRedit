@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.ffm.rka.rkareddit.model.audit.Auditable;
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 import static java.util.Date.from;

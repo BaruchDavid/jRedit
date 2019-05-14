@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.model.audit;
+package de.ffm.rka.rkareddit.domain.audit;
 
 import java.time.LocalDateTime;
 

@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import de.ffm.rka.rkareddit.model.audit.Auditable;
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
