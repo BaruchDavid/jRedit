@@ -7,17 +7,17 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.ffm.rka.rkareddit.model.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import static java.util.Date.from;
 
@@ -28,15 +28,21 @@ import java.net.URISyntaxException;
 public class Link extends Auditable{
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long linkId;
 	private long userId;
+	
+	@NotEmpty(message = "title is required")
 	private String title;
+	
+	@NotEmpty(message = "url is required")
+	@URL(message = "valid url is required")
 	private String url;
+	
+	
 	private LocalDateTime createdOn;
 	private int voteCount = 0;
-	
-	
+		
 	
 	@OneToMany(mappedBy="link")
 	private List<Comment> comments = new ArrayList<>();
@@ -138,6 +144,12 @@ public class Link extends Auditable{
 	public static ZoneId getZoneId() {
 		return ZONE_ID;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Link [linkId=" + linkId + ", userId=" + userId + ", title=" + title + ", url=" + url + ", createdOn="
+				+ createdOn + ", voteCount=" + voteCount + ", comments=" + comments + ", prettyTime=" + prettyTime
+				+ "]";
+	}
 	
 }
