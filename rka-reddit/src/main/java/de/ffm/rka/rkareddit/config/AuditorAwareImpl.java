@@ -9,6 +9,9 @@ import de.ffm.rka.rkareddit.domain.User;
 
 public class AuditorAwareImpl implements AuditorAware<String>{
 
+	/**
+	 * will be invoked for auditing, when trying to save anythng 
+	 */
 	@Override
 	public Optional<String> getCurrentAuditor() {
 		Optional<String> userName = Optional.of(((User)SecurityContextHolder.getContext()

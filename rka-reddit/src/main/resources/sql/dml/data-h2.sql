@@ -30,8 +30,14 @@ VALUES(2, 'ROLE_ADMIN');
 INSERT INTO Role(role_id, name)
 VALUES(3, 'ROLE_USER');
 
+INSERT INTO Role(role_id, name)
+VALUES(4, 'ROLE_ACTUATOR');
+
 INSERT INTO User(user_id, email, enabled, password)
 VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne');
+
+INSERT INTO User(user_id, email, enabled, password)
+VALUES(2, 'dascha@gmx.de', 1, '$2a$10$huJEV8HA6ty9BzNlRqHyG.QMPE//p4lyMyfcTqnSpTe7fxlxybs2e');
 
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 1);
@@ -41,4 +47,10 @@ VALUES(1, 2);
 
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 3);
+
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(1, 4);
+
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(2, 3);
 
