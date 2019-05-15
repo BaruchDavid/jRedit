@@ -20,3 +20,25 @@ INSERT INTO LINK(link_id, user_id, title, url, created_On, VOTE_COUNT)
 VALUES(10, 1, 'Add Social Login to Your Spring Boot 2.0 app', 'https://developer.okta.com/blog/2018/07/24/social-spring-boot', NOW(), 1);
 INSERT INTO LINK(link_id, user_id, title, url, created_On, VOTE_COUNT)
 VALUES(11, 1, 'File download example using Spring REST Controller', 'https://developer.okta.com/blog/2018/07/24/social-spring-boot', NOW(), 1);
+
+INSERT INTO Role(role_id, name)
+VALUES(1, 'ROLE_DBA');
+
+INSERT INTO Role(role_id, name)
+VALUES(2, 'ROLE_ADMIN');
+
+INSERT INTO Role(role_id, name)
+VALUES(3, 'ROLE_USER');
+
+INSERT INTO User(user_id, email, enabled, password)
+VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne');
+
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(1, 1);
+
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(1, 2);
+
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(1, 3);
+
