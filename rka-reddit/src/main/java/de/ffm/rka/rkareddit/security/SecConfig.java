@@ -37,13 +37,21 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR)
 								.antMatchers("/").permitAll()
-								.antMatchers("/links/link/create").hasRole(ADMIN)
+								.antMatchers("/links/link/create").hasRole(USER)
  								.antMatchers("/h2-console/**").hasRole(DBA)
+ 								.antMatchers("/links/").permitAll()
+ 								
 								.and()
 							.formLogin()
 								.loginPage("/login").permitAll()
 								.usernameParameter("email")
-								.defaultSuccessUrl("/links");		
+								.defaultSuccessUrl("/links")
+							.and()
+							.logout()
+								.invalidateHttpSession(true)
+								.clearAuthentication(true)
+							.and()
+							.rememberMe();
 	}
 
 	@Override
