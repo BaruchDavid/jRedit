@@ -41,8 +41,9 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
  								.antMatchers("/h2-console/**").hasRole(DBA)
 								.and()
 							.formLogin()
-								.loginPage("/login")
-								.permitAll();		
+								.loginPage("/login").permitAll()
+								.usernameParameter("email")
+								.defaultSuccessUrl("/links");		
 	}
 
 	@Override
