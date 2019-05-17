@@ -34,8 +34,7 @@ public class VoteController {
 			int voteCounter = voteCount + direction;
 			linkObj.setVoteCount(voteCounter);
 			voteRepository.saveAndFlush(vote);
-			linkRepository.saveAndFlush(linkObj); //todo schauen, ob bei bidirectionaler beziehung man noch den link
-												//speichern muss, wenn vote vorher gespeichert wurde
+			linkRepository.saveAndFlush(linkObj); 
 			return voteCounter;
 		}
 		return voteCount;
