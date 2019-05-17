@@ -55,7 +55,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 								.key("uniqueAndSecret")
 								.tokenValiditySeconds(oneDay)
 							 .and()
-							 	.csrf().disable()
+						 		.csrf().disable()
 							 	.headers().frameOptions().disable();
 	}
 
