@@ -22,13 +22,13 @@ INSERT INTO LINK(link_id, user_id, title, url, created_On, VOTE_COUNT)
 VALUES(11, 1, 'File download example using Spring REST Controller', 'https://developer.okta.com/blog/2018/07/24/social-spring-boot', NOW(), 1);
 
 INSERT INTO Role(role_id, name)
-VALUES(1, 'ROLE_DBA');
+VALUES(1, 'ROLE_USER');
 
 INSERT INTO Role(role_id, name)
-VALUES(2, 'ROLE_ADMIN');
+VALUES(2, 'ROLE_DBA');
 
 INSERT INTO Role(role_id, name)
-VALUES(3, 'ROLE_USER');
+VALUES(3, 'ROLE_ADMIN');
 
 INSERT INTO Role(role_id, name)
 VALUES(4, 'ROLE_ACTUATOR');
@@ -43,8 +43,12 @@ INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 1);
 
 INSERT INTO users_roles(user_Id, role_Id)
-VALUES(1, 2);
+VALUES(1, 3);
 
+
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(1, 2);
+/*
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 3);
 
@@ -53,4 +57,4 @@ VALUES(1, 4);
 
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(2, 3);
-
+*/
