@@ -35,12 +35,12 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 		
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
+		final int oneDay = 86400;
 		http.authorizeRequests().requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR)
 								.antMatchers("/").permitAll()
 								.antMatchers("/links/link/create").hasRole(USER)
- 								.antMatchers("/h2-console/**").hasRole(DBA)
+								.antMatchers("/h2_console/**").hasRole(DBA)
  								.antMatchers("/links/").permitAll()
- 								
 								.and()
 							.formLogin()
 								.loginPage("/login").permitAll()
@@ -51,7 +51,9 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 								.invalidateHttpSession(true)
 								.clearAuthentication(true)
 							.and()
-							.rememberMe();
+							.rememberMe()
+								.key("uniqueAndSecret")
+								.tokenValiditySeconds(oneDay);
 	}
 
 	@Override

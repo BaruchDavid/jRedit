@@ -52,6 +52,10 @@ public class Link extends Auditable{
 	
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
+    public Link() {
+	}
+
+    
 	public Link(String title, String url) {
 
 		this.title = title;
@@ -74,9 +78,7 @@ public class Link extends Auditable{
         return domain.startsWith("www.") ? domain.substring(4) : domain;
     }
 
-	public Link() {
-	}
-
+	
 	public Long getLinkId() {
 		return linkId;
 	}
