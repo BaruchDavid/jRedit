@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 
@@ -39,6 +40,8 @@ public class Link extends Auditable{
 	@URL(message = "valid url is required")
 	private String url;
 	
+	@OneToMany(mappedBy = "link")
+	private List<Vote> vote = new ArrayList<>();
 	
 	private LocalDateTime createdOn;
 	private int voteCount = 0;

@@ -4,45 +4,61 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-public class Vote {
+public class Vote extends Auditable {
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long voteId;
-	private long userId;
-	private long createdBy;
-	private  LocalDateTime commentOn;
+	
+	@NotNull
+	private short direction;
+	
+	@NotNull
+	@ManyToOne
+	private Link link;
+
+	public Vote(@NotNull Link link,@NotNull short direction) {
+		this.direction = direction;
+		this.link = link;
+	}
+
+	public Vote() {
+		super();
+	}
+
 	public long getVoteId() {
 		return voteId;
 	}
+
 	public void setVoteId(long voteId) {
 		this.voteId = voteId;
 	}
-	public long getUserId() {
-		return userId;
+
+	public short getDirection() {
+		return direction;
 	}
-	public void setUserId(long userId) {
-		this.userId = userId;
+
+	public void setDirection(short direction) {
+		this.direction = direction;
 	}
-	public long getCreatedBy() {
-		return createdBy;
+
+	public Link getLink() {
+		return link;
 	}
-	public void setCreatedBy(long createdBy) {
-		this.createdBy = createdBy;
+
+	public void setLink(Link link) {
+		this.link = link;
 	}
-	public LocalDateTime getCommentOn() {
-		return commentOn;
-	}
-	public void setCommentOn(LocalDateTime commentOn) {
-		this.commentOn = commentOn;
-	}
-	
 	
 	
 }
