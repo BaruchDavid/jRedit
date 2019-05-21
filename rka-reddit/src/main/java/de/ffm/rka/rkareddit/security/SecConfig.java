@@ -8,6 +8,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -25,13 +26,10 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
  */
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecConfig extends WebSecurityConfigurerAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
-	private static final String ADMIN="ADMIN";
-	private static final String USER="USER";
-	private static final String DBA="DBA";
-	private static final String ACTUATOR="ACTUATOR";
 	
 	@Autowired
 	private HikariDataSource dataSource;
@@ -50,9 +48,9 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 		final int oneDay = 86400;
 		http.authorizeRequests().antMatchers("/").permitAll()
 								.antMatchers("/links/").permitAll()
-								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR)
-								.antMatchers("/links/link/create").hasRole(ADMIN)
-								.antMatchers("/data/h2-console/**").hasRole(DBA)
+								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ACTUATOR)
+								.antMatchers("/links/link/create").hasRole(Role.ADMIN)
+								.antMatchers("/data/h2-console/**").hasRole(Role.DBA)
 								.and()
 							.formLogin()
 								.loginPage("/login").permitAll()
