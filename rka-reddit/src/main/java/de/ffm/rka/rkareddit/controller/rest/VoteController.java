@@ -22,7 +22,7 @@ public class VoteController {
 	@Autowired
 	private LinkRepository linkRepository;
 	
-	@GetMapping("/vote/link/{linkId}/direction/{direction}/voteCount/{voteCount}")
+	@GetMapping("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}")
 	public int vote(@PathVariable Long  linkId, 
 					@PathVariable short direction, 
 					@PathVariable int voteCount, Model model) {
@@ -33,8 +33,8 @@ public class VoteController {
 			Vote vote = new Vote(linkObj, direction);
 			int voteCounter = voteCount + direction;
 			linkObj.setVoteCount(voteCounter);
-			voteRepository.saveAndFlush(vote);
-			linkRepository.saveAndFlush(linkObj); 
+			voteRepository.save(vote);
+			linkRepository.save(linkObj); 
 			return voteCounter;
 		}
 		return voteCount;
