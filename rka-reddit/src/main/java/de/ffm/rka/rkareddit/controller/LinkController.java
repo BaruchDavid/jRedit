@@ -77,14 +77,4 @@ public class LinkController {
 			return "redirect:/links/link/{linkId}";
 		}
 	}	
-	
-//	@PutMapping("/link/{linkId}")
-//	public Link update(@ModelAttribute Link link) {		
-//		return linkRepository.saveAndFlush(link);
-//	}
-//	
-//	@DeleteMapping("/{linkId}")
-//	public void delete(Model model, @PathVariable Long linkId) {		
-//		linkRepository.deleteById(linkId);
-//	}
 }
