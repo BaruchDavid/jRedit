@@ -2,6 +2,10 @@ package de.ffm.rka.rkareddit.controller.rest;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,11 +23,14 @@ import de.ffm.rka.rkareddit.security.Role;
 @RestController
 public class VoteController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(VoteController.class);
+	
 	@Autowired
 	private VoteRepository voteRepository;
 	
 	@Autowired
 	private LinkRepository linkRepository;
+	
 	
 	/**
 	 * 
@@ -33,12 +40,12 @@ public class VoteController {
 	 * @return new sum of votes
 	 * @author Roman
 	 */
-	@Secured({Role.USER})
+	@Secured({"ROLE_USER"})
 	@GetMapping("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}")
 	public int vote(@PathVariable Long  linkId, 
 					@PathVariable short direction, 
-					@PathVariable int voteCount, Model model) {
-		
+					@PathVariable int voteCount, Model model, HttpServletRequest req) {
+		LOGGER.info("USER AUTHETICATION DETAILS {}", req.getUserPrincipal());
 		Optional<Link> link = linkRepository.findById(linkId);
 		if(link.isPresent()) {
 			Link linkObj = link.get();

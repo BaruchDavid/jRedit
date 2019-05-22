@@ -1,7 +1,11 @@
 package de.ffm.rka.rkareddit.security;
 
 import org.springframework.security.core.GrantedAuthority;
-
+/**
+ * Container for roles with required prefix
+ * @author Roman
+ *
+ */
 public final class Role{
 	
 	/**
@@ -22,5 +26,5 @@ public final class Role{
 	 * verifies that the user is actuator
 	 */
 	public static final String ACTUATOR="ACTUATOR";
-	
+
 }

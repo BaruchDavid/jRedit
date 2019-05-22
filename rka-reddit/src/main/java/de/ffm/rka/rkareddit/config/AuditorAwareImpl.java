@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -16,7 +18,7 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 
 
 public class AuditorAwareImpl implements AuditorAware<String>{
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuditorAwareImpl.class);
 
 	
 	/**
@@ -25,8 +27,8 @@ public class AuditorAwareImpl implements AuditorAware<String>{
 	@Override
 	public Optional<String> getCurrentAuditor() {
 		Optional<String> userName = Optional.empty();
-		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		LOGGER.info("USER AUTHETICATION DETAILS {}", authentication.getPrincipal());
 		if (!(authentication instanceof AnonymousAuthenticationToken)) {
 		   userName = Optional.ofNullable(authentication.getName());
 		}

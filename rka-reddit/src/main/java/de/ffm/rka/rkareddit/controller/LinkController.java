@@ -59,14 +59,14 @@ public class LinkController {
 		}
 	}
 	
-	@Secured({Role.ADMIN})
+	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/link/create")
 	public String createNewLink(Model model) {
 		model.addAttribute("newLink", new Link());
 		return "link/submit";
 	}
 	
-	@Secured({Role.ADMIN})
+	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/link/create")
 	public String saveNewLink(@Valid Link link, Model model, BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
