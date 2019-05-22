@@ -42,8 +42,7 @@ public class Link extends Auditable{
 	
 	@OneToMany(mappedBy = "link")
 	private List<Vote> vote = new ArrayList<>();
-	
-	private LocalDateTime createdOn;
+
 	private int voteCount = 0;
 		
 	
@@ -67,21 +66,19 @@ public class Link extends Auditable{
 	
 	public String getElapsedTime() {
 		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
-		return prettyTime.format(from(this.createdOn.atZone(ZONE_ID).toInstant()));
+    	return prettyTime.format(from(super.getCreationDate().atZone(ZONE_ID).toInstant()));
+		
+	}
+	
+	public String getHoster() throws URISyntaxException {
+		URI domain = new URI(url);
+		return domain.getHost().toString();
 	}
 	
 	public void addComment(Comment comment) {
 		comments.add(comment);
 	}
-	
-	
-	public String getDomainName() throws URISyntaxException {
-        URI uri = new URI(this.url);
-        String domain = uri.getHost();
-        return domain.startsWith("www.") ? domain.substring(4) : domain;
-    }
 
-	
 	public Long getLinkId() {
 		return linkId;
 	}
@@ -114,14 +111,6 @@ public class Link extends Auditable{
 		this.url = url;
 	}
 
-	public LocalDateTime getCreatedOn() {
-		return createdOn;
-	}
-
-	public void setCreatedOn(LocalDateTime createdOn) {
-		this.createdOn = createdOn;
-	}
-
 	public int getVoteCount() {
 		return voteCount;
 	}
@@ -152,8 +141,7 @@ public class Link extends Auditable{
 
 	@Override
 	public String toString() {
-		return "Link [linkId=" + linkId + ", userId=" + userId + ", title=" + title + ", url=" + url + ", createdOn="
-				+ createdOn + ", voteCount=" + voteCount + ", comments=" + comments + ", prettyTime=" + prettyTime
+		return "Link [linkId=" + linkId + ", userId=" + userId + ", title=" + title + ", url=" + url + ", voteCount=" + voteCount + ", comments=" + comments + ", prettyTime=" + prettyTime
 				+ "]";
 	}
 	

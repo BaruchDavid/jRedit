@@ -27,7 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		Optional<User> user = userRepository.findByEmail(username);
 		if(user.isPresent()) {
 			return user.get();

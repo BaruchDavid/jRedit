@@ -26,7 +26,7 @@
                     <a class="title " th:href="${link.url}" th:text="${link.title}" target="_blank">
                         What's new in Spring Boot 2?
                     </a>
-                    <span class="domain">(<a th:href="${link.url}" th:text="${link.getDomainName()}">therealdanvega.com</a>)</span>
+                    <span class="domain">(<a th:href="${link.url}" th:text="${link.getHoster()}">google.com</a>)</span>
                 </p>
                 <p class="tagline ">submitted
                     <time th:title="${link.getCreationDate()}" th:datetime="${link.getCreationDate()}" class="live-timestamp" th:text="${link.getPrettyTime()}">1 hour(s)</time> by
@@ -68,8 +68,8 @@
                 <div class="col-1">&nbsp;</div>
                 <div class="col-11">
                     <span><a href="#" th:text="${comment.getCreatedBy()}"><i class="far fa-user"></i> therealdanvega</a></span>
-                    <span th:text="${comment.getPrettyTime()}"><i class="far fa-clock"></i> 4 hours ago</span>
-                    <p class="body" th:text="${comment.getBody()}">It’s one thing I never care about, new releases of maven. Yet I do for most other things.. I really should take a look at any features released in the last while! Pull my dependencies, run my tests and upload to nexus. I don’t care for much else, I wonder what if any I’m missing.</p>
+                    <span th:text="${comment.getElapsedTime()}"><i class="far fa-clock"></i> 4 hours ago</span>
+                    <p class="body" th:text="${comment.getComment()}">It’s one thing I never care about, new releases of maven. Yet I do for most other things.. I really should take a look at any features released in the last while! Pull my dependencies, run my tests and upload to nexus. I don’t care for much else, I wonder what if any I’m missing.</p>
                     <a href="#" class="permalink"><i class="fas fa-link"></i> permalink</a>
                     <a href="#" class="like"><i class="far fa-thumbs-up"></i> Like</a>
                 </div>
