@@ -52,51 +52,51 @@ VALUES(1, 4);
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 2);
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(1, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 1, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(2, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(3, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 3, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(32, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 1, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(4, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(5, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(6, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(7, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(8, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(9, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 3, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(12, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 3, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(22, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 4, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(23, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 4, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(24, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 5, 2,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(25, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 5, 1,NOW());
 
-INSERT INTO Comment(comment_id, comment, link_link_id, user_user_id, creation_Date)
+INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(26, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 6, 1,NOW());
 

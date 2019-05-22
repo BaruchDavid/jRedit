@@ -43,8 +43,6 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private boolean enabled;
 	
-	
-	
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(

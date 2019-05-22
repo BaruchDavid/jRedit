@@ -27,10 +27,10 @@ public class Comment extends Auditable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long commentId;
-	private String comment;
+	private String commentText;
 	
 	@ManyToOne
-	@NotNull
+	//@NotNull
 	private User user;
 	
 	@NotNull
@@ -58,13 +58,17 @@ public class Comment extends Auditable{
 		this.commentId = commentId;
 	}
 
-	public String getComment() {
-		return comment;
+	
+
+	public String getCommentText() {
+		return commentText;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+
+	public void setCommentText(String commentText) {
+		this.commentText = commentText;
 	}
+
 
 	public Link getLink() {
 		return link;
