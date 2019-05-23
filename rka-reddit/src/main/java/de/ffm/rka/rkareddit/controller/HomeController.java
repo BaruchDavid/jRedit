@@ -43,48 +43,5 @@ public class HomeController {
 		return "link/link_list";
 		 
 	}
-	
-	
-	@GetMapping("link/{linkId}")
-	public String read(Model model, @PathVariable Long linkId) {		
-		Optional<Link> link = linkRepository.findById(linkId);
-		if(link.isPresent()) {
-			model.addAttribute("link",link.get());
-			model.addAttribute("success",model.containsAttribute("success"));
-			return "link/link_view";
-		}else {
-			return "redirect:/links";
-		}
-	}
-	
-	@GetMapping("/link/create")
-	public String createNewLink(Model model) {
-		model.addAttribute("newLink", new Link());
-		return "link/submit";
-	}
-		
-	@PostMapping("/link/create")
-	public String saveNewLink(@Valid Link link, Model model, BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
-		
-		if(bindingResult.hasErrors()) {
-			LOGGER.info("Validation failed of link: {}", link.toString());
-			model.addAttribute("newLink", link);
-			return "link/submit";
-		} else {
-			linkRepository.saveAndFlush(link);
-			redirectAttributes.addAttribute("linkId", link.getLinkId())
-								.addFlashAttribute("success", true);
-			return "redirect:/links/link/{linkId}";
-		}
-	}	
-	
-//	@PutMapping("/link/{linkId}")
-//	public Link update(@ModelAttribute Link link) {		
-//		return linkRepository.saveAndFlush(link);
-//	}
-//	
-//	@DeleteMapping("/{linkId}")
-//	public void delete(Model model, @PathVariable Long linkId) {		
-//		linkRepository.deleteById(linkId);
-//	}
+
 }

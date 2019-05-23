@@ -3,19 +3,24 @@ package de.ffm.rka.rkareddit.service;
 import java.util.List;
 import java.util.Optional;
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 
 /**
  * maintance all business logik for link treating
+ * creates basically read transaction 
  * @author RKA
  *
  */
 @Service
+@Transactional(readOnly = true)
 public class LinkService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
@@ -48,6 +53,11 @@ public class LinkService {
 		return link;
 	}		
 	
+	/**
+	 * create write transactional
+	 * @author RKA
+	 */
+	@Transactional(readOnly = false)
 	public Link saveLink(Link link) {
 		LOGGER.info("TRY TO SAVE LINK {}", link);
 		return Optional.ofNullable(linkRepository.saveAndFlush(link)).orElse(new Link("link not availible", "http://jReditt.com"));
