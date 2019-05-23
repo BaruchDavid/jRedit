@@ -31,7 +31,7 @@ public class Link extends Auditable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long linkId;
-	private long userId;
+	
 	
 	@NotEmpty(message = "title is required")
 	private String title;
@@ -44,8 +44,10 @@ public class Link extends Auditable{
 	private List<Vote> vote = new ArrayList<>();
 
 	private int voteCount = 0;
-		
 	
+	@ManyToOne
+	private User user;
+		
 	@OneToMany(mappedBy="link")
 	private List<Comment> comments = new ArrayList<>();
 
@@ -87,13 +89,27 @@ public class Link extends Auditable{
 		this.linkId = linkId;
 	}
 
-	public long getUserId() {
-		return userId;
+	
+
+	public List<Vote> getVote() {
+		return vote;
 	}
 
-	public void setUserId(long userId) {
-		this.userId = userId;
+
+	public void setVote(List<Vote> vote) {
+		this.vote = vote;
 	}
+
+
+	public User getUser() {
+		return user;
+	}
+
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 
 	public String getTitle() {
 		return title;
@@ -141,7 +157,7 @@ public class Link extends Auditable{
 
 	@Override
 	public String toString() {
-		return "Link [linkId=" + linkId + ", userId=" + userId + ", title=" + title + ", url=" + url + ", voteCount=" + voteCount + ", comments=" + comments + ", prettyTime=" + prettyTime
+		return "Link [linkId=" + linkId + ", userId=" + title + ", url=" + url + ", voteCount=" + voteCount + ", comments=" + comments + ", prettyTime=" + prettyTime
 				+ "]";
 	}
 	

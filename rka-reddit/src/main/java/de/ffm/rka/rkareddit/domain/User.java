@@ -17,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,11 +41,32 @@ public class User implements UserDetails {
 	@Column(length = 100)
 	private String password;
 	
+
+	@NotEmpty(message = "you must enter First Name.")
+	@Column(length = 50)
+	private String firstName;
+	
+	@NotEmpty(message = "you must enter Second Name.")
+	@Column(length = 50)
+	private String secondName;
+	
+	@Transient
+	private  String fullName;
+	
+	@NotEmpty(message = "Please enter alias.")
+	@Column(nullable = false, unique = true)
+	private  String aliasName;
+
+	@OneToMany(mappedBy = "user")
+	private Set<Link> userLinks = new HashSet<Link>();
+	
 	@NotEmpty
 	@Column(nullable = false)
 	private boolean enabled;
-	
 
+
+	
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "users_roles",
@@ -69,6 +92,37 @@ public class User implements UserDetails {
 			.collect(Collectors.toList());
 		
 		return authorities;
+	}
+	
+	 
+
+	public String getAliasName() {
+		return aliasName;
+	}
+
+	public void setAliasName(String aliasName) {
+		this.aliasName = aliasName;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getSecondName() {
+		return secondName;
+	}
+
+	public void setSecondName(String secondName) {
+		this.secondName = secondName;
+	}
+
+	public String getFullName() {
+		
+		return firstName.concat(" ").concat(secondName);
 	}
 
 	@Override
