@@ -24,21 +24,22 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import de.ffm.rka.rkareddit.security.Role;
+import de.ffm.rka.rkareddit.service.LinkService;
 
 @Controller
 @RequestMapping("/links")
 public class LinkController {
 
 	
-	private LinkRepository linkRepository;
+	private LinkService linkService;
 	private CommentRepository commentRepository;
 	
 	
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
-	public LinkController(LinkRepository linkRepository, CommentRepository commentRepository) {
-		this.linkRepository = linkRepository;
+	public LinkController(LinkService linkService, CommentRepository commentRepository) {
+		this.linkService = linkService;
 		this.commentRepository = commentRepository;
 
 	}
@@ -47,7 +48,7 @@ public class LinkController {
 	@GetMapping({"/",""})
 	public String list(Model model) {	
 		
-		model.addAttribute("links",linkRepository.findAll());
+		model.addAttribute("links",linkService.findAllLinks());
 		return "link/link_list";
 		 
 	}
@@ -55,7 +56,7 @@ public class LinkController {
 	
 	@GetMapping("link/{linkId}")
 	public String read(Model model, @PathVariable Long linkId) {		
-		Optional<Link> link = linkRepository.findById(linkId);
+		Optional<Link> link = linkService.findLinkByLinkId(linkId);
 		if(link.isPresent()) {
 			Link currentLink = link.get();
 			Comment comment = new Comment();
@@ -85,7 +86,7 @@ public class LinkController {
 			model.addAttribute("newLink", link);
 			return "link/submit";
 		} else {
-			linkRepository.saveAndFlush(link);
+			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())
 								.addFlashAttribute("success", true);
 			return "redirect:/links/link/{linkId}";
