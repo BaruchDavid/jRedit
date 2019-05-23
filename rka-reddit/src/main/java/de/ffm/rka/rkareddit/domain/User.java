@@ -14,14 +14,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -33,8 +34,8 @@ public class User implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
 	
-	@NotEmpty
-	@Size(min = 8, max = 20)
+	@NotEmpty(message = "mail must be entered ")
+	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	@Column(unique = true, nullable=false)
 	private String email;
 	
@@ -60,7 +61,7 @@ public class User implements UserDetails {
 	@OneToMany(mappedBy = "user")
 	private Set<Link> userLinks = new HashSet<Link>();
 	
-	@NotEmpty
+	@NotNull
 	@Column(nullable = false)
 	private boolean enabled;
 
