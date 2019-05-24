@@ -6,6 +6,7 @@ import javax.validation.ConstraintValidatorContext;
 import de.ffm.rka.rkareddit.domain.User;
 
 /**
+ * 
  * validates given constraint for given object
  * @author RKA
  *

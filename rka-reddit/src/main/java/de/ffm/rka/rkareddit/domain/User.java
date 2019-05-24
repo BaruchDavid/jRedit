@@ -83,6 +83,18 @@ public class User implements UserDetails {
 	)
 	private Set<Role> roles = new HashSet<>();
 	
+	
+	@Transient
+	private String activationCode;
+	
+	public String getActivationCode() {
+		return activationCode;
+	}
+
+	public void setActivationCode(String activationCode) {
+		this.activationCode = activationCode;
+	}
+
 	public void addRole(Role role) {
 		roles.add(role);
 	}
@@ -195,5 +207,13 @@ public class User implements UserDetails {
 		this.enabled = enabled;
 	}
 
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", firstName=" + firstName
+				+ ", secondName=" + secondName + ", fullName=" + fullName + ", aliasName=" + aliasName + ", enabled="
+				+ enabled + ", confirmPassword=" + confirmPassword + ", activationCode=" + activationCode + "]";
+	}
 
+	
+	
 }

@@ -11,3 +11,7 @@ Initialisierung in der Testumgebung:
 Laden von Tabellen anhand der Entities im Package:  de.ffm.rka.rkareddit.model
 Laden von Daten in die erzeugte Entities mit Angabe von spring.datasource.data=classpath:data-h2.sql
 Da in der Testumgebung h2 als DB gilt, lädt er nur data-h2.sql nach dem anhand der Entities die Tabellen erstellt wurden
+
+Mail-Server Einrichtung
+>npm install -g maildev
+>maildev
