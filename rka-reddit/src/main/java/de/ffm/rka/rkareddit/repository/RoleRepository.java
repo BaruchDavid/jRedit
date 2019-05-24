@@ -7,4 +7,6 @@ import de.ffm.rka.rkareddit.domain.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
+	Role findByName(String roleName);
+
 }
