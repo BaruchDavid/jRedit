@@ -42,6 +42,7 @@ public class UserService {
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		String secret = encoder.encode(user.getPassword());
 		user.setPassword(secret);
+		user.setConfirmPassword(secret);
 		user.addRole(roleService.findByName("ROLE_USER"));
 		userRepository.saveAndFlush(user);
 		return user;

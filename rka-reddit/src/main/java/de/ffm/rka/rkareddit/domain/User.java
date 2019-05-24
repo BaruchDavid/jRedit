@@ -26,9 +26,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
+
 
 @Entity
+@PasswordMatcher
 public class User implements UserDetails {
+
+
+	private static final long serialVersionUID = -5987601453095162765L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,8 +71,9 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private boolean enabled;
 
-
-	
+	@Transient
+	@NotEmpty(message = "please confirm your password")
+	private String confirmPassword;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
@@ -94,8 +101,14 @@ public class User implements UserDetails {
 		
 		return authorities;
 	}
-	
-	 
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
 
 	public String getAliasName() {
 		return aliasName;
