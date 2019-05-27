@@ -82,9 +82,7 @@ public class User implements UserDetails {
 			inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
 	)
 	private Set<Role> roles = new HashSet<>();
-	
-	
-	@Transient
+
 	private String activationCode;
 	
 	public String getActivationCode() {

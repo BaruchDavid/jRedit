@@ -21,6 +21,7 @@ import de.ffm.rka.rkareddit.service.UserService;
 @Controller
 public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
+	
 	private UserService userService;
 
 	public AuthController(UserService userService) {
