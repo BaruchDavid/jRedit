@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.controller;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -95,10 +96,10 @@ public class LinkController {
 	
 	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/link/comments")
-	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes) {		
-		
+	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes, HttpServletRequest request) {		
+		LOGGER.info("USER {} SAVE NEW LINK {}",request.getUserPrincipal().getName(), comment);
 		if(bindingResult.hasErrors()) {
-			LOGGER.info("Validation failed of link: {}", comment.toString());
+			LOGGER.info("Validation failed of comment: {}", comment.toString());
 			model.addAttribute("newLink", comment);
 			return "link/submit";
 		} else {

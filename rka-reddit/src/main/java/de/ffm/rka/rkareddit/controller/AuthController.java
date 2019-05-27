@@ -76,6 +76,7 @@ public class AuthController {
 		if(user.isPresent()) {
 			User newUser = user.get();
 			newUser.setEnabled(true);
+			newUser.setConfirmPassword(newUser.getPassword());
 			userService.save(newUser);
 			userService.sendWelcomeEmail(newUser);
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);

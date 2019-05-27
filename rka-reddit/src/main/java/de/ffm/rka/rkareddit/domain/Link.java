@@ -155,10 +155,11 @@ public class Link extends Auditable{
 		return ZONE_ID;
 	}
 
+
 	@Override
 	public String toString() {
-		return "Link [linkId=" + linkId + ", userId=" + title + ", url=" + url + ", voteCount=" + voteCount + ", comments=" + comments + ", prettyTime=" + prettyTime
-				+ "]";
+		return "Link [linkId=" + linkId + ", title=" + title + ", url=" + url + ", vote=" + vote + ", voteCount="
+				+ voteCount + "]";
 	}
-	
+
 }
