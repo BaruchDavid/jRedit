@@ -8,9 +8,8 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,16 +21,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
-import de.ffm.rka.rkareddit.repository.LinkRepository;
-import de.ffm.rka.rkareddit.security.Role;
 import de.ffm.rka.rkareddit.service.LinkService;
 
 @Controller
 @RequestMapping("/links")
 public class LinkController {
 
-	
+	private UserDetailsService userDetailService;
 	private LinkService linkService;
 	private CommentRepository commentRepository;
 	
@@ -39,9 +37,10 @@ public class LinkController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
-	public LinkController(LinkService linkService, CommentRepository commentRepository) {
+	public LinkController(LinkService linkService, CommentRepository commentRepository,  UserDetailsService userDetailService) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
+		this.userDetailService = userDetailService;
 
 	}
 
@@ -80,13 +79,16 @@ public class LinkController {
 	
 	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/link/create")
-	public String saveNewLink(@Valid Link link, Model model, BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
+	public String saveNewLink(@Valid Link link, Model model, HttpServletRequest request,
+							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
 		if(bindingResult.hasErrors()) {
 			LOGGER.info("Validation failed of link: {}", link.toString());
 			model.addAttribute("newLink", link);
 			return "link/submit";
 		} else {
+			User user = (User) userDetailService.loadUserByUsername(request.getUserPrincipal().getName());
+			link.setUser(user);
 			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())
 								.addFlashAttribute("success", true);
