@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +18,6 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Vote;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import de.ffm.rka.rkareddit.repository.VoteRepository;
-import de.ffm.rka.rkareddit.security.Role;
 
 @RestController
 public class VoteController {
@@ -45,15 +44,19 @@ public class VoteController {
 	public int vote(@PathVariable Long  linkId, 
 					@PathVariable short direction, 
 					@PathVariable int voteCount, Model model, HttpServletRequest req) {
-		LOGGER.info("USER AUTHETICATION DETAILS {}", req.getUserPrincipal());
-		Optional<Link> link = linkRepository.findById(linkId);
-		if(link.isPresent()) {
-			Link linkObj = link.get();
-			Vote vote = new Vote(linkObj, direction);
-			int voteCounter = voteCount + direction;
-			linkObj.setVoteCount(voteCounter);
-			voteRepository.saveAndFlush(vote);	
-			return voteCounter;
+		LOGGER.info("USER AUTHETICATION DETAILS FOR VOTE {}", req.getUserPrincipal());
+		try {
+			Optional<Link> link = linkRepository.findById(linkId);
+			if(link.isPresent()) {
+				Link linkObj = link.get();
+				Vote vote = new Vote(linkObj, direction);
+				int voteCounter = voteCount + direction;
+				linkObj.setVoteCount(voteCounter);
+				voteRepository.saveAndFlush(vote);	
+				return voteCounter;
+			}
+		} catch (RuntimeException e) {
+			LOGGER.error("NO PERMISSION FOR USER TO VOTE", e);
 		}
 		return voteCount;
 	}

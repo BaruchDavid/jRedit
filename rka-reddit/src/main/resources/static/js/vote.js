@@ -8,8 +8,10 @@ $('.upvote, .downvote').on('click', function(){
             fetch(`/jReditt/vote/link/${linkId}/direction/${direction}/votecount/${voteCount.text()}`)
                     .then(
                         response => response.json())
-                    .then(data => 
-                            voteCount.text(data)
+                    .then(data => {
+                            if(!isNaN(data))
+                                voteCount.text(data)
+                            }
                         )
                     .catch(
                         err => console.error(err)

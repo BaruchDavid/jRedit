@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import de.ffm.rka.rkareddit.domain.Role;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.service.UserService;
@@ -74,9 +75,12 @@ public class AuthController {
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
 		Optional<User> user = userService.findUserByMailAndActivationCode(email, activationCode);
 		if(user.isPresent()) {
+			Role role_user= new Role();
+			role_user.setName("ROLE_USER");
 			User newUser = user.get();
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
+			newUser.addRole(role_user);
 			userService.save(newUser);
 			userService.sendWelcomeEmail(newUser);
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);

@@ -53,6 +53,9 @@ VALUES(1, 4);
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 2);
 
+INSERT INTO users_roles(user_Id, role_Id)
+VALUES(2, 1);
+
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(1, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 1, 1,NOW());
 
