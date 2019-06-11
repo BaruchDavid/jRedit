@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
 
 @Entity
 @PasswordMatcher
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
 
 
 	private static final long serialVersionUID = -5987601453095162765L;
