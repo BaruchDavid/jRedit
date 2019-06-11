@@ -35,7 +35,7 @@ public class FacebookService {
 		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
 		OAuth2Parameters params = new OAuth2Parameters();
 		params.setRedirectUri("http://localhost:5550/jReditt/social/facebookAccess");
-		params.setScope("public_profile,email,user_birthday");
+		params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages");
 		return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE,params);
 	}
 
