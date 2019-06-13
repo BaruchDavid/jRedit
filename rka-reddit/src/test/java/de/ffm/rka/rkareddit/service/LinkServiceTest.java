@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit;
+package de.ffm.rka.rkareddit.service;
 
 import static org.junit.Assert.assertEquals;
 
