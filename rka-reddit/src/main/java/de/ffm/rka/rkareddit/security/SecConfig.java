@@ -43,14 +43,17 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	@Value("${userAuthorities}")
 	private String userAuthorities;
 	
+	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		final int oneDay = 86400;
-		http.authorizeRequests().antMatchers("/").permitAll()
+		http.authorizeRequests().antMatchers("/").permitAll()		
+								.antMatchers( "/resources/**").permitAll()
 								.antMatchers("/links/").permitAll()
 								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ACTUATOR)
 								.antMatchers("/links/link/create").hasRole(Role.ADMIN)
 								.antMatchers("/data/h2-console/**").hasRole(Role.DBA)
+								
 								.and()
 							.formLogin()
 								.loginPage("/login").permitAll()
