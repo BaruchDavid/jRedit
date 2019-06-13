@@ -1,8 +1,8 @@
-INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name)
-VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'baruc-david', 'rka', 'worker');
+INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, creation_date)
+VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'baruc-david', 'rka', 'worker', NOW());
 
-INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name)
-VALUES(2, 'dascha@gmx.de', 1, '$2a$10$huJEV8HA6ty9BzNlRqHyG.QMPE//p4lyMyfcTqnSpTe7fxlxybs2e', 'dascha', 'unknown', 'ceo');
+INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, creation_date)
+VALUES(2, 'dascha@gmx.de', 1, '$2a$10$huJEV8HA6ty9BzNlRqHyG.QMPE//p4lyMyfcTqnSpTe7fxlxybs2e', 'dascha', 'unknown', 'ceo', NOW());
 
 INSERT INTO LINK(link_id,  title, url,  VOTE_COUNT, creation_Date, user_user_id)
 VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', 'https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing',  0,NOW(),1);

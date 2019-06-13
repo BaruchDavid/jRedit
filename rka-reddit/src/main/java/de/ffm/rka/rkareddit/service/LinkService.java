@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 
 /**
@@ -61,6 +62,12 @@ public class LinkService {
 	public Link saveLink(Link link) {
 		LOGGER.info("TRY TO SAVE LINK {}", link);
 		return Optional.ofNullable(linkRepository.saveAndFlush(link)).orElse(new Link("link not availible", "http://jReditt.com"));
+	}
+
+
+	public long findAllByUser(User user) {
+		// TODO Auto-generated method stub
+		return linkRepository.countByUser(user);
 	}
 	
 }

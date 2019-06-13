@@ -27,12 +27,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
 
 
 @Entity
 @PasswordMatcher
-public class User implements UserDetails, Serializable {
+public class User extends Auditable implements UserDetails, Serializable {
 
 
 	private static final long serialVersionUID = -5987601453095162765L;

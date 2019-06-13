@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,6 +56,10 @@ public class UserService {
 		userRepository.saveAndFlush(user);
 		sendActivatonEmail(user);
 		return user;
+	}
+	
+	public List<Long> getLinkSizeByUser(long userId){
+		return userRepository.getSizeForLinkByUser(userId);
 	}
 	
 	/**

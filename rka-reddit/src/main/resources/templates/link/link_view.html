@@ -20,7 +20,8 @@
                 <div><span class="votecount">0</span></div>
 
                 <div><a href="#" class="downvote"><i class="fas fa-arrow-down"></i></a></div>
-            </div>
+			</div>
+			
             <div class="col-11">
                 <p class="title">
                     <a class="title " th:href="${link.url}" th:text="${link.title}" target="_blank">
@@ -52,8 +53,8 @@
             <div class="row addcomment" sec:authorize="hasRole('ROLE_USER')">
                 <div class="col-1">&nbsp;</div>
                 <div class="col-11">
-                    <!-- th:field="*{body}" -->
-                    <form id="frmAddComment" method="POST" th:action="@{/links/link/comments}" th:object="${comment}" >
+					<!-- th:field="*{body}" -->					
+					<form id="frmAddComment" method="POST" th:action="@{/links/link/comments}" th:object="${comment}" >
                         <input type="hidden" th:field="*{link}"/>
                         <div class="form-group">
                             <textarea class="form-control" id="comment" rows="3" th:field="*{commentText}"></textarea>

@@ -77,8 +77,14 @@ public class Comment extends Auditable{
 	public void setLink(Link link) {
 		this.link = link;
 	}
-	
-	
-	
-	
+
+
+	public User getUser() {
+		return user;
+	}
+
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

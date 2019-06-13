@@ -8,7 +8,9 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,7 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
 
 @Controller
@@ -32,7 +35,8 @@ public class LinkController {
 	private UserDetailsService userDetailService;
 	private LinkService linkService;
 	private CommentRepository commentRepository;
-	
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
 	
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
@@ -55,8 +59,9 @@ public class LinkController {
 	
 	
 	@GetMapping("link/{linkId}")
-	public String read(Model model, @PathVariable Long linkId) {		
+	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request) {		
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
+	
 		if(link.isPresent()) {
 			Link currentLink = link.get();
 			Comment comment = new Comment();
@@ -98,14 +103,17 @@ public class LinkController {
 	
 	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/link/comments")
-	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes, HttpServletRequest request) {		
-		LOGGER.info("USER {} SAVE NEW LINK {}",request.getUserPrincipal().getName(), comment);
+	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes) {		
+		
 		if(bindingResult.hasErrors()) {
-			LOGGER.info("Validation failed of comment: {}", comment.toString());
+			LOGGER.warn("Validation failed of comment: {}", comment.toString());
 			model.addAttribute("newLink", comment);
 			return "link/submit";
 		} else {
-			LOGGER.info("Saved comment {} for  link: {}", comment.toString());
+			User currentUser = (User) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext()	
+																								.getAuthentication().getName());
+			comment.setUser(currentUser);
+			LOGGER.info("Saved comment {} for  link: {} from {}", comment.toString(), comment.getLink().getLinkId(), currentUser.getEmail());
 			attributes.addFlashAttribute("success", true);
 			commentRepository.saveAndFlush(comment);
 			
