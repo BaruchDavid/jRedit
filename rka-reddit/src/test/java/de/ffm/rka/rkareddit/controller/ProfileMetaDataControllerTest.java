@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,7 +44,9 @@ public class ProfileMetaDataControllerTest {
 	public void shouldReturnDefaultMessage() throws Exception {
 		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now()); 
 		String expectedValue ="[\"5\",\"9\",\""+today+"\"]";
-		this.mockMvc.perform(get("/profile/information/content"))
+		this.mockMvc.perform(get("/profile/information/content")
+								.contentType(MediaType.TEXT_PLAIN)
+								.content("romakapt@gmx.de"))
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(content().string(expectedValue));		
