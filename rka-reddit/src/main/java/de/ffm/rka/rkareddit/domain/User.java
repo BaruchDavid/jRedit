@@ -66,8 +66,11 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Column(nullable = false, unique = true)
 	private  String aliasName;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private Set<Link> userLinks = new HashSet<Link>();
+	
+	@OneToMany(mappedBy = "user")
+	private Set<Comment> userComments = new HashSet<Comment>();
 	
 	@NotNull
 	@Column(nullable = false)
@@ -77,7 +80,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@NotEmpty(message = "please confirm your password")
 	private String confirmPassword;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "users_roles",
 			joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
@@ -87,6 +90,44 @@ public class User extends Auditable implements UserDetails, Serializable {
 
 	private String activationCode;
 	
+	public void addCommentToUser(Comment comment) {
+		this.userComments.add(comment);
+	}
+	
+	
+	
+	public Set<Comment> getUserComments() {
+		return userComments;
+	}
+
+
+
+	public void setUserComments(Set<Comment> userComments) {
+		this.userComments = userComments;
+	}
+
+
+
+	public void addLinkToUser(Link link) {
+		this.userLinks.add(link);
+	}
+	
+	public Set<Link> getUserLinks() {
+		return userLinks;
+	}
+
+	public void setUserLinks(Set<Link> userLinks) {
+		this.userLinks = userLinks;
+	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
 	public String getActivationCode() {
 		return activationCode;
 	}
@@ -95,7 +136,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 		this.activationCode = activationCode;
 	}
 
-	public void addRole(Role role) {
+	public void add(Role role) {
 		roles.add(role);
 	}
 	
@@ -206,6 +247,11 @@ public class User extends Auditable implements UserDetails, Serializable {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+	
+	public void addRole(Role role_user) {
+		this.roles.add(role_user);
+		
+	}
 
 	@Override
 	public String toString() {
@@ -213,6 +259,10 @@ public class User extends Auditable implements UserDetails, Serializable {
 				+ ", secondName=" + secondName + ", fullName=" + fullName + ", aliasName=" + aliasName + ", enabled="
 				+ enabled + ", confirmPassword=" + confirmPassword + ", activationCode=" + activationCode + "]";
 	}
+
+
+
+
 
 	
 	

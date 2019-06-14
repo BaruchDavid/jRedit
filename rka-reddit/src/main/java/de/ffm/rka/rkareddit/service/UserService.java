@@ -7,10 +7,13 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import de.ffm.rka.rkareddit.domain.Comment;
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -28,6 +31,9 @@ public class UserService {
 	private UserRepository userRepository;
 	private RoleService roleService;
 	private final MailService mailService;
+	
+	@Autowired
+	private CommentService commentService;
 	
 	
 	public UserService(MailService mailService,UserRepository userRepository, RoleService roleService) {
@@ -58,7 +64,7 @@ public class UserService {
 		return user;
 	}
 	
-	public List<Long> getLinkSizeByUser(long userId){
+	public User getLinkSizeByUser(long userId){
 		return userRepository.getSizeForLinkByUser(userId);
 	}
 	
@@ -104,5 +110,10 @@ public class UserService {
 		Optional<User> existsUser = userRepository.findByEmail(username);
 		existsUser.ifPresent(user -> LOGGER.info("USER FOUND WITH ID {}", user.getUserId()));
 		return existsUser;
+	}
+
+	public User getCommentSizeByUser(Long userId) {
+		
+		return userRepository.getSizeForCommentsByUser(userId);
 	}
 }

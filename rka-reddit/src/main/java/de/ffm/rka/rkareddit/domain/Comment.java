@@ -7,6 +7,7 @@ import java.time.ZoneId;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,12 +30,12 @@ public class Comment extends Auditable{
 	private long commentId;
 	private String commentText;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	//@NotNull
 	private User user;
 	
 	@NotNull
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Link link;
 
 	@Autowired
