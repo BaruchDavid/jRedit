@@ -74,13 +74,10 @@ public class AuthController {
 	public String activateAccount(@PathVariable String email, @PathVariable String activationCode, Model model) {	
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
 		Optional<User> user = userService.findUserByMailAndActivationCode(email, activationCode);
-		if(user.isPresent()) {
-			Role role_user= new Role();
-			role_user.setName("ROLE_USER");
+		if(user.isPresent()) {			
 			User newUser = user.get();
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
-			newUser.addRole(role_user);
 			userService.save(newUser);
 			userService.sendWelcomeEmail(newUser);
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -80,7 +81,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@NotEmpty(message = "please confirm your password")
 	private String confirmPassword;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(
 			name = "users_roles",
 			joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),

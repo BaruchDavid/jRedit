@@ -16,7 +16,7 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long roleId;
 	
-	@NotNull
+	@NotNull(message = "Rollenname darf nicht null sein")
 	private String name;
 	
 	@ManyToMany(mappedBy= "roles")
