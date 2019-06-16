@@ -17,15 +17,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
@@ -51,6 +52,8 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Column(length = 100)
 	private String password;
 	
+	@Lob
+	private byte[] profileFoto;
 
 	@NotEmpty(message = "you must enter First Name.")
 	@Column(length = 50)
@@ -77,7 +80,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Column(nullable = false)
 	private boolean enabled;
 
-	@Transient
+	
 	@NotEmpty(message = "please confirm your password")
 	private String confirmPassword;
 	
@@ -91,6 +94,26 @@ public class User extends Auditable implements UserDetails, Serializable {
 
 	private String activationCode;
 	
+	
+	
+	public byte[] getProfileFoto() {
+		return profileFoto;
+	}
+
+
+
+	public void setProfileFoto(byte[] profileFoto) {
+		this.profileFoto = profileFoto;
+	}
+
+
+
+	public void setFullName(String fullName) {
+		this.fullName = firstName.concat(" ").concat(secondName);
+	}
+
+
+
 	public void addCommentToUser(Comment comment) {
 		this.userComments.add(comment);
 	}
@@ -262,6 +285,47 @@ public class User extends Auditable implements UserDetails, Serializable {
 	}
 
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		return result;
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		return true;
+	}
+
+	
 
 
 
