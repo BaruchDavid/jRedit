@@ -1,11 +1,13 @@
 package de.ffm.rka.rkareddit.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -16,10 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.ffm.rka.rkareddit.domain.Role;
 import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.service.UserService;
+import de.ffm.rka.rkareddit.util.FileNIO;
 
 @Controller
 public class AuthController {
@@ -30,6 +31,9 @@ public class AuthController {
 	public AuthController(UserService userService) {
 		this.userService = userService;
 	}
+	
+	@Autowired
+	private FileNIO fileNIO;
 
 	@GetMapping({"/login"})
 	public String login(Model model) {		
@@ -38,10 +42,11 @@ public class AuthController {
 	
 	@Secured("ROLE_USER")
 	@GetMapping({"/profile"})
-	public String showProfile(Model model) {		
+	public String showProfile(Model model) throws IOException {		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		Optional<User> user = userService.findUserById(username);
 		if(user.isPresent()) {
+			model.addAttribute("userPic", fileNIO.readByteToPic(user.get().getProfileFoto(), user.get().getEmail()));
 			model.addAttribute("user", user.get());
 			model.addAttribute("posts", user.get().getUserLinks());
 			model.addAttribute("comments", user.get().getUserComments());
