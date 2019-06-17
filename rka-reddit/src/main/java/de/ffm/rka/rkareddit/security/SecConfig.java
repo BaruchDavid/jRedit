@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -43,6 +43,10 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	@Value("${userAuthorities}")
 	private String userAuthorities;
 	
+	@Bean
+    public AuthenticationSuccessHandler userSuccessfullAthenticationHandler(){
+        return new UserSuccessfullAthenticationHandler();
+    }
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
@@ -53,12 +57,11 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ACTUATOR)
 								.antMatchers("/links/link/create").hasRole(Role.ADMIN)
 								.antMatchers("/data/h2-console/**").hasRole(Role.DBA)
-								
 								.and()
 							.formLogin()
 								.loginPage("/login").permitAll()
 								.usernameParameter("email")
-								.defaultSuccessUrl("/links")
+								.successHandler(userSuccessfullAthenticationHandler())
 							.and()
 							.logout()
 								.invalidateHttpSession(true)

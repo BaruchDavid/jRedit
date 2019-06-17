@@ -42,9 +42,7 @@ public class FileNIO {
 		String resourcePath = "static/images/".concat(name).concat(".png");
 		URL fileUrl = this.getClass().getProtectionDomain().getCodeSource().getLocation();
 		String filePath = fileUrl.getPath();
-		if(filePath.startsWith("/")) {
-			filePath = filePath.substring(1, filePath.length());
-		}
+		filePath = filePath.startsWith("/")? filePath.substring(1, filePath.length()) : filePath;
 		File file = new File(filePath.concat(resourcePath));
 		ImageIO.write(bImage2, "png", file);
 		return file.getAbsolutePath();

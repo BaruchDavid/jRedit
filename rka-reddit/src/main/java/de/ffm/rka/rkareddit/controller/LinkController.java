@@ -4,6 +4,7 @@ package de.ffm.rka.rkareddit.controller;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.service.UserService;
 
 @Controller
 @RequestMapping("/links")
@@ -35,9 +37,12 @@ public class LinkController {
 	private UserDetailsService userDetailService;
 	private LinkService linkService;
 	private CommentRepository commentRepository;
+	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	
+	@Autowired
+	private UserService userService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
@@ -50,9 +55,13 @@ public class LinkController {
 
 
 	@GetMapping({"/",""})
-	public String list(Model model) {	
-		
+	public String list(Model model, HttpSession session) {	
+		Optional<User> user = Optional.ofNullable((User) session.getAttribute("loggedUser"));
+		if(user.isPresent()) {
+			model.addAttribute("user",user.get());
+		}		
 		model.addAttribute("links",linkService.findAllLinks());
+		
 		return "link/link_list";
 		 
 	}

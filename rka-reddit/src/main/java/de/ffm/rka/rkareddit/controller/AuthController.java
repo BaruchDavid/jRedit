@@ -46,7 +46,7 @@ public class AuthController {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		Optional<User> user = userService.findUserById(username);
 		if(user.isPresent()) {
-			model.addAttribute("userPic", fileNIO.readByteToPic(user.get().getProfileFoto(), user.get().getEmail()));
+			//model.addAttribute("userPic", fileNIO.readByteToPic(user.get().getProfileFoto(), user.get().getEmail()));
 			model.addAttribute("user", user.get());
 			model.addAttribute("posts", user.get().getUserLinks());
 			model.addAttribute("comments", user.get().getUserComments());

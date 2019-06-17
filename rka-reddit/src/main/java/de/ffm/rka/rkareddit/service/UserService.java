@@ -1,19 +1,17 @@
 package de.ffm.rka.rkareddit.service;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.ffm.rka.rkareddit.domain.Comment;
-import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -105,6 +103,7 @@ public class UserService {
 	 * find somebody by username
 	 * @param username from searched user
 	 */
+	@Cacheable("userInfo")
 	public Optional<User> findUserById(String username){
 		LOGGER.info("TRY TO FIND SER BY USERNAME {}", username);
 		Optional<User> existsUser = userRepository.findByEmail(username);
