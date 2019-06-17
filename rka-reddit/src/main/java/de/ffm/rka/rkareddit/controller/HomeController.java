@@ -9,11 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 
 @Controller
 @RequestMapping("/")
+@SessionAttributes("user")
 public class HomeController {
 
 	
@@ -28,8 +30,7 @@ public class HomeController {
 
 
 	@GetMapping({"/",""})
-	public String list(Model model, HttpSession session) {	
-		model.addAttribute("user", session.getAttribute("loggedUser"));
+	public String list(Model model) {	
 		model.addAttribute("links",linkRepository.findAll());
 		return "link/link_list";
 		 

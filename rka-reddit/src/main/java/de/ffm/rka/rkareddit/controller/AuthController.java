@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.ffm.rka.rkareddit.domain.User;
@@ -23,6 +24,7 @@ import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.FileNIO;
 
 @Controller
+@SessionAttributes("user")
 public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 	
@@ -42,15 +44,11 @@ public class AuthController {
 	
 	@Secured("ROLE_USER")
 	@GetMapping({"/profile"})
-	public String showProfile(Model model) throws IOException {		
-		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		Optional<User> user = userService.findUserById(username);
-		if(user.isPresent()) {
-			//model.addAttribute("userPic", fileNIO.readByteToPic(user.get().getProfileFoto(), user.get().getEmail()));
-			model.addAttribute("user", user.get());
-			model.addAttribute("posts", user.get().getUserLinks());
-			model.addAttribute("comments", user.get().getUserComments());
-		}
+	public String showProfile(Model model) throws IOException {
+		User user = (User) Optional.ofNullable(model.asMap().get("user")).orElse(new User()) ;	
+		model.addAttribute("user", user);
+		model.addAttribute("posts", user.getUserLinks());
+		model.addAttribute("comments", user.getUserComments());
 		return "auth/profile"; 
 	}
 	

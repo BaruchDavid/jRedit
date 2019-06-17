@@ -30,7 +30,7 @@ public class UserSuccessfullAthenticationHandler implements AuthenticationSucces
 			HttpSession validSession = session.get();
 			String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 			Optional<User> user = userService.findUserById(userName);
-			validSession.setAttribute("loggedUser", user.get());
+			validSession.setAttribute("user", user.get());
 			response.sendRedirect(request.getContextPath().concat("/"));
 		}
 	}

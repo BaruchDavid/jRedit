@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.ffm.rka.rkareddit.domain.Comment;
@@ -32,6 +33,7 @@ import de.ffm.rka.rkareddit.service.UserService;
 
 @Controller
 @RequestMapping("/links")
+@SessionAttributes("user")
 public class LinkController {
 
 	private UserDetailsService userDetailService;
@@ -56,21 +58,14 @@ public class LinkController {
 
 	@GetMapping({"/",""})
 	public String list(Model model, HttpSession session) {	
-		Optional<User> user = Optional.ofNullable((User) session.getAttribute("loggedUser"));
-		if(user.isPresent()) {
-			model.addAttribute("user",user.get());
-		}		
 		model.addAttribute("links",linkService.findAllLinks());
-		
 		return "link/link_list";
-		 
 	}
 	
 	
 	@GetMapping("link/{linkId}")
 	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request) {		
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
-	
 		if(link.isPresent()) {
 			Link currentLink = link.get();
 			Comment comment = new Comment();
@@ -121,7 +116,7 @@ public class LinkController {
 		} else {
 			User currentUser = (User) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext()	
 																								.getAuthentication().getName());
-			comment.setUser(currentUser);
+			comment.setUser((User) model.asMap().get("user"));
 			LOGGER.info("Saved comment {} for  link: {} from {}", comment.toString(), comment.getLink().getLinkId(), currentUser.getEmail());
 			attributes.addFlashAttribute("success", true);
 			commentRepository.saveAndFlush(comment);
