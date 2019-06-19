@@ -24,6 +24,15 @@ public class Role {
 
 	
 
+	public Role() {
+		super();
+	}
+
+	public Role(@NotNull(message = "Rollenname darf nicht null sein") String name) {
+		super();
+		this.name = name;
+	}
+
 	public Long getRoleId() {
 		return roleId;
 	}

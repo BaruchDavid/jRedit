@@ -58,7 +58,7 @@ public class LinkController {
 
 	@GetMapping({"/",""})
 	public String list(Model model, HttpSession session) {	
-		model.addAttribute("links",linkService.findAllLinks());
+		model.addAttribute("links",linkService.findAll());
 		return "link/link_list";
 	}
 	

@@ -42,10 +42,13 @@ public class AuthController {
 		return "auth/login"; 
 	}
 	
+	/**
+	 * set user info, user links and their comments
+	 */
 	@Secured("ROLE_USER")
 	@GetMapping({"/profile"})
 	public String showProfile(Model model) throws IOException {
-		User user = (User) Optional.ofNullable(model.asMap().get("user")).orElse(new User()) ;	
+		User user = (User ) Optional.ofNullable(model.asMap().get("user")).get();	
 		model.addAttribute("user", user);
 		model.addAttribute("posts", user.getUserLinks());
 		model.addAttribute("comments", user.getUserComments());

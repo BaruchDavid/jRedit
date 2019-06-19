@@ -94,19 +94,25 @@ public class User extends Auditable implements UserDetails, Serializable {
 
 	private String activationCode;
 	
+	public User() {}
 	
-	
+	public User(
+			@NotEmpty(message = "mail must be entered ") 
+			@Size(message = "email must be between 8 and 20 signs", min = 8, max = 20) String email,
+			String password,
+			Set<Role> roles) {
+		super();
+		this.email = email;
+		this.password = password;
+	}
+
 	public byte[] getProfileFoto() {
 		return profileFoto;
 	}
 
-
-
 	public void setProfileFoto(byte[] profileFoto) {
 		this.profileFoto = profileFoto;
 	}
-
-
 
 	public void setFullName(String fullName) {
 		this.fullName = firstName.concat(" ").concat(secondName);
@@ -178,7 +184,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 		
 		return authorities;
 	}
-
+	
 	public String getConfirmPassword() {
 		return confirmPassword;
 	}

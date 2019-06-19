@@ -70,4 +70,7 @@ public class LinkService {
 		return linkRepository.countByUser(user);
 	}
 	
+	public List<Link> findAll(){
+		return linkRepository.fetchAllLinks();
+	}
 }
