@@ -22,21 +22,21 @@
 
 
 	<springProfile name="test">
-		<root level="DEBUG">
+		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
 	</springProfile>
 
 	<springProfile name="dev">
-		<root level="DEBUG">
+		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
 	</springProfile>
 
 	<springProfile name="staging">
-		<root level="DEBUG">
+		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
