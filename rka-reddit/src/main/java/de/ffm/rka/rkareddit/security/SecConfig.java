@@ -20,7 +20,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 /**
- * This is a cnfiguration service for authentication
+ * This is a configuration service for authentication
+ * secures role-based requests and url-based requests
  * @author rka
  *
  */
