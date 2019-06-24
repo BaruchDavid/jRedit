@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.domain;
 
-import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,8 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 @Entity
 public class Vote extends Auditable {

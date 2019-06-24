@@ -56,7 +56,6 @@ public class ProfileMetaDataControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnDefaultMessage() throws Exception {
-		
 		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now()); 
 		String expectedValue ="[\"5\",\"9\",\""+today+"\",\"C:\\\\Drops\\\\rka-reddit\\\\target\\\\classes\\\\static\\\\images\\\\romakapt@gmx.de.png\"]";
 		MvcResult result = this.mockMvc.perform(get("/profile/information/content")

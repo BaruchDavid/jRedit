@@ -5,7 +5,6 @@ import static java.util.Date.from;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,8 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 @Entity
 public class Comment extends Auditable{
@@ -40,8 +38,7 @@ public class Comment extends Auditable{
 
 	@Autowired
 	private transient PrettyTime prettyTime;
-	
-	private transient LocalDateTime createdOn;
+
 	
 	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 	

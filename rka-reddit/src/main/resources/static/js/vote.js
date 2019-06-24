@@ -5,7 +5,7 @@ $('.upvote, .downvote').on('click', function(){
            
             
             
-            fetch(`/jReditt/vote/link/${linkId}/direction/${direction}/votecount/${voteCount.text()}`)
+            fetch('/jReditt/vote/link/${linkId}/direction/${direction}/votecount/${voteCount.text()}')
                     .then(
                         response => response.json())
                     .then(data => {

@@ -6,11 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.service.UserService;
-import de.ffm.rka.rkareddit.util.BeanUtil;
+
 import de.ffm.rka.rkareddit.util.FileNIO;
 
 public class DatabaseLoader implements CommandLineRunner{
@@ -29,6 +28,7 @@ public class DatabaseLoader implements CommandLineRunner{
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
 		User userObj = user.get();
 		userObj.setProfileFoto(fileNIO.readPictureToByte("static/images/profile_small.png"));	
+		LOGGER.info("Test-User setup picture bytes: {}", userObj.getProfileFoto().length);
 		userService.save(user.get());
 	}
 
