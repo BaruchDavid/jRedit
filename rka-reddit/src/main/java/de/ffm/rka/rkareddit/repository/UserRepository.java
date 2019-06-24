@@ -10,20 +10,39 @@ import org.springframework.data.repository.query.Param;
 import de.ffm.rka.rkareddit.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+	
+	
 	Optional<User> findByEmail(String email);
 	Optional<User> findByEmailAndActivationCode(String email, String code);
 	
+	/**
+	 * email is unique value like id for fetching Roles
+	 * @author RKA
+	 */
+	@Query("SELECT usr "
+			+ "FROM User usr "
+			+ "JOIN FETCH usr.roles "
+			+ "WHERE usr.email =:email")
+	User findByEmailWithRoles(@Param("email") String email);
+	
+	/**
+	 * email is unique value like id for fetching Links
+	 * @author RKA
+	 */
 	@Query("SELECT usr "
 			+ "FROM User usr "
 			+ "JOIN FETCH usr.userLinks "
-			+ "WHERE usr.userId =:userId")
-	User getSizeForLinkByUser(@Param("userId") long userId);
+			+ "WHERE usr.email =:email")
+	User getSizeForLinkByUser(@Param("email") String userId);
 	
-	
+	/**
+	 * email is unique value like id for fetching comments
+	 * @author RKA
+	 */
 	@Query("SELECT usr "
 			+"FROM User usr "
 			+ "JOIN FETCH usr.userComments "
-			+ "WHERE usr.userId =:userId")
-	User getSizeForCommentsByUser(@Param("userId") long userId);
+			+ "WHERE usr.email =:email")
+	User getSizeForCommentsByUser(@Param("email") String userId);
 	
 }

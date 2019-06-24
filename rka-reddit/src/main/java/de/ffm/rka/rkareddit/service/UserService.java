@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,10 +28,7 @@ public class UserService {
 	private UserRepository userRepository;
 	private RoleService roleService;
 	private final MailService mailService;
-	
-	@Autowired
-	private CommentService commentService;
-	
+
 	
 	public UserService(MailService mailService,UserRepository userRepository, RoleService roleService) {
 
@@ -62,7 +58,7 @@ public class UserService {
 		return user;
 	}
 	
-	public User getLinkSizeByUser(long userId){
+	public User getLinkSizeByUser(String userId){
 		return userRepository.getSizeForLinkByUser(userId);
 	}
 	
@@ -111,7 +107,8 @@ public class UserService {
 		return existsUser;
 	}
 
-	public User getCommentSizeByUser(Long userId) {
+	
+	public User getCommentSizeByUser(String userId) {
 		
 		return userRepository.getSizeForCommentsByUser(userId);
 	}
