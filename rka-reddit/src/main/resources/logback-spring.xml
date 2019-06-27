@@ -3,7 +3,8 @@
 	<appender name="SAVE-TO-FILE"
 		class="ch.qos.logback.core.FileAppender">
 		<file>${LOG_PATH}/ApplicationLog.log</file>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
 				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level
 				%logger{36}.%M - %msg%n
@@ -11,7 +12,8 @@
 		</encoder>
 	</appender>
 
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="CONSOLE"
+		class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>
 				%d{HH:mm:ss.SSS} | %5p | %logger{25} | %m%n
@@ -26,6 +28,10 @@
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
+		<logger name="org.hibernate.SQL" level="trace" additivity="false">
+			<appender-ref ref="SAVE-TO-FILE" />
+		</logger>
+
 	</springProfile>
 
 	<springProfile name="dev">
@@ -33,6 +39,9 @@
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
+		<logger name="org.hibernate.SQL" level="trace" additivity="false">
+			<appender-ref ref="SAVE-TO-FILE" />
+		</logger>
 	</springProfile>
 
 	<springProfile name="staging">
@@ -40,6 +49,9 @@
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
+		<logger name="org.hibernate.SQL" level="trace" additivity="false">
+			<appender-ref ref="SAVE-TO-FILE" />
+		</logger>
 	</springProfile>
 
 </configuration>
