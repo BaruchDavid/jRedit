@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,6 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
-import de.ffm.rka.rkareddit.service.UserService;
 
 @Controller
 @RequestMapping("/links")
@@ -43,8 +43,6 @@ public class LinkController {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	
-	@Autowired
-	private UserService userService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
@@ -58,7 +56,8 @@ public class LinkController {
 
 	@GetMapping({"/",""})
 	public String list(Model model, HttpSession session) {	
-		model.addAttribute("links",linkService.findAll());
+		List<Link> links = linkService.findAll();
+		model.addAttribute("links",links);
 		return "link/link_list";
 	}
 	

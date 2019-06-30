@@ -1,11 +1,16 @@
 package de.ffm.rka.rkareddit.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
-import de.ffm.rka.rkareddit.domain.Comment;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Vote;
 
 
 public interface VoteRepository extends JpaRepository<Vote, Long> {
+
+	
 
 }

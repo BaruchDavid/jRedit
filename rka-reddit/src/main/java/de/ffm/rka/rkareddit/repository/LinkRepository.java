@@ -15,7 +15,9 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 	 */
 	long countByUser(User usr);
 	
-	@Query("SELECT link FROM Link link")
-	List<Link> fetchAllLinks();
-	
+	@Query("SELECT link "
+			+ "FROM Link link "
+			+ "LEFT JOIN FETCH link.comments ")
+	List<Link> fetchAllLinksWithComments();
+		
 }

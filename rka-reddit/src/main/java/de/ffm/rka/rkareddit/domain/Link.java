@@ -1,6 +1,10 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import static java.util.Date.from;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +15,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
-import static java.util.Date.from;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
+@NamedEntityGraph(name="linkEntityGraph", attributeNodes={
+	    @NamedAttributeNode("vote"),
+	    @NamedAttributeNode("comments")
+	})
 @Entity
 public class Link extends Auditable{
 
@@ -41,7 +48,8 @@ public class Link extends Auditable{
 	@URL(message = "valid url is required")
 	private String url;
 	
-	@OneToMany(mappedBy = "link", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "link", fetch=FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Vote> vote = new ArrayList<>();
 
 	private int voteCount = 0;
