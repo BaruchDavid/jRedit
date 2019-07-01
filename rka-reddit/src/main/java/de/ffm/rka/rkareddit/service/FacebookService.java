@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 import de.ffm.rka.rkareddit.controller.rest.FbController;
 import de.ffm.rka.rkareddit.domain.FbPost;
 import de.ffm.rka.rkareddit.domain.Link;
-
+/*
+ * Goal of this service is, to create posts on facebook.
+ * 
+ */
 @Service
 public class FacebookService {
 
