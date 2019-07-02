@@ -2,7 +2,7 @@ package de.ffm.rka.rkareddit.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.ffm.rka.rkareddit.controller.HomeController;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 
@@ -35,7 +34,6 @@ public class LinkServiceTest {
 	/**
 	 * test for test_env for user on service-layer
 	 */
-	@Ignore
 	@Test
 	public void linkSizeForUserOne() {
 		User user = new User();
@@ -47,10 +45,11 @@ public class LinkServiceTest {
 	 */
 	@Test
 	public void findAllLinksFromAllUsers() {
-		List<Link> links = linkService.findAll();	
+		Set<Link> links = linkService.findAll();
 		links.forEach(link -> {
-			LOGGER.info("link id {} and vote size {} ", link.getLinkId(), link.getVote().size());
-			LOGGER.info("link id {} and comment size {} ", link.getLinkId(), link.getComments().size());
+			LOGGER.info("Link found {}", link.toString());
+			LOGGER.info("link vote size {} ",  link.getVote().size());
+			LOGGER.info("link comment size {} ", link.getComments().size());
 			LOGGER.info("=========================== ");
 			
 		});
