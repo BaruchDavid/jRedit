@@ -1,8 +1,8 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,7 +56,8 @@ public class LinkController {
 
 	@GetMapping({"/",""})
 	public String list(Model model, HttpSession session) {	
-		List<Link> links = linkService.findAll();
+		Set<Link> links = linkService.findAll();
+		LOGGER.info("{} Links has been found", links.size()); 
 		model.addAttribute("links",links);
 		return "link/link_list";
 	}
@@ -109,17 +110,12 @@ public class LinkController {
 	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes) {		
 		
 		if(bindingResult.hasErrors()) {
-			LOGGER.warn("Validation failed of comment: {}", comment.toString());
 			model.addAttribute("newLink", comment);
 			return "link/submit";
 		} else {
-			User currentUser = (User) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext()	
-																								.getAuthentication().getName());
 			comment.setUser((User) model.asMap().get("user"));
-			LOGGER.info("Saved comment {} for  link: {} from {}", comment.toString(), comment.getLink().getLinkId(), currentUser.getEmail());
 			attributes.addFlashAttribute("success", true);
 			commentRepository.saveAndFlush(comment);
-			
 			return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 		}
 	}	

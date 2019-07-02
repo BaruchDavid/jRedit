@@ -1,6 +1,6 @@
 package de.ffm.rka.rkareddit.repository;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +18,6 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 	@Query("SELECT link "
 			+ "FROM Link link "
 			+ "LEFT JOIN FETCH link.comments ")
-	List<Link> fetchAllLinksWithComments();
+	Set<Link> fetchAllLinksWithComments();
 		
 }
