@@ -31,12 +31,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 @Entity
 @PasswordMatcher
+@Getter @Setter 
+@ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto"})
+@NoArgsConstructor
 public class User extends Auditable implements UserDetails, Serializable {
-
 
 	private static final long serialVersionUID = -5987601453095162765L;
 
@@ -93,9 +99,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private Set<Role> roles = new HashSet<>();
 
 	private String activationCode;
-	
-	public User() {}
-	
+
 	public User(
 			@NotEmpty(message = "mail must be entered ") 
 			@Size(message = "email must be between 8 and 20 signs", min = 8, max = 20) String email,
@@ -106,64 +110,16 @@ public class User extends Auditable implements UserDetails, Serializable {
 		this.password = password;
 	}
 
-	public byte[] getProfileFoto() {
-		return profileFoto;
-	}
-
-	public void setProfileFoto(byte[] profileFoto) {
-		this.profileFoto = profileFoto;
-	}
-
 	public void setFullName(String fullName) {
 		this.fullName = firstName.concat(" ").concat(secondName);
 	}
 
-
-
 	public void addCommentToUser(Comment comment) {
 		this.userComments.add(comment);
 	}
-	
-	
-	
-	public Set<Comment> getUserComments() {
-		return userComments;
-	}
-
-
-
-	public void setUserComments(Set<Comment> userComments) {
-		this.userComments = userComments;
-	}
-
-
 
 	public void addLinkToUser(Link link) {
 		this.userLinks.add(link);
-	}
-	
-	public Set<Link> getUserLinks() {
-		return userLinks;
-	}
-
-	public void setUserLinks(Set<Link> userLinks) {
-		this.userLinks = userLinks;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
-
-	public String getActivationCode() {
-		return activationCode;
-	}
-
-	public void setActivationCode(String activationCode) {
-		this.activationCode = activationCode;
 	}
 
 	public void add(Role role) {
@@ -184,38 +140,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 		
 		return authorities;
 	}
-	
-	public String getConfirmPassword() {
-		return confirmPassword;
-	}
-
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
-	}
-
-	public String getAliasName() {
-		return aliasName;
-	}
-
-	public void setAliasName(String aliasName) {
-		this.aliasName = aliasName;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getSecondName() {
-		return secondName;
-	}
-
-	public void setSecondName(String secondName) {
-		this.secondName = secondName;
-	}
 
 	public String getFullName() {
 		
@@ -224,116 +148,32 @@ public class User extends Auditable implements UserDetails, Serializable {
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
+
 		return email;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
+
 		return true;
-	}
-	
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 	
 	public void addRole(Role role_user) {
 		this.roles.add(role_user);
 		
 	}
-
-	@Override
-	public String toString() {
-		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", firstName=" + firstName
-				+ ", secondName=" + secondName + ", fullName=" + fullName + ", aliasName=" + aliasName + ", enabled="
-				+ enabled + ", confirmPassword=" + confirmPassword + ", activationCode=" + activationCode + "]";
-	}
-
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + ((password == null) ? 0 : password.hashCode());
-		return result;
-	}
-
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
-		if (firstName == null) {
-			if (other.firstName != null)
-				return false;
-		} else if (!firstName.equals(other.firstName))
-			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		return true;
-	}
-
-	
-
-
 
 	
 	

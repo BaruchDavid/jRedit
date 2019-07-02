@@ -9,7 +9,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Data
+@NoArgsConstructor
 public class Role {
 
 	@Id
@@ -22,41 +27,8 @@ public class Role {
 	@ManyToMany(mappedBy= "roles")
 	private Collection<User> users;
 
-	
-
-	public Role() {
-		super();
-	}
-
 	public Role(@NotNull(message = "Rollenname darf nicht null sein") String name) {
 		super();
 		this.name = name;
 	}
-
-	public Long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Collection<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Collection<User> users) {
-		this.users = users;
-	}
-	
-	
-	
 }

@@ -2,7 +2,6 @@ package de.ffm.rka.rkareddit.domain;
 
 import static java.util.Date.from;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import javax.persistence.Entity;
@@ -18,9 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 @Entity
+@Getter @Setter
+@ToString(exclude = {"link", "user"})
+@NoArgsConstructor
 public class Comment extends Auditable{
 	
 	@Id
@@ -45,44 +51,5 @@ public class Comment extends Auditable{
 	public String getElapsedTime() {
 		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
 		return prettyTime.format(from(super.getCreationDate().atZone(ZONE_ID).toInstant()));
-	}
-	
-	
-	public long getCommentId() {
-		return commentId;
-	}
-
-	public void setCommentId(long commentId) {
-		this.commentId = commentId;
-	}
-
-	
-
-	public String getCommentText() {
-		return commentText;
-	}
-
-
-	public void setCommentText(String commentText) {
-		this.commentText = commentText;
-	}
-
-
-	public Link getLink() {
-		return link;
-	}
-
-	public void setLink(Link link) {
-		this.link = link;
-	}
-
-
-	public User getUser() {
-		return user;
-	}
-
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 }
