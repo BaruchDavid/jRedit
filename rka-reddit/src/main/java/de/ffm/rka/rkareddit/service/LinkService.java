@@ -2,8 +2,7 @@ package de.ffm.rka.rkareddit.service;
 
 import java.util.List;
 import java.util.Optional;
-
-
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
+
 
 /**
  * maintance all business logik for link treating
@@ -26,13 +26,12 @@ public class LinkService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
 	private LinkRepository linkRepository;
-	
+		
 	public LinkService( LinkRepository linkRepository) {
 
 		this.linkRepository = linkRepository;
 	}
-	
-	
+
 	/**
 	 * return all availible links
 	 * @autor RKA
@@ -66,11 +65,11 @@ public class LinkService {
 
 
 	public long findAllByUser(User user) {
-		// TODO Auto-generated method stub
 		return linkRepository.countByUser(user);
 	}
 	
-	public List<Link> findAll(){
-		return linkRepository.fetchAllLinks();
+	public Set<Link> findAll(){
+		Set<Link> links = linkRepository.fetchAllLinksWithComments();
+		return links;
 	}
 }

@@ -1,6 +1,10 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import static java.util.Date.from;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,23 +18,27 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-
-import static java.util.Date.from;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@ToString(exclude = {"user", "comments", "vote"}) 
+@NoArgsConstructor
 public class Link extends Auditable{
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Getter @Setter
 	private Long linkId;
 	
 	
@@ -39,27 +47,31 @@ public class Link extends Auditable{
 	
 	@NotEmpty(message = "url is required")
 	@URL(message = "valid url is required")
+	@Getter @Setter
 	private String url;
 	
-	@OneToMany(mappedBy = "link", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "link", fetch=FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
+	@Getter @Setter
 	private List<Vote> vote = new ArrayList<>();
 
+	@Getter @Setter
 	private int voteCount = 0;
 	
 	@ManyToOne
+	@Getter @Setter
 	private User user;
 		
 	@OneToMany(mappedBy="link")
+	@Getter @Setter
 	private List<Comment> comments = new ArrayList<>();
 
 	@Autowired
+	@Getter @Setter
 	private transient PrettyTime prettyTime;
 	
+	@Getter 
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
-
-    public Link() {
-	}
-
     
 	public Link(String title, String url) {
 
@@ -81,86 +93,4 @@ public class Link extends Auditable{
 	public void addComment(Comment comment) {
 		comments.add(comment);
 	}
-
-	public Long getLinkId() {
-		return linkId;
-	}
-
-	public void setLinkId(Long linkId) {
-		this.linkId = linkId;
-	}
-
-	
-
-	public List<Vote> getVote() {
-		return vote;
-	}
-
-
-	public void setVote(List<Vote> vote) {
-		this.vote = vote;
-	}
-
-
-	public User getUser() {
-		return user;
-	}
-
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public int getVoteCount() {
-		return voteCount;
-	}
-
-	public void setVoteCount(int voteCount) {
-		this.voteCount = voteCount;
-	}
-
-	public List<Comment> getComments() {
-		return comments;
-	}
-
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
-	}
-
-	public PrettyTime getPrettyTime() {
-		return prettyTime;
-	}
-
-	public void setPrettyTime(PrettyTime prettyTime) {
-		this.prettyTime = prettyTime;
-	}
-
-	public static ZoneId getZoneId() {
-		return ZONE_ID;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Link [linkId=" + linkId + ", title=" + title + ", url=" + url + ", vote=" + vote + ", voteCount="
-				+ voteCount + "]";
-	}
-
 }

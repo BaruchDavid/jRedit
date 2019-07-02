@@ -1,7 +1,8 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import de.ffm.rka.rkareddit.repository.LinkRepository;
+import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.service.LinkService;
 
 @Controller
 @RequestMapping("/")
@@ -19,19 +21,21 @@ import de.ffm.rka.rkareddit.repository.LinkRepository;
 public class HomeController {
 
 	
-	private LinkRepository linkRepository;
+	private LinkService linkService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
-	public HomeController(LinkRepository linkRepository) {
-		this.linkRepository = linkRepository;
+	public HomeController(LinkService linkService) {
+		this.linkService = linkService;
 
 	}
 
 
 	@GetMapping({"/",""})
 	public String list(Model model) {	
-		model.addAttribute("links",linkRepository.findAll());
+		Set<Link> links = linkService.findAll();
+		LOGGER.info("{} Links has been found", links.size());
+		model.addAttribute("links",links);
 		return "link/link_list";
 		 
 	}

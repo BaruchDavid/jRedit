@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.controller;
 
 
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -29,7 +30,6 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
-import de.ffm.rka.rkareddit.service.UserService;
 
 @Controller
 @RequestMapping("/links")
@@ -43,8 +43,6 @@ public class LinkController {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	
-	@Autowired
-	private UserService userService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
@@ -58,7 +56,9 @@ public class LinkController {
 
 	@GetMapping({"/",""})
 	public String list(Model model, HttpSession session) {	
-		model.addAttribute("links",linkService.findAll());
+		Set<Link> links = linkService.findAll();
+		LOGGER.info("{} Links has been found", links.size()); 
+		model.addAttribute("links",links);
 		return "link/link_list";
 	}
 	
@@ -110,17 +110,12 @@ public class LinkController {
 	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes) {		
 		
 		if(bindingResult.hasErrors()) {
-			LOGGER.warn("Validation failed of comment: {}", comment.toString());
 			model.addAttribute("newLink", comment);
 			return "link/submit";
 		} else {
-			User currentUser = (User) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext()	
-																								.getAuthentication().getName());
 			comment.setUser((User) model.asMap().get("user"));
-			LOGGER.info("Saved comment {} for  link: {} from {}", comment.toString(), comment.getLink().getLinkId(), currentUser.getEmail());
 			attributes.addFlashAttribute("success", true);
 			commentRepository.saveAndFlush(comment);
-			
 			return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 		}
 	}	

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.FacebookLink;
-import org.springframework.social.facebook.api.FacebookObject;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
@@ -61,8 +60,7 @@ public class FacebookService {
 	}
 
 	public String postLinkOnFacebook(Link link, FbPost fbPost) {
-		
-		//Facebook facebook = new FacebookTemplate(facebookService.getfbSec(),facebookService.getFbId());
+		LOGGER.info("Link {} will be posted on Facebook ", link.toString());
 		FacebookLink fBlink = new FacebookLink("http://www.springsource.org/spring-social", "Spring Social",
 			"The Spring Social Project", "Spring Social is an extension to Spring to enable "
 						+ "applications to connect with service providers.");

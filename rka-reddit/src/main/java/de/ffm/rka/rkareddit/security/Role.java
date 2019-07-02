@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.security;
 
-import org.springframework.security.core.GrantedAuthority;
 /**
  * Container for roles with required prefix
  * @author Roman
