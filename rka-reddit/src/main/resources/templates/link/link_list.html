@@ -21,7 +21,7 @@
             </div>
             <div class="col-11">
                 <p class="title">
-                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.title}">Title Goes Here</a>
+                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.getTitle()}">Title Goes Here</a>
                     <span class="domain">(<a th:href="${link.url}" th:text="${link.getHoster()}" target="_blank"></a>)</span>
                 </p>
                 <p class="tagline ">submitted                    
