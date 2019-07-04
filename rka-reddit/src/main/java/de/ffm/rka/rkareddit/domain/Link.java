@@ -41,7 +41,7 @@ public class Link extends Auditable{
 	@Getter @Setter
 	private Long linkId;
 	
-	
+	@Getter @Setter
 	@NotEmpty(message = "title is required")
 	private String title;
 	
