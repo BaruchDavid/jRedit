@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -12,7 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,6 +54,8 @@ public class LinkController {
 		this.userDetailService = userDetailService;
 
 	}
+	
+	
 
 
 	@GetMapping({"/",""})
@@ -106,14 +110,18 @@ public class LinkController {
 	}	
 	
 	@Secured({"ROLE_ADMIN"})
-	@PostMapping("/link/comments")
-	public String saveNewComment(@Valid Comment comment, Model model, BindingResult bindingResult, RedirectAttributes attributes) {		
-		
+	@PostMapping(value = "/link/comments")
+	public String saveNewComment(@Valid Comment comment, BindingResult bindingResult, 
+								RedirectAttributes attributes,Model model,
+								@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse req) {		
+
 		if(bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
 			model.addAttribute("newLink", comment);
+			req.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return "link/submit";
 		} else {
-			comment.setUser((User) model.asMap().get("user"));
+			comment.setUser((User) userDetailsService.loadUserByUsername(userDetails.getUsername()));
 			attributes.addFlashAttribute("success", true);
 			commentRepository.saveAndFlush(comment);
 			return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
