@@ -4,6 +4,10 @@ VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsIn
 INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, profile_foto, confirm_password, creation_date)
 VALUES(2, 'dascha@gmx.de', 1, '$2a$10$huJEV8HA6ty9BzNlRqHyG.QMPE//p4lyMyfcTqnSpTe7fxlxybs2e', 'dascha', 'unknown', 'ceo', null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
 
+INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, profile_foto, confirm_password,creation_date)
+VALUES(3, 'grom@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'grom', 'grm', 'worker2', null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
+
+
 INSERT INTO LINK(link_id,  title, url,  VOTE_COUNT, creation_Date, user_user_id)
 VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', 'https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing',  0,NOW(),1);
 INSERT INTO LINK(link_id,  title, url,  VOTE_COUNT, creation_Date, user_user_id) 
@@ -25,7 +29,7 @@ VALUES(9,  'Simplest way to Upload and Download Files in Java with Spring Boot -
 INSERT INTO LINK(link_id,  title, url,  VOTE_COUNT, creation_Date, user_user_id) 
 VALUES(10,  'Add Social Login to Your Spring Boot 2.0 app', 'https://developer.okta.com/blog/2018/07/24/social-spring-boot',  112,NOW(),2);
 INSERT INTO LINK(link_id,  title, url,  VOTE_COUNT, creation_Date, user_user_id) 
-VALUES(11, 'File download example using Spring REST Controller', 'https://developer.okta.com/blog/2018/07/24/social-spring-boot',  17,NOW(),2);
+VALUES(11, 'File download example using Spring REST Controller', 'https://developer.okta.com/blog/2018/07/24/social-spring-boot',  17,NOW(),3);
 
 INSERT INTO Role(role_id, name)
 VALUES(1, 'ROLE_USER');
@@ -57,19 +61,19 @@ INSERT INTO users_roles(user_Id, role_Id)
 VALUES(2, 1);
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
-VALUES(1, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 1, 1,NOW());
+VALUES(1, 'Erstes Kommentar für Ersten Link für ersten romakapt', 1, 1,NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
-VALUES(2, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 1,NOW());
+VALUES(2, 'Erstes Kommentar für zweiten Link für romakapt', 2, 1,NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
-VALUES(3, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 3, 1,NOW());
+VALUES(3, 'Drittes Kommentar für dritten link', 3, 1,NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
-VALUES(32, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 1, 2,NOW());
+VALUES(32, '32tes Kommentar für ersten Link', 1, 2,NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
-VALUES(4, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 2,NOW());
+VALUES(4, 'Viertes Kommentar für zweiten Link von romakapt', 2, 1,NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(5, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 2, 1,NOW());
@@ -103,4 +107,31 @@ VALUES(25, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolo
 
 INSERT INTO Comment(comment_id, comment_text, link_link_id, user_user_id, creation_Date)
 VALUES(26, 'Lorem ipsum sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.', 6, 1,NOW());
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(1, 'romakapt@gmx.de', NOW(),'romakapt@gmx.de', NOW(), 1, 1);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(2, 'romakapt@gmx.de', NOW(),'romakapt@gmx.de', NOW(), 1, 1);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(3, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 1);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(4, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 1);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(5, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 3);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(6, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 3);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(7, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 5);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(8, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 5);
+
+INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
+VALUES(9, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 5);
 
