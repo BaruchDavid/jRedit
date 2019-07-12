@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByEmail(String email);
 	Optional<User> findByEmailAndActivationCode(String email, String code);
 	
-	/**
+	/**git
 	 * email is unique value like id for fetching Roles
 	 * @author RKA
 	 */
