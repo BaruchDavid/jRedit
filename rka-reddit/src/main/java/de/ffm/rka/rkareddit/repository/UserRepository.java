@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "FROM User usr "
 			+ "JOIN FETCH usr.userLinks "
 			+ "WHERE usr.email =:email")
-	User getSizeForLinkByUser(@Param("email") String userId);
+	User fetchUserWithLinks(@Param("email") String userId);
 	
 	/**
 	 * email is unique value like id for fetching comments
