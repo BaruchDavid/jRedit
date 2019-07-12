@@ -14,7 +14,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 
@@ -32,42 +35,36 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
+@Getter @Setter
 @ToString(exclude = {"user", "comments", "vote"}) 
 @NoArgsConstructor
 public class Link extends Auditable{
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Getter @Setter
 	private Long linkId;
 	
-	@Getter @Setter
 	@NotEmpty(message = "title is required")
 	private String title;
 	
 	@NotEmpty(message = "url is required")
 	@URL(message = "valid url is required")
-	@Getter @Setter
 	private String url;
 	
 	@OneToMany(mappedBy = "link", fetch=FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@Getter @Setter
 	private List<Vote> vote = new ArrayList<>();
 
-	@Getter @Setter
 	private int voteCount = 0;
 	
-	@ManyToOne
-	@Getter @Setter
+	@ManyToOne(fetch = FetchType.EAGER)
 	private User user;
 		
-	@OneToMany(mappedBy="link")
-	@Getter @Setter
+	@OneToMany(mappedBy="link", fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Comment> comments = new ArrayList<>();
 
 	@Autowired
-	@Getter @Setter
 	private transient PrettyTime prettyTime;
 	
 	@Getter 
