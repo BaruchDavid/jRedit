@@ -1,8 +1,8 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,7 +60,7 @@ public class LinkController {
 
 	@GetMapping({"/",""})
 	public String list(Model model, HttpSession session) {	
-		Set<Link> links = linkService.findAll();
+		List<Link> links = linkService.findAllCommentsForEachLink();
 		LOGGER.info("{} Links has been found", links.size()); 
 		model.addAttribute("links",links);
 		return "link/link_list";

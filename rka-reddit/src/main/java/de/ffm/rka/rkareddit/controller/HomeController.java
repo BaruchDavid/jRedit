@@ -1,8 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class HomeController {
 
 	@GetMapping({"/",""})
 	public String list(Model model) {	
-		Set<Link> links = linkService.findAll();
+		List<Link> links = linkService.findAllCommentsForEachLink();
 		LOGGER.info("{} Links has been found", links.size());
 		model.addAttribute("links",links);
 		return "link/link_list";
