@@ -1,6 +1,6 @@
 package de.ffm.rka.rkareddit.repository;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,10 +14,13 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 	 * namedQuery, SpringData introducts count-statement
 	 */
 	long countByUser(User usr);
-	
-	@Query("SELECT link "
-			+ "FROM Link link "
-			+ "LEFT JOIN FETCH link.comments ")
-	Set<Link> fetchAllLinksWithComments();
+
+	/**
+	 * find all comments for each user
+	 */
+	@Query("select l " +
+		   "from Link l " +
+		   "inner join fetch l.user")
+	List<Link> findAll();
 		
 }
