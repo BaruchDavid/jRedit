@@ -34,12 +34,6 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 public class LinkControllerTest {
 
 	private MockMvc mockMvc;
-	private SpringSecurityTestConfig testConfig;
-	public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(), 
-																		MediaType.APPLICATION_JSON.getSubtype(), 
-																		Charset.forName("utf8"));
-	 @Autowired
-     private MockServletContext servletContext;
 
 	@Autowired
 	private LinkController linkController;
@@ -51,7 +45,6 @@ public class LinkControllerTest {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(linkController)
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
 										.build();
-		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);
 	}
 
 	@Test
@@ -68,10 +61,10 @@ public class LinkControllerTest {
 	public void postNewComment() throws Exception {
 
 	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/comments")
-													.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-													.param("link.linkId", "1")
-													.param("commentText", "hallo kommentar"))													
-							.andDo(print())
+														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+														.param("link.linkId", "1")
+														.param("commentText", "hallo kommentar"))
+	    					.andDo(print())
 							.andExpect(status().is3xxRedirection())
 							.andExpect(redirectedUrl("/links/link/1"))
 							.andExpect(flash().attributeExists("success"));
@@ -86,9 +79,9 @@ public class LinkControllerTest {
 	public void rejectNewInvalidComment() throws Exception {
 
 	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/comments")
-													.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-													.param("commentText", "hallo kommentar"))													
-							.andDo(print())
+														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+														.param("commentText", "hallo kommentar"))
+	    					.andDo(print())
 							.andExpect(status().is4xxClientError());
 
 	}
