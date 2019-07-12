@@ -24,7 +24,7 @@ public class CommentServiceTest {
 	public void commentSizeForUserOne() {
 		User user = new User();
 		user.setUserId(1l);
-		assertEquals(9l, commentService.countAllByUser(user));
+		assertEquals(10l, commentService.countAllByUser(user));
 	}
 
 }

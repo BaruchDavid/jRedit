@@ -53,11 +53,17 @@ public class ProfileMetaDataControllerTest {
 		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);  
 	}
     
+	/**
+	 * expectedValues
+	 * 1. how many links: 5
+	 * 2. how many comments: 11
+	 * 3. picture path
+	 */
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnDefaultMessage() throws Exception {
 		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now()); 
-		String expectedValue ="[\"5\",\"9\",\""+today+"\",\"C:\\\\Drops\\\\jRedit\\\\rka-reddit\\\\target\\\\classes\\\\static\\\\images\\\\romakapt@gmx.de.png\"]";
+		String expectedValue ="[\"5\",\"10\",\""+today+"\",\"C:\\\\Drops\\\\jRedit\\\\rka-reddit\\\\target\\\\classes\\\\static\\\\images\\\\romakapt@gmx.de.png\"]";
 		MvcResult result = this.mockMvc.perform(get("/profile/information/content")
 												.sessionAttr("user", testConfig.getUsers().iterator().next())
 								.contentType(MediaType.TEXT_PLAIN)
