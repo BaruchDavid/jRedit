@@ -77,10 +77,10 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private  String aliasName;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<Link> userLinks = new HashSet<Link>();
+	private List<Link> userLinks = new ArrayList<Link>();
 	
-	@OneToMany(mappedBy = "user")
-	private Set<Comment> userComments = new HashSet<Comment>();
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<Comment> userComments = new ArrayList<Comment>();
 	
 	@NotNull
 	@Column(nullable = false)
@@ -174,7 +174,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 		this.roles.add(role_user);
 		
 	}
-
 	
 	
 }
