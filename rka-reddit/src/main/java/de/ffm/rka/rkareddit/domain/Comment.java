@@ -39,7 +39,6 @@ public class Comment extends Auditable{
 	private String commentText;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	//@NotNull
 	private User user;
 	
 	@NotNull
