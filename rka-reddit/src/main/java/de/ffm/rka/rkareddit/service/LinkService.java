@@ -68,8 +68,8 @@ public class LinkService {
 		return linkRepository.countByUser(user);
 	}
 	
-	public Set<Link> findAll(){
-		Set<Link> links = linkRepository.fetchAllLinksWithComments();
+	public List<Link> findAllCommentsForEachLink(){
+		List<Link> links = linkRepository.findAll();
 		return links;
 	}
 }
