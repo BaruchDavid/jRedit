@@ -58,8 +58,12 @@ public class UserService {
 		return user;
 	}
 	
-	public User getLinkSizeByUser(String userId){
-		return userRepository.getSizeForLinkByUser(userId);
+	/**
+	 * fetch User with retrieved List<Link> with mail
+	 * @param userId
+	 */
+	public User getUserWithLinks(String userId){
+		return userRepository.fetchUserWithLinks(userId);
 	}
 	
 	/**
@@ -107,8 +111,11 @@ public class UserService {
 		return existsUser;
 	}
 
-	
-	public User getCommentSizeByUser(String userId) {
+	/**
+	 * fetch User with retrieved List<Comment> with mail
+	 * @param userId
+	 */
+	public User getUserWithComments(String userId) {
 		
 		return userRepository.getSizeForCommentsByUser(userId);
 	}
