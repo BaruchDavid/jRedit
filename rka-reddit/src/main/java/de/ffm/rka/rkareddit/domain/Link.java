@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -51,7 +52,10 @@ public class Link extends Auditable{
 	@URL(message = "valid url is required")
 	private String url;
 	
-	@OneToMany(mappedBy = "link", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "link", 
+			 fetch=FetchType.EAGER,
+			 orphanRemoval = true,
+			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Vote> vote = new ArrayList<>();
 
