@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.controller;
 import java.io.IOException;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -36,8 +37,15 @@ public class AuthController {
 	@Autowired
 	private FileNIO fileNIO;
 
+	/**
+	 * method for login and logout
+	 * during logout, request parameter contains 'logout' param
+	 * after session-timeout, you will be redirected to login again
+	 * @param request
+	 * @return view for login / logout
+	 */
 	@GetMapping({"/login"})
-	public String login(Model model) {		
+	public String login(HttpServletRequest request, Model model) {
 		return "auth/login"; 
 	}
 	

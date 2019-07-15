@@ -1,7 +1,12 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +36,12 @@ public class HomeController {
 
 
 	@GetMapping({"/",""})
-	public String list(Model model) {	
+	public String list(HttpServletRequest request, Model model) {
+		Enumeration<String> sessionAttributeNames = request.getSession().getAttributeNames();
+		HttpSession session = request.getSession();
+		while(sessionAttributeNames.hasMoreElements()) {
+			LOGGER.info("SessionKEY {} SessionValue {}", sessionAttributeNames.nextElement().toString() ,session.getValue(sessionAttributeNames.nextElement().toString()));
+		}
 		List<Link> links = linkService.findAllCommentsForEachLink();
 		LOGGER.info("{} Links has been found", links.size());
 		model.addAttribute("links",links);
