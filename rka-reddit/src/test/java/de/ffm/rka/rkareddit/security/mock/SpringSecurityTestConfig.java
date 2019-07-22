@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.security.mock;
 
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;
-
 import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
@@ -42,6 +42,4 @@ public class SpringSecurityTestConfig   {
 	public Collection<UserDetails> getUsers() {
 		return users;
 	}
-    
-    
 }

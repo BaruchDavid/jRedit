@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -43,7 +44,7 @@ public class LinkControllerTest {
     
         MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(linkController)
-										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
+										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();
 	}
 

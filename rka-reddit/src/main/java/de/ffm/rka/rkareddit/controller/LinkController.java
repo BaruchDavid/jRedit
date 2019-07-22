@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -62,7 +63,8 @@ public class LinkController {
 	 * load links with all there attributes alike votes, comments, user for each link
 	 */
 	@GetMapping({"/",""})
-	public String list(Model model, Pageable page) {
+	public String list(@PageableDefault(size = 11, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
+						Model model) {
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		LOGGER.info("{} Links has been found", links.getSize());
 		model.addAttribute("links",links);
