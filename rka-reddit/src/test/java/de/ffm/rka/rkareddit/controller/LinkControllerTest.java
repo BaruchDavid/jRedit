@@ -3,11 +3,16 @@ package de.ffm.rka.rkareddit.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
+import org.apache.maven.model.Model;
+import org.assertj.core.util.Arrays;
+import org.hibernate.mapping.Array;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,7 +55,12 @@ public class LinkControllerTest {
 
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
-		this.mockMvc.perform(get("/links/")).andDo(print()).andExpect(status().isOk());
+		
+		List pages = Arrays.asList(new Integer[] {1,2});
+		this.mockMvc.perform(get("/links/"))
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("pageNumbers", pages));
 	}
 
 	/**

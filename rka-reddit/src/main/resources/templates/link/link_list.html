@@ -36,7 +36,19 @@
                 </p>
             </div>
         </div>
-
+        <div class="row" th:fragment="pagination">
+	        <div class="col-md-2"></div>
+		        <div class="col-md-8">
+		            <nav aria-label="Pagination">
+		                <ul class="pagination justify-content-center">
+		                    <li th:each="pageNumber : ${pageNumbers}" >		                    	
+		                        <a class="page-link" th:href="@{|/links/?page=*{pageNumber-1}|}" th:text=${pageNumber}>${pageNumber}</a>
+ 	    					</li>
+		                </ul>
+		            </nav>
+		        </div>
+        <div class="col-md-2"></div>
+    </div>
     </div>
 </body>
 <script src="js/vote.js"></script>

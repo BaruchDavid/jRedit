@@ -1,7 +1,10 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,18 +59,22 @@ public class LinkController {
 		this.userDetailService = userDetailService;
 
 	}
-	
-	
 
 	/**
 	 * load links with all there attributes alike votes, comments, user for each link
+	 * @param page contains a page-number, page-size and sorting
 	 */
 	@GetMapping({"/",""})
-	public String list(@PageableDefault(size = 11, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
+	public String list(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
 						Model model) {
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		LOGGER.info("{} Links has been found", links.getSize());
+		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
+											.boxed()
+											.collect(Collectors.toList());		
 		model.addAttribute("links",links);
+		model.addAttribute("pageNumbers",totalPages);
+		
 		return "link/link_list";
 	}
 	
