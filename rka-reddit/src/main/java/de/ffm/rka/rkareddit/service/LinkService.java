@@ -2,10 +2,11 @@ package de.ffm.rka.rkareddit.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,8 +69,8 @@ public class LinkService {
 		return linkRepository.countByUser(user);
 	}
 	
-	public List<Link> findAllCommentsForEachLink(){
-		List<Link> links = linkRepository.findAll();
+	public Page<Link> fetchAllLinksWithUsersCommentsVotes(Pageable pageable){
+		Page<Link> links = linkRepository.findAll(pageable);
 		return links;
 	}
 }

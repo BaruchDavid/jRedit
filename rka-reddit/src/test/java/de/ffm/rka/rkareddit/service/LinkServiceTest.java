@@ -2,15 +2,15 @@ package de.ffm.rka.rkareddit.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -46,43 +46,42 @@ public class LinkServiceTest {
 	 */
 	@Test
 	public void findAllLinksAllCommentsAllVotesForEachUser() {
+		Pageable firstPageWithElevenElements = PageRequest.of(0, 11);
+		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(firstPageWithElevenElements);		
+		assertEquals(11l, links.getNumberOfElements());
+		assertEquals(2l, ((Link)links.getContent().get(0)).getComments().size());
+		assertEquals(4l, ((Link)links.getContent().get(0)).getVote().size());
+		assertEquals("romakapt@gmx.de", ((Link)links.getContent().get(0)).getUser().getUsername());
+			
+		assertEquals(6l, ((Link)links.getContent().get(1)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(1)).getVote().size());
 		
-		List<Link> links = linkService.findAllCommentsForEachLink();		
-		assertEquals(11l, links.size());
-		assertEquals(2l, links.get(0).getComments().size());
-		assertEquals(4l, links.get(0).getVote().size());
-		assertEquals("romakapt@gmx.de", links.get(0).getUser().getUsername());
+		assertEquals(3l, ((Link)links.getContent().get(2)).getComments().size());
+		assertEquals(2l, ((Link)links.getContent().get(2)).getVote().size());
 		
-				
-		assertEquals(6l, links.get(1).getComments().size());
-		assertEquals(0l, links.get(1).getVote().size());
+		assertEquals(2l, ((Link)links.getContent().get(3)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(3)).getVote().size());
 		
-		assertEquals(3l, links.get(2).getComments().size());
-		assertEquals(2l, links.get(2).getVote().size());
+		assertEquals(2l, ((Link)links.getContent().get(4)).getComments().size());
+		assertEquals(3l, ((Link)links.getContent().get(4)).getVote().size());
 		
-		assertEquals(2l, links.get(3).getComments().size());
-		assertEquals(0l, links.get(3).getVote().size());
+		assertEquals(1l, ((Link)links.getContent().get(5)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(5)).getVote().size());
 		
-		assertEquals(2l, links.get(4).getComments().size());
-		assertEquals(3l, links.get(4).getVote().size());
-		
-		assertEquals(1l, links.get(5).getComments().size());
-		assertEquals(0l, links.get(5).getVote().size());
-		
-		assertEquals(0l, links.get(6).getComments().size());
-		assertEquals(0l, links.get(6).getVote().size());
+		assertEquals(0l, ((Link)links.getContent().get(6)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(6)).getVote().size());
 	
-		assertEquals(0l, links.get(7).getComments().size());
-		assertEquals(0l, links.get(6).getVote().size());
+		assertEquals(0l, ((Link)links.getContent().get(7)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(7)).getVote().size());
 		
-		assertEquals(0l, links.get(8).getComments().size());
-		assertEquals(0l, links.get(6).getVote().size());
+		assertEquals(0l, ((Link)links.getContent().get(8)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(8)).getVote().size());
 		
-		assertEquals(0l, links.get(9).getComments().size());
-		assertEquals(0l, links.get(6).getVote().size());
+		assertEquals(0l, ((Link)links.getContent().get(9)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(9)).getVote().size());
 		
-		assertEquals(0l, links.get(10).getComments().size());
-		assertEquals(0l, links.get(6).getVote().size());
+		assertEquals(0l, ((Link)links.getContent().get(10)).getComments().size());
+		assertEquals(0l, ((Link)links.getContent().get(10)).getVote().size());
 		
 		
 		links.forEach(link -> {

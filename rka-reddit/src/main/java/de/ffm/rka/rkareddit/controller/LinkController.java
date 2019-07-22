@@ -6,12 +6,13 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -57,11 +58,13 @@ public class LinkController {
 	
 	
 
-
+	/**
+	 * load links with all there attributes alike votes, comments, user for each link
+	 */
 	@GetMapping({"/",""})
-	public String list(Model model, HttpSession session) {	
-		List<Link> links = linkService.findAllCommentsForEachLink();
-		LOGGER.info("{} Links has been found", links.size()); 
+	public String list(Model model, Pageable page) {
+		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
+		LOGGER.info("{} Links has been found", links.getSize());
 		model.addAttribute("links",links);
 		return "link/link_list";
 	}
