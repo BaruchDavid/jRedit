@@ -53,6 +53,7 @@ public class ProfileMetaDataController {
 		informations.add(String.valueOf(userCommentSize));
 		informations.add(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(user.getCreationDate()));
 		informations.add(picPath);
+		informations.add(userPrincipal.getUsername());
 		LOGGER.debug("For user {} has been found {} links", userPrincipal.getUsername(),userLinkSize);
 		LOGGER.debug("For user {} has been found {} comments", userPrincipal.getUsername(), userCommentSize);
 		return informations;
