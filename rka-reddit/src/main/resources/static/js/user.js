@@ -1,4 +1,12 @@
 $(document).ready(function(){
+
+	fetch('/jReditt/profile/information/content/user-pic', {method: 'GET'})
+	  .then(res=>{return res.blob()})
+	  .then(blob=>{
+	    var img = URL.createObjectURL(blob);
+	    document.getElementById('profilePic').setAttribute('src', img);
+	  })
+	
 	fetch('/jReditt/profile/information/content', {
 		method: 'GET'
 	}).then(function(response){
@@ -8,6 +16,7 @@ $(document).ready(function(){
 		$('#commentSize').text('Comments: ' + data[1]);
 		$('#userSince').text('User since: ' + data[2]);
 		$('#profilePic').attr('src',data[3]);
-		$('#userName').text('Username: ' + data[4]);
+		$('#userName').text('Username: ' + data[3]);
 	})    
+
 });
