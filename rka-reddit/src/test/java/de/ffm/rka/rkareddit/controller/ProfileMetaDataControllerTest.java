@@ -5,12 +5,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.List;
 
-import org.assertj.core.util.Arrays;
+import javax.imageio.ImageIO;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,27 +62,42 @@ public class ProfileMetaDataControllerTest {
 	 * expectedValues
 	 * 1. how many links: 5
 	 * 2. how many comments: 11
-	 * 3. picture path
+	 * 3. username
 	 */
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnDefaultMessage() throws Exception {
 		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now()); 
-		//String expectedValue ="[\"5\",\"10\",\""+today+"\",\"C:\\\\Drops\\\\jRedit\\\\rka-reddit\\\\target\\\\classes\\\\static\\\\images\\\\romakapt@gmx.de.png\"]";
 		MvcResult result = this.mockMvc.perform(get("/profile/information/content")
 												.sessionAttr("user", testConfig.getUsers().iterator().next())
 								.contentType(MediaType.TEXT_PLAIN)
 								.content("romakapt@gmx.de"))
-					.andDo(print())
-					.andExpect(status().isOk())
-				//	.andExpect(content().string(expectedValue))
-					.andReturn();
+								.andDo(print())
+								.andExpect(status().isOk())
+								.andReturn();
 		LOGGER.info(result.getResponse().getContentAsString());
 		String[] resultValues = result.getResponse().getContentAsString().replace("[","").replace("]","").replace("\"","").split(",");
 		assertEquals("5", resultValues[0]);
 		assertEquals("10", resultValues[1]);
 		assertEquals(today, resultValues[2]);
-		assertEquals("romakapt@gmx.de", resultValues[4]);
+		assertEquals("romakapt@gmx.de", resultValues[3]);
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void shouldReturnUserPicture() throws Exception {
+		MvcResult result = this.mockMvc.perform(get("/profile/information/content/user-pic")
+												.sessionAttr("user", testConfig.getUsers().iterator().next())
+								.contentType(MediaType.IMAGE_PNG_VALUE)
+								.content("romakapt@gmx.de"))								
+								.andExpect(status().isOk())
+								.andReturn();
+		byte [] data = result.getResponse().getContentAsByteArray();
+		ByteArrayInputStream bis = new ByteArrayInputStream(data);
+		BufferedImage bImage2 = ImageIO.read(bis);
+		File receivedUserPic = new File("receivedUserPic.png");
+		ImageIO.write(bImage2, "png", receivedUserPic);
+		LOGGER.info("RECEIVED IMAGE READABLE: {}", receivedUserPic.canRead()); 
 	}
 	
 }

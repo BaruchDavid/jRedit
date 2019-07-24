@@ -31,15 +31,14 @@ public class FileNIO {
 
 	public String readByteToPic(byte[] profileFoto, String name) throws IOException {
 		ByteArrayInputStream bis = new ByteArrayInputStream(profileFoto);
-		BufferedImage bImage2 = ImageIO.read(bis);
-		
-		String resourcePath = "static/images/".concat(name).concat(".png");
+		BufferedImage bImage2 = ImageIO.read(bis);	
+		String webResourcePath = "static/images/".concat(name).concat(".png");
 		URL fileUrl = this.getClass().getProtectionDomain().getCodeSource().getLocation();
 		String filePath = fileUrl.getPath();
 		filePath = filePath.startsWith("/")? filePath.substring(1, filePath.length()) : filePath;
-		File file = new File(filePath.concat(resourcePath));
+		File file = new File(filePath.concat(webResourcePath));
 		ImageIO.write(bImage2, "png", file);
-		return file.getAbsolutePath();
+		return webResourcePath;
 	}
 
 }
