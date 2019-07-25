@@ -27,7 +27,7 @@ public class FileNIOTest {
 	@Test
 	public void testReadImage() throws IOException {
 		String path = "static/images/profile_small.png";
-		assertEquals(1088660, fileNIO.readPictureToByte(path).length);
+		assertEquals(93296, fileNIO.readPictureToByte(path).get().length);
 	}
 	
 	/**
@@ -37,7 +37,7 @@ public class FileNIOTest {
 	@Test
 	public void testReadImageToPic() throws IOException {
 		String path = "static/images/profile_small.png";
-		byte[] pic = fileNIO.readPictureToByte(path);
+		byte[] pic = fileNIO.readPictureToByte(path).get();
 		String url = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceFirst("/","");
 		Path picPath = Paths.get(url).getParent().resolve("classes/");	
 		path = fileNIO.readByteToPic(pic, "test@test.com");

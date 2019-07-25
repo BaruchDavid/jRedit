@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -18,14 +19,22 @@ public class FileNIO {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileNIO.class);
 
-	public byte[] readPictureToByte(String path) throws IOException {
-
-		File fnew = new File(this.getClass().getClassLoader().getResource(path).getFile());
-		BufferedImage originalImage = ImageIO.read(fnew);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageIO.write(originalImage, "png", baos);
-		byte[] pic = baos.toByteArray();
-		LOGGER.debug("message byte-array as string {}: ", pic.toString());
+	/**
+	 * converts pictures into byte-array as png
+	 */
+	public Optional<byte[]> readPictureToByte(String path) throws IOException {
+		Optional<byte[]> pic = Optional.empty() ;
+		URL resourceUrl = this.getClass().getClassLoader().getResource(path);
+		if(resourceUrl != null) {
+			File fnew = new File(resourceUrl.getFile());
+			BufferedImage originalImage = ImageIO.read(fnew);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(originalImage, "png", baos);
+			pic = Optional.of(baos.toByteArray());
+			LOGGER.debug("message byte-array as string {}: ", pic.toString());
+		}else {
+			LOGGER.warn("no picture found for converting into byte-array {}: ", pic.toString());
+		}
 		return pic;
 	}
 

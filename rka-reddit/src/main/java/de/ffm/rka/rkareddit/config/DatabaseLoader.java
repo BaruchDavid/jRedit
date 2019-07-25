@@ -27,7 +27,11 @@ public class DatabaseLoader implements CommandLineRunner{
 		
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
 		User userObj = user.get();
-		userObj.setProfileFoto(fileNIO.readPictureToByte("static/images/profile_small.png"));	
+		LOGGER.info("Try to read picture and save in DB");
+		fileNIO.readPictureToByte("static/images/profile_small.png").ifPresent(pic -> {
+			userObj.setProfileFoto(pic);
+			LOGGER.info("Read picture and save in DB SUCCESSFULY");
+		});
 		LOGGER.info("Test-User setup picture bytes: {}", userObj.getProfileFoto().length);
 		userService.save(user.get());
 	}
