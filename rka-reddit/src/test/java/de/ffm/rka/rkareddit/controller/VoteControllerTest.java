@@ -20,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,23 +38,24 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = SpringSecurityTestConfig.class
 )
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class VoteControllerTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VoteControllerTest.class);
     private MockMvc mockMvc;
-    private SpringSecurityTestConfig testConfig;    
-    
-    
+    private SpringSecurityTestConfig testConfig;
+
+
     @Autowired
 	private VoteController voteController;
-     
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(voteController).setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
-		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);  
+		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);
 	}
-    
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVote() throws Exception {
@@ -64,7 +67,7 @@ public class VoteControllerTest {
 					.andExpect(status().isOk())
 					.andReturn();
 		assertEquals(String.valueOf(2),result.getResponse().getContentAsString());
-		
+
 	}
-	
+
 }

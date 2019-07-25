@@ -13,7 +13,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 import javax.imageio.ImageIO;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +28,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,23 +46,25 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = SpringSecurityTestConfig.class
 )
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class ProfileMetaDataControllerTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataControllerTest.class);
     private MockMvc mockMvc;
-    private SpringSecurityTestConfig testConfig;    
-    
-    
+    private SpringSecurityTestConfig testConfig;
+	private static EntityManager em;
+
     @Autowired
 	private ProfileMetaDataController profileMetaDataController;
-    
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(profileMetaDataController).setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
-		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);  
+		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);
+		em = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
-    
+
 	/**
 	 * expectedValues
 	 * 1. how many links: 5
@@ -67,14 +74,15 @@ public class ProfileMetaDataControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnDefaultMessage() throws Exception {
-		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now()); 
+		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now());
 		MvcResult result = this.mockMvc.perform(get("/profile/information/content")
-												.sessionAttr("user", testConfig.getUsers().iterator().next())
-								.contentType(MediaType.TEXT_PLAIN)
-								.content("romakapt@gmx.de"))
-								.andDo(print())
-								.andExpect(status().isOk())
-								.andReturn();
+													.sessionAttr("user", testConfig.getUsers().iterator().next())
+										.contentType(MediaType.TEXT_PLAIN)
+										.content("romakapt@gmx.de"))
+										.andDo(print())
+										.andExpect(status().isOk())
+										.andReturn();
+
 		LOGGER.info(result.getResponse().getContentAsString());
 		String[] resultValues = result.getResponse().getContentAsString().replace("[","").replace("]","").replace("\"","").split(",");
 		assertEquals("5", resultValues[0]);
@@ -82,14 +90,14 @@ public class ProfileMetaDataControllerTest {
 		assertEquals(today, resultValues[2]);
 		assertEquals("romakapt@gmx.de", resultValues[3]);
 	}
-	
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnUserPicture() throws Exception {
 		MvcResult result = this.mockMvc.perform(get("/profile/information/content/user-pic")
 												.sessionAttr("user", testConfig.getUsers().iterator().next())
 								.contentType(MediaType.IMAGE_PNG_VALUE)
-								.content("romakapt@gmx.de"))								
+								.content("romakapt@gmx.de"))
 								.andExpect(status().isOk())
 								.andReturn();
 		byte [] data = result.getResponse().getContentAsByteArray();
@@ -97,7 +105,9 @@ public class ProfileMetaDataControllerTest {
 		BufferedImage bImage2 = ImageIO.read(bis);
 		File receivedUserPic = new File("receivedUserPic.png");
 		ImageIO.write(bImage2, "png", receivedUserPic);
-		LOGGER.info("RECEIVED IMAGE READABLE: {}", receivedUserPic.canRead()); 
+		LOGGER.info("RECEIVED IMAGE READABLE: {}", receivedUserPic.canRead());
+		LOGGER.info("RECEIVED IMAGE HAS BEEN DELETED: {}", receivedUserPic.delete());
+
 	}
-	
+
 }
