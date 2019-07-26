@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+	<!-- To enable JMX Management -->
+    <jmxConfigurator/>
+
 	<appender name="SAVE-TO-FILE"
 		class="ch.qos.logback.core.FileAppender">
 		<file>${LOG_PATH}/ApplicationLog.log</file>
@@ -23,15 +30,16 @@
 	</appender>
 
 
+
 	<springProfile name="test">
+		
+		<logger name="org.hibernate.SQL" level="DEBUG" />
+    	<logger name="org.hibernate.type" level="TRACE" />
+
 		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
-		<logger name="org.hibernate.SQL" level="trace" additivity="false">
-			<appender-ref ref="SAVE-TO-FILE" />
-		</logger>
-
 	</springProfile>
 
 	<springProfile name="dev">
@@ -39,7 +47,8 @@
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
-		<logger name="org.hibernate.SQL" level="trace" additivity="false">
+		<logger name="org.hibernate.SQL" level="trace"
+			additivity="false">
 			<appender-ref ref="SAVE-TO-FILE" />
 		</logger>
 	</springProfile>
@@ -49,7 +58,8 @@
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>
-		<logger name="org.hibernate.SQL" level="trace" additivity="false">
+		<logger name="org.hibernate.SQL" level="trace"
+			additivity="false">
 			<appender-ref ref="SAVE-TO-FILE" />
 		</logger>
 	</springProfile>
