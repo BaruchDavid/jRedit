@@ -53,7 +53,7 @@ public class HomeController {
 				LOGGER.debug("Session attribute name: {}", attr);
 				Optional<Object> attribute = Optional.of(session.getAttribute(attr));
 				LOGGER.debug("Session attribute value: {}", attribute.isPresent()?attribute.get():"no value");
-			});			
+			});
 		}
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())

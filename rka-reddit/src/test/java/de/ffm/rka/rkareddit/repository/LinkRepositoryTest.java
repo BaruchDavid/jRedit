@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.hibernate.Session;
+import org.hibernate.stat.EntityStatistics;
 import org.hibernate.stat.Statistics;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,6 +106,7 @@ public class LinkRepositoryTest {
 			
 		});
 		
+		EntityStatistics entityStats = hibernateStatistic.getEntityStatistics( Link.class.getName() );
 		long counterAfterExecution = hibernateStatistic.getQueryExecutionCount();
 		assertEquals("3 Statetments should be executed", counterAfterExecution, counterAfterExecution);
 	}
