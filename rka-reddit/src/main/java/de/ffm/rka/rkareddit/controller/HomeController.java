@@ -1,9 +1,9 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,7 +48,12 @@ public class HomeController {
 		Enumeration<String> sessionAttributeNames = request.getSession().getAttributeNames();
 		HttpSession session = request.getSession();
 		while(sessionAttributeNames.hasMoreElements()) {
-			LOGGER.info("SessionKEY {} SessionValue {}", sessionAttributeNames.nextElement().toString() ,session.getValue(sessionAttributeNames.nextElement().toString()));
+			Optional<String> attributeName = Optional.of(sessionAttributeNames.nextElement());
+			attributeName.ifPresent(attr -> {
+				LOGGER.debug("Session attribute name: {}", attr);
+				Optional<Object> attribute = Optional.of(session.getAttribute(attr));
+				LOGGER.debug("Session attribute value: {}", attribute.isPresent()?attribute.get():"no value");
+			});			
 		}
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())

@@ -15,7 +15,6 @@ $(document).ready(function(){
 		$('#linkSize').text('Links: ' + data[0]);
 		$('#commentSize').text('Comments: ' + data[1]);
 		$('#userSince').text('User since: ' + data[2]);
-		$('#profilePic').attr('src',data[3]);
 		$('#userName').text('Username: ' + data[3]);
 	})    
 
