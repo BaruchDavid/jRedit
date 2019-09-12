@@ -1,14 +1,11 @@
 package de.ffm.rka.rkareddit.controller.rest;
 
-
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
@@ -37,25 +34,28 @@ import de.ffm.rka.rkareddit.util.FileNIO;
 @RestController
 @RequestMapping("/profile")
 public class ProfileMetaDataController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataController.class);
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private FileNIO fileNIO;
-	
+
 	@Autowired
 	ApplicationContext applicationContext;
 
 	/**
 	 * shows user informations on profile-page on right side
+	 * @throws InterruptedException 
 	 */
 	@GetMapping("/information/content")
 	@ResponseBody
 //	@Cacheable("user")
 //	@CacheEvict(value="userInfo", allEntries=true)
-	public List<String> getInformation(@AuthenticationPrincipal UserDetails userPrincipal, Model model) throws IOException {
+	public List<String> getInformation(@AuthenticationPrincipal UserDetails userPrincipal, Model model)
+			throws IOException, InterruptedException {
+		createOutOfMemory();
 		List<String> informations = new ArrayList<String>();
 		User user = userService.getUserWithLinks(userPrincipal.getUsername());
 		long userLinkSize = user.getUserLinks().size();
@@ -64,14 +64,15 @@ public class ProfileMetaDataController {
 		informations.add(String.valueOf(userCommentSize));
 		informations.add(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(user.getCreationDate()));
 		informations.add(userPrincipal.getUsername());
-		LOGGER.debug("For user {} has been found {} links", userPrincipal.getUsername(),userLinkSize);
+		LOGGER.debug("For user {} has been found {} links", userPrincipal.getUsername(), userLinkSize);
 		LOGGER.debug("For user {} has been found {} comments", userPrincipal.getUsername(), userCommentSize);
 		return informations;
 	}
 
 	@RequestMapping(value = "/information/content/user-pic", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<byte[]> getImageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
+	public ResponseEntity<byte[]> getImageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal,
+			HttpServletRequest req) throws IOException {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setCacheControl(CacheControl.maxAge(1, java.util.concurrent.TimeUnit.HOURS));
@@ -81,4 +82,24 @@ public class ProfileMetaDataController {
 		byte[] media = IOUtils.toByteArray(in);
 		return new ResponseEntity<>(media, headers, HttpStatus.OK);
 	}
+
+	/**
+	 * method for test-purpose for checking jvm options on linux
+	 * @throws InterruptedException
+	 */
+	private void createOutOfMemory() throws InterruptedException {
+		int initArraySize = 15;
+		LOGGER.info("Max JVM memory: " + Runtime.getRuntime().maxMemory());
+		long[] memoryAllocated = null;
+		for (int loop = 0; loop < Integer.MAX_VALUE; loop++) {
+			memoryAllocated = new long[initArraySize];
+			memoryAllocated[0] = 0;
+
+			LOGGER.info("Memory Consumed till now: " + Runtime.getRuntime().freeMemory());
+			initArraySize *= initArraySize * 2;
+			Thread.sleep(500);
+		}
+
+	}
+
 }
