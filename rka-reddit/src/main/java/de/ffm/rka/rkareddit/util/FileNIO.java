@@ -44,7 +44,6 @@ public class FileNIO {
 		String webResourcePath = "static/images/".concat(name).concat(".png");
 		URL fileUrl = this.getClass().getProtectionDomain().getCodeSource().getLocation();
 		String filePath = fileUrl.getPath();
-		filePath = filePath.startsWith("/")? filePath.substring(1, filePath.length()) : filePath;
 		File file = new File(filePath.concat(webResourcePath));
 		ImageIO.write(bImage2, "png", file);
 		return webResourcePath;
