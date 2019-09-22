@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -54,11 +56,15 @@ public class AuthController {
 	 */
 	@Secured("ROLE_USER")
 	@GetMapping({"/profile"})
-	public String showProfile(Model model) throws IOException {
-		User user = (User ) Optional.ofNullable(model.asMap().get("user")).get();	
-		model.addAttribute("user", user);
-		model.addAttribute("posts", user.getUserLinks());
-		model.addAttribute("comments", user.getUserComments());
+	public String showProfile(@AuthenticationPrincipal UserDetails userPrincipal,Model model) throws IOException {
+		//User user = (User ) Optional.ofNullable(model.asMap().get("user")).get();	
+		Optional<UserDetails> user = Optional.ofNullable(userPrincipal);	
+		if(user.isPresent()) {
+			User usrObj = userService.getUserWithLinks(user.get().getUsername());
+			model.addAttribute("user", usrObj);
+			model.addAttribute("posts", usrObj.getUserLinks());
+			model.addAttribute("comments", usrObj.getUserComments());
+		}
 		return "auth/profile"; 
 	}
 	

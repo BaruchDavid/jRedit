@@ -28,10 +28,11 @@ public class FileNIO {
 		if(resourceUrl != null) {
 			File fnew = new File(resourceUrl.getFile());
 			BufferedImage originalImage = ImageIO.read(fnew);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(originalImage, "png", baos);
-			pic = Optional.of(baos.toByteArray());
-			LOGGER.debug("message byte-array as string {}: ", pic.toString());
+			try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
+				ImageIO.write(originalImage, "png", baos);
+				pic = Optional.of(baos.toByteArray());
+				LOGGER.debug("message byte-array as string {}: ", pic.toString());
+			}
 		}else {
 			LOGGER.warn("no picture found for converting into byte-array {}: ", pic.toString());
 		}

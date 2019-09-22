@@ -33,8 +33,8 @@
 
 	<springProfile name="test">
 		
-		<logger name="org.hibernate.SQL" level="DEBUG" />
-    	<logger name="org.hibernate.type" level="TRACE" />
+		<logger name="org.hibernate.SQL" level="INFO" />
+    	<logger name="org.hibernate.type" level="INFO" />
 
 		<root level="INFO">
 			<appender-ref ref="CONSOLE" />

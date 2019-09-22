@@ -11,10 +11,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
+import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
+
 @Configuration
-public class AppConfig {
+public class AppConfig implements WebMvcConfigurer{
 
 	@Bean
 	public PrettyTime getPrettyTime() {
@@ -57,5 +62,14 @@ public class AppConfig {
 	    list.add(MediaType.APPLICATION_OCTET_STREAM);
 	    return list;
 	}
+
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new AutheticationInterceptor());
+		WebMvcConfigurer.super.addInterceptors(registry);
+	}
+	
+	
 
 }
