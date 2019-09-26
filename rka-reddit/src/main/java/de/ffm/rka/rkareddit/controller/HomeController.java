@@ -21,7 +21,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.service.LinkService;
 
@@ -29,7 +28,6 @@ import de.ffm.rka.rkareddit.service.LinkService;
 @RequestMapping("/")
 @SessionAttributes("user")
 public class HomeController {
-
 	
 	private LinkService linkService;
 	
@@ -39,7 +37,6 @@ public class HomeController {
 		this.linkService = linkService;
 
 	}
-
 
 	@GetMapping({"/",""})
 	public String list(HttpServletRequest request, 
