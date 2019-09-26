@@ -27,7 +27,7 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 		if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             if(handlerMethod.getMethod().getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal) {
-            	if(SecurityContextHolder.getContext().getAuthentication().getName().isEmpty()) {
+            	if("anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
             		LOGGER.warn("autheticated user could not access method with authetication");
             		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
             		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
