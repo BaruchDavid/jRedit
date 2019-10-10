@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,12 @@ public class User extends Auditable implements UserDetails, Serializable {
 	}
 
 	public void setFullName(String fullName) {
-		this.fullName = firstName.concat(" ").concat(secondName);
+		Optional<String> fName = Optional.ofNullable(firstName);
+		Optional<String> sName = Optional.ofNullable(secondName);
+		
+		this.fullName = fName.isPresent() ? fName.get(): "";
+		this.fullName += " ";
+		this.fullName += sName.isPresent() ? sName.get(): "";
 	}
 
 	public void addCommentToUser(Comment comment) {
@@ -142,8 +148,13 @@ public class User extends Auditable implements UserDetails, Serializable {
 	}
 
 	public String getFullName() {
+		Optional<String> fName = Optional.ofNullable(firstName);
+		Optional<String> sName = Optional.ofNullable(secondName);
 		
-		return firstName.concat(" ").concat(secondName);
+		this.firstName = fName.isPresent() ? fName.get(): "";
+		this.secondName += sName.isPresent() ? sName.get(): "";
+		fullName = firstName.concat(" ").concat(secondName);
+		return fullName;
 	}
 
 	@Override
