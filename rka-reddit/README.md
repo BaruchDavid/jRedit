@@ -1,5 +1,4 @@
 # jRedit
-
 jRedit project is a project for webapplication based on SpringBoot2
 
 ## Getting Started
