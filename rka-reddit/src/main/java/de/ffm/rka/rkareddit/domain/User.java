@@ -112,6 +112,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	}
 
 	public void setFullName(String fullName) {
+	
 		Optional<String> fName = Optional.ofNullable(firstName);
 		Optional<String> sName = Optional.ofNullable(secondName);
 		
@@ -152,7 +153,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 		Optional<String> sName = Optional.ofNullable(secondName);
 		
 		this.firstName = fName.isPresent() ? fName.get(): "";
-		this.secondName += sName.isPresent() ? sName.get(): "";
+		this.secondName = sName.isPresent() ? sName.get(): "";
 		fullName = firstName.concat(" ").concat(secondName);
 		return fullName;
 	}
