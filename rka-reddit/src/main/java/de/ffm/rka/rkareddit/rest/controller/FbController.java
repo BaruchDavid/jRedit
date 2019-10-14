@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.controller.rest;
+package de.ffm.rka.rkareddit.rest.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

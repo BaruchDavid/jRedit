@@ -13,9 +13,9 @@ import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 
-import de.ffm.rka.rkareddit.controller.rest.FbController;
 import de.ffm.rka.rkareddit.domain.FbPost;
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.rest.controller.FbController;
 
 @Service
 public class FacebookService {

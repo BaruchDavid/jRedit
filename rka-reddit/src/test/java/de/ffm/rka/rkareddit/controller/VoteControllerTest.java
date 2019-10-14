@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import de.ffm.rka.rkareddit.controller.rest.VoteController;
+import de.ffm.rka.rkareddit.rest.controller.VoteController;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 

@@ -8,6 +8,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 import de.ffm.rka.rkareddit.security.SecConfig;
 
 /**
@@ -31,8 +33,8 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
             		LOGGER.warn("autheticated user could not access method with authetication");
             		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
             		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
-            		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  		
-            		throw new Exception();
+            		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
+            		//throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
             	}
             }
         }
