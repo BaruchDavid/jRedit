@@ -1,9 +1,17 @@
 package de.ffm.rka.rkareddit.interceptor;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
@@ -23,21 +31,48 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
 
+	/**
+	 * any method with @AutheticationPrincipal and without @Secured
+	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
-            if(handlerMethod.getMethod().getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal) {
+            Method method = ((HandlerMethod) handler).getMethod();
+            if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
+            	&& ! (method.getAnnotation(Secured.class) instanceof Secured)) {
             	if("anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            		LOGGER.info("METHODE: "+method.getName());
             		LOGGER.warn("autheticated user could not access method with authetication");
             		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
             		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
             		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
-            		//throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
+            		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
             	}
             }
         }
 		return super.preHandle(request, response, handler);
+	}
+	
+	public static List<String> getRequestHeaderList(HttpServletRequest request) {
+		Enumeration headerNames = request.getHeaderNames();
+		List<String> resultList;
+		if (headerNames == null || !headerNames.hasMoreElements()) {
+			return Collections.emptyList();
+		}
+		resultList = new ArrayList<String>();
+		while (headerNames != null && headerNames.hasMoreElements()) {
+			String headerName = headerNames.nextElement().toString();
+			String headerValue = "";
+			Enumeration header = request.getHeaders(headerName);
+			while (header != null && header.hasMoreElements()) {
+				headerValue = headerValue + "," + header.nextElement().toString();
+			}
+			if (headerValue.length() > 0) {
+				headerValue = headerValue.substring(1, headerValue.length());
+			}
+			resultList.add(headerName + "=" + headerValue);
+		}
+		return resultList;
 	}
 }
