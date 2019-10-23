@@ -4,9 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
@@ -40,4 +42,15 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
         }
 		return super.preHandle(request, response, handler);
 	}
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		if(HttpStatus.NOT_FOUND.value()==response.getStatus()) {
+			throw new IllegalAccessException(String.valueOf(response.getStatus()));
+		}
+		super.postHandle(request, response, handler, modelAndView);
+	}
+	
+	
 }

@@ -1,5 +1,7 @@
 package de.ffm.rka.rkareddit.exception;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -9,6 +11,9 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ContextPathCompositeHandler;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,6 +33,7 @@ import de.ffm.rka.rkareddit.domain.User;
 class GlobalDefaultExceptionHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 	public static final String DEFAULT_ERROR_VIEW = "error/userAuth";
+	public static final String PAGE_NOT_FOUND = "error/pageNotFound";
 
 	/**
 	 * Exception handling for controller If the exception is annotated
@@ -52,5 +58,24 @@ class GlobalDefaultExceptionHandler {
 		mav.addObject("url", req.getRequestURL());
 		mav.setViewName(DEFAULT_ERROR_VIEW);
 		return mav;
+	}
+	
+	
+	
+	
+	@ExceptionHandler(value = { IllegalAccessException.class })
+	public ModelAndView userError(HttpServletRequest req, Exception e) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		Optional<String> userDetails = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
+		if(userDetails.isPresent()) {
+			//ToDo: dear user, page has not been found
+		}else {
+			//ToDo: dear visitor, page has not been found
+		}
+		mav.addObject("user", new User());
+		mav.addObject("exception", e);
+		mav.addObject("url", req.getRequestURL());
+		mav.setViewName(DEFAULT_ERROR_VIEW);
+		return internalControllerError(req, e);
 	}
 }
