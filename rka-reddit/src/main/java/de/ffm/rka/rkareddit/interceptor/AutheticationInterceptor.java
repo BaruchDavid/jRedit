@@ -9,12 +9,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
@@ -30,7 +33,7 @@ import de.ffm.rka.rkareddit.security.SecConfig;
 public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
-
+	private static final String IS_4XX_ERROR ="4";
 	/**
 	 * any method with @AutheticationPrincipal and without @Secured
 	 */
@@ -55,7 +58,7 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	}
 	
 	public static List<String> getRequestHeaderList(HttpServletRequest request) {
-		Enumeration headerNames = request.getHeaderNames();
+		Enumeration<String> headerNames = request.getHeaderNames();
 		List<String> resultList;
 		if (headerNames == null || !headerNames.hasMoreElements()) {
 			return Collections.emptyList();
@@ -64,7 +67,7 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 		while (headerNames != null && headerNames.hasMoreElements()) {
 			String headerName = headerNames.nextElement().toString();
 			String headerValue = "";
-			Enumeration header = request.getHeaders(headerName);
+			Enumeration<String> header = request.getHeaders(headerName);
 			while (header != null && header.hasMoreElements()) {
 				headerValue = headerValue + "," + header.nextElement().toString();
 			}
@@ -75,4 +78,19 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 		}
 		return resultList;
 	}
+
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		LOGGER.debug("page: {}", request.getRequestURL());	
+		if(String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
+			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
+			throw new IllegalAccessException(String.valueOf(response.getStatus()));
+		}else {
+			super.postHandle(request, response, handler, modelAndView);
+		}
+		
+	}
+
 }
