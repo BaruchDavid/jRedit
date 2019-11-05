@@ -22,10 +22,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.rest.controller"})
 class GlobalRESTExceptionHandler {
-	
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalRESTExceptionHandler.class);
-	
-	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR,reason="information temporarely not availible")
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR,reason="information not availible")
 	@ResponseBody
 	@ExceptionHandler(value = {UserAuthenticationLostException.class, NullPointerException.class, IllegalArgumentException.class})
 	public List<String> internalError(HttpServletRequest req, Exception err){

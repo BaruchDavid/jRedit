@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
-//	fetch('/jReditt/profile/information/content/user-pic', {method: 'GET'})
-//	  .then(res=>{return res.blob()})
-//	  .then(blob=>{
-//	    var img = URL.createObjectURL(blob);
-//	    document.getElementById('profilePic').setAttribute('src', img);
-//	  })
+	fetch('/jReditt/profile/information/content/user-pic', {method: 'GET'})
+	  .then(res=>{return res.blob()})
+	  .then(blob=>{
+	    var img = URL.createObjectURL(blob);
+	    document.getElementById('profilePic').setAttribute('src', img);
+	  })
 	
 	fetch('/jReditt/profile/information/content', {
 		method: 'GET'
