@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 
@@ -120,7 +121,7 @@ public class LinkControllerTest {
 	//@WithUserDetails("romakapt@gmx.de")
 	public void pageNotFound() throws Exception {
 
-	    	this.mockMvc.perform(MockMvcRequestBuilders.get("links/link/asdfadf")
+	    	this.mockMvc.perform(MockMvcRequestBuilders.get("links/link/".concat(UUID.randomUUID().toString()))
 			    			.contentType(MediaType.TEXT_PLAIN)
 			    			.content("romakapt@gmx.de"))
 	    					.andDo(print())
