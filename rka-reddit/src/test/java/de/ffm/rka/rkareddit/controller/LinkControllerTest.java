@@ -32,7 +32,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import de.ffm.rka.rkareddit.exception.GlobalControllerAdvice;
+
+import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 
@@ -49,7 +50,7 @@ public class LinkControllerTest {
 	private LinkController linkController;
 
 	@Autowired
-	private GlobalControllerAdvice globalControllerAdvice;
+	private GlobalControllerAdvisor globalControllerAdvice;
 	
 	/**
 	 * Using Standalone-Configuration, no SpringApplicationContext.
@@ -114,16 +115,14 @@ public class LinkControllerTest {
 	
 	/**
 	 * @author RKA
-	 * testing of not existing page by anonymous-user
+	 * testing of non-long page id
 	 */
 	@Test
-	//@Ignore
-	//@WithUserDetails("romakapt@gmx.de")
 	public void pageNotFound() throws Exception {
 		String invalidPage = UUID.randomUUID().toString();
 		this.mockMvc.perform(get("/links/link/".concat(invalidPage)))
 					.andDo(print())
 					.andExpect(status().is4xxClientError())
-					.andExpect(view().name("pageNotFound"));
+					.andExpect(view().name("error/pageNotFound"));
 	}
 }

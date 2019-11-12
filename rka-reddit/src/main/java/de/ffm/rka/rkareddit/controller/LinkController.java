@@ -80,7 +80,7 @@ public class LinkController {
 	
 	
 	@GetMapping("link/{linkId}")
-	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request) {		
+	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request) throws IllegalAccessException, NullPointerException {		
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
 		if(link.isPresent()) {
 			Link currentLink = link.get();

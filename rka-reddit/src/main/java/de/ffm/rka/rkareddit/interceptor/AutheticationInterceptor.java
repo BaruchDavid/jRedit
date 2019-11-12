@@ -20,6 +20,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 import de.ffm.rka.rkareddit.security.SecConfig;
 
@@ -34,29 +35,35 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
 	private static final String IS_4XX_ERROR ="4";
+	private static final String IS_5XX_ERROR ="5";
 	/**
 	 * any method with @AutheticationPrincipal and without @Secured
+	 * @throws Exception 
 	 */
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-		if (handler instanceof HandlerMethod) {
-            Method method = ((HandlerMethod) handler).getMethod();
-            if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
-            	&& ! (method.getAnnotation(Secured.class) instanceof Secured)) {
-            	if("anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
-            		LOGGER.info("METHODE: "+method.getName());
-            		LOGGER.warn("autheticated user could not access method with authetication");
-            		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
-            		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
-            		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
-            		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
-            	}
-            } else if (String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
-    			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
-    			throw new IllegalAccessException(String.valueOf(response.getStatus()));
-    		}    		
-        }
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		LOGGER.info("current URL in preHandle {}", request.getRequestURL());
+		
+//		if (handler instanceof HandlerMethod) {
+//            Method method = ((HandlerMethod) handler).getMethod();
+//            if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
+//            	&& ! (method.getAnnotation(Secured.class) instanceof Secured)) {
+//            	if("anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+//            		LOGGER.info("METHODE: "+method.getName());
+//            		LOGGER.warn("autheticated user could not access method with authetication");
+//            		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
+//            		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
+//            		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
+//            		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
+//            	}
+//            } else if (String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
+//    			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
+//    			throw new IllegalAccessException(String.valueOf(response.getStatus()));
+//    		} else if (String.valueOf(response.getStatus()).startsWith(IS_5XX_ERROR)) {
+//    			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
+//    			throw new IllegalAccessException(String.valueOf(response.getStatus()));
+//    		}    		
+//        }
 		return super.preHandle(request, response, handler);
 	}
 	
@@ -86,13 +93,17 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		LOGGER.debug("page: {}", request.getRequestURL());	
-		if(String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
-			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
-			throw new IllegalAccessException(String.valueOf(response.getStatus()));
-		}else {
-			super.postHandle(request, response, handler, modelAndView);
-		}
+		LOGGER.info("current url in postHandle: {}", request.getRequestURL());	
+		
+//		if(String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
+//			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
+//			modelAndView = new ModelAndView();
+//			modelAndView.addObject("user", new User());
+//			modelAndView.addObject("url", request);	
+//			modelAndView.setViewName("error/pageNotFound");
+//		}else {
+//			super.postHandle(request, response, handler, modelAndView);
+//		}
 		
 	}
 
