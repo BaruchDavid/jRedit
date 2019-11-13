@@ -32,9 +32,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import de.ffm.rka.rkareddit.domain.Comment;
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+import de.ffm.rka.rkareddit.util.BeanUtil;
 
 
 @ActiveProfiles("test")
@@ -51,6 +55,7 @@ public class LinkControllerTest {
 	@Autowired
 	private GlobalControllerAdvisor globalControllerAdvice;
 
+	private EntityManager entityManager;
 	
 	/**
 	 * Using Standalone-Configuration, no SpringApplicationContext.
@@ -65,6 +70,7 @@ public class LinkControllerTest {
 										.setControllerAdvice(globalControllerAdvice)		
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();
+		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
 
 	@Test
@@ -123,6 +129,22 @@ public class LinkControllerTest {
 					.andDo(print())
 					.andExpect(status().is4xxClientError())
 					.andExpect(view().name("error/pageNotFound"));
+
+	}
+	
+	@Test
+	public void readLink() throws Exception {
+		Link currentLink = entityManager.find(Link.class, 1l);
+		Comment currentComment = new Comment();
+		currentComment.setCommentId(0);
+		
+		this.mockMvc.perform(get("/links/link/1"))
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("link", currentLink))
+					.andExpect(model().attribute("comment", currentComment))
+					.andExpect(model().attribute("success", false))
+					.andExpect(view().name("link/link_view"));
 
 	}
 }
