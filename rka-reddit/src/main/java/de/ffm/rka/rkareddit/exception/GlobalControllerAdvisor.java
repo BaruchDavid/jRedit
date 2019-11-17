@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,7 +29,7 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
  */
 @ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
 public class GlobalControllerAdvisor {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
 	public static final String DEFAULT_ERROR_VIEW = "error/userAuth";
 	public static final String PAGE_NOT_FOUND = "error/pageNotFound";
 
@@ -36,21 +37,23 @@ public class GlobalControllerAdvisor {
 	UserDetailsServiceImpl userDetailsService;
 
 	@ExceptionHandler(value = { UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
-			IllegalAccessException.class, NumberFormatException.class, Exception.class})
+			IllegalAccessException.class, NumberFormatException.class, UsernameNotFoundException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) throws Exception {
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		User user = new User();	
 		String view = DEFAULT_ERROR_VIEW;
+		String visitorName="";
 		if(authetication.isPresent()) {
-			String visitorName = authetication.get().getName();
+			visitorName = authetication.get().getName();
 			if(!"anonymousUser".equals(visitorName)) { 
-				user = (User) userDetailsService.loadUserByUsername(visitorName);
-				LOGGER.info("NOT FOUND REQUESTED PAGE: {} FROM USER {}", req.getRequestURL().toString(), user);
+				user = (User) userDetailsService.loadUserByUsername(visitorName);	
 			}else { 
-				user.setFirstName("dear visitor");
-				LOGGER.info("NOT FOUND REQUESTED PAGE: {} FROM VISITOR {}", req.getRequestURL().toString(), user);
+				user.setFirstName("dear visitor");	
 			}
+		} else {
+			user.setFirstName("dear visitor");
 		}
+		LOGGER.info("EXCEPTION ACCURED: {} FOR USER {}", exception.getMessage(), visitorName);
 
 		switch (getExceptionName(exception.getClass().getCanonicalName())) {
 		case "MethodArgumentTypeMismatchException":

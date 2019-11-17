@@ -1,8 +1,10 @@
 package de.ffm.rka.rkareddit.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,8 +134,14 @@ public class LinkControllerTest {
 
 	}
 	
+	/**
+	 * while reading one link
+	 * empty comment will be created,
+	 * which will be used for new comment
+	 * @throws Exception
+	 */
 	@Test
-	public void readLink() throws Exception {
+	public void readLinkTest() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		Comment currentComment = new Comment();
 		currentComment.setCommentId(0);
@@ -147,4 +155,32 @@ public class LinkControllerTest {
 					.andExpect(view().name("link/link_view"));
 
 	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void saveNewLinkTest() throws Exception {
+    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
+							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+							.param("title", "welt.de")
+							.param("url", "http://welt.de"))
+  					.andDo(print())
+					.andExpect(status().is3xxRedirection())
+					.andExpect(redirectedUrl("/links/link/12"))
+					.andExpect(flash().attribute("success", true));	
+    }
+	
+	/**
+	 * try to save link without authetication
+	 * @throws Exception
+	 */
+	@Test
+	public void saveNewLinkTestForUnknownUser() throws Exception {
+    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
+							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+							.param("title", "welt.de")
+							.param("url", "http://welt.de"))
+  					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(forwardedUrl("error/userAuth"));	
+    }
 }

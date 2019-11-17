@@ -42,8 +42,6 @@ import de.ffm.rka.rkareddit.service.LinkService;
 @RequestMapping("/links")
 @SessionAttributes("user")
 public class LinkController {
-
-	private UserDetailsService userDetailService;
 	private LinkService linkService;
 	private CommentRepository commentRepository;
 	
@@ -56,7 +54,7 @@ public class LinkController {
 	public LinkController(LinkService linkService, CommentRepository commentRepository,  UserDetailsService userDetailService) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
-		this.userDetailService = userDetailService;
+		
 
 	}
 
@@ -104,7 +102,7 @@ public class LinkController {
 	
 	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/link/create")
-	public String saveNewLink(@Valid Link link, Model model, HttpServletRequest request,
+	public String saveNewLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletRequest request,
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
 		if(bindingResult.hasErrors()) {
@@ -112,8 +110,7 @@ public class LinkController {
 			model.addAttribute("newLink", link);
 			return "link/submit";
 		} else {
-			User user = (User) userDetailService.loadUserByUsername(request.getUserPrincipal().getName());
-			link.setUser(user);
+			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
 			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())
 								.addFlashAttribute("success", true);
