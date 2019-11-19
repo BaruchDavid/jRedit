@@ -117,6 +117,6 @@ public class UserService {
 	 */
 	public User getUserWithComments(String userId) {
 		
-		return userRepository.getSizeForCommentsByUser(userId);
+		return userRepository.fetchUserWithComments(userId);
 	}
 }

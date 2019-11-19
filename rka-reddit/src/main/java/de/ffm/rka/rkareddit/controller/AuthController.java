@@ -56,7 +56,7 @@ public class AuthController {
 			User usrObj = userService.getUserWithLinks(user.get().getUsername());
 			model.addAttribute("user", usrObj);
 			model.addAttribute("posts", usrObj.getUserLinks());
-			model.addAttribute("comments", usrObj.getUserComments());
+ 			model.addAttribute("comments", userService.getUserWithComments(usrObj.getEmail()).getUserComments());
 		}
 		return "auth/profile"; 
 	}

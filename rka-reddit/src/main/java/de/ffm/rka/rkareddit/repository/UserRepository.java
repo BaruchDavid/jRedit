@@ -43,6 +43,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+"FROM User usr "
 			+ "JOIN FETCH usr.userComments "
 			+ "WHERE usr.email =:email")
-	User getSizeForCommentsByUser(@Param("email") String userId);
+	User fetchUserWithComments(@Param("email") String userId);
 	
 }
