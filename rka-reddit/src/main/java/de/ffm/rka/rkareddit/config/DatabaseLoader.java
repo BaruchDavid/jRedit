@@ -32,6 +32,7 @@ public class DatabaseLoader implements CommandLineRunner{
 			userObj.setProfileFoto(pic);
 			LOGGER.info("Read picture and save in DB SUCCESSFULY");
 		});
+		userObj.setActivationCode("activation");
 		LOGGER.info("Test-User setup picture bytes: {}", userObj.getProfileFoto().length);
 		userService.save(user.get());
 	}

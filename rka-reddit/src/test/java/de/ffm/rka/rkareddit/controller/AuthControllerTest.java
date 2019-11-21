@@ -135,5 +135,21 @@ public class AuthControllerTest {
 							.andExpect(redirectedUrl("/register?id=4"))
 							.andExpect(flash().attribute("success", true));
 	}
+	
+	@Test
+	public void activateAccountTest() throws Exception {
+		
+            this.mockMvc.perform(get("/activate/romakapt@gmx.de/activation"))
+					.andDo(print())
+					.andExpect(view().name("auth/activated"));  
+	}
+	
+	@Test
+	public void activateInvalidAccountTest() throws Exception {
+		
+            this.mockMvc.perform(get("/activate/romakapt@gmx.de/actiion"))
+					.andDo(print())
+					.andExpect(redirectedUrl("/"));  
+	}
 
 }
