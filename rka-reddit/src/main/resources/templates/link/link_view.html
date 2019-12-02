@@ -4,10 +4,10 @@
 </head>
 <body>
 
-    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    
     <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-
     <div class="container">
+    	<nav th:replace="~{layouts/main_layout :: nav}"></nav>
         <div class="alert alert-success" role="alert" th:if="${success}">
             Has been was created!
         </div>
@@ -73,12 +73,9 @@
                     <a href="#" class="like"><i class="far fa-thumbs-up"></i> Like</a>
                 </div>
             </div>
-
         </div>
-
     </div>
-
     <br/><br/>
-
+    <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
 </body>
 </html>

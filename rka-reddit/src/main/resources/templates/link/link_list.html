@@ -5,12 +5,9 @@
 </head>
 
 <body>
-
-    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
-    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-
+   <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
     <div class="container">
-
+		<nav th:replace="~{layouts/main_layout :: nav}"></nav>
         <!-- links -->
         <div class="row link" th:each="link : ${links}">
             <div class="col-1">
@@ -47,9 +44,11 @@
 		                </ul>
 		            </nav>
 		        </div>
-        <div class="col-md-2"></div>
+        	<div class="col-md-2"></div>
+    	</div>
     </div>
-    </div>
+    <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
+	<script th:src="@{/js/vote.js}"></script>   
+	
 </body>
-<script src="js/vote.js"></script>
 </html>
