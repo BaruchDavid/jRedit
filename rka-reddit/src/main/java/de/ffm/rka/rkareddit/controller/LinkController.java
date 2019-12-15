@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -135,5 +137,15 @@ public class LinkController {
 			commentRepository.saveAndFlush(comment);
 			return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 		}
-	}	
+	}		
+	
+	@PostMapping(value = "/link/search")
+	@ResponseBody
+	public List<String> completeSearch(Model model, HttpServletResponse req) {		
+		List<String> suggestions = new ArrayList<String>();
+		suggestions.add("Vorschlag1");
+		suggestions.add("Vorschlag2");
+		suggestions.add("Vorschlag3");
+		return suggestions;
+	}
 }

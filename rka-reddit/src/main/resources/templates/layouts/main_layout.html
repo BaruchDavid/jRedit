@@ -68,13 +68,15 @@
 	</div>
 	<div class="jumbotron jumbotron-fluid" th:fragment="jumbotron">
 		<h2 style="text-align: center;" class="display-4">Drops</h2>
-        <input id="search_input" type="text" placeholder="Find your domain">
+        <input id="searchDrop" type="text" placeholder="Find your domain">
     </div>
  	<div class="container" th:fragment="content">
 		<p>This is your main content</p>
 	</div>
  	<div id="bootstrap_func">
- 		<script th:src="@{/js/jquery-3.4.0.min.js/}"></script>
+ 		<script th:src="@{/libs/bootstrap/js/jquery-3.4.0.min.js}"></script>
+ 		<script th:src="@{/libs/bootstrap/js/jquery-ui.min.js}"></script>
+ 		<script th:src="@{/js/autocomplete.js}"></script>
 		<script th:src="@{/libs/bootstrap/js/popper.min.js}"></script>
 		<script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
  	</div>

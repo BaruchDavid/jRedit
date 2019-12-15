@@ -125,7 +125,7 @@ a.share {
     }
 }
 
-input#search_input {
+input#searchDrop {
   margin: auto;
   display: block;
   width: 50%;
