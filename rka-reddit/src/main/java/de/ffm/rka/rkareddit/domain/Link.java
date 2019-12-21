@@ -58,6 +58,9 @@ public class Link extends Auditable{
 			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Vote> vote = new ArrayList<>();
+	
+//	//M:N BEZIEHUNG
+//	private List<Tag> tags = new ArrayList<>();
 
 	private int voteCount = 0;
 	
