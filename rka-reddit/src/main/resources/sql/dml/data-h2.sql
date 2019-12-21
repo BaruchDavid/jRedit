@@ -170,3 +170,24 @@ VALUES(11, 'HTML-5');
 
 INSERT INTO Tag(tag_id, tag)
 VALUES(12, 'CSS');
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(1, 2);
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(1, 3);
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(1, 3);
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(1, 3);
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(2, 3);
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(2, 1);
+
+INSERT INTO link_tags(link_id, tag_id)
+VALUES(4, 1);

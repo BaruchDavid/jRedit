@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
@@ -59,8 +61,13 @@ public class Link extends Auditable{
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Vote> vote = new ArrayList<>();
 	
-//	//M:N BEZIEHUNG
-//	private List<Tag> tags = new ArrayList<>();
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "link_tags",
+			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
+			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
+	)
+	private List<Tag> tags = new ArrayList<>();
 
 	private int voteCount = 0;
 	
