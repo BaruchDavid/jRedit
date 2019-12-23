@@ -1,5 +1,4 @@
 $(function() {
-
 	$("#searchDrop").autocomplete({
 		source : function(request, response) {
 			$.ajax({
@@ -15,11 +14,23 @@ $(function() {
 			});
 		},
 		select : function(event, ui) {
-			console.log(ui.item.value);
-			// Set selection
-			//$('#searchDrop').val(ui.item.value); // display the selected text
-			//$('#searchDrop').val(ui.item.value); // save selected id to input
+			$('#searchDrop').val(ui.item.value);
 			return false;
 		}
 	});
 });
+
+function linkSearch('click' function(){
+	$.ajax({
+		url : "/jReditt/links/link/apiDesignForPathes??",
+		type : 'get',
+		dataType : "text",
+		data : {
+			search : request.term
+		},
+		success : function(data) {
+			response(JSON.parse(data));
+		}
+	});
+});
+
