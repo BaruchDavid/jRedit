@@ -1,14 +1,5 @@
 $(function() {
-	var availableTags = [
-	      "ActionScript",
-	      "AppleScript",
-	      "Asp",
-	      "BASIC",
-	      "C",
-	      "C++",
-	      "Clojure",
-	      "COBOL"
-	    ];
+
 	$("#searchDrop").autocomplete({
 		source : function(request, response) {
 			$.ajax({

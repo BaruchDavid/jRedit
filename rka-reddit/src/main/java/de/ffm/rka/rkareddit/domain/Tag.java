@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 
-@Entity
+@Entity(name="Tag")
 @Data
 @NoArgsConstructor
 @ToString
@@ -29,10 +29,10 @@ public class Tag extends Auditable {
 	private long tagId;
 	
 	@NotNull
-	private String tag;
+	private String name;
 	
 	public Tag(@NotNull String tag) {
-		this.tag = tag;
+		this.name = tag;
 	}	
 	
 	@ManyToMany(mappedBy= "tags")

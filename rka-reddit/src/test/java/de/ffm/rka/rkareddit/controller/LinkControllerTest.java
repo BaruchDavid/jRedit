@@ -1,8 +1,9 @@
 package de.ffm.rka.rkareddit.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -10,12 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
-import org.assertj.core.util.Arrays;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,11 +35,13 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
@@ -74,7 +79,6 @@ public class LinkControllerTest {
 										.build();
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
-	@Ignore
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 
@@ -89,7 +93,6 @@ public class LinkControllerTest {
 	 * @author RKA
 	 * testing new post of valid comment
 	 */
-	@Ignore
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
@@ -108,7 +111,6 @@ public class LinkControllerTest {
 	 * testing new post of valid comment
 	 * without suitable link
 	 */
-	@Ignore
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void rejectCommentWithoutSuitableLinkId() throws Exception {
@@ -126,7 +128,6 @@ public class LinkControllerTest {
 	 * test for non-long pageId
 	 * @throws Exception
 	 */
-	@Ignore
 	@Test
 	public void pageNotFound() throws Exception {
 		String invalidPage = UUID.randomUUID().toString();
@@ -159,7 +160,6 @@ public class LinkControllerTest {
 					.andExpect(view().name("link/link_view"));
 
 	}
-	@Ignore
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
@@ -178,7 +178,6 @@ public class LinkControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void saveNewLinkTestForUnknownUser() throws Exception {
     	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -195,11 +194,14 @@ public class LinkControllerTest {
 	
 	@Test
 	public void getTags() throws Exception {
-    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/search")
+		List<String> expList = Arrays.asList("TypeScript","JavaScript","Delphi/Object Pascal");
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/search")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-							.param("title", "java"))
-  					.andDo(print())
-					.andExpect(status().isOk()
-					.andExpect(model().size(2));	
+							.param("search", "sc"))
+					    	.andDo(print())
+							.andExpect(status().isOk())
+							.andReturn();
+		String[] resultArray = result.getResponse().getContentAsString().replace("[","").replace("]","").replace("\"","").split(",");
+		assertEquals(true, Stream.of(resultArray).allMatch(tag -> expList.contains(tag)));
     }
 }

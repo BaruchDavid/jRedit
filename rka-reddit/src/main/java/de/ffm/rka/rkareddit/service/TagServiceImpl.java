@@ -16,7 +16,7 @@ public class TagServiceImpl {
 	@Autowired
 	private TagRepository tagRepository;
 
-	public List<Tag> findSuitableTags(String tag){
-		return tagRepository.findByTagIgnoreCase(tag);
+	public List<String> findSuitableTags(String tagName){
+		return tagRepository.findTagByName(tagName);
 	}
 }

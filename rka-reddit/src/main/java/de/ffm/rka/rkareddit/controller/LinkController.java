@@ -144,7 +144,8 @@ public class LinkController {
 	
 	@PostMapping(value = "/link/search")
 	@ResponseBody
-	public List<Tag> completeSearch(String tag, Model model, HttpServletResponse req) {		
-		return tagService.findSuitableTags("ja");
+	public List<String> completeSearch(String search, Model model, HttpServletResponse req) {	
+				
+		return tagService.findSuitableTags(search);
 	}
 }
