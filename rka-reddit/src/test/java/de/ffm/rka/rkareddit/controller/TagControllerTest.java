@@ -47,7 +47,7 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-public class LinkControllerTest {
+public class TagControllerTest {
 
 	private MockMvc mockMvc;
 
@@ -74,7 +74,7 @@ public class LinkControllerTest {
 										.build();
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
-	@Ignore
+
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 
@@ -89,7 +89,6 @@ public class LinkControllerTest {
 	 * @author RKA
 	 * testing new post of valid comment
 	 */
-	@Ignore
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
@@ -108,7 +107,6 @@ public class LinkControllerTest {
 	 * testing new post of valid comment
 	 * without suitable link
 	 */
-	@Ignore
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void rejectCommentWithoutSuitableLinkId() throws Exception {
@@ -126,7 +124,6 @@ public class LinkControllerTest {
 	 * test for non-long pageId
 	 * @throws Exception
 	 */
-	@Ignore
 	@Test
 	public void pageNotFound() throws Exception {
 		String invalidPage = UUID.randomUUID().toString();
@@ -143,7 +140,6 @@ public class LinkControllerTest {
 	 * which will be used for new comment
 	 * @throws Exception
 	 */
-	@Ignore
 	@Test
 	public void readLinkTest() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
@@ -159,7 +155,7 @@ public class LinkControllerTest {
 					.andExpect(view().name("link/link_view"));
 
 	}
-	@Ignore
+	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
@@ -178,7 +174,6 @@ public class LinkControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void saveNewLinkTestForUnknownUser() throws Exception {
     	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -192,14 +187,14 @@ public class LinkControllerTest {
 	/**
 	 * get initial tags
 	 */
-	
 	@Test
-	public void getTags() throws Exception {
-    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/search")
+	public void saveNewLinkTestForUnknownUser() throws Exception {
+    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-							.param("title", "java"))
+							.param("title", "welt.de")
+							.param("url", "http://welt.de"))
   					.andDo(print())
-					.andExpect(status().isOk()
-					.andExpect(model().size(2));	
+					.andExpect(status().isOk())
+					.andExpect(forwardedUrl("error/userAuth"));	
     }
 }

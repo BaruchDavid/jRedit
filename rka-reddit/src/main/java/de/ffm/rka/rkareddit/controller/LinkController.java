@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,10 +34,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.service.TagServiceImpl;
 
 @Controller
 @RequestMapping("/links")
@@ -50,6 +51,8 @@ public class LinkController {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 	
+	@Autowired
+	private TagServiceImpl tagService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
@@ -141,11 +144,7 @@ public class LinkController {
 	
 	@PostMapping(value = "/link/search")
 	@ResponseBody
-	public List<String> completeSearch(Model model, HttpServletResponse req) {		
-		List<String> suggestions = new ArrayList<String>();
-		suggestions.add("Vorschlag1");
-		suggestions.add("Vorschlag2");
-		suggestions.add("Vorschlag3");
-		return suggestions;
+	public List<Tag> completeSearch(String tag, Model model, HttpServletResponse req) {		
+		return tagService.findSuitableTags("ja");
 	}
 }
