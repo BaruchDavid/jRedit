@@ -125,7 +125,22 @@ a.share {
     }
 }
 
-input#searchDrop {
+
+field { 
+	font-family:arial, sans-serif; 
+	border-color: #d9d9d9; 
+	border-top:solid 1px #c0c0c0; 
+}
+input.field {
+	width:35%;
+}
+.fieldwrapper{
+	text-align: center;
+	white-space: nowrap;
+}
+
+
+/* input#searchDrop {
   margin: auto;
   display: block;
   width: 30%;
@@ -146,4 +161,4 @@ input#searchDrop {
   border-right: 1px solid #333333;
   border-bottom: 1px solid #333333;
   border-left: 1px solid #CCCCCC;
-}
+} */

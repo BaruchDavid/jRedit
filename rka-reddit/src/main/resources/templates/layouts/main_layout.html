@@ -68,10 +68,11 @@
 		</nav>
 	</div>
 	<div class="jumbotron jumbotron-fluid" th:fragment="jumbotron">
-		<h2 style="text-align: center;" class="display-4">Drops</h2>
-		<div>
-			<input id="searchDrop" type="text" placeholder="Find your domain"><a class="link_button" href="http://yahoo.com">http://yahoo.com</a>
-		</div>
+		<h2 style="text-align: center;" class="display-4">Drops</h2>	
+		<div class="fieldwrapper">
+			<input id="field_location" class="field" name="searchTerm" type="text" value="">
+			<input type="submit" id="findbutton" value="Find" />
+		</div>	
     </div>
  	<div class="container" th:fragment="content">
 		<p>This is your main content</p>
@@ -80,6 +81,7 @@
  		<script th:src="@{/libs/bootstrap/js/jquery-3.4.0.min.js}"></script>
  		<script th:src="@{/libs/bootstrap/js/jquery-ui.min.js}"></script>
  		<script th:src="@{/js/autocomplete.js}"></script>
+ 		<script th:src="@{/js/link.js}"></script>
 		<script th:src="@{/libs/bootstrap/js/popper.min.js}"></script>
 		<script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
  	</div>

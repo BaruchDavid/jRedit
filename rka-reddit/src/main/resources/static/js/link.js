@@ -1,5 +1,5 @@
 $(function() {
-	$("#searchDrop").autocomplete({
+	$("#field_location").autocomplete({
 		source : function(request, response) {
 			$.ajax({
 				url : "/jReditt/links/link/search",
@@ -14,15 +14,15 @@ $(function() {
 			});
 		},
 		select : function(event, ui) {
-			$('#searchDrop').val(ui.item.value);
+			$('#field_location').val(ui.item.value);
 			return false;
 		}
 	});
 });
 
-function linkSearch('click' function(){
+$('#findbutton').click(function(){
 	$.ajax({
-		url : "/jReditt/links/link/apiDesignForPathes??",
+		url : "/jReditt/links/link/",
 		type : 'get',
 		dataType : "text",
 		data : {
@@ -33,4 +33,3 @@ function linkSearch('click' function(){
 		}
 	});
 });
-
