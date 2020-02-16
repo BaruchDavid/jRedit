@@ -39,7 +39,7 @@ import lombok.ToString;
 
 @Entity
 @Getter @Setter
-@ToString(exclude = {"user", "comments", "vote"}) 
+@ToString(exclude = {"user", "comments", "vote", "tags"}) 
 @NoArgsConstructor
 public class Link extends Auditable{
 

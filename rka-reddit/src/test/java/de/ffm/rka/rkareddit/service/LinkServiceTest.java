@@ -88,6 +88,7 @@ public class LinkServiceTest {
 			LOGGER.info("Link found {}", link.toString());
 			LOGGER.info("link vote size {} ",  link.getVote().size());
 			LOGGER.info("link comment size {} ", link.getComments().size());
+			LOGGER.info("link tag size {} ", link.getComments().size());
 			LOGGER.info("=========================== ");
 			
 		});
