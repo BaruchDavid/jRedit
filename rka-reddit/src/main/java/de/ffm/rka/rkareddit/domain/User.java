@@ -77,9 +77,15 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Column(nullable = false, unique = true)
 	private  String aliasName;
 
+	/**
+	 * Link is a owner of this Relation
+	 */
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Link> userLinks = new ArrayList<Link>();
 	
+	/**
+	 * Comment is a owner of this Relation
+	 */
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Comment> userComments = new ArrayList<Comment>();
 	

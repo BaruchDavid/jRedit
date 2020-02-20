@@ -54,19 +54,16 @@ public class Link extends Auditable{
 	@URL(message = "valid url is required")
 	private String url;
 	
+	/**
+	 * Vote is owner of this Relation
+	 */
 	@OneToMany(mappedBy = "link", 
-			 fetch=FetchType.EAGER,
+			 fetch=FetchType.LAZY,
 			 orphanRemoval = true,
 			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Vote> vote = new ArrayList<>();
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-			name = "link_tags",
-			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
-			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
-	)
+	@ManyToMany(mappedBy= "links")
 	private List<Tag> tags = new ArrayList<>();
 
 	private int voteCount = 0;
@@ -74,6 +71,9 @@ public class Link extends Auditable{
 	@ManyToOne(fetch = FetchType.EAGER)
 	private User user;
 		
+	/**
+	 * Comment is a owner cause of mappedBy argument
+	 */
 	@OneToMany(mappedBy="link", fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Comment> comments = new ArrayList<>();

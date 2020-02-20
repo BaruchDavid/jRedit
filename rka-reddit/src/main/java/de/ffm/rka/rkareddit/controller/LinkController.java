@@ -76,8 +76,7 @@ public class LinkController {
 											.boxed()
 											.collect(Collectors.toList());		
 		model.addAttribute("links",links);
-		model.addAttribute("pageNumbers",totalPages);
-		
+		model.addAttribute("pageNumbers",totalPages);	
 		return "link/link_list";
 	}
 	

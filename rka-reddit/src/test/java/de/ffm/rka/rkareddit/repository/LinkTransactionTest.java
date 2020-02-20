@@ -36,11 +36,11 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-public class LinkRepositoryTest {
+public class LinkTransactionTest {
 
 	@Autowired
     private LinkService linkService ;
-	private static final Logger LOGGER = LoggerFactory.getLogger(LinkRepositoryTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LinkTransactionTest.class);
 	private EntityManager entityManager;
 	
 	@Before

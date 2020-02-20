@@ -2,10 +2,15 @@ package de.ffm.rka.rkareddit.domain;
 
 
 import java.util.Collection;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
@@ -31,6 +36,11 @@ public class Tag extends Auditable {
 		this.name = tag;
 	}	
 	
-	@ManyToMany(mappedBy= "tags")
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "link_tags",
+			joinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId"),
+			inverseJoinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId")
+	)
 	private Collection<Link> links;
 }

@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.service;
 
 import static org.junit.Assert.assertEquals;
 
+import org.hibernate.Hibernate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
@@ -24,6 +26,7 @@ import de.ffm.rka.rkareddit.domain.User;
  */
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
+@Transactional
 @SpringBootTest
 public class LinkServiceTest {
 
