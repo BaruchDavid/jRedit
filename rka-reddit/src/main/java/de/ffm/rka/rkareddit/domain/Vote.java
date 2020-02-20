@@ -8,10 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-
+@ToString(exclude = "link")
+@Getter @Setter
 @Entity
 public class Vote extends Auditable {
 	
@@ -34,30 +37,5 @@ public class Vote extends Auditable {
 	public Vote() {
 		super();
 	}
-
-	public long getVoteId() {
-		return voteId;
-	}
-
-	public void setVoteId(long voteId) {
-		this.voteId = voteId;
-	}
-
-	public short getDirection() {
-		return direction;
-	}
-
-	public void setDirection(short direction) {
-		this.direction = direction;
-	}
-
-	public Link getLink() {
-		return link;
-	}
-
-	public void setLink(Link link) {
-		this.link = link;
-	}
-	
 	
 }
