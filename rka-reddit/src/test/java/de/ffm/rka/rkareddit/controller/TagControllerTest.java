@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.controller;
 
 
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
@@ -64,12 +66,13 @@ public class TagControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
 
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/tags/tag/create")
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/tags/tag/create")
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("tag.tagId", "1")
 														.param("name", "java"))
 	    					.andDo(print())
-							.andExpect(status().isOk());
+							.andExpect(status().isOk())
+							.andReturn();
+		assertEquals(true, Boolean.valueOf(result.getResponse().getContentAsString()));
 	}
 
 }
