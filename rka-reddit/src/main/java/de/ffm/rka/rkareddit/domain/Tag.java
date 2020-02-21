@@ -14,6 +14,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
+import de.ffm.rka.rkareddit.domain.validator.TagResolver;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -23,6 +24,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @ToString
+@TagResolver
 public class Tag extends Auditable {
 	
 	@Id

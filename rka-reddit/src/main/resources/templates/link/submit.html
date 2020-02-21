@@ -30,10 +30,14 @@
                         <input type="url" class="form-control" id="url" placeholder="URL" required="required" th:field="*{url}">
                         <small th:errors="*{url}" style="color:red;"></small>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" rows="3" th:field="*{description}"></textarea>
-                    </div> -->
+                    <div class="form-group">
+                        <label for="tag">tags</label>
+                        <input type="text"
+                                class="form-control"
+                                placeholder="Enter one or more tags" 
+                                id="tag">
+                        <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
+                    </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

@@ -2,61 +2,64 @@ package de.ffm.rka.rkareddit.rest.controller;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import de.ffm.rka.rkareddit.domain.Tag;
+import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.service.TagServiceImpl;
+import de.ffm.rka.rkareddit.service.UserService;
 
-import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.Vote;
-import de.ffm.rka.rkareddit.repository.LinkRepository;
-import de.ffm.rka.rkareddit.repository.TagRepository;
-import de.ffm.rka.rkareddit.repository.VoteRepository;
 
 @RestController
+@RequestMapping("/tags")
 public class TagController {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
 	
-	@Autowired
-	private TagRepository tagRepository;
-	
-	@Autowired
-	private LinkRepository linkRepository;
-	
-	
-	/**
-	 * 
-	 * @param linkId which will be voted
-	 * @param direction down or top
-	 * @param voteCount is sum of votes
-	 * @return new sum of votes
-	 * @author Roman
-	 */
-	@Secured({"ROLE_USER"})
-	@GetMapping("/tag/link/{linkId}/direction/{direction}/votecount/{voteCount}")
-	public int saveTag(@PathVariable Long  linkId, 
-					@PathVariable short direction, 
-					@PathVariable int voteCount, Model model, HttpServletRequest req) {
-		LOGGER.info("USER AUTHETICATION DETAILS FOR VOTE {}", req.getUserPrincipal());
-		try {
-			Optional<Link> link = null;//tagRepository.findAll();
-//			if(link.isPresent()) {
-//				Link linkObj = link.get();
-//				Vote vote = new Vote(linkObj, direction);
-//				int voteCounter = voteCount + direction;
-//				linkObj.setVoteCount(voteCounter);
-//				tagRepository.saveAndFlush(vote);	
-				return 1;
-		} catch (RuntimeException e) {
-			LOGGER.error("NO PERMISSION FOR USER TO VOTE", e);
-		}
-		return voteCount;
+	private UserService userService;
+	private TagServiceImpl tagService;
+
+	public TagController(UserService userService, TagServiceImpl tagServiceImpl) {
+		this.userService = userService;
+		tagService = tagServiceImpl;
 	}
+
+	/**
+	 * method for login and logout
+	 * during logout, request parameter contains 'logout' param
+	 * after session-timeout, you will be redirected to login again
+	 * @param request
+	 * @return view for login / logout
+	 */
+	@Secured({"ROLE_ADMIN"})
+	@PostMapping("/tag/create")
+	@ResponseBody
+	public boolean saveNewTag(@Valid Tag tag, @AuthenticationPrincipal UserDetails user, Model model,
+							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
+		boolean result=false;
+		if(bindingResult.hasErrors()) {			
+			if(userService.lockUser(user.getUsername())) {
+				LOGGER.info("LOCK USER {}, validation failed of tag: {}", user.getUsername(),tag.toString());
+			} else {
+				LOGGER.info("USER {} IS NOT IN THE SYSTEM ANYMORE, All links and tags has been deleted from him: {}", 
+						user.getUsername(),tag.toString());
+			}
+		} else {
+			tagService.saveTag(tag);
+			result = true;
+		}
+		return result;
+	}		
 }
+

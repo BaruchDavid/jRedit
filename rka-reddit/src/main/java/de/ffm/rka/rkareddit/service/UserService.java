@@ -119,4 +119,18 @@ public class UserService {
 		
 		return userRepository.fetchUserWithComments(userId);
 	}
+
+	public boolean lockUser(String userName) {
+		Optional<User> dbUser = userRepository.findByEmail(userName);
+		boolean locked = false;
+		if(dbUser.isPresent()) {
+			dbUser.get().setEnabled(false);
+			mailService.sendEmail(userName, "Account is locked", "account is locked", false, false);
+			locked = true;
+		} else {
+			//delete all links with this tag
+			//delete tag
+		}
+		return locked;
+	}
 }
