@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,7 +101,11 @@ public class LinkController {
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/link/create")
 	public String createNewLink(Model model) {
-		model.addAttribute("newLink", new Link());
+		Link link = new Link();
+		for(int i=0; i<4; ++i) {
+			link.addTag(new Tag());
+		}
+		model.addAttribute("newLink", link);
 		return "link/submit";
 	}
 	
@@ -114,6 +119,11 @@ public class LinkController {
 			model.addAttribute("newLink", link);
 			return "link/submit";
 		} else {
+			List<Tag> unUsedtags = new ArrayList<Tag>(); 
+			link.getTags().stream()
+						  .filter(tag -> tag.getTagId()==0)
+						  .forEach(tag -> unUsedtags.add(tag));
+			link.getTags().removeAll(unUsedtags);
 			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
 			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())

@@ -1,25 +1,26 @@
 package de.ffm.rka.rkareddit.rest.controller;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import de.ffm.rka.rkareddit.domain.Tag;
-import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
+import de.ffm.rka.rkareddit.vo.TagVO;
 
 
 @RestController
@@ -43,23 +44,27 @@ public class TagController {
 	 * @return view for login / logout
 	 */
 	@Secured({"ROLE_ADMIN"})
-	@PostMapping("/tag/create")
+	@PostMapping(value ="/tag/create", consumes = MediaType.ALL_VALUE)
 	@ResponseBody
-	public boolean saveNewTag(@Valid Tag tag, @AuthenticationPrincipal UserDetails user, Model model,
+	public TagVO saveNewTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model,
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
-		boolean result=false;
-		if(bindingResult.hasErrors()) {			
-			if(userService.lockUser(user.getUsername())) {
-				LOGGER.info("LOCK USER {}, validation failed of tag: {}", user.getUsername(),tag.toString());
-			} else {
-				LOGGER.info("USER {} IS NOT IN THE SYSTEM ANYMORE, All links and tags has been deleted from him: {}", 
-						user.getUsername(),tag.toString());
-			}
-		} else {
-			tagService.saveTag(tag);
-			result = true;
-		}
-		return result;
+		Tag nTag = new Tag(tag.substring(0,tag.indexOf("=")));
+		long id = tagService.saveTag(nTag);
+		LOGGER.info("NEW TAG: {}", nTag.toString());
+		
+		
+//		Überprüfung im Validator einbauen
+//		if(bindingResult.hasErrors()) {			
+//			if(userService.lockUser(user.getUsername())) {
+//				LOGGER.info("LOCK USER {}, validation failed of tag: {}", user.getUsername(),tag.toString());
+//			} else {
+//				LOGGER.info("USER {} IS NOT IN THE SYSTEM ANYMORE, All links and tags has been deleted from him: {}", 
+//						user.getUsername(),tag.toString());
+//			}
+//		} else {			
+
+//		}
+		return new TagVO(nTag.getName(), nTag.getTagId());
 	}		
 }
 

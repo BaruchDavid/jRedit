@@ -61,7 +61,7 @@ public class LinkService {
 	@Transactional(readOnly = false)
 	public Link saveLink(Link link) {
 		LOGGER.info("TRY TO SAVE LINK {}", link);
-		return Optional.ofNullable(linkRepository.saveAndFlush(link)).orElse(new Link("link not availible", "http://jReditt.com"));
+		return Optional.ofNullable(linkRepository.save(link)).orElse(new Link("link not availible", "http://jReditt.com"));
 	}
 
 

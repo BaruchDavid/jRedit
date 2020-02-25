@@ -3,9 +3,6 @@ package de.ffm.rka.rkareddit.service;
 
 
 import java.util.List;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +19,8 @@ public class TagServiceImpl {
 		return tagRepository.findTagByName(tagName);
 	}
 
-	public void saveTag(Tag tag) {
-		tagRepository.save(tag);
+	public long saveTag(Tag tag) {
+		Tag newTag = tagRepository.save(tag);
+		return newTag.getTagId();
 	}
 }

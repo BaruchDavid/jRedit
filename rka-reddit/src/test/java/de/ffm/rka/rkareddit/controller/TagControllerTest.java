@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.controller;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.junit.Before;
@@ -72,7 +73,7 @@ public class TagControllerTest {
 	    					.andDo(print())
 							.andExpect(status().isOk())
 							.andReturn();
-		assertEquals(true, Boolean.valueOf(result.getResponse().getContentAsString()));
+		assertNotEquals("0", Boolean.valueOf(result.getResponse().getContentAsString()));
 	}
 
 }

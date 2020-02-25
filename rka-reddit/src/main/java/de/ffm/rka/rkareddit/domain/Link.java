@@ -63,7 +63,12 @@ public class Link extends Auditable{
 			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Vote> vote = new ArrayList<>();
 	
-	@ManyToMany(mappedBy= "links")
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE})
+	@JoinTable(
+			name = "link_tags",
+			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
+			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
+	)
 	private List<Tag> tags = new ArrayList<>();
 
 	private int voteCount = 0;
@@ -104,4 +109,9 @@ public class Link extends Auditable{
 	public void addComment(Comment comment) {
 		comments.add(comment);
 	}
+	
+	public void addTag(Tag tag) {
+		tags.add(tag);
+	}
+
 }

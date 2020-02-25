@@ -39,6 +39,16 @@
                         <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
+                     <table>
+	                     <tbody>
+		                     <tr th:each="book, itemStat : *{tags}">
+		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagId}" /></td>
+		                    	<td><input th:field="*{tags[__${itemStat.index}__].name}" /></td>
+		                	</tr>
+	                     </tbody>
+                     </table>
+                     
+                     
                 </form>
             </div>
             <div class="col-md-3"></div>
@@ -46,6 +56,7 @@
     </div>
     <!-- Bootstrap core JavaScript -->
 	<div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
+	<script th:src="@{/js/tag.js}"></script>
 </body>
 
 </html>

@@ -23,7 +23,7 @@ import lombok.ToString;
 @Entity(name="Tag")
 @Data
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "links")
 @TagResolver
 public class Tag extends Auditable {
 	
@@ -38,11 +38,6 @@ public class Tag extends Auditable {
 		this.name = tag;
 	}	
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-			name = "link_tags",
-			joinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId"),
-			inverseJoinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId")
-	)
+	@ManyToMany(mappedBy= "tags")
 	private Collection<Link> links;
 }
