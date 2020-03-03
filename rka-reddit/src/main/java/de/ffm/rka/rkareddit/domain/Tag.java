@@ -40,4 +40,12 @@ public class Tag extends Auditable {
 	
 	@ManyToMany(mappedBy= "tags")
 	private Collection<Link> links;
+	
+	public void addLink(Link link) {
+		links.add(link);
+	}
+	
+	public void removeLink(Link link) {
+		links.remove(link);
+	}
 }

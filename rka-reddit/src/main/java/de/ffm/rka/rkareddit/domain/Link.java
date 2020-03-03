@@ -7,7 +7,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -19,8 +21,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 
@@ -69,7 +69,7 @@ public class Link extends Auditable{
 			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
 			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
 	)
-	private List<Tag> tags = new ArrayList<>();
+	private Set<Tag> tags = new HashSet<>();
 
 	private int voteCount = 0;
 	
@@ -112,6 +112,10 @@ public class Link extends Auditable{
 	
 	public void addTag(Tag tag) {
 		tags.add(tag);
+	}
+	
+	public void removeTag(Tag tag) {
+		tags.remove(tag);
 	}
 
 }

@@ -6,7 +6,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -24,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
 import de.ffm.rka.rkareddit.rest.controller.TagController;
@@ -63,17 +66,42 @@ public class TagControllerTest {
 	 * @author RKA
 	 * testing new post of valid comment
 	 */
+	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/tags/tag/create")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("name", "java"))
+																	.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+																	.param("java8", ""))
 	    					.andDo(print())
-							.andExpect(status().isOk())
 							.andReturn();
-		assertNotEquals("0", Boolean.valueOf(result.getResponse().getContentAsString()));
+		assertNotEquals("1", result.getResponse().getContentAsString().split(":")[2]);
 	}
 
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void postAvailibleTag() throws Exception {
+
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/tags/tag/create")
+														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+														.param("java", ""))
+	    					.andDo(print())
+							.andReturn();
+		assertNotEquals("1", result.getResponse().getContentAsString().split(":")[2]);
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void testSchouldNotDeleteRelatedTag() throws Exception {
+
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","1")
+																	.contentType(MediaType.APPLICATION_JSON))
+							.andDo(print())
+							.andExpect(status().isOk())
+							.andReturn();
+		assertEquals("", result.getResponse().getContentAsString());
+	}
+
+	
 }

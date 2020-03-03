@@ -3,9 +3,12 @@ package de.ffm.rka.rkareddit.service;
 
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.repository.TagRepository;
 
@@ -22,5 +25,18 @@ public class TagServiceImpl {
 	public long saveTag(Tag tag) {
 		Tag newTag = tagRepository.save(tag);
 		return newTag.getTagId();
+	}
+
+	public Optional<Tag> findTagOnName(String tag) {
+		// TODO Auto-generated method stub
+		return tagRepository.findByName(tag);
+	}
+	
+	public void deleteTagWithoutRelation(long tagId) {
+		tagRepository.deleteById(tagId);
+	}
+	
+	public Optional<Tag> selectTag(long tagId){
+		return Optional.of(tagRepository.selectTagWithLinks(tagId));
 	}
 }

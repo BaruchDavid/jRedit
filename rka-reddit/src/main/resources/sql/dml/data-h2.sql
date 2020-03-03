@@ -50,9 +50,6 @@ VALUES(1, 1);
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 3);
 
-INSERT INTO users_roles(user_Id, role_Id)
-VALUES(1, 4);
-
 
 INSERT INTO users_roles(user_Id, role_Id)
 VALUES(1, 2);
@@ -173,12 +170,6 @@ VALUES(12, 'CSS');
 
 INSERT INTO link_tags(link_id, tag_id)
 VALUES(1, 2);
-
-INSERT INTO link_tags(link_id, tag_id)
-VALUES(1, 3);
-
-INSERT INTO link_tags(link_id, tag_id)
-VALUES(1, 3);
 
 INSERT INTO link_tags(link_id, tag_id)
 VALUES(1, 3);
