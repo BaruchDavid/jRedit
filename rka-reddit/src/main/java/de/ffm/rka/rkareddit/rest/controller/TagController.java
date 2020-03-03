@@ -82,14 +82,14 @@ public class TagController {
 	@ResponseBody
 	public String deleteTagWithoutRelation(@PathVariable long tagId, @AuthenticationPrincipal UserDetails user, Model model) {		
 		String deletedTagId = "";
-		Optional<Tag> tag = tagService.selectTag(tagId);
+		Optional<Tag> tag = tagService.selectTagWithLinks(tagId);
 		if (tag.isPresent()) {
 			if(tag.get().getLinks().size()==0) {
 				deletedTagId = String.valueOf(tag.get().getTagId());
-				tagService.deleteTagWithoutRelation(tag.get().getTagId());
+				tagService.deleteTagWithoutRelation(tag.get());
 				LOGGER.info("DELETE TAG WITHOUT RELATION: {}", deletedTagId);
 			}
-		}
+		} 
 		return deletedTagId;	
 	}
 }

@@ -66,7 +66,7 @@ public class TagControllerTest {
 	 * @author RKA
 	 * testing new post of valid comment
 	 */
-	
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
@@ -90,7 +90,7 @@ public class TagControllerTest {
 							.andReturn();
 		assertNotEquals("1", result.getResponse().getContentAsString().split(":")[2]);
 	}
-	
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void testSchouldNotDeleteRelatedTag() throws Exception {
@@ -103,5 +103,28 @@ public class TagControllerTest {
 		assertEquals("", result.getResponse().getContentAsString());
 	}
 
+
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void testSchouldNotDeleteNotAvailibleTag() throws Exception {
+
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","101")
+																	.contentType(MediaType.APPLICATION_JSON))
+							.andDo(print())
+							.andExpect(status().isOk())
+							.andReturn();
+		assertEquals("", result.getResponse().getContentAsString());
+	}
 	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void testSchouldDeleteNotRelatedTag() throws Exception {
+
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","6")
+																	.contentType(MediaType.APPLICATION_JSON))
+							.andDo(print())
+							.andExpect(status().isOk())
+							.andReturn();
+		assertEquals("6", result.getResponse().getContentAsString());
+	}
 }

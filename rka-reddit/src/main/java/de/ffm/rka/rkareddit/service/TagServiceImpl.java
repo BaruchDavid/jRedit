@@ -32,11 +32,11 @@ public class TagServiceImpl {
 		return tagRepository.findByName(tag);
 	}
 	
-	public void deleteTagWithoutRelation(long tagId) {
-		tagRepository.deleteById(tagId);
+	public void deleteTagWithoutRelation(Tag tag) {
+		tagRepository.delete(tag);
 	}
 	
-	public Optional<Tag> selectTag(long tagId){
-		return Optional.of(tagRepository.selectTagWithLinks(tagId));
+	public Optional<Tag> selectTagWithLinks(long tagId){
+		return Optional.ofNullable(tagRepository.selectTagWithLinks(tagId));
 	}
 }

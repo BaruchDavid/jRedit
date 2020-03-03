@@ -21,6 +21,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 	@Query(value = "SELECT tg.tagId FROM Tag tg JOIN tg.links lk  WHERE tg.tagId =:tagId")
 	Optional<String> selectTagIdFromRelation(String tagId);
 
-	@Query(value = "SELECT a FROM Tag a JOIN FETCH a.links WHERE a.tagId =:tagId")
+	@Query(value = "SELECT a FROM Tag a LEFT OUTER JOIN FETCH a.links WHERE a.tagId =:tagId")
 	Tag selectTagWithLinks(@Param("tagId") long tagId);
 }
