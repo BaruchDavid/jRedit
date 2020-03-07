@@ -20,7 +20,7 @@ public class Vote extends Auditable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long voteId;
+	private Long voteId;
 	
 	@NotNull
 	private short direction;
@@ -38,4 +38,19 @@ public class Vote extends Auditable {
 		super();
 	}
 	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vote))
+            return false;
+        Vote other = (Vote) o;
+ 
+        return voteId != null &&
+        		voteId.equals(other.getVoteId());
+    }
+	 
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

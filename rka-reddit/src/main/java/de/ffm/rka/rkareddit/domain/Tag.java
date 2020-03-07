@@ -3,25 +3,23 @@ package de.ffm.rka.rkareddit.domain;
 
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
+
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.TagResolver;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 
 @Entity(name="Tag")
-@Data
+@Getter @Setter
 @NoArgsConstructor
 @ToString(exclude = "links")
 @TagResolver
@@ -29,7 +27,7 @@ public class Tag extends Auditable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long tagId;
+	private Long tagId;
 	
 	@NotNull
 	private String name;
@@ -48,4 +46,20 @@ public class Tag extends Auditable {
 	public void removeLink(Link link) {
 		links.remove(link);
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tag))
+            return false;
+        Tag other = (Tag) o;
+ 
+        return tagId != null &&
+        		tagId.equals(other.getTagId());
+    }
+	 
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

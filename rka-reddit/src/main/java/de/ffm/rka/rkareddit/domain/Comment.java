@@ -35,7 +35,8 @@ public class Comment extends Auditable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long commentId;
+	private Long commentId;
+	
 	private String commentText;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -55,4 +56,20 @@ public class Comment extends Auditable{
 		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
 		return prettyTime.format(from(super.getCreationDate().atZone(ZONE_ID).toInstant()));
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment))
+            return false;
+        Comment other = (Comment) o;
+ 
+        return commentId != null &&
+        		commentId.equals(other.getCommentId());
+    }
+	 
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

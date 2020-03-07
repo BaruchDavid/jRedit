@@ -118,4 +118,19 @@ public class Link extends Auditable{
 		tags.remove(tag);
 	}
 
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Link))
+            return false;
+        Link other = (Link) o;
+ 
+        return linkId != null &&
+        		linkId.equals(other.getLinkId());
+    }
+	 
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

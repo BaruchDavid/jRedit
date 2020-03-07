@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
@@ -9,12 +10,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+
 import javax.persistence.EntityManager;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -32,6 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
@@ -71,6 +77,7 @@ public class LinkControllerTest {
 										.build();
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
+
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 
@@ -136,21 +143,20 @@ public class LinkControllerTest {
 	 * which will be used for new comment
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void readLinkTest() throws Exception {
-		Link currentLink = entityManager.find(Link.class, 1l);
-		Comment currentComment = new Comment();
-		currentComment.setCommentId(0);
-		
+		Link currentLink = entityManager.find(Link.class, 1l);	
 		this.mockMvc.perform(get("/links/link/1"))
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("link", currentLink))
-					.andExpect(model().attribute("comment", currentComment))
 					.andExpect(model().attribute("success", false))
 					.andExpect(view().name("link/link_view"));
 
+
 	}
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
@@ -182,7 +188,6 @@ public class LinkControllerTest {
 	/**
 	 * get initial tags
 	 */
-	
 	@Test
 	public void getTags() throws Exception {
 		List<String> expList = Arrays.asList("TypeScript","JavaScript","Delphi/Object Pascal");

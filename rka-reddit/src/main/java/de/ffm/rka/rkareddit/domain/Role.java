@@ -9,12 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
-@Data
+@Getter @Setter
 @NoArgsConstructor
 public class Role {
 
@@ -32,4 +33,20 @@ public class Role {
 		super();
 		this.name = name;
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role))
+            return false;
+        Role other = (Role) o;
+ 
+        return roleId != null &&
+        		roleId.equals(other.getRoleId());
+    }
+	 
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }
