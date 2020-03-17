@@ -69,7 +69,7 @@ public class Link extends Auditable{
 			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
 			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
 	)
-	private Set<Tag> tags = new HashSet<>();
+	private List<Tag> tags = new ArrayList<>();
 
 	private int voteCount = 0;
 	

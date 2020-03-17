@@ -20,7 +20,6 @@ import lombok.ToString;
 
 @Entity(name="Tag")
 @Getter @Setter
-@NoArgsConstructor
 @ToString(exclude = "links")
 @TagResolver
 public class Tag extends Auditable {
@@ -31,6 +30,11 @@ public class Tag extends Auditable {
 	
 	@NotNull
 	private String name;
+	
+	public Tag() {
+		this.tagId = 0l;
+		this.name ="";
+	}
 	
 	public Tag(@NotNull String tag) {
 		this.name = tag;
