@@ -117,6 +117,10 @@ public class Link extends Auditable{
 	public void removeTag(Tag tag) {
 		tags.remove(tag);
 	}
+	
+	public List<Tag> getTags(){
+		return this.tags;
+	}
 
 	@Override
     public boolean equals(Object o) {

@@ -123,11 +123,6 @@ public class LinkController {
 			model.addAttribute("newLink", link);
 			return "link/submit";
 		} else {
-			List<Tag> unUsedtags = new ArrayList<Tag>(); 
-			link.getTags().stream()
-						  .filter(tag -> tag.getTagId()==0)
-						  .forEach(tag -> unUsedtags.add(tag));
-			link.getTags().removeAll(unUsedtags);
 			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
 			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())

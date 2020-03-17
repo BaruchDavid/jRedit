@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.Entity;
@@ -34,6 +35,7 @@ public class Tag extends Auditable {
 	public Tag() {
 		this.tagId = 0l;
 		this.name ="";
+		this.links = new ArrayList<>();
 	}
 	
 	public Tag(@NotNull String tag) {

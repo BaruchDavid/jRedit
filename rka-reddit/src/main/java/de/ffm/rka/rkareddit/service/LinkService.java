@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 
@@ -60,6 +62,13 @@ public class LinkService {
 	 */
 	@Transactional(readOnly = false)
 	public Link saveLink(Link link) {
+		List<Tag> tags = new ArrayList<Tag>(); 
+		link.getTags().stream()
+					  .filter(tag -> tag.getTagId()==0)
+					  .forEach(tag -> tags.add(tag));
+		link.getTags().removeAll(tags);		
+		link.getTags().stream()
+					  .forEach(tag -> tag.getLinks().add(link));
 		LOGGER.info("TRY TO SAVE LINK {}", link);
 		return Optional.ofNullable(linkRepository.save(link)).orElse(new Link("link not availible", "http://jReditt.com"));
 	}
