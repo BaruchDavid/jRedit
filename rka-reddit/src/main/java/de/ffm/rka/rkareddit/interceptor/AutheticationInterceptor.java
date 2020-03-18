@@ -60,7 +60,6 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
             } else if (String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
             		|| (String.valueOf(response.getStatus()).startsWith(IS_400_ERROR))) {
     			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
-    			//throw new IllegalAccessException(String.valueOf(response.getStatus()));
     		}     		
         }
 		return super.preHandle(request, response, handler);
