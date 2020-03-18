@@ -22,6 +22,7 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 @Controller
 public class BasicErrorController implements ErrorController{
 	private static final Logger LOGGER = LoggerFactory.getLogger(BasicErrorController.class);
+	public static final String ANONYMOUS = "anonymousUser";
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 	
@@ -32,11 +33,16 @@ public class BasicErrorController implements ErrorController{
 	
 	@RequestMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {
-		Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-		User user = (User) userDetailsService.loadUserByUsername(authetication.get().getName());
+		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
+		User user = User.builder()
+						.firstName("Gast")
+						.secondName("")
+						.build();
+		if(!ANONYMOUS.equals(authetication.getName())){
+			user = (User) userDetailsService.loadUserByUsername(authetication.getName());
+		}
 		model.addAttribute("user", user);
-        return "error/basicError";
+        return "error/pageNotFound";
     }
 
 }
