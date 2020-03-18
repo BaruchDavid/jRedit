@@ -27,11 +27,11 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
  * @author kaproma
  *
  */
-//@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
+@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
 public class GlobalControllerAdvisor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
-	public static final String DEFAULT_ERROR_VIEW = "error/userAuth";
-	public static final String PAGE_NOT_FOUND = "error/pageNotFound";
+	public static final String USER_ERROR_VIEW = "error/userAuth";
+	public static final String DEFAULT_APPLICATION_ERROR = "error/basicError";
 	public static final String ANONYMOUS = "anonymousUser";
 
 	@Autowired
@@ -42,7 +42,7 @@ public class GlobalControllerAdvisor {
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) throws Exception {
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		User user = new User();	
-		String view = DEFAULT_ERROR_VIEW;
+		String view = USER_ERROR_VIEW;
 		String visitorName="";
 		if(authetication.isPresent()) {
 			visitorName = authetication.get().getName();
@@ -59,14 +59,14 @@ public class GlobalControllerAdvisor {
 		switch (getExceptionName(exception.getClass().getCanonicalName())) {
 		case "MethodArgumentTypeMismatchException":
 		case "IllegalArgumentException":
-			view = PAGE_NOT_FOUND;
+			view = DEFAULT_APPLICATION_ERROR;
 			res.setStatus(404);
 			break;
 		case "NullPointerException":
 		case "Exception":
 		case "UserAuthenticationLostException":
 			res.setStatus(500);
-			view = DEFAULT_ERROR_VIEW;
+			view = USER_ERROR_VIEW;
 			break;
 		}
 		return createErrorView(req.getRequestURL().toString(),user, view);

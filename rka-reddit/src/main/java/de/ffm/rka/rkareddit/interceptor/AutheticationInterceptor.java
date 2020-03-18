@@ -91,10 +91,8 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		LOGGER.debug("page: {}", request.getRequestURL());	
 		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
 			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
-			throw new IllegalAccessException(String.valueOf(response.getStatus()));
 		}else {
 			super.postHandle(request, response, handler, modelAndView);
 		}
