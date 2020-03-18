@@ -32,6 +32,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,6 +45,8 @@ import lombok.ToString;
 @Getter @Setter 
 @ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto"})
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User extends Auditable implements UserDetails, Serializable {
 
 	private static final long serialVersionUID = -5987601453095162765L;
@@ -155,12 +159,9 @@ public class User extends Auditable implements UserDetails, Serializable {
 	}
 
 	public String getFullName() {
-		Optional<String> fName = Optional.ofNullable(firstName);
-		Optional<String> sName = Optional.ofNullable(secondName);
-		
-		this.firstName = fName.isPresent() ? fName.get(): "";
-		this.secondName = sName.isPresent() ? sName.get(): "";
-		fullName = firstName.concat(" ").concat(secondName);
+		String fName = Optional.ofNullable(firstName).orElse("");
+		String sName = Optional.ofNullable(secondName).orElse("");
+		fullName = fName.concat(" ").concat(sName);
 		return fullName;
 	}
 
