@@ -25,5 +25,7 @@ public final class Role{
 	 * verifies that the user is actuator
 	 */
 	public static final String ACTUATOR="ACTUATOR";
+	
+	public static final String ANONYMOUS="ANONYMOUS";
 
 }

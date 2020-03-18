@@ -27,11 +27,12 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
  * @author kaproma
  *
  */
-@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
+//@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
 public class GlobalControllerAdvisor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
 	public static final String DEFAULT_ERROR_VIEW = "error/userAuth";
 	public static final String PAGE_NOT_FOUND = "error/pageNotFound";
+	public static final String ANONYMOUS = "anonymousUser";
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
@@ -45,7 +46,7 @@ public class GlobalControllerAdvisor {
 		String visitorName="";
 		if(authetication.isPresent()) {
 			visitorName = authetication.get().getName();
-			if(!"anonymousUser".equals(visitorName)) { 
+			if(!ANONYMOUS.equals(visitorName)) { 
 				user = (User) userDetailsService.loadUserByUsername(visitorName);	
 			}else { 
 				user.setFirstName("dear visitor");	
