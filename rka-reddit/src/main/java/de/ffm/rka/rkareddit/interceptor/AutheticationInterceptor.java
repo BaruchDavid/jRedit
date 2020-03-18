@@ -34,7 +34,8 @@ import de.ffm.rka.rkareddit.security.SecConfig;
 public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
-	private static final String IS_4XX_ERROR ="4";
+	private static final String IS_404_ERROR ="404";
+	private static final String IS_400_ERROR ="400";
 
 	/**
 	 * any method with @AutheticationPrincipal and without @Secured
@@ -56,9 +57,10 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
             		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
             		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
             	}
-            } else if (String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
+            } else if (String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
+            		|| (String.valueOf(response.getStatus()).startsWith(IS_400_ERROR))) {
     			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
-    			throw new IllegalAccessException(String.valueOf(response.getStatus()));
+    			//throw new IllegalAccessException(String.valueOf(response.getStatus()));
     		}     		
         }
 		return super.preHandle(request, response, handler);
@@ -91,7 +93,7 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		LOGGER.debug("page: {}", request.getRequestURL());	
-		if(String.valueOf(response.getStatus()).startsWith(IS_4XX_ERROR)) {
+		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
 			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
 			throw new IllegalAccessException(String.valueOf(response.getStatus()));
 		}else {
