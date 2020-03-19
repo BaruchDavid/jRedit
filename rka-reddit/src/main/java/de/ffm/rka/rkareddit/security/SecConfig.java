@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.security;
 
+import static de.ffm.rka.rkareddit.security.Role.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +53,13 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		final int oneDay = 86400;
-		http.authorizeRequests().antMatchers("/links/link/create").hasRole(Role.ADMIN)
-								.antMatchers("/data/h2-console/**").hasRole(Role.DBA)
-								.antMatchers("/").permitAll()		
-								.antMatchers( "/resources/**").permitAll()
+		http.authorizeRequests().antMatchers("/links/link/create").hasAuthority(ADMIN.name())
+								.antMatchers("/data/h2-console/**").hasRole(DBA.name())
+								.antMatchers("/","/resources/**").permitAll()
+								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
+								.antMatchers("/login*").hasRole(ANONYMOUS.name())
 								.antMatchers("/links/").permitAll()
-								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ACTUATOR)
-								.antMatchers("/login*").hasRole(Role.ANONYMOUS)
+								
 			.and()
 			.sessionManagement().maximumSessions(1)
 								.expiredUrl("/login?oneSession")
