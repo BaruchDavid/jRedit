@@ -24,7 +24,7 @@
                 <p class="tagline ">submitted                    
                     <time th:title="${link.getCreationDate()}" th:datetime="${link.getCreationDate()}"
                         class="live-timestamp" th:text="${link.getElapsedTime()}"></time> by
-                    <a th:href="@{'/u/' + ${link.getUser().getAliasName()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
+                    <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
                 </p>
                 <p>
                     <a th:href="@{'/links/link/' + ${link.getLinkId()} + '#comments'}" class="comments"

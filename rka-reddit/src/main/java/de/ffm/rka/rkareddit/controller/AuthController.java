@@ -1,12 +1,14 @@
 package de.ffm.rka.rkareddit.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,8 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import de.ffm.rka.rkareddit.domain.Comment;
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.service.UserService;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 @Controller
@@ -48,16 +54,20 @@ public class AuthController {
 	 * set user info, user links and their comments
 	 * @throws Exception 
 	 */
-	@Secured("ROLE_USER")
-	@GetMapping({"/profile"})
-	public String showProfile(@AuthenticationPrincipal UserDetails userPrincipal,Model model) throws Exception {
+	@GetMapping(value={"/profile/private", "/profile/public/{email}"})
+	public String showProfile(@AuthenticationPrincipal UserDetails userPrincipal,
+								@PathVariable(required = false) String email, 
+								Model model) throws Exception {
 		Optional<UserDetails> user = Optional.ofNullable(userPrincipal);	
-		if(user.isPresent()) {
-			User usrObj = userService.getUserWithLinks(user.get().getUsername());
-			model.addAttribute("user", usrObj);
-			model.addAttribute("posts", usrObj.getUserLinks());
- 			model.addAttribute("comments", userService.getUserWithComments(usrObj.getEmail()).getUserComments());
-		}
+		email = user.isPresent() ? user.get().getUsername() : email;
+		User usrObj = userService.getUserWithLinks(email);
+		List<Link> userLinks = Optional.ofNullable(usrObj.getUserLinks()).orElse(new ArrayList<Link>());	
+		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(usrObj.getEmail())
+																	.getUserComments())
+											.orElse(new ArrayList<Comment>());
+		model.addAttribute("user", usrObj);
+		model.addAttribute("posts", userLinks);
+		model.addAttribute("comments", userComments);
 		return "auth/profile"; 
 	}
 	

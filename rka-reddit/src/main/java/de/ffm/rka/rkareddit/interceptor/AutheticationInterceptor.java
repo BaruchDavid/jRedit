@@ -36,6 +36,8 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
 	private static final String IS_404_ERROR ="404";
 	private static final String IS_400_ERROR ="400";
+	public static final String ANONYMOUS = "anonymousUser";
+	public static final String PRIVATE_PROFILE_URL = "private";
 
 	/**
 	 * any method with @AutheticationPrincipal and without @Secured
@@ -48,15 +50,13 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 		if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
             if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
-            	&& ! (method.getAnnotation(Secured.class) instanceof Secured)) {
-            	if("anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            	&& PRIVATE_PROFILE_URL.contains(request.getRequestURL())) {
             		LOGGER.info("METHODE: "+method.getName());
             		LOGGER.warn("autheticated user could not access method with authetication");
             		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
             		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
             		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
             		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
-            	}
             } else if (String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
             		|| (String.valueOf(response.getStatus()).startsWith(IS_400_ERROR))) {
     			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
