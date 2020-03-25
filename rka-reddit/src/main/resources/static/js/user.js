@@ -1,15 +1,14 @@
 $(document).ready(function(){
-
-	fetch('/jReditt/profile/information/content/user-pic', {method: 'GET'})
+	var user = $('#user').val();
+	fetch('/jReditt/profile/information/content/user-pic?user='+user, {method: 'GET'})
 	  .then(res=>{return res.blob()})
 	  .then(blob=>{
 	    var img = URL.createObjectURL(blob);
 	    document.getElementById('profilePic').setAttribute('src', img);
 	  })
 	
-	fetch('/jReditt/profile/information/content', {
-		method: 'GET'
-	}).then(function(response){
+	fetch('/jReditt/profile/information/content?user='+user, {method: 'GET'})
+	.then(function(response){
 		return response.json();
 	}).then(function(data){
 		if(data.status!==500){

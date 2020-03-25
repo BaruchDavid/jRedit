@@ -1,15 +1,12 @@
 package de.ffm.rka.rkareddit.controller;
 
-import java.util.Optional;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -32,7 +29,7 @@ public class BasicErrorController implements ErrorController{
 	}
 	
 	@RequestMapping("/error")
-    public String handleError(HttpServletRequest request, Model model) {
+    public String handleError(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
 		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
 		User user = User.builder()
 						.firstName("Gast")
@@ -40,6 +37,11 @@ public class BasicErrorController implements ErrorController{
 						.build();
 		if(!ANONYMOUS.equals(authetication.getName())){
 			user = (User) userDetailsService.loadUserByUsername(authetication.getName());
+		}
+		
+		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", request.getRequestURL(), ex.getMessage(), resp.getStatus());
+		if(ex.getMessage() == null) {
+			ex.printStackTrace();
 		}
 		model.addAttribute("user", user);
         return "error/pageNotFound";

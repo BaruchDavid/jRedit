@@ -6,7 +6,6 @@
 
     <nav th:replace="~{layouts/main_layout :: nav}"></nav>
     <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-
     <!-- profile -->
     <div id="profile" class="container">
     
@@ -81,10 +80,11 @@
                     </div>
                 </div>
             </div>
-
+			
         </div> <!-- // row -->
     
     </div><!-- // profile -->
+    <input type="hidden" id="user" name="user" th:value="${user.getEmail()}">
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
 	<script th:src="@{/js/user.js}"></script>
 </body>
