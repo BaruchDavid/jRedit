@@ -54,7 +54,10 @@ public class GlobalControllerAdvisor {
 		} else {
 			user.setFirstName("dear visitor");
 		}
-		LOGGER.info("EXCEPTION ACCURED: {} FOR USER {}", exception.getMessage(), visitorName);
+		LOGGER.error("EXCEPTION ACCURED: {} FOR USER {} ON REQUESTED URL {} {}", exception.getMessage(), 
+																			visitorName, 
+																			req.getMethod(),
+																			req.getRequestURL());
 
 		switch (getExceptionName(exception.getClass().getCanonicalName())) {
 		case "MethodArgumentTypeMismatchException":
