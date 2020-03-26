@@ -42,6 +42,7 @@ import de.ffm.rka.rkareddit.util.FileNIO;
 public class ProfileMetaDataController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataController.class);
+	
 	@Autowired
 	private UserService userService;
 	
@@ -59,11 +60,12 @@ public class ProfileMetaDataController {
 //	@Cacheable("user")
 //	@CacheEvict(value="userInfo", allEntries=true)
 	public List<String> getInformation(@AuthenticationPrincipal UserDetails userPrincipal,
-			@RequestParam(required = false) String user,
+			@RequestParam(required = false) String user, HttpServletRequest req,
 			Model model) throws IOException {
 		List<String> informations = new ArrayList<>();
+		
 		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);
-		String requestedUser = usrDetail.isPresent()? usrDetail.get().getUsername():user;
+		String requestedUser = usrDetail.isPresent() && user == null? usrDetail.get().getUsername():user;
 		User currentUser = userService.getUserWithLinks(requestedUser);
 		long userLinkSize = currentUser.getUserLinks().size();
 		long userCommentSize = userService.getUserWithComments(requestedUser).getUserComments().size();

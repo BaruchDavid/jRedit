@@ -84,7 +84,7 @@
         </div> <!-- // row -->
     
     </div><!-- // profile -->
-    <input type="hidden" id="user" name="user" th:value="${user.getEmail()}">
+    <input type="hidden" id="user" name="user" th:value="${userContent.getEmail()}">
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
 	<script th:src="@{/js/user.js}"></script>
 </body>

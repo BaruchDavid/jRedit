@@ -58,14 +58,19 @@ public class AuthController {
 	public String showProfile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email, 
 								Model model) throws Exception {
-		Optional<UserDetails> user = Optional.ofNullable(userPrincipal);	
-		email = user.isPresent() ? user.get().getUsername() : email;
-		User usrObj = userService.getUserWithLinks(email);
-		List<Link> userLinks = Optional.ofNullable(usrObj.getUserLinks()).orElse(new ArrayList<Link>());	
-		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(usrObj.getEmail())
+		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);	
+		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
+		User member = new User();
+		User pageContentUser = userService.getUserWithLinks(email);
+		if(authenticatedUser.isPresent()) {
+			member = userService.getUserWithLinks(authenticatedUser.get().getUsername());
+		}
+		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks()).orElse(new ArrayList<Link>());	
+		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail())
 																	.getUserComments())
 											.orElse(new ArrayList<Comment>());
-		model.addAttribute("user", usrObj);
+		model.addAttribute("user", member);
+		model.addAttribute("userContent", pageContentUser);
 		model.addAttribute("posts", userLinks);
 		model.addAttribute("comments", userComments);
 		return "auth/profile"; 
