@@ -89,7 +89,7 @@ public class AuthControllerTest {
 		List<Link> posts = user.getUserLinks();
 		List<Comment> comments = userService.getUserWithComments("romakapt@gmx.de").getUserComments();
 		
-		ResultActions resultActions = this.mockMvc.perform(get("/profile"))
+		ResultActions resultActions = this.mockMvc.perform(get("/profile/private"))
 					.andDo(print());
 		MvcResult result = resultActions.andReturn();
 	    assertTrue(posts.containsAll((List<Link>) result.getModelAndView().getModel().get("posts")));
