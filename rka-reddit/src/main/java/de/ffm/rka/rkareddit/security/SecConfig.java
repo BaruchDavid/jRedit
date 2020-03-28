@@ -53,8 +53,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		final int oneDay = 86400;
-		http.authorizeRequests().antMatchers("/links/link/create").hasAuthority(ADMIN.name())
-								.antMatchers("/data/h2-console/**").hasRole(DBA.name())
+		http.authorizeRequests().antMatchers("/data/h2-console/**").hasRole(DBA.name())
 								.antMatchers("/","/resources/**").permitAll()
 								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
 								.antMatchers("/login*").hasRole(ANONYMOUS.name())
