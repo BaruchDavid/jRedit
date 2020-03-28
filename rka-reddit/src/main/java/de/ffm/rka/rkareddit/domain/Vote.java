@@ -37,7 +37,7 @@ public class Vote extends Auditable {
 	public Vote() {
 		super();
 	}
-	
+		
 	@Override
     public boolean equals(Object o) {
         if (this == o) return true;

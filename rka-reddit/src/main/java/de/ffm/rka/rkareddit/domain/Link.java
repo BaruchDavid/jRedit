@@ -106,16 +106,34 @@ public class Link extends Auditable{
 		return domain.getHost().toString();
 	}
 	
+	public void addVote(Vote vote) {
+		this.vote.add(vote);
+		vote.setLink(this);
+	}
+	
+	public void removeVote(Vote vote) {
+		this.vote.remove(vote);
+		vote.setLink(null);
+	}
+	
 	public void addComment(Comment comment) {
 		comments.add(comment);
+		comment.setLink(this);
+	}
+	
+	public void remoteComment(Comment comment) {
+		this.comments.add(comment);
+		comment.setLink(null);
 	}
 	
 	public void addTag(Tag tag) {
 		tags.add(tag);
+		tag.getLinks().add(this);
 	}
 	
 	public void removeTag(Tag tag) {
 		tags.remove(tag);
+		tag.getLinks().remove(this); 
 	}
 	
 	public List<Tag> getTags(){
