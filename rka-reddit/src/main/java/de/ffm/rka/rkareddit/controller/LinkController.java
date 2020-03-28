@@ -131,7 +131,7 @@ public class LinkController {
 		}
 	}	
 	
-	@Secured({"ROLE_ADMIN"})
+	@Secured({"ROLE_USER"})
 	@PostMapping(value = "/link/comments")
 	public String saveNewComment(@Valid Comment comment, BindingResult bindingResult, 
 								RedirectAttributes attributes,Model model,

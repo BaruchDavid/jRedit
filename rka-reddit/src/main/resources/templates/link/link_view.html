@@ -35,8 +35,8 @@
                 </p>
                 <p><a th:href="${link.url}" th:text="${link.url}" target="_blank"></a></p>
                 <p>
-                    <a href="/" class="comments" th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
-                    <a href="#" class="share"><i class="fas fa-share-square"></i> share</a>
+                   <a href="#" class="comments" th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+					<a href="#" class="share"><i class="fas fa-share-square"></i> share</a>
                 </p>
             </div>
         </div>
@@ -49,7 +49,7 @@
                     all 21 comments
                 </div>
             </div>
-            <div class="row addcomment" sec:authorize="hasRole('ROLE_ADMIN')">
+            <div class="row addcomment" sec:authorize="hasRole('ROLE_USER')">
                 <div class="col-1">&nbsp;</div>
                 <div class="col-11">
 					<!-- th:field="*{body}" -->					

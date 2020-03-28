@@ -51,7 +51,7 @@
                         <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
-                     <table>
+                     <table style="display:none">
 	                     <tbody>
 		                     <tr th:each="book, itemStat : *{tags}">
 		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagId}" /></td>
