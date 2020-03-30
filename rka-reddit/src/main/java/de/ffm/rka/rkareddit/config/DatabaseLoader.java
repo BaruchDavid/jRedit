@@ -31,6 +31,9 @@ public class DatabaseLoader implements CommandLineRunner{
 			.forEach(user -> 
 			{
 				user.setProfileFoto(pic.get());
+				if(user.getUserId()==3) {
+					user.setEnabled(false);
+				}
 				user.setActivationCode("activation");
 				userService.save(user);
 			});
