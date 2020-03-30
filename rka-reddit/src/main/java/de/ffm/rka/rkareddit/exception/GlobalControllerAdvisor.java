@@ -30,7 +30,7 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 @ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
 public class GlobalControllerAdvisor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
-	public static final String USER_ERROR_VIEW = "error/userAuth";
+	public static final String USER_ERROR_VIEW = "error/application";
 	public static final String DEFAULT_APPLICATION_ERROR = "error/basicError";
 	public static final String ANONYMOUS = "anonymousUser";
 
@@ -38,7 +38,7 @@ public class GlobalControllerAdvisor {
 	UserDetailsServiceImpl userDetailsService;
 
 	@ExceptionHandler(value = { UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
-			IllegalAccessException.class, NumberFormatException.class, UsernameNotFoundException.class, Exception.class})
+			IllegalAccessException.class, NumberFormatException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) throws Exception {
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		User user = new User();	
