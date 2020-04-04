@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,6 +42,8 @@ import lombok.ToString;
 @Entity
 @Getter @Setter
 @ToString(exclude = {"user", "comments", "vote", "tags"}) 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Link extends Auditable{
 
