@@ -35,7 +35,6 @@ import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -44,11 +43,14 @@ import lombok.ToString;
 @PasswordMatcher
 @Getter @Setter 
 @ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto"})
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User extends Auditable implements UserDetails, Serializable {
 
+	public User() {
+		this.enabled=false;
+	}
+	
 	private static final long serialVersionUID = -5987601453095162765L;
 
 	@Id
@@ -95,7 +97,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	
 	@NotNull
 	@Column(nullable = false)
-	private boolean enabled;
+	private boolean enabled=false;
 
 	
 	@NotEmpty(message = "please confirm your password")
@@ -191,15 +193,14 @@ public class User extends Auditable implements UserDetails, Serializable {
 	}
 	
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User))
-            return false;
-        User other = (User) o;
- 
-        return userId != null &&
-        		userId.equals(other.getUserId());
-    }
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof User))
+			return false;
+		User other = (User) o;
+		return userId != null && userId.equals(other.getUserId());
+	}
 	 
     @Override
     public int hashCode() {

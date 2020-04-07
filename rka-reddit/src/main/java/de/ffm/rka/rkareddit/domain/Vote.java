@@ -27,7 +27,7 @@ public class Vote extends Auditable {
 	
 	@NotNull
 	@ManyToOne(fetch = FetchType.EAGER)
-	private Link link;
+	private Link link = new Link();
 
 	public Vote(@NotNull Link link,@NotNull short direction) {
 		this.direction = direction;
@@ -35,7 +35,7 @@ public class Vote extends Auditable {
 	}
 
 	public Vote() {
-		super();
+		this.direction = 0;
 	}
 		
 	@Override

@@ -40,7 +40,7 @@ public class CommentService {
 	
 	public String getElapsedTimeFromComment(Comment com) {
 		Optional<Comment> comment = commentRepository.findById(com.getCommentId());
-		return comment.get().getElapsedTime();
+		return comment.isPresent()?comment.get().getElapsedTime():"No creation time availible";
 	}
 	
 }

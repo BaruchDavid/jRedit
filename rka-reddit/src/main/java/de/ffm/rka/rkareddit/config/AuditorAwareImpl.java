@@ -24,14 +24,13 @@ public class AuditorAwareImpl implements AuditorAware<String>{
 	public Optional<String> getCurrentAuditor() {
 		Optional<String> audithUser = Optional.empty();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if(authentication!=null) {
+		if(authentication != null) {
 			LOGGER.info("AUDITING USER AUTHETICATION DETAILS {}", authentication.getPrincipal());
-			
 			if (!(authentication instanceof AnonymousAuthenticationToken)) {
 			   audithUser = Optional.ofNullable(authentication.getName());
 			}
 		}else {
-			LOGGER.warn("AUDITING MOCK IS USING. {}");
+			LOGGER.warn("AUDITING MOCK IS USING.");
 			audithUser = Optional.of("romakapt@gmx.de");
 		}
 		

@@ -27,7 +27,7 @@ public class FileNIOTest {
 	@Test
 	public void testReadImage() throws IOException {
 		String path = "static/images/profile_small.png";
-		assertEquals(93296, fileNIO.readPictureToByte(path).get().length);
+		assertEquals(true, fileNIO.readPictureToByte(path).isPresent());
 	}
 	
 	/**
