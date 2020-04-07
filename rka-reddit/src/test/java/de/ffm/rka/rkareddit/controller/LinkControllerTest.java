@@ -181,7 +181,7 @@ public class LinkControllerTest {
 							.param("url", "http://welt.de"))
   					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(forwardedUrl("error/userAuth"));	
+					.andExpect(forwardedUrl("error/application"));	
     }
 	
 	/**
