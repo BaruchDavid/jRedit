@@ -42,7 +42,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
-import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
+import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -76,7 +76,7 @@ public class HomeControllerTest {
 
         MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(homeController)
-										.addInterceptors(new AutheticationInterceptor())
+										.addInterceptors(new ApplicationHandlerInterceptor())
 										.setControllerAdvice(globalControllerAdvice)		
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();

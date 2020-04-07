@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
-import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
+import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 
 @Configuration
 public class AppConfig implements WebMvcConfigurer{
@@ -65,7 +65,7 @@ public class AppConfig implements WebMvcConfigurer{
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new AutheticationInterceptor());
+		registry.addInterceptor(new ApplicationHandlerInterceptor());
 		WebMvcConfigurer.super.addInterceptors(registry);
 	}
 	

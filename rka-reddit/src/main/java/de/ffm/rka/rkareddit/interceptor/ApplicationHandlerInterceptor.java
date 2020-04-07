@@ -31,7 +31,7 @@ import de.ffm.rka.rkareddit.security.SecConfig;
  * @author rka
  *
  */
-public class AutheticationInterceptor extends HandlerInterceptorAdapter {
+public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
 	private static final String IS_404_ERROR ="404";
@@ -45,7 +45,7 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		LOGGER.info("current URL in preHandle {}", request.getRequestURL());
+		LOGGER.info("current URL in preHandle {}  {}", request.getMethod(), request.getRequestURL());
 		
 		if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
@@ -92,7 +92,7 @@ public class AutheticationInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
-			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
+			LOGGER.info("PAGE NOT FOUND: {} {} with Status: {}",request.getMethod(),  request.getRequestURL(), response.getStatus()); 
 		}else {
 			super.postHandle(request, response, handler, modelAndView);
 		}

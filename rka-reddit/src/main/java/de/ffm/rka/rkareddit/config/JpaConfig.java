@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 /**
@@ -12,6 +13,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
  *
  */
 @Configuration
+@EnableJpaRepositories(basePackages = "de.ffm.rka.rkareddit.repository")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class JpaConfig {
 

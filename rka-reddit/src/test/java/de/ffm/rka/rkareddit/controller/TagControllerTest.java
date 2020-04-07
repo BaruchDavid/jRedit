@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
-import de.ffm.rka.rkareddit.interceptor.AutheticationInterceptor;
+import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.rest.controller.TagController;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 
@@ -56,7 +56,7 @@ public class TagControllerTest {
 
         MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(tagController)
-										.addInterceptors(new AutheticationInterceptor())
+										.addInterceptors(new ApplicationHandlerInterceptor())
 										.setControllerAdvice(globalControllerAdvice)		
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();
