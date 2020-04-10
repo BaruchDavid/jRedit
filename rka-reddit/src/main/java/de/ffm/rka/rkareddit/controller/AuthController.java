@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -54,14 +55,15 @@ public class AuthController {
 	 * set user info, user links and their comments
 	 * @throws Exception 
 	 */
-	@GetMapping(value={"/profile/private", "/profile/public/{email}"})
+	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String showProfile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email, 
 								Model model) throws Exception {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);	
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User member = new User();
-		User pageContentUser = userService.getUserWithLinks(email);
+		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
+												.orElseThrow(()-> new UsernameNotFoundException("user not found"));
 		if(authenticatedUser.isPresent()) {
 			member = userService.getUserWithLinks(authenticatedUser.get().getUsername());
 		}

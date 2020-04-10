@@ -75,7 +75,6 @@ public class LinkControllerTest {
 										.build();
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
-
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 
@@ -122,17 +121,15 @@ public class LinkControllerTest {
 
 	    
 	/**
-	 * test for non-long pageId
-	 * @throws Exception
+	 * test for illegal link
 	 */
-	@Ignore
 	@Test
-	public void pageNotFound() throws Exception {
+	public void illegalArguments() throws Exception {
 		String invalidPage = UUID.randomUUID().toString();
 		this.mockMvc.perform(get("/links/link/".concat(invalidPage)))
 					.andDo(print())
 					.andExpect(status().is4xxClientError())
-					.andExpect(view().name("error/pageNotFound"));
+					.andExpect(forwardedUrl("error/basicError"));
 
 	}
 	
@@ -142,7 +139,6 @@ public class LinkControllerTest {
 	 * which will be used for new comment
 	 * @throws Exception
 	 */
-	
 	@Test
 	public void readLinkTest() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);	
@@ -155,7 +151,7 @@ public class LinkControllerTest {
 
 
 	}
-
+	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
@@ -171,7 +167,6 @@ public class LinkControllerTest {
 	
 	/**
 	 * try to save link without authetication
-	 * @throws Exception
 	 */
 	@Test
 	public void saveNewLinkTestForUnknownUser() throws Exception {
@@ -199,4 +194,15 @@ public class LinkControllerTest {
 		String[] resultArray = result.getResponse().getContentAsString().replace("[","").replace("]","").replace("\"","").split(",");
 		assertEquals(true, Stream.of(resultArray).allMatch(tag -> expList.contains(tag)));
     }
+	
+	/**
+	 * create link as autheticated user
+	 */
+	@Test
+	public void linkCreateAsUnautheticatedTest() throws Exception {
+		
+            this.mockMvc.perform(get("/links/link/create"))
+					.andDo(print())
+					.andExpect(forwardedUrl("error/application"));  
+	}
 }
