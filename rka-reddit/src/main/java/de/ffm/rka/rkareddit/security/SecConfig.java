@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -51,17 +52,17 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		final int oneDay = 86400;
-		http.authorizeRequests().antMatchers("/data/h2-console/**").hasRole(DBA.name())
-								.antMatchers("/","/resources/**").permitAll()
-								.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
-								.antMatchers("/login*").hasRole(ANONYMOUS.name())
-								.antMatchers("/links/").permitAll()
-								
-			.and()
-			.sessionManagement().maximumSessions(1)
-								.expiredUrl("/login?oneSession")
-								.and()
-								.sessionFixation().newSession()
+		http.csrf().disable()
+ 					.headers().frameOptions().disable()
+ 			.and()
+
+ 			.authorizeRequests()			
+							.antMatchers("/","/resources/**").permitAll()
+							.antMatchers("/links/").permitAll()	
+							.antMatchers("/login*","/profile/public","/invalidSession*", "/sessionExpired*").permitAll()
+							.antMatchers("/profile/private","/links/link/create**").authenticated()
+							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
+							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
 			.and()
 			.formLogin().loginPage("/login")
 						.usernameParameter("email")
@@ -73,11 +74,16 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 		    .and()
 			.logout().invalidateHttpSession(true)
 					.clearAuthentication(true)
+					.deleteCookies("JSESSIONID")
 			.and()
 			.rememberMe().key("uniqueAndSecret")
-						.tokenValiditySeconds(oneDay)
-			 .and().csrf().disable()
-			 		.headers().frameOptions().disable();
+						 .tokenValiditySeconds(oneDay);
+//			.and()
+//			.sessionManagement().sessionFixation().newSession()
+//						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+//						.invalidSessionUrl("/invalidSession")
+//						.maximumSessions(1)
+//						.expiredUrl("/expiredSession");	
 	}
 
 	@Override
