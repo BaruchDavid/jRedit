@@ -74,16 +74,14 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 		    .and()
 			.logout().invalidateHttpSession(true)
 					.clearAuthentication(true)
-					.deleteCookies("JSESSIONID")
 			.and()
 			.rememberMe().key("uniqueAndSecret")
-						 .tokenValiditySeconds(oneDay);
-//			.and()
-//			.sessionManagement().sessionFixation().newSession()
-//						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-//						.invalidSessionUrl("/invalidSession")
-//						.maximumSessions(1)
-//						.expiredUrl("/expiredSession");	
+						 .tokenValiditySeconds(oneDay)
+			.and()
+			.sessionManagement()
+						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)						
+						.maximumSessions(1)
+						.expiredUrl("/login?oneSession");	
 	}
 
 	@Override
