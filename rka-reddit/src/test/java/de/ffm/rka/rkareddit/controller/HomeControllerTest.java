@@ -83,6 +83,7 @@ public class HomeControllerTest {
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
 
+	@Ignore
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 		List<Integer> pageNumbers = Arrays.asList(1,2);

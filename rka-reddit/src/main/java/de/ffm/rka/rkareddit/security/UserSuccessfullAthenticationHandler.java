@@ -47,7 +47,7 @@ public class UserSuccessfullAthenticationHandler implements AuthenticationSucces
 				}
 			}
 			
-			response.sendRedirect(request.getContextPath().concat("/"));
+			response.sendRedirect(request.getContextPath().concat("/links"));
 		}
 	}
 

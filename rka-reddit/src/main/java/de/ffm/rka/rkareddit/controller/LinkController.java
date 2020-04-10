@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,9 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
@@ -44,7 +39,6 @@ import de.ffm.rka.rkareddit.service.TagServiceImpl;
 
 @Controller
 @RequestMapping("/links")
-@SessionAttributes("user")
 public class LinkController {
 	private LinkService linkService;
 	private CommentRepository commentRepository;
@@ -70,12 +64,15 @@ public class LinkController {
 	 */
 	@GetMapping({"/",""})
 	public String list(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
-						Model model) {
+						@AuthenticationPrincipal UserDetails user, Model model) {
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		LOGGER.info("{} Links has been found", links.getSize());
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
 											.boxed()
 											.collect(Collectors.toList());		
+		if(user !=null) {
+			model.addAttribute("user", (User) userDetailsService.loadUserByUsername(user.getUsername()));
+		}	
 		model.addAttribute("links",links);
 		model.addAttribute("pageNumbers",totalPages);	
 		return "link/link_list";
@@ -100,11 +97,12 @@ public class LinkController {
 	
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/link/create")
-	public String createNewLink(Model model) {
+	public String createNewLink(@AuthenticationPrincipal UserDetails user, Model model) {
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
 			link.addTag(new Tag());
 		}
+		model.addAttribute("user", (User)userDetailsService.loadUserByUsername(user.getUsername()));
 		model.addAttribute("newLink", link);
 		return "link/submit";
 	}
