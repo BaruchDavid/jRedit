@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -18,6 +19,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.ffm.rka.rkareddit.domain.Comment;
@@ -45,7 +49,12 @@ public class AuthController {
 	 * @return view for login / logout
 	 */
 	@GetMapping({"/login"})
-	public String login(HttpServletRequest request, Model model) {
+	public String login(HttpServletRequest request,  
+						SessionStatus sessionStatus, Model model) {		
+		String logout = request.getParameter("logout");
+		if(logout!=null && logout.isEmpty()) {
+			return "redirect:/links/cleanUp";
+		}
 		return "auth/login"; 
 	}
 		

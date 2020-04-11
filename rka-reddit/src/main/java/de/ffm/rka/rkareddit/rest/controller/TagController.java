@@ -55,13 +55,13 @@ public class TagController {
 	@ResponseBody
 	public TagVO saveNewTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model) {		
 		Tag nTag = new Tag(tag.substring(0,tag.indexOf("=")));
-		Optional<Tag> availibleTag = tagService.findTagOnName(nTag.getName());
+		Optional<Tag> availibleTag = tagService.findTagOnName(nTag.getTagName());
 		if (availibleTag.isPresent()) {
-			return new TagVO(availibleTag.get().getName(), availibleTag.get().getTagId());
+			return new TagVO(availibleTag.get().getTagName(), availibleTag.get().getTagId());
 		} else {
 			long id = tagService.saveTag(nTag);
 			LOGGER.info("NEW TAG: {}", nTag.toString());
-			return new TagVO(nTag.getName(), nTag.getTagId());
+			return new TagVO(nTag.getTagName(), nTag.getTagId());
 		}
 		
 //		Überprüfung im Validator einbauen

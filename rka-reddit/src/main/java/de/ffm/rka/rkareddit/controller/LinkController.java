@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
@@ -39,6 +42,7 @@ import de.ffm.rka.rkareddit.service.TagServiceImpl;
 
 @Controller
 @RequestMapping("/links")
+@SessionAttributes("user")
 public class LinkController {
 	private LinkService linkService;
 	private CommentRepository commentRepository;
@@ -54,8 +58,6 @@ public class LinkController {
 	public LinkController(LinkService linkService, CommentRepository commentRepository,  UserDetailsService userDetailService) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
-		
-
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class LinkController {
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
 											.boxed()
 											.collect(Collectors.toList());		
-		if(user !=null) {
+		if(user != null) {
 			model.addAttribute("user", (User) userDetailsService.loadUserByUsername(user.getUsername()));
 		}	
 		model.addAttribute("links",links);
@@ -80,12 +82,12 @@ public class LinkController {
 	
 	
 	@GetMapping("link/{linkId}")
-	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request){		
+	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request){
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
 		if(link.isPresent()) {
 			Link currentLink = link.get();
 			Comment comment = new Comment();
-			comment.setLink(currentLink);
+			comment.setLink(currentLink);			
 			model.addAttribute("link",currentLink);
 			model.addAttribute("comment",comment);
 			model.addAttribute("success",model.containsAttribute("success"));
@@ -97,12 +99,11 @@ public class LinkController {
 	
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/link/create")
-	public String createNewLink(@AuthenticationPrincipal UserDetails user, Model model) {
+	public String createNewLink(Model model) {
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
 			link.addTag(new Tag());
 		}
-		model.addAttribute("user", (User)userDetailsService.loadUserByUsername(user.getUsername()));
 		model.addAttribute("newLink", link);
 		return "link/submit";
 	}
@@ -113,14 +114,14 @@ public class LinkController {
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
 		if(bindingResult.hasErrors()) {
-			LOGGER.info("Validation failed of link: {}", link.toString());
+			LOGGER.error("Validation failed of link: {}", link.toString());
 			model.addAttribute("newLink", link);
 			return "link/submit";
 		} else {
 			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
 			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())
-								.addFlashAttribute("success", true);
+								.addFlashAttribute("success", true);			
 			return "redirect:/links/link/{linkId}";
 		}
 	}	
@@ -134,6 +135,7 @@ public class LinkController {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
 			model.addAttribute("newLink", comment);
+			LOGGER.error("Validation failed of comment: {}", comment.toString());
 			req.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return "link/submit";
 		} else {
@@ -148,5 +150,11 @@ public class LinkController {
 	@ResponseBody
 	public List<String> completeSearch(String search, Model model, HttpServletResponse req) {		
 		return tagService.findSuitableTags(search);
+	}
+	
+	@GetMapping(value = "/cleanUp")
+	public String cleanUpModel(SessionStatus sessionStatus) {
+		sessionStatus.setComplete();
+		return "redirect:/login?logout=complete";
 	}
 }
