@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import de.ffm.rka.rkareddit.domain.User;
@@ -28,7 +29,7 @@ public class BasicErrorController implements ErrorController{
 		return "/error";
 	}
 	
-	@RequestMapping("/error")
+	@GetMapping("/error")
     public String handleError(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
 		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
 		User user = User.builder()

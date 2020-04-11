@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -46,6 +45,8 @@ import de.ffm.rka.rkareddit.service.TagServiceImpl;
 public class LinkController {
 	private LinkService linkService;
 	private CommentRepository commentRepository;
+	private static final String NEW_LINK = "newLink";
+	private static final String SUBMIT_LINK = "link/submit";
 	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
@@ -104,8 +105,8 @@ public class LinkController {
 		for(int i=0; i<4; ++i) {
 			link.addTag(new Tag());
 		}
-		model.addAttribute("newLink", link);
-		return "link/submit";
+		model.addAttribute(NEW_LINK, link);
+		return SUBMIT_LINK;
 	}
 	
 	@Secured({"ROLE_ADMIN"})
@@ -114,9 +115,9 @@ public class LinkController {
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
 		if(bindingResult.hasErrors()) {
-			LOGGER.error("Validation failed of link: {}", link.toString());
-			model.addAttribute("newLink", link);
-			return "link/submit";
+			LOGGER.error("Validation failed of link: {}", link);
+			model.addAttribute(NEW_LINK, link);
+			return SUBMIT_LINK;
 		} else {
 			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
 			linkService.saveLink(link);
@@ -133,11 +134,11 @@ public class LinkController {
 								@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse req) {		
 
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
-			model.addAttribute("newLink", comment);
-			LOGGER.error("Validation failed of comment: {}", comment.toString());
+			bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ERROR ON COMMENT SUBMITING {}", error.getDefaultMessage()));
+			model.addAttribute(NEW_LINK, comment);
+			LOGGER.error("Validation failed of comment: {}", comment);
 			req.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return "link/submit";
+			return SUBMIT_LINK;
 		} else {
 			comment.setUser((User) userDetailsService.loadUserByUsername(userDetails.getUsername()));
 			attributes.addFlashAttribute("success", true);
