@@ -67,7 +67,7 @@ public class Link extends Auditable{
 			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Vote> vote = new ArrayList<>();
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE})
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST})
 	@JoinTable(
 			name = "link_tags",
 			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),

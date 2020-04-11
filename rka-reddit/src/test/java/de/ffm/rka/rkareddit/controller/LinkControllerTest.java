@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
+import javax.validation.constraints.AssertTrue;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -38,6 +40,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
@@ -75,6 +78,7 @@ public class LinkControllerTest {
 										.build();
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
+
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 
@@ -151,29 +155,47 @@ public class LinkControllerTest {
 
 
 	}
-	
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
     	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+							.param("tags[0].tagName", "java12")
+							.param("tags[1].tagName", "java13")
 							.param("title", "welt.de")
-							.param("url", "http://welt.de"))
+							.param("url", "http://welt.de")
+							)
   					.andDo(print())
 					.andExpect(status().is3xxRedirection())
 					.andExpect(redirectedUrl("/links/link/12"))
 					.andExpect(flash().attribute("success", true));	
     }
 	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void createNewLinkTest() throws Exception {
+		Link link = new Link();
+    	MvcResult result = this.mockMvc.perform(get("/links/link/create"))
+  					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(forwardedUrl("link/submit"))
+					.andReturn();
+    	assertTrue(result.getModelAndView().getModel().get("newLink").toString().equals(link.toString()));
+    }
+	
 	/**
 	 * try to save link without authetication
 	 */
+
 	@Test
 	public void saveNewLinkTestForUnknownUser() throws Exception {
     	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 							.param("title", "welt.de")
-							.param("url", "http://welt.de"))
+							.param("url", "http://welt.de")
+							.param("name", "java12")
+							.param("name", "java13"))
   					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(forwardedUrl("error/application"));	
@@ -182,6 +204,7 @@ public class LinkControllerTest {
 	/**
 	 * get initial tags
 	 */
+
 	@Test
 	public void getTags() throws Exception {
 		List<String> expList = Arrays.asList("TypeScript","JavaScript","Delphi/Object Pascal");

@@ -4,6 +4,7 @@ package de.ffm.rka.rkareddit.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,16 +31,17 @@ public class Tag extends Auditable {
 	private Long tagId;
 	
 	@NotNull
-	private String name;
+	@Column(name = "tagName") 
+	private String tagName;
 	
 	public Tag() {
 		this.tagId = 0l;
-		this.name ="";
+		this.tagName ="";
 		this.links = new ArrayList<>();
 	}
 	
 	public Tag(@NotNull String tag) {
-		this.name = tag;
+		this.tagName = tag;
 	}	
 	
 	@ManyToMany(mappedBy= "tags")

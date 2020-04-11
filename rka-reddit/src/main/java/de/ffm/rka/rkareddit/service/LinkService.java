@@ -64,7 +64,8 @@ public class LinkService {
 	public Link saveLink(Link link) {
 		List<Tag> tags = new ArrayList<Tag>(); 
 		link.getTags().stream()
-					  .filter(tag -> tag.getName().length()==0)
+					  .peek(tag -> System.out.println("TAG NAME IST: "+ tag.getTagName()))
+					  .filter(tag -> tag.getTagName().length()==0)
 					  .forEach(tag -> tags.add(tag));
 		link.getTags().removeAll(tags);		
 		link.getTags().stream()

@@ -55,7 +55,7 @@
 	                     <tbody>
 		                     <tr th:each="book, itemStat : *{tags}">
 		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagId}" /></td>
-		                    	<td><input th:field="*{tags[__${itemStat.index}__].name}" /></td>
+		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagName}" /></td>
 		                	</tr>
 	                     </tbody>
                      </table>

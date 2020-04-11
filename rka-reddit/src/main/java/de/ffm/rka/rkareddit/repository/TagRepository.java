@@ -12,10 +12,10 @@ import de.ffm.rka.rkareddit.domain.Tag;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-	@Query(value = "SELECT name FROM Tag WHERE UPPER(name) LIKE UPPER(CONCAT('%', :tagName,'%'))")
+	@Query(value = "SELECT tagName FROM Tag WHERE UPPER(tagName) LIKE UPPER(CONCAT('%', :tagName,'%'))")
 	List<String> findTagByName(@Param("tagName") String tagName);
 	
-	@Query(value = "SELECT tag FROM Tag tag WHERE UPPER(name) LIKE UPPER(:tagName)")
+	@Query(value = "SELECT tag FROM Tag tag WHERE UPPER(tagName) LIKE UPPER(:tagName)")
 	Optional<Tag> findByName(String tagName);
 	
 	@Query(value = "SELECT tg.tagId FROM Tag tg JOIN tg.links lk  WHERE tg.tagId =:tagId")
