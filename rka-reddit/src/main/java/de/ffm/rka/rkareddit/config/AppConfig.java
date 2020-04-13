@@ -61,7 +61,7 @@ public class AppConfig implements WebMvcConfigurer{
 	}
 
 	private List<MediaType> getSupportedMediaTypes() {
-	    List<MediaType> list = new ArrayList<MediaType>();
+	    List<MediaType> list = new ArrayList<>();
 	    list.add(MediaType.IMAGE_JPEG);
 	    list.add(MediaType.IMAGE_PNG);
 	    list.add(MediaType.APPLICATION_OCTET_STREAM);

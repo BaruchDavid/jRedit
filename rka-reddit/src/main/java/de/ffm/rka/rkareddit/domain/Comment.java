@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.domain;
 
 import static java.util.Date.from;
 
+import java.io.Serializable;
 import java.time.ZoneId;
 
 import javax.persistence.Entity;
@@ -31,8 +32,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Comment extends Auditable{
+public class Comment extends Auditable implements Serializable{
 	
+	private static final long serialVersionUID = -5839947949942907414L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long commentId;

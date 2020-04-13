@@ -66,12 +66,16 @@ public class GlobalControllerAdvisor {
 			res.setStatus(404);
 			break;
 		case "NullPointerException":
-		case "Exception":
 		case "UserAuthenticationLostException":
 			res.setStatus(500);
 			view = USER_ERROR_VIEW;
 			break;
+		default:
+			res.setStatus(500);
+			view = USER_ERROR_VIEW;
+			break;
 		}
+
 		return createErrorView(req.getRequestURL().toString(),user, view);
 	}
 

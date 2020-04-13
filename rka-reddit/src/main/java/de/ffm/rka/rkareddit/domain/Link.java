@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.domain;
 
 import static java.util.Date.from;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
@@ -40,7 +41,9 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Link extends Auditable{
+public class Link extends Auditable implements Serializable{
+
+	private static final long serialVersionUID = -5337989744648444109L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

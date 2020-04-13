@@ -35,7 +35,7 @@
 		
 		<logger name="org.hibernate.SQL" level="INFO" />
     	<logger name="org.hibernate.type" level="INFO" />
-    	<logger name="org.springframework.security" level="TRACE" />
+    	<logger name="org.springframework.security" level="INFO" />
 
 		<root level="INFO">
 			<appender-ref ref="CONSOLE" />

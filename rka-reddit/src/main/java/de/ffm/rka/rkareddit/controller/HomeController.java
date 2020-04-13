@@ -24,9 +24,9 @@ public class HomeController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
-	public HomeController() {
-	}
-
+	/**
+    * @deprecated after login, request redirect to LinkController
+    */
 	@Deprecated(since = "in the moment not used")
 	@GetMapping({"/",""})
 	public String list(HttpServletRequest request, 

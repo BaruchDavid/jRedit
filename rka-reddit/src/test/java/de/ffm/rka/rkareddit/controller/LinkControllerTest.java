@@ -192,7 +192,7 @@ public class LinkControllerTest {
 							.param("name", "java12")
 							.param("name", "java13"))
   					.andDo(print())
-					.andExpect(status().isOk())
+					.andExpect(status().is(500))
 					.andExpect(forwardedUrl("error/application"));	
     }
 	

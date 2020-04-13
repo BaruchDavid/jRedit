@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.domain;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.persistence.Entity;
@@ -17,7 +18,9 @@ import lombok.Setter;
 @Entity
 @Getter @Setter
 @NoArgsConstructor
-public class Role {
+public class Role implements Serializable {
+
+	private static final long serialVersionUID = -2090774371747207972L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

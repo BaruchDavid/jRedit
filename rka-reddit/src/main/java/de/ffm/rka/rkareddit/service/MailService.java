@@ -28,7 +28,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
  */
 @Service
 public class MailService {
-
+	private static final String FAIL_TO_SEND = "FAIL TO SEND EMAIL";
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
 	private final JavaMailSender mailSender;
 	private ModelMapper modelMapper;
@@ -59,11 +59,11 @@ public class MailService {
 			mailSender.send(mimeMessage);
 			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", mimeMessage.getAllRecipients());
 		} catch (MailException e) {
-			LOGGER.error("FAIL TO SEND EMAIL", e);
+			LOGGER.error(FAIL_TO_SEND, e);
 		} catch (MessagingException e) {
-			LOGGER.error("FAIL TO SEND EMAIL", e);
+			LOGGER.error(FAIL_TO_SEND, e);
 		} catch(Exception e) {
-			LOGGER.error("FAIL TO SEND EMAIL", e);
+			LOGGER.error(FAIL_TO_SEND, e);
 		}
 		
 	}

@@ -16,6 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.ui.Model;
 
 import de.ffm.rka.rkareddit.controller.LinkController;
 import de.ffm.rka.rkareddit.domain.User;
@@ -32,23 +33,25 @@ public class UserSuccessfullAthenticationHandler implements AuthenticationSucces
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		Optional<HttpSession> session = Optional.ofNullable(request.getSession());
-		if (session.isPresent()) {
-			HttpSession validSession = session.get();
-			String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-			Optional<User> user = userService.findUserById(userName);
-			if(user.isPresent()) {
-				validSession.setAttribute("user",user.get());
-			} else {
-				try {
-					throw new UserAuthenticationLostException("NO USER WITHIN SESSION");
-				} catch (UserAuthenticationLostException e) {
-					LOGGER.info("{} USER NOT FOUND AFTER LOGIN FOR SESSION SETTING", userName);
-				}
-			}
-			
-			response.sendRedirect(request.getContextPath().concat("/links"));
-		}
+		
+//		Optional<HttpSession> session = Optional.ofNullable(request.getSession());
+//		if (session.isPresent()) {
+//			HttpSession validSession = session.get();
+//			String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+//			Optional<User> user = userService.findUserById(userName);
+//			if(user.isPresent()) {
+//				validSession.setAttribute("user",user.get());
+//			} else {
+//				try {
+//					throw new UserAuthenticationLostException("NO USER WITHIN SESSION");
+//				} catch (UserAuthenticationLostException e) {
+//					LOGGER.info("{} USER NOT FOUND AFTER LOGIN FOR SESSION SETTING", userName);
+//				}
+//			}
+//			
+//			
+//		}
+		response.sendRedirect(request.getContextPath().concat("/links"));
 	}
 
 }

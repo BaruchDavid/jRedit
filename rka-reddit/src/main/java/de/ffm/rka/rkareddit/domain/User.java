@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,17 +19,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,7 +34,6 @@ import lombok.ToString;
 
 
 @Entity
-//@PasswordMatcher
 @Getter @Setter 
 @ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto"})
 @AllArgsConstructor
@@ -83,15 +76,18 @@ public class User extends Auditable implements UserDetails, Serializable {
 	/**
 	 * Link is a owner of this Relation
 	 */
+	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Link> userLinks = new ArrayList<Link>();
 	
 	/**
 	 * Comment is a owner of this Relation
 	 */
+	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Comment> userComments = new ArrayList<Comment>();
+	private List<Comment> userComments = new ArrayList<>();
 	
+	@Builder.Default
 	@NotNull
 	@Column(nullable = false)
 	private boolean enabled=false;
@@ -128,10 +124,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 		this.userLinks.add(link);
 	}
 
-	public void add(Role role) {
-		roles.add(role);
-	}
-	
 	public void addRoles(Set<Role> roles) {
 		this.roles.addAll(roles);
 	}

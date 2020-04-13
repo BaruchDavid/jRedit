@@ -36,6 +36,7 @@ public class DatabaseLoader implements CommandLineRunner{
 				}
 				user.setActivationCode("activation");
 				userService.save(user);
+				LOGGER.info("DEFAULT USER CONFIG {}", user);
 			});
 	}
 

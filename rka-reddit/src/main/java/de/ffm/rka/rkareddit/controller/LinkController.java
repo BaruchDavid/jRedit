@@ -47,6 +47,7 @@ public class LinkController {
 	private CommentRepository commentRepository;
 	private static final String NEW_LINK = "newLink";
 	private static final String SUBMIT_LINK = "link/submit";
+	private static final String SUCCESS = "success";
 	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
@@ -56,7 +57,7 @@ public class LinkController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
-	public LinkController(LinkService linkService, CommentRepository commentRepository,  UserDetailsService userDetailService) {
+	public LinkController(LinkService linkService, CommentRepository commentRepository) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
 	}
@@ -91,7 +92,7 @@ public class LinkController {
 			comment.setLink(currentLink);			
 			model.addAttribute("link",currentLink);
 			model.addAttribute("comment",comment);
-			model.addAttribute("success",model.containsAttribute("success"));
+			model.addAttribute(SUCCESS,model.containsAttribute(SUCCESS));
 			return "link/link_view";
 		}else {
 			return "redirect:/links";
@@ -122,7 +123,7 @@ public class LinkController {
 			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
 			linkService.saveLink(link);
 			redirectAttributes.addAttribute("linkId", link.getLinkId())
-								.addFlashAttribute("success", true);			
+								.addFlashAttribute(SUCCESS, true);			
 			return "redirect:/links/link/{linkId}";
 		}
 	}	
@@ -141,7 +142,7 @@ public class LinkController {
 			return SUBMIT_LINK;
 		} else {
 			comment.setUser((User) userDetailsService.loadUserByUsername(userDetails.getUsername()));
-			attributes.addFlashAttribute("success", true);
+			attributes.addFlashAttribute(SUCCESS, true);
 			commentRepository.saveAndFlush(comment);
 			return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 		}

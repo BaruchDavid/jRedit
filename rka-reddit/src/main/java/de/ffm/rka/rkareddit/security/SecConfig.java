@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -36,8 +37,6 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
 	
-	@Autowired
-	private UserDetailsServiceImpl userDetalsService;
 			
 	@Bean
     public AuthenticationSuccessHandler userSuccessfullAthenticationHandler(){
@@ -47,6 +46,11 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	@Bean
     public AuthenticationFailureHandler userFailureAthenticationHandler(){
         return new UserFailureAuthenticationHandler();
+    }
+	
+	@Bean
+    public UserDetailsService getUserDetailsService(){
+        return new UserDetailsServiceImpl();
     }
 		
 	@Override
@@ -93,7 +97,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setPasswordEncoder(BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class));
-		provider.setUserDetailsService(userDetalsService);
+		provider.setUserDetailsService(getUserDetailsService());
 		return provider;
 	}
 }
