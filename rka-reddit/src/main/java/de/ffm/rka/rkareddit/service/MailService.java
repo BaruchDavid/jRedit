@@ -5,6 +5,8 @@ import java.util.Locale;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.junit.Ignore;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 
 /**
  * sending several emails from tempalate
@@ -28,13 +31,13 @@ public class MailService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
 	private final JavaMailSender mailSender;
-	
+	private ModelMapper modelMapper;
 	private final SpringTemplateEngine templateEngine;
 	
 
 	@Value("${linkMeEmailService}")
 	private String BASE_URL;
-	public MailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
+	public MailService(JavaMailSender mailSender, ModelMapper modelMapper, SpringTemplateEngine templateEngine) {
 		super();
 		this.mailSender = mailSender;
 		this.templateEngine = templateEngine;
@@ -68,14 +71,14 @@ public class MailService {
 	 * creates temaplte for email
 	 */
 	@Async
-	public void sendEmailFromTemplate(User user, String temlateName, String subject) {
-		LOGGER.info("CREATE EMAIL FOR {}", user.toString());
+	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) {
+		LOGGER.info("CREATE EMAIL FOR {}", userDto.toString());
 		Locale locale =  Locale.ENGLISH;
 		Context context  = new Context(locale);
-		context.setVariable("user", user);
+		context.setVariable("user", userDto);
 		context.setVariable("baseURL", BASE_URL);
 		String content = templateEngine.process(temlateName, context);
-		sendEmail(user.getEmail(), subject, content, false, true);
+		sendEmail(userDto.getEmail(), subject, content, false, true);
 		
 	}
 	
@@ -83,7 +86,7 @@ public class MailService {
 	 * activation mail sending
 	 */
 	@Async
-	public void sendActivationEmail(User user) {
+	public void sendActivationEmail(UserDTO user) {
 		sendEmailFromTemplate(user, "mail/activation",  "LinkMe User Activation"); 
 	}
 	
@@ -91,7 +94,7 @@ public class MailService {
 	 * welcome mail sending
 	 */
 	@Async
-	public void sendWelcomeEmail(User user) {
+	public void sendWelcomeEmail(UserDTO user) {
 		sendEmailFromTemplate(user, "mail/welcome",  "Welcom new LinkMe User"); 
 	}
 	

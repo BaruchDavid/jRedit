@@ -103,7 +103,7 @@ public class LinkController {
 	public String createNewLink(Model model) {
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
-			link.addTag(new Tag());
+			link.addTag(Tag.builder().tagName("").build());
 		}
 		model.addAttribute(NEW_LINK, link);
 		return SUBMIT_LINK;

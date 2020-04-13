@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,14 +20,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.service.UserService;
 
 
@@ -36,9 +35,10 @@ public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 	
 	private UserService userService;
-
-	public AuthController(UserService userService) {
+	private ModelMapper modelMapper;
+	public AuthController(UserService userService, ModelMapper modelMapper) {
 		this.userService = userService;
+		this.modelMapper = modelMapper;
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class AuthController {
 	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String showProfile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email, 
-								Model model) throws Exception {
+								Model model) {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);	
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User member = new User();
@@ -92,7 +92,6 @@ public class AuthController {
 	@GetMapping({"/register"})
 	public String register(Model model) {	
 		model.addAttribute("user", new User());
-		//model.addAttribute("success", false);
 		return "auth/register"; 
 	}
 	
@@ -101,17 +100,18 @@ public class AuthController {
 	 * @return user
 	 */
 	@PostMapping("/register")
-	public String registerNewUser(@Valid User user, BindingResult bindingResult, RedirectAttributes attributes, Model model) {
-		LOGGER.info("TRY TO REGISTER {}",user.toString());
+	public String registerNewUser(@Valid UserDTO userDto, BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
+		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
+			final int badRequest = 400;
 			LOGGER.warn("Validation Error during registration {}", bindingResult.getAllErrors());
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());
-			model.addAttribute("user", user);
+			model.addAttribute("user", userDto);
+			res.setStatus(badRequest);
 			return "auth/register";
 		} else {
-			User newUser = userService.register(user);
-			attributes.addAttribute("id", newUser.getUserId())
-						.addFlashAttribute("success",true);
+			userService.register(userDto);
+			attributes.addFlashAttribute("success",true);	
 			return "redirect:/register";
 		}
 	}
@@ -125,8 +125,10 @@ public class AuthController {
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
 			userService.save(newUser);
-			userService.sendWelcomeEmail(newUser);
+			UserDTO userDTO = modelMapper.map(user.get(), UserDTO.class);
+			userService.sendWelcomeEmail(userDTO);
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
+			model.addAttribute("user", userDTO);
 			return "auth/activated"; 
 		}else {
 			LOGGER.info("USER {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email);

@@ -40,7 +40,7 @@ import lombok.ToString;
 
 
 @Entity
-@PasswordMatcher
+//@PasswordMatcher
 @Getter @Setter 
 @ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto"})
 @AllArgsConstructor
@@ -75,9 +75,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@NotEmpty(message = "you must enter Second Name.")
 	@Column(length = 50)
 	private String secondName;
-	
-	@Transient
-	private  String fullName;
 	
 	@NotEmpty(message = "Please enter alias.")
 	@Column(nullable = false, unique = true)
@@ -123,12 +120,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 		this.password = password;
 	}
 
-	public void setFullName(String fullName) {
-		String fName = Optional.ofNullable(firstName).orElse("");
-		String sName = Optional.ofNullable(secondName).orElse("");	
-		this.fullName = fName.concat(" ").concat(sName);
-	}
-
 	public void addCommentToUser(Comment comment) {
 		this.userComments.add(comment);
 	}
@@ -156,13 +147,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 		return authorities;
 	}
 
-	public String getFullName() {
-		String fName = Optional.ofNullable(firstName).orElse("");
-		String sName = Optional.ofNullable(secondName).orElse("");
-		fullName = fName.concat(" ").concat(sName);
-		return fullName;
-	}
-
+	
 	@Override
 	public String getUsername() {
 

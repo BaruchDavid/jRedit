@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -18,7 +19,7 @@ public class UserServiceTest {
 
 	@Test
 	public void fullNameUser() {
-		User user = User.builder()
+		UserDTO user = UserDTO.builder()
 						.firstName("rka")
 						.secondName("blr")
 						.build();
@@ -27,9 +28,8 @@ public class UserServiceTest {
 	
 	@Test
 	public void fullNameUserPart() {
-		User user = User.builder()
+		UserDTO user = UserDTO.builder()
 						.firstName("rka")
-						.secondName("")
 						.build();
 		assertEquals("rka ", user.getFullName());
 	}

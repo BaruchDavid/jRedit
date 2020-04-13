@@ -135,40 +135,41 @@ VALUES(8, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 5);
 INSERT INTO Vote(vote_id, created_by, creation_date, last_modified_by, last_modified_date, direction, link_link_id)
 VALUES(9, 'dascha@gmx.de', NOW(),'dascha@gmx.de', NOW(), 1, 5);
 
-INSERT INTO Tag(tag_id, name)
+
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(1, 'Java');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(2, 'TypeScript');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(3, 'JavaScript');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(4, 'C');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(5, 'C++');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(6, 'PHP');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(7, 'Phyton');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(8, 'Delphi/Object Pascal');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(9, 'Swift');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(10, 'SQL');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(11, 'HTML-5');
 
-INSERT INTO Tag(tag_id, name)
+INSERT INTO Tag(tag_id, tag_name)
 VALUES(12, 'CSS');
 
 INSERT INTO link_tags(link_id, tag_id)

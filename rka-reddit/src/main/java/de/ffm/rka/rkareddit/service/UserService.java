@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
@@ -29,13 +31,14 @@ public class UserService {
 	private UserRepository userRepository;
 	private RoleService roleService;
 	private final MailService mailService;
-
+	private ModelMapper modelMapper;
 	
-	public UserService(MailService mailService,UserRepository userRepository, RoleService roleService) {
+	public UserService(MailService mailService,UserRepository userRepository, RoleService roleService, ModelMapper modelMapper) {
 
 		this.userRepository = userRepository;
 		this.roleService= roleService;
 		this.mailService  = mailService;
+		this.modelMapper = modelMapper;
 	}
 	
 	/**
@@ -47,16 +50,17 @@ public class UserService {
 	 * @author RKA
 	 * @return user
 	 */
-	public User register(User user) {
+	public UserDTO register(UserDTO userDto) {
+		User newUser = modelMapper.map(userDto, User.class);
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-		String secret = encoder.encode(user.getPassword());
-		user.setPassword(secret);
-		user.setConfirmPassword(secret);
-		user.addRole(roleService.findByName("ROLE_USER"));
-		user.setActivationCode(UUID.randomUUID().toString());
-		userRepository.saveAndFlush(user);
-		sendActivatonEmail(user);
-		return user;
+		String secret = encoder.encode(newUser.getPassword());
+		newUser.setPassword(secret);
+		newUser.setConfirmPassword(secret);
+		newUser.addRole(roleService.findByName("ROLE_USER"));
+		newUser.setActivationCode(UUID.randomUUID().toString());
+		userRepository.saveAndFlush(newUser);
+		sendActivatonEmail(userDto);
+		return userDto;
 	}
 	
 	/**
@@ -75,11 +79,11 @@ public class UserService {
 		return userRepository.findByEmailAndActivationCode(mail, code);
 	}
 	
-	private void sendActivatonEmail(User user) {
+	private void sendActivatonEmail(UserDTO user) {
 		mailService.sendActivationEmail(user);
 	}
 	
-	public void sendWelcomeEmail(User user) {
+	public void sendWelcomeEmail(UserDTO user) {
 		mailService.sendWelcomeEmail(user);
 	}
 	

@@ -76,7 +76,6 @@ public class AuthControllerTest {
 	 */
 	@Before
 	public void setup() {
-
         MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(authController)
 										.addInterceptors(new ApplicationHandlerInterceptor())
@@ -86,15 +85,13 @@ public class AuthControllerTest {
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void showProfileOfUserAsAutheticated() throws Exception {
 		User user = userService.getUserWithLinks("romakapt@gmx.de");
 		List<Link> posts = user.getUserLinks();
-		List<Comment> comments = userService.getUserWithComments("romakapt@gmx.de").getUserComments();
-		
+		List<Comment> comments = userService.getUserWithComments("romakapt@gmx.de").getUserComments();		
 		ResultActions resultActions = this.mockMvc.perform(get("/profile/private"))
 					.andDo(print());
 		MvcResult result = resultActions.andReturn();
@@ -105,58 +102,50 @@ public class AuthControllerTest {
 	/**
 	 * @author RKA
 	 */
-
 	@Test
 	public void registerNewInvalidUser() throws Exception {
 
 	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/register")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 								.param("firstName", "Paul")
-								.param("secondName", "Grünbein")
-						    	.param("secondName", "Grünbein")
+								.param("secondName", "Grom")
 								.param("aliasName", "grünes")
 								.param("password", "tata")
 								.param("confirmPassword", "tata"))
 	    					.andDo(print())
-							.andExpect(status().isOk())
+							.andExpect(status().is(400))
 							.andExpect(view().name("auth/register"));
 	}
 	
 	/**
 	 * @author RKA
 	 */
-
 	@Test
 	public void registerNewUser() throws Exception {
 
 	    	this.mockMvc.perform(post("/register")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 								.param("firstName", "Plau")
-								.param("secondName", "Grbein")
+								.param("secondName", "Grbn")
 								.param("aliasName", "grünes")
 								.param("email", "Grbein@com.de")
 								.param("password", "tata")
 								.param("confirmPassword", "tata"))
 	    					.andDo(print())
 							.andExpect(status().is3xxRedirection())
-							.andExpect(model().attribute("id", "4"))
-							.andExpect(redirectedUrl("/register?id=4"))
 							.andExpect(flash().attribute("success", true));
 	}
 	
 
 	@Test
-	public void activateAccountTest() throws Exception {
-		
+	public void activateAccountTest() throws Exception {		
             this.mockMvc.perform(get("/activate/romakapt@gmx.de/activation"))
 					.andDo(print())
 					.andExpect(view().name("auth/activated"));  
 	}
 	
-	
 	@Test
-	public void activateInvalidAccountTest() throws Exception {
-		
+	public void activateInvalidAccountTest() throws Exception {		
             this.mockMvc.perform(get("/activate/romakapt@gmx.de/actiion"))
 					.andDo(print())
 					.andExpect(redirectedUrl("/"));  
@@ -165,7 +154,6 @@ public class AuthControllerTest {
 	/**
 	 * show public profile from grom as autheticated user
 	 */
-
 	@Test
 	public void showPublicProfileAsUnautheticated() throws Exception {
 		Optional<User> user = userService.findUserById("grom@gmx.de");
@@ -183,17 +171,14 @@ public class AuthControllerTest {
 	 * show public non existing profile from grm as autheticated user
 	 */
 	@Test
-	public void showPublicNoNexistedProfileAsUnautheticated() throws Exception {
-		
+	public void showPublicNoNexistedProfileAsUnautheticated() throws Exception {		
         this.mockMvc.perform(get("/profile/public/grm@gmx.de"))
 				.andDo(print())
 				.andExpect(forwardedUrl("error/application"));  
 	}
-	
 
 	@Test
-	public void showPrivateProfileAsUnautheticated() throws Exception {
-		
+	public void showPrivateProfileAsUnautheticated() throws Exception {		
         this.mockMvc.perform(get("/profile/private/romakapt@gmx.de"))
 				.andDo(print())
 				.andExpect(status().isNotFound());  

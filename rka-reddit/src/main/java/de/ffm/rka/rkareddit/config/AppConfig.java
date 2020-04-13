@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,11 @@ public class AppConfig implements WebMvcConfigurer{
 	@Bean
 	public PrettyTime getPrettyTime() {
 		return new PrettyTime();
+	}
+	
+	@Bean
+	public ModelMapper getModelMapper() {
+		return new ModelMapper();
 	}
 	
 

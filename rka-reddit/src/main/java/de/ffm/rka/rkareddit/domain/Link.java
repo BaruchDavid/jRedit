@@ -7,10 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,13 +20,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.AllArgsConstructor;
@@ -61,12 +56,14 @@ public class Link extends Auditable{
 	/**
 	 * Vote is owner of this Relation
 	 */
+	@Builder.Default
 	@OneToMany(mappedBy = "link", 
 			 fetch=FetchType.LAZY,
 			 orphanRemoval = true,
 			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Vote> vote = new ArrayList<>();
 	
+	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST})
 	@JoinTable(
 			name = "link_tags",
@@ -75,6 +72,7 @@ public class Link extends Auditable{
 	)
 	private List<Tag> tags = new ArrayList<>();
 
+	@Builder.Default
 	private int voteCount = 0;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -83,6 +81,7 @@ public class Link extends Auditable{
 	/**
 	 * Comment is a owner cause of mappedBy argument
 	 */
+	@Builder.Default
 	@OneToMany(mappedBy="link", fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Comment> comments = new ArrayList<>();

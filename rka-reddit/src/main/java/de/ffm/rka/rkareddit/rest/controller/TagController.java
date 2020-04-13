@@ -8,9 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
@@ -33,14 +28,11 @@ import de.ffm.rka.rkareddit.vo.TagVO;
 public class TagController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
 	
-	private UserService userService;
 	private TagServiceImpl tagService;
-	private LinkService linkService;
+
 
 	public TagController(UserService userService, TagServiceImpl tagServiceImpl, LinkService linkService) {
-		this.userService = userService;
 		this.tagService = tagServiceImpl;
-		this.linkService = linkService;
 	}
 
 	/**
@@ -54,13 +46,16 @@ public class TagController {
 	@PostMapping(value ="/tag/create", consumes = MediaType.ALL_VALUE)
 	@ResponseBody
 	public TagVO saveNewTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model) {		
-		Tag nTag = new Tag(tag.substring(0,tag.indexOf("=")));
+		Tag nTag = Tag.builder()
+					  .tagId(0l)
+					  .tagName(tag.substring(0,tag.indexOf("=")))
+					  .build();
+		
 		Optional<Tag> availibleTag = tagService.findTagOnName(nTag.getTagName());
 		if (availibleTag.isPresent()) {
 			return new TagVO(availibleTag.get().getTagName(), availibleTag.get().getTagId());
 		} else {
-			long id = tagService.saveTag(nTag);
-			LOGGER.info("NEW TAG: {}", nTag.toString());
+			LOGGER.info("AUTOCOMPLETE NO RESULT FOR: {}", tag);
 			return new TagVO(nTag.getTagName(), nTag.getTagId());
 		}
 		

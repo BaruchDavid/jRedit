@@ -4,6 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 
 /**
  * 
@@ -11,10 +12,10 @@ import de.ffm.rka.rkareddit.domain.User;
  * @author RKA
  *
  */
-public class PasswordValidator implements ConstraintValidator<PasswordMatcher, User>{
+public class PasswordValidator implements ConstraintValidator<PasswordMatcher, UserDTO>{
 
 	@Override
-	public boolean isValid(User user, ConstraintValidatorContext context) {
+	public boolean isValid(UserDTO user, ConstraintValidatorContext context) {
 		
 		return user.getPassword().equals(user.getConfirmPassword());
 	}

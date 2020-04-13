@@ -55,7 +55,7 @@ public class FbController {
 	@PostMapping("/post/fb/link/")
 	public String vote(@RequestBody FbPost fbPost) {
 		LOGGER.info("USER {} POSTS {}", SecurityContextHolder.getContext().getAuthentication().getName(),
-				fbPost.toString());
+				fbPost);
 		try {
 			facebookService.postLinkOnFacebook(new Link(), fbPost);
 			

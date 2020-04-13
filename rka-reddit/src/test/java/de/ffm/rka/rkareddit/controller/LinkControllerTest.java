@@ -17,10 +17,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
-import javax.validation.constraints.AssertTrue;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -38,9 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
@@ -82,7 +77,7 @@ public class LinkControllerTest {
 	@Test
 	public void shouldReturnAllLinks() throws Exception {
 
-		List pages = Arrays.asList(new Integer[] {1,2});
+		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
 		this.mockMvc.perform(get("/links/"))
 					.andDo(print())
 					.andExpect(status().isOk())
