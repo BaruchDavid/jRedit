@@ -8,9 +8,9 @@ public enum Role {
 	ACTUATOR("ACTUATOR"),
 	ANONYMOUS("ANONYMOUS");
 	
-	private String role;
+	private String userRole;
 	
 	Role(String role) {
-		this.role = role;
+		this.userRole = role;
 	}
 }

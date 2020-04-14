@@ -1,22 +1,16 @@
 package de.ffm.rka.rkareddit.exception;
 
 import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
-
-import de.ffm.rka.rkareddit.controller.AuthController;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 
@@ -65,21 +59,21 @@ public class GlobalControllerAdvisor {
 			view = DEFAULT_APPLICATION_ERROR;
 			res.setStatus(404);
 			break;
-		case "NullPointerException":
 		case "UserAuthenticationLostException":
-			res.setStatus(500);
-			view = USER_ERROR_VIEW;
+			res.setStatus(401);
+			break;
+		case "NullPointerException":
+			res.setStatus(400);
 			break;
 		default:
 			res.setStatus(500);
-			view = USER_ERROR_VIEW;
 			break;
 		}
 
 		return createErrorView(req.getRequestURL().toString(),user, view);
 	}
 
-	private ModelAndView createErrorView(String req, User user, String errorView) throws Exception {
+	private ModelAndView createErrorView(String req, User user, String errorView) {
 		
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("user", user);

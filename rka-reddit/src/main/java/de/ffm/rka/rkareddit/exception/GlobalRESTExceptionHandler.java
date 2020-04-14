@@ -27,7 +27,7 @@ class GlobalRESTExceptionHandler {
 	@ResponseBody
 	@ExceptionHandler(value = {UserAuthenticationLostException.class, NullPointerException.class, IllegalArgumentException.class})
 	public List<String> internalError(HttpServletRequest req, Exception err){
-		LOGGER.error("REST CONTROLLER EXCEPTION on: ".concat(req.getServletPath()), err);
+		LOGGER.error("REST CONTROLLER EXCEPTION {} {} on: {}", err.getMessage(), req.getMethod(), req.getRequestURL());
 		List<String> informations = new ArrayList<String>();
 		informations.add("fehler1");
 		informations.add("fehler2");

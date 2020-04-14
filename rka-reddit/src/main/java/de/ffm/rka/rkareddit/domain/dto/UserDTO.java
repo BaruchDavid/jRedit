@@ -52,7 +52,7 @@ public class UserDTO {
 	
 	private String activationCode;
 	
-	public void setFullName(String fullName) {
+	public void setFullName() {
 		String fName = Optional.ofNullable(firstName).orElse("");
 		String sName = Optional.ofNullable(secondName).orElse("");	
 		this.fullName = fName.concat(" ").concat(sName);

@@ -109,8 +109,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	public User(
 			@NotEmpty(message = "mail must be entered ") 
 			@Size(message = "email must be between 8 and 20 signs", min = 8, max = 20) String email,
-			String password,
-			Set<Role> roles) {
+			String password) {
 		super();
 		this.email = email;
 		this.password = password;

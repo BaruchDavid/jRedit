@@ -2,25 +2,16 @@ package de.ffm.rka.rkareddit.interceptor;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.NullArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 import de.ffm.rka.rkareddit.security.SecConfig;
 
@@ -51,7 +42,7 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
             Method method = ((HandlerMethod) handler).getMethod();
             if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
             	&& PRIVATE_PROFILE_URL.contains(request.getRequestURL())) {
-            		LOGGER.info("METHODE: "+method.getName());
+            		LOGGER.info("METHODE: {}", method.getName());
             		LOGGER.warn("autheticated user could not access method with authetication");
             		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
             		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
@@ -67,22 +58,21 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	
 	public static List<String> getRequestHeaderList(HttpServletRequest request) {
 		Enumeration<String> headerNames = request.getHeaderNames();
-		List<String> resultList;
-		if (headerNames == null || !headerNames.hasMoreElements()) {
-			return Collections.emptyList();
-		}
-		resultList = new ArrayList<String>();
-		while (headerNames != null && headerNames.hasMoreElements()) {
-			String headerName = headerNames.nextElement().toString();
-			String headerValue = "";
-			Enumeration<String> header = request.getHeaders(headerName);
-			while (header != null && header.hasMoreElements()) {
-				headerValue = headerValue + "," + header.nextElement().toString();
+		List<String> resultList = new ArrayList<String>();;
+
+		if(headerNames != null) {
+			while (headerNames.hasMoreElements()) {
+				String headerName = headerNames.nextElement().toString();
+				String headerValue = "";
+				Enumeration<String> header = request.getHeaders(headerName);
+				while (header != null && header.hasMoreElements()) {
+					headerValue = headerValue + "," + header.nextElement().toString();
+				}
+				if (headerValue.length() > 0) {
+					headerValue = headerValue.substring(1, headerValue.length());
+				}
+				resultList.add(headerName + "=" + headerValue);
 			}
-			if (headerValue.length() > 0) {
-				headerValue = headerValue.substring(1, headerValue.length());
-			}
-			resultList.add(headerName + "=" + headerValue);
 		}
 		return resultList;
 	}

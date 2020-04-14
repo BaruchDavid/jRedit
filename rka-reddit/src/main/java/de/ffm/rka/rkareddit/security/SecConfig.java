@@ -1,10 +1,6 @@
 package de.ffm.rka.rkareddit.security;
 
 import static de.ffm.rka.rkareddit.security.Role.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
-import com.zaxxer.hikari.HikariDataSource;
-
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 /**
@@ -34,10 +27,7 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecConfig extends WebSecurityConfigurerAdapter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
-	
-			
+		
 	@Bean
     public AuthenticationSuccessHandler userSuccessfullAthenticationHandler(){
         return new UserSuccessfullAthenticationHandler();

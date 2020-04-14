@@ -17,9 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import de.ffm.rka.rkareddit.domain.Tag;
-import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
-import de.ffm.rka.rkareddit.service.UserService;
+
 import de.ffm.rka.rkareddit.vo.TagVO;
 
 
@@ -31,7 +30,7 @@ public class TagController {
 	private TagServiceImpl tagService;
 
 
-	public TagController(UserService userService, TagServiceImpl tagServiceImpl, LinkService linkService) {
+	public TagController(TagServiceImpl tagServiceImpl) {
 		this.tagService = tagServiceImpl;
 	}
 
@@ -48,7 +47,7 @@ public class TagController {
 	public TagVO saveNewTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model) {		
 		Tag nTag = Tag.builder()
 					  .tagId(0l)
-					  .tagName(tag.substring(0,tag.indexOf("=")))
+					  .tagName(tag.substring(0,tag.indexOf('=')))
 					  .build();
 		
 		Optional<Tag> availibleTag = tagService.findTagOnName(nTag.getTagName());
@@ -58,18 +57,6 @@ public class TagController {
 			LOGGER.info("AUTOCOMPLETE NO RESULT FOR: {}", tag);
 			return new TagVO(nTag.getTagName(), nTag.getTagId());
 		}
-		
-//		Überprüfung im Validator einbauen
-//		if(bindingResult.hasErrors()) {			
-//			if(userService.lockUser(user.getUsername())) {
-//				LOGGER.info("LOCK USER {}, validation failed of tag: {}", user.getUsername(),tag.toString());
-//			} else {
-//				LOGGER.info("USER {} IS NOT IN THE SYSTEM ANYMORE, All links and tags has been deleted from him: {}", 
-//						user.getUsername(),tag.toString());
-//			}
-//		} else {			
-
-//		}
 	}	
 	
 	@Secured({"ROLE_ADMIN"})
@@ -78,12 +65,11 @@ public class TagController {
 	public String deleteTagWithoutRelation(@PathVariable long tagId, @AuthenticationPrincipal UserDetails user, Model model) {		
 		String deletedTagId = "";
 		Optional<Tag> tag = tagService.selectTagWithLinks(tagId);
-		if (tag.isPresent()) {
-			if(tag.get().getLinks().size()==0) {
-				deletedTagId = String.valueOf(tag.get().getTagId());
-				tagService.deleteTagWithoutRelation(tag.get());
-				LOGGER.info("DELETE TAG WITHOUT RELATION: {}", deletedTagId);
-			}
+		if (tag.isPresent()
+			&& tag.get().getLinks().size()==0) {
+			deletedTagId = String.valueOf(tag.get().getTagId());
+			tagService.deleteTagWithoutRelation(tag.get());
+			LOGGER.info("DELETE TAG WITHOUT RELATION: {}", deletedTagId);
 		} 
 		return deletedTagId;	
 	}
