@@ -31,10 +31,10 @@ public class FileNIO {
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 				ImageIO.write(originalImage, "png", baos);
 				pic = Optional.of(baos.toByteArray());
-				LOGGER.debug("message byte-array as string {}: ", pic.toString());
+				LOGGER.debug("message byte-array {}: ", pic);
 			}
 		}else {
-			LOGGER.warn("no picture found for converting into byte-array {}: ", pic.toString());
+			LOGGER.warn("no picture found for converting into byte-array {}: ", pic);
 		}
 		return pic;
 	}

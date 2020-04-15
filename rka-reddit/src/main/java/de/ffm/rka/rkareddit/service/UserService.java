@@ -90,7 +90,7 @@ public class UserService {
 	@Transactional(readOnly = false)
 	public User save(User user) {
 		User newUser = userRepository.save(user);
-		LOGGER.info("new User has been saved {}", newUser.toString());
+		LOGGER.info("new User has been saved {}", newUser);
 		return newUser;
 	}
 	

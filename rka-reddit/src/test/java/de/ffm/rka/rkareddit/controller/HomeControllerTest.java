@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,9 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
-import de.ffm.rka.rkareddit.service.LinkService;
-import de.ffm.rka.rkareddit.util.BeanUtil;
-
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -39,14 +35,9 @@ public class HomeControllerTest {
 
 	@Autowired
 	private HomeController homeController;
-	
-	@Autowired
-	private LinkService linkService;
 
 	@Autowired
 	private GlobalControllerAdvisor globalControllerAdvice;
-
-	private EntityManager entityManager;
 	
 	/**
 	 * Using Standalone-Configuration, no SpringApplicationContext.
@@ -61,7 +52,6 @@ public class HomeControllerTest {
 										.setControllerAdvice(globalControllerAdvice)		
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();
-		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
 
 	@Ignore

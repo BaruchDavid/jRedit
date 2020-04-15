@@ -66,7 +66,7 @@ public class TagController {
 		String deletedTagId = "";
 		Optional<Tag> tag = tagService.selectTagWithLinks(tagId);
 		if (tag.isPresent()
-			&& tag.get().getLinks().size()==0) {
+			&& tag.get().getLinks().isEmpty()) {
 			deletedTagId = String.valueOf(tag.get().getTagId());
 			tagService.deleteTagWithoutRelation(tag.get());
 			LOGGER.info("DELETE TAG WITHOUT RELATION: {}", deletedTagId);

@@ -22,13 +22,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	private UserRepository userRepository;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = Optional.ofNullable(userRepository.findByEmailWithRoles(username))
+	public UserDetails loadUserByUsername(String username) {
+		return Optional.ofNullable(userRepository.findByEmailWithRoles(username))
 										.orElseThrow(() -> { 
 															LOGGER.warn("{} Could not be found", username);
 															return new  UsernameNotFoundException(username); 
 															});
-		return user;
 	}
 
 }

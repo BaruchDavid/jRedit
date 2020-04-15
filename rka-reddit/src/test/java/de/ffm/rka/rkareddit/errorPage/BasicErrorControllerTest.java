@@ -6,9 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
-
-import javax.persistence.EntityManager;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,7 +27,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
-import de.ffm.rka.rkareddit.util.BeanUtil;
+
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)

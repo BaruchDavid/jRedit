@@ -25,7 +25,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,7 +56,7 @@ public class ProfileMetaDataController {
 //	@CacheEvict(value="userInfo", allEntries=true)
 	public List<String> getInformation(@AuthenticationPrincipal UserDetails userPrincipal,
 			@RequestParam(required = false) String user, HttpServletRequest req,
-			Model model) throws IOException {
+			Model model) {
 		List<String> informations = new ArrayList<>();
 		
 		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);
@@ -74,7 +73,7 @@ public class ProfileMetaDataController {
 		return informations;
 	}
 
-	@RequestMapping(value = "/information/content/user-pic", method = RequestMethod.GET)
+	@GetMapping(value = "/information/content/user-pic")
 	@ResponseBody
 	public ResponseEntity<byte[]> getImageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
 		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);

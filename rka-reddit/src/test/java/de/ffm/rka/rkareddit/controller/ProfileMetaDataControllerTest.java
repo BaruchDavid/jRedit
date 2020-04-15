@@ -4,19 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-
 import javax.imageio.ImageIO;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +46,6 @@ public class ProfileMetaDataControllerTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataControllerTest.class);
     private MockMvc mockMvc;
     private SpringSecurityTestConfig testConfig;
-	private static EntityManager em;
 
     @Autowired
 	private ProfileMetaDataController profileMetaDataController;
@@ -62,7 +55,7 @@ public class ProfileMetaDataControllerTest {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(profileMetaDataController).setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
 		testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);
-		em = BeanUtil.getBeanFromContext(EntityManager.class);
+
 	}
 
 	/**

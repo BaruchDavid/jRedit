@@ -62,10 +62,11 @@ public class LinkService {
 	 */
 	@Transactional(readOnly = false)
 	public Link saveLink(Link link) {
-		List<Tag> tags = new ArrayList<Tag>(); 
+		List<Tag> tags = new ArrayList<>(); 
 		link.getTags().stream()
 					  .filter(tag -> tag.getTagName().length()==0)
-					  .forEach(tag -> tags.add(tag));
+					  //.forEach(tag -> tags.add(tag));
+						.forEach(tags::add);
 		link.getTags().removeAll(tags);		
 		link.getTags().stream()
 					  .forEach(tag -> tag.getLinks().add(link));
@@ -79,7 +80,6 @@ public class LinkService {
 	}
 	
 	public Page<Link> fetchAllLinksWithUsersCommentsVotes(Pageable pageable){
-		Page<Link> links = linkRepository.findAll(pageable);
-		return links;
+		return linkRepository.findAll(pageable);
 	}
 }

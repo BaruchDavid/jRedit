@@ -12,10 +12,8 @@ import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
-
 import de.ffm.rka.rkareddit.domain.FbPost;
 import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.rest.controller.FbController;
 
 @Service
 public class FacebookService {
@@ -27,7 +25,7 @@ public class FacebookService {
 
 	Facebook facebook;
 	String accessToken;
-	private static final Logger LOGGER = LoggerFactory.getLogger(FbController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FacebookService.class);
 
 	public String createFacebookAuthorizationURL() {
 		FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);

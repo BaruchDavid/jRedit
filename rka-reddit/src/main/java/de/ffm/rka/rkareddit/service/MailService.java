@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,13 +27,13 @@ public class MailService {
 	private static final String FAIL_TO_SEND = "FAIL TO SEND EMAIL";
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
 	private final JavaMailSender mailSender;
-	private ModelMapper modelMapper;
 	private final SpringTemplateEngine templateEngine;
 	
 
 	@Value("${linkMeEmailService}")
-	private String BASE_URL;
-	public MailService(JavaMailSender mailSender, ModelMapper modelMapper, SpringTemplateEngine templateEngine) {
+	private String baseUrl;
+	
+	public MailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
 		super();
 		this.mailSender = mailSender;
 		this.templateEngine = templateEngine;
@@ -55,13 +54,11 @@ public class MailService {
 			message.setText(content,isHtml);
 			mailSender.send(mimeMessage);
 			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", Arrays.deepToString(mimeMessage.getAllRecipients()));
-		} catch (MailException e) {
+		} catch (MailException  | MessagingException  e) {
 			LOGGER.error(FAIL_TO_SEND, e);
-		} catch (MessagingException e) {
-			LOGGER.error(FAIL_TO_SEND, e);
-		} catch(Exception e) {
-			LOGGER.error(FAIL_TO_SEND, e);
-		}
+		} catch (Exception  e) {
+			LOGGER.error("system error", e);
+		} 
 		
 	}
 	/**
@@ -69,11 +66,11 @@ public class MailService {
 	 */
 	@Async
 	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) {
-		LOGGER.info("CREATE EMAIL FOR {}", userDto.toString());
+		LOGGER.info("CREATE EMAIL FOR {}", userDto);
 		Locale locale =  Locale.ENGLISH;
 		Context context  = new Context(locale);
 		context.setVariable("user", userDto);
-		context.setVariable("baseURL", BASE_URL);
+		context.setVariable("baseURL", baseUrl);
 		String content = templateEngine.process(temlateName, context);
 		sendEmail(userDto.getEmail(), subject, content, false, true);
 		
