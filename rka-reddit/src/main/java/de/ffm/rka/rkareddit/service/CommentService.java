@@ -1,14 +1,10 @@
 package de.ffm.rka.rkareddit.service;
 
-
-
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
@@ -23,7 +19,6 @@ import de.ffm.rka.rkareddit.repository.CommentRepository;
 @Transactional(readOnly = true)
 public class CommentService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommentService.class);
 	private CommentRepository commentRepository;
 	
 	public CommentService( CommentRepository commentReptory) {

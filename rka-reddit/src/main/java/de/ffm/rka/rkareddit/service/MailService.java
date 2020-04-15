@@ -4,8 +4,6 @@ import java.util.Locale;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
-import org.junit.Ignore;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +15,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-
-import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * sending several emails from tempalate
@@ -57,7 +54,7 @@ public class MailService {
 			message.setSubject(subject);
 			message.setText(content,isHtml);
 			mailSender.send(mimeMessage);
-			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", mimeMessage.getAllRecipients());
+			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", Arrays.deepToString(mimeMessage.getAllRecipients()));
 		} catch (MailException e) {
 			LOGGER.error(FAIL_TO_SEND, e);
 		} catch (MessagingException e) {

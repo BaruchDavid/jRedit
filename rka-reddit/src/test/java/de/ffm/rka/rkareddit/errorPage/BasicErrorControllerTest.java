@@ -46,7 +46,6 @@ public class BasicErrorControllerTest {
 	@Autowired
 	private GlobalControllerAdvisor globalControllerAdvice;
 
-	private EntityManager entityManager;
 	
 	/**
 	 * Using Standalone-Configuration, no SpringApplicationContext.
@@ -61,7 +60,6 @@ public class BasicErrorControllerTest {
 										.setControllerAdvice(globalControllerAdvice)		
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();
-		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
 
 	@Ignore

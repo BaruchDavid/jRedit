@@ -11,15 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-import javax.persistence.EntityManager;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -27,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
@@ -47,9 +40,6 @@ import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
-import de.ffm.rka.rkareddit.util.BeanUtil;
-import jdk.net.SocketFlow.Status;
-
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -68,7 +58,6 @@ public class AuthControllerTest {
 	@Autowired
 	private GlobalControllerAdvisor globalControllerAdvice;
 
-	private EntityManager entityManager;
 	
 	/**
 	 * Using Standalone-Configuration, no SpringApplicationContext.
@@ -82,7 +71,6 @@ public class AuthControllerTest {
 										.setControllerAdvice(globalControllerAdvice)		
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();
-		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 	}
 
 	@SuppressWarnings("unchecked")

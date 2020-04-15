@@ -1,6 +1,8 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,8 +18,10 @@ import lombok.ToString;
 @ToString(exclude = "link")
 @Getter @Setter
 @Entity
-public class Vote extends Auditable {
+public class Vote extends Auditable implements Serializable {
 	
+	private static final long serialVersionUID = 4242833929963027951L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long voteId;

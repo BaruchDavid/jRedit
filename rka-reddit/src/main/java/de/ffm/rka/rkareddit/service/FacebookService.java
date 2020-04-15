@@ -60,7 +60,7 @@ public class FacebookService {
 	}
 
 	public String postLinkOnFacebook(Link link, FbPost fbPost) {
-		LOGGER.info("Link {} will be posted on Facebook ", link.toString());
+		LOGGER.info("Link {} will be posted on Facebook ", link);
 		FacebookLink fBlink = new FacebookLink("http://www.springsource.org/spring-social", "Spring Social",
 			"The Spring Social Project", "Spring Social is an extension to Spring to enable "
 						+ "applications to connect with service providers.");

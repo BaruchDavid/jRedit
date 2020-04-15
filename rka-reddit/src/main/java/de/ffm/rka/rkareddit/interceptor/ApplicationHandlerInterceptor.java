@@ -4,16 +4,18 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
-import de.ffm.rka.rkareddit.security.SecConfig;
 
 /**
  * purpose of this class is checking of autheticated users by using
@@ -24,7 +26,7 @@ import de.ffm.rka.rkareddit.security.SecConfig;
  */
 public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SecConfig.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationHandlerInterceptor.class);
 	private static final String IS_404_ERROR ="404";
 	private static final String IS_400_ERROR ="400";
 	public static final String ANONYMOUS = "anonymousUser";
@@ -58,20 +60,20 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	
 	public static List<String> getRequestHeaderList(HttpServletRequest request) {
 		Enumeration<String> headerNames = request.getHeaderNames();
-		List<String> resultList = new ArrayList<String>();;
-
+		List<String> resultList = new ArrayList<>();
+		
 		if(headerNames != null) {
 			while (headerNames.hasMoreElements()) {
-				String headerName = headerNames.nextElement().toString();
+				String headerName = headerNames.nextElement();
 				String headerValue = "";
 				Enumeration<String> header = request.getHeaders(headerName);
 				while (header != null && header.hasMoreElements()) {
-					headerValue = headerValue + "," + header.nextElement().toString();
+					headerValue = headerValue.concat(",").concat(header.nextElement());
 				}
 				if (headerValue.length() > 0) {
 					headerValue = headerValue.substring(1, headerValue.length());
 				}
-				resultList.add(headerName + "=" + headerValue);
+				resultList.add(headerName.concat("=").concat(headerValue));
 			}
 		}
 		return resultList;

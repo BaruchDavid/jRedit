@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -27,8 +28,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Tag extends Auditable {
+public class Tag extends Auditable implements Serializable {
 	
+	private static final long serialVersionUID = -1764376324929313404L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long tagId;
@@ -39,7 +42,7 @@ public class Tag extends Auditable {
 		
 	@Builder.Default
 	@ManyToMany(mappedBy= "tags")
-	private List<Link> links = new ArrayList<Link>();
+	private List<Link> links = new ArrayList<>();
 	
 	public void addLink(Link link) {
 		links.add(link);

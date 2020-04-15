@@ -20,13 +20,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
 
-	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = Optional.ofNullable(userRepository.findByEmailWithRoles(username))
-										.orElseThrow(() -> new  UsernameNotFoundException(username));
+										.orElseThrow(() -> { 
+															LOGGER.warn("{} Could not be found", username);
+															return new  UsernameNotFoundException(username); 
+															});
 		return user;
 	}
 

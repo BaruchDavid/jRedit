@@ -52,7 +52,7 @@ public class LinkService {
 	public Optional<Link> findLinkByLinkId(Long linkId){
 		LOGGER.info("TRY TO FIND LINK WITH ID {}", linkId);
 		Optional<Link> link = linkRepository.findById(linkId);
-		link.ifPresent(val -> LOGGER.info("LINK HAS BEEN FOUND WITH ID {}",val.getLinkId().toString()));
+		link.ifPresent(val -> LOGGER.info("LINK HAS BEEN FOUND WITH ID {}",val.getLinkId()));
 		return link;
 	}		
 	
@@ -64,7 +64,6 @@ public class LinkService {
 	public Link saveLink(Link link) {
 		List<Tag> tags = new ArrayList<Tag>(); 
 		link.getTags().stream()
-					  .peek(tag -> System.out.println("TAG NAME IST: "+ tag.getTagName()))
 					  .filter(tag -> tag.getTagName().length()==0)
 					  .forEach(tag -> tags.add(tag));
 		link.getTags().removeAll(tags);		

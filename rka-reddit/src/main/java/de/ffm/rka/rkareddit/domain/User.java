@@ -78,7 +78,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	 */
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Link> userLinks = new ArrayList<Link>();
+	private List<Link> userLinks = new ArrayList<>();
 	
 	/**
 	 * Comment is a owner of this Relation
@@ -163,8 +163,8 @@ public class User extends Auditable implements UserDetails, Serializable {
 		return true;
 	}
 	
-	public void addRole(Role role_user) {
-		this.roles.add(role_user);
+	public void addRole(Role roleUser) {
+		this.roles.add(roleUser);
 		
 	}
 	

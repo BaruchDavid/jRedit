@@ -33,7 +33,7 @@ public class GlobalControllerAdvisor {
 
 	@ExceptionHandler(value = { UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
 			IllegalAccessException.class, NumberFormatException.class, Exception.class})
-	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) throws Exception {
+	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		User user = new User();	
 		String view = USER_ERROR_VIEW;

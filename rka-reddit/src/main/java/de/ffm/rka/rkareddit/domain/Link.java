@@ -109,7 +109,7 @@ public class Link extends Auditable implements Serializable{
 	
 	public String getHoster() throws URISyntaxException {
 		URI domain = new URI(url);
-		return domain.getHost().toString();
+		return domain.getHost();
 	}
 	
 	public void addVote(Vote vote) {
