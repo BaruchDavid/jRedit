@@ -32,6 +32,7 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
@@ -40,7 +41,7 @@ import de.ffm.rka.rkareddit.service.TagServiceImpl;
 
 @Controller
 @RequestMapping("/links")
-@SessionAttributes("user")
+@SessionAttributes("userDto")
 public class LinkController {
 	private LinkService linkService;
 	private CommentRepository commentRepository;
@@ -74,10 +75,16 @@ public class LinkController {
 											.boxed()
 											.collect(Collectors.toList());		
 		if(user != null) {
-			model.addAttribute("user", (User) userDetailsService.loadUserByUsername(user.getUsername()));
+			User usrObj = (User) userDetailsService.loadUserByUsername(user.getUsername());
+			UserDTO userDto = UserDTO.builder()
+							.firstName(usrObj.getFirstName())
+							.secondName(usrObj.getSecondName())
+							.build();
+
+			model.addAttribute("userDto", userDto);
 		}	
 		model.addAttribute("links",links);
-		model.addAttribute("pageNumbers",totalPages);	
+ 		model.addAttribute("pageNumbers",totalPages);	
 		return "link/link_list";
 	}
 	

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import lombok.ToString;
 
 @PasswordMatcher
 @Getter @Setter 
+@EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -63,5 +65,5 @@ public class UserDTO {
 		String sName = Optional.ofNullable(secondName).orElse("");
 		fullName = fName.concat(" ").concat(sName);
 		return fullName;
-	}
+	}	
 }

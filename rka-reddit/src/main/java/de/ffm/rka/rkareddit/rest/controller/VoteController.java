@@ -38,7 +38,6 @@ public class VoteController {
 	 * @return new sum of votes
 	 * @author Roman
 	 */
-	@Secured({"ROLE_USER"})
 	@GetMapping("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}")
 	public int vote(@PathVariable Long  linkId, 
 					@PathVariable short direction, 

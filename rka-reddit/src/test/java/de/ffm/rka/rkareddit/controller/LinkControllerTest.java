@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
@@ -75,13 +76,19 @@ public class LinkControllerTest {
 	}
 
 	@Test
+	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnAllLinks() throws Exception {
-
+		UserDTO userDto = UserDTO.builder()
+								.firstName("baruc-david")
+								.secondName("rka")
+								.fullName("baruc-david rka")
+								.build();
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
 		this.mockMvc.perform(get("/links/"))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(model().attribute("pageNumbers", pages));
+					.andExpect(model().attribute("pageNumbers", pages))
+					.andExpect(model().attribute("user", userDto));
 	}
 
 	/**

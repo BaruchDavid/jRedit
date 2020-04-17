@@ -51,10 +51,10 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
  			.and()
 
  			.authorizeRequests()			
-							.antMatchers("/","/resources/**").permitAll()
-							.antMatchers("/links/").permitAll()	
+							.antMatchers("/","/links/","/resources/**").permitAll()	
 							.antMatchers("/login*","/profile/public","/invalidSession*", "/sessionExpired*").permitAll()
 							.antMatchers("/profile/private","/links/link/create**").authenticated()
+							.antMatchers("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
 							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
 			.and()
