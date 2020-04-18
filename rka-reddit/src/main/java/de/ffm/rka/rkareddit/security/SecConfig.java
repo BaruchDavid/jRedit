@@ -4,6 +4,7 @@ import static de.ffm.rka.rkareddit.security.Role.*;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -52,11 +53,17 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 
  			.authorizeRequests()			
 							.antMatchers("/","/links/","/resources/**").permitAll()	
-							.antMatchers("/login*","/profile/public","/invalidSession*", "/sessionExpired*").permitAll()
-							.antMatchers("/profile/private","/links/link/create**").authenticated()
+							.antMatchers("/login*","/profile/public").permitAll()
+							.antMatchers("/profile/private").authenticated()
 							.antMatchers("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
+							.antMatchers(HttpMethod.POST, "/tags/tag/create", "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.DELETE, "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.GET, "/links/link/create").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.POST, "/links/link/create").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.POST, "/links/link/comments").hasRole(ADMIN.name())
 							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
+							
 			.and()
 			.formLogin().loginPage("/login")
 						.usernameParameter("email")
