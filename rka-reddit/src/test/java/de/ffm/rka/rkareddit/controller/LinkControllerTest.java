@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,19 +27,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithSecurityContextFactory;
+
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import de.ffm.rka.rkareddit.RkaRedditApplication;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
+import de.ffm.rka.rkareddit.security.SecConfig;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
@@ -47,6 +55,7 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
+@ContextConfiguration(classes={RkaRedditApplication.class, SecConfig.class})
 public class LinkControllerTest {
 
 	private MockMvc mockMvc;
@@ -88,7 +97,7 @@ public class LinkControllerTest {
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("pageNumbers", pages))
-					.andExpect(model().attribute("user", userDto));
+					.andExpect(model().attribute("userDto", userDto));
 	}
 
 	/**
@@ -187,9 +196,8 @@ public class LinkControllerTest {
     }
 	
 	/**
-	 * try to save link without authetication
+	 * Save something without AutheticationContext
 	 */
-
 	@Test
 	public void saveNewLinkTestForUnknownUser() throws Exception {
     	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
@@ -199,7 +207,7 @@ public class LinkControllerTest {
 							.param("name", "java12")
 							.param("name", "java13"))
   					.andDo(print())
-					.andExpect(status().is(500))
+					.andExpect(status().is(401))
 					.andExpect(forwardedUrl("error/application"));	
     }
 	
@@ -221,13 +229,27 @@ public class LinkControllerTest {
     }
 	
 	/**
-	 * create link as autheticated user
+	 * Authetication as anonymous
+	 */
+	@Test
+	@WithAnonymousUser
+	public void linkCreateAsAnonymous() throws Exception {
+		
+            this.mockMvc.perform(get("/links/link/create"))
+					.andDo(print())
+					.andExpect(status().is(403))
+					.andExpect(forwardedUrl("error/application"));  
+	}
+	
+	/**
+	 * Authetication is not presented
 	 */
 	@Test
 	public void linkCreateAsUnautheticatedTest() throws Exception {
 		
             this.mockMvc.perform(get("/links/link/create"))
 					.andDo(print())
+					.andExpect(status().is(401))
 					.andExpect(forwardedUrl("error/application"));  
 	}
 }
