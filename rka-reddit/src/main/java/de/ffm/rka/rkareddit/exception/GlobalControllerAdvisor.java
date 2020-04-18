@@ -57,17 +57,15 @@ public class GlobalControllerAdvisor {
 		switch (getExceptionName(exception.getClass().getCanonicalName())) {
 		case "MethodArgumentTypeMismatchException":
 		case "IllegalArgumentException":
+		case "NullPointerException":
 			view = DEFAULT_APPLICATION_ERROR;
-			res.setStatus(404);
+			res.setStatus(400);
 			break;
 		case "UserAuthenticationLostException":
 		case "AuthenticationCredentialsNotFoundException":
 		case "UsernameNotFoundException":
 			res.setStatus(401);
-			break;
-		case "NullPointerException":
-			res.setStatus(400);
-			break;
+			break;		
 		case "AccessDeniedException":
 			res.setStatus(403);
 			break;
