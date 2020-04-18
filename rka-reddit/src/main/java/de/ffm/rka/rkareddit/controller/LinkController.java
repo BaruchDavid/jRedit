@@ -104,10 +104,10 @@ public class LinkController {
 			return "redirect:/links";
 		}
 	}
-	
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/link/create")
-	public String createNewLink(Model model) {
+	public String newLink(Model model) {
+		
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
 			link.addTag(Tag.builder().tagName("").build());
@@ -134,7 +134,7 @@ public class LinkController {
 		}
 	}	
 	
-	@Secured({"ROLE_USER"})
+	@Secured({"ROLE_ADMIN"})
 	@PostMapping(value = "/link/comments")
 	public String saveNewComment(@Valid Comment comment, BindingResult bindingResult, 
 								RedirectAttributes attributes,Model model,
