@@ -65,8 +65,7 @@ public class LinkService {
 		List<Tag> tags = new ArrayList<>(); 
 		link.getTags().stream()
 					  .filter(tag -> tag.getTagName().length()==0)
-					  //.forEach(tag -> tags.add(tag));
-						.forEach(tags::add);
+					  .forEach(tags::add);
 		link.getTags().removeAll(tags);		
 		link.getTags().stream()
 					  .forEach(tag -> tag.getLinks().add(link));

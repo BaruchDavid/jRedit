@@ -53,13 +53,7 @@ public class UserDTO {
 	private  String aliasName;
 	
 	private String activationCode;
-	
-	public void setFullName() {
-		String fName = Optional.ofNullable(firstName).orElse("");
-		String sName = Optional.ofNullable(secondName).orElse("");	
-		this.fullName = fName.concat(" ").concat(sName);
-	}
-	
+		
 	public String getFullName() {
 		String fName = Optional.ofNullable(firstName).orElse("");
 		String sName = Optional.ofNullable(secondName).orElse("");

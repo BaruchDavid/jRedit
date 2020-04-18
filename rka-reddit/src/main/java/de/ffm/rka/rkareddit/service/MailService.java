@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.mail.MessagingException;
@@ -53,7 +54,7 @@ public class MailService {
 			message.setSubject(subject);
 			message.setText(content,isHtml);
 			mailSender.send(mimeMessage);
-			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", Arrays.deepToString(mimeMessage.getAllRecipients()));
+			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", List.of(mimeMessage.getAllRecipients()));
 		} catch (MailException  | MessagingException  e) {
 			LOGGER.error(FAIL_TO_SEND, e);
 		} catch (Exception  e) {
