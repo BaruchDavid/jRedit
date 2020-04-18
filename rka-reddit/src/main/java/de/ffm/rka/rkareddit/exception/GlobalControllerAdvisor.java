@@ -26,7 +26,8 @@ public class GlobalControllerAdvisor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
 	public static final String USER_ERROR_VIEW = "error/application";
 	public static final String DEFAULT_APPLICATION_ERROR = "error/basicError";
-	public static final String ANONYMOUS = "anonymousUser";
+	public static final String ANONYMOUS_USER = "anonymousUser";
+	public static final String ANONYMOUS = "anonymous";
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
@@ -40,7 +41,7 @@ public class GlobalControllerAdvisor {
 		String visitorName="";
 		if(authetication.isPresent()) {
 			visitorName = authetication.get().getName();
-			if(!ANONYMOUS.equals(visitorName)) { 
+			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) { 
 				user = (User) userDetailsService.loadUserByUsername(visitorName);	
 			}else { 
 				user.setFirstName("dear visitor");	
@@ -60,10 +61,15 @@ public class GlobalControllerAdvisor {
 			res.setStatus(404);
 			break;
 		case "UserAuthenticationLostException":
+		case "AuthenticationCredentialsNotFoundException":
+		case "UsernameNotFoundException":
 			res.setStatus(401);
 			break;
 		case "NullPointerException":
 			res.setStatus(400);
+			break;
+		case "AccessDeniedException":
+			res.setStatus(403);
 			break;
 		default:
 			res.setStatus(500);
