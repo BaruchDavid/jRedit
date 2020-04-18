@@ -68,17 +68,22 @@ public class AuthController {
 								Model model) {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);	
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
-		User member = new User();
+		UserDTO member = new UserDTO();
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));
 		if(authenticatedUser.isPresent()) {
-			member = userService.getUserWithLinks(authenticatedUser.get().getUsername());
+			//Umstellen auf UserDto
+			User usr = userService.getUserWithLinks(authenticatedUser.get().getUsername());
+			member = UserDTO.builder()
+							  .firstName(usr.getFirstName())
+							  .secondName(usr.getSecondName())
+							  .build();
 		}
 		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks()).orElse(new ArrayList<Link>());	
 		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail())
 																	.getUserComments())
 											.orElse(new ArrayList<Comment>());
-		model.addAttribute("user", member);
+		model.addAttribute("userDto", member);
 		model.addAttribute("userContent", pageContentUser);
 		model.addAttribute("posts", userLinks);
 		model.addAttribute("comments", userComments);

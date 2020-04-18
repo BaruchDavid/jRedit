@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
@@ -162,6 +163,7 @@ public class AuthControllerTest {
 	public void showPublicNoNexistedProfileAsUnautheticated() throws Exception {		
         this.mockMvc.perform(get("/profile/public/grm@gmx.de"))
 				.andDo(print())
+				.andExpect(status().is(401))
 				.andExpect(forwardedUrl("error/application"));  
 	}
 
@@ -180,10 +182,15 @@ public class AuthControllerTest {
 	public void showPrivateProfileAsAutheticated() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
         if(user.isPresent()) {
+        	UserDTO userDto = UserDTO.builder()
+        							 .firstName(user.get().getFirstName())
+        							 .secondName(user.get().getSecondName())
+        							 .build();        							 
         	this.mockMvc.perform(get("/profile/private"))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("userContent", user.get()));
+						.andDo(print())
+						.andExpect(status().isOk())
+						.andExpect(model().attribute("userContent", user.get()))
+						.andExpect(model().attribute("userDto", userDto));
         } else {
         	fail("user for test-request not found");
         }  
