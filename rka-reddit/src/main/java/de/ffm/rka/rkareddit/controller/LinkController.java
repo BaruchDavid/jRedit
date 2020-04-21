@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,8 +30,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
@@ -41,13 +44,15 @@ import de.ffm.rka.rkareddit.service.TagServiceImpl;
 
 @Controller
 @RequestMapping("/links")
-@SessionAttributes("userDto")
 public class LinkController {
 	private LinkService linkService;
 	private CommentRepository commentRepository;
 	private static final String NEW_LINK = "newLink";
 	private static final String SUBMIT_LINK = "link/submit";
 	private static final String SUCCESS = "success";
+	private static final String ERROR = "error";
+	private static final String USER_DTO = "userDto";
+	private ModelMapper modelMapper;
 	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
@@ -57,9 +62,10 @@ public class LinkController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
-	public LinkController(LinkService linkService, CommentRepository commentRepository) {
+	public LinkController(LinkService linkService, CommentRepository commentRepository, ModelMapper modelMapper) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
+		this.modelMapper = modelMapper;
 	}
 
 	/**
@@ -75,13 +81,7 @@ public class LinkController {
 											.boxed()
 											.collect(Collectors.toList());		
 		if(user != null) {
-			User usrObj = (User) userDetailsService.loadUserByUsername(user.getUsername());
-			UserDTO userDto = UserDTO.builder()
-							.firstName(usrObj.getFirstName())
-							.secondName(usrObj.getSecondName())
-							.build();
-
-			model.addAttribute("userDto", userDto);
+			model.addAttribute(USER_DTO, mapUserToUserDto(user.getUsername()));
 		}	
 		model.addAttribute("links",links);
  		model.addAttribute("pageNumbers",totalPages);	
@@ -90,24 +90,34 @@ public class LinkController {
 	
 	
 	@GetMapping("link/{linkId}")
-	public String read(Model model, @PathVariable Long linkId, HttpServletRequest request){
+	public String read(Model model, @PathVariable Long linkId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
 		if(link.isPresent()) {
 			Link currentLink = link.get();
 			Comment comment = new Comment();
-			comment.setLink(currentLink);			
+			comment.setLink(currentLink);	
+			if (user != null) {
+				model.addAttribute(USER_DTO, mapUserToUserDto(user.getUsername()));
+			}			
 			model.addAttribute("link",currentLink);
 			model.addAttribute("comment",comment);
-			model.addAttribute(SUCCESS,model.containsAttribute(SUCCESS));
+			
+			if (model.containsAttribute(SUCCESS)) {
+				model.addAttribute(SUCCESS, model.containsAttribute(SUCCESS));
+			} else if(model.containsAttribute(ERROR)) {
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+				model.addAttribute(ERROR, model.containsAttribute(ERROR));
+			}
+			
 			return "link/link_view";
 		}else {
 			return "redirect:/links";
 		}
 	}
-	@Secured({"ROLE_ADMIN"})
+	
 	@GetMapping("/link/create")
-	public String newLink(Model model) {
-		
+	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
+		model.addAttribute(USER_DTO, mapUserToUserDto(user.getUsername()));		
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
 			link.addTag(Tag.builder().tagName("").build());
@@ -116,9 +126,8 @@ public class LinkController {
 		return SUBMIT_LINK;
 	}
 	
-	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/link/create")
-	public String saveNewLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletRequest request,
+	public String newLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletRequest request,
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
 		if(bindingResult.hasErrors()) {
@@ -134,24 +143,22 @@ public class LinkController {
 		}
 	}	
 	
-	@Secured({"ROLE_ADMIN"})
 	@PostMapping(value = "/link/comments")
 	public String saveNewComment(@Valid Comment comment, BindingResult bindingResult, 
 								RedirectAttributes attributes,Model model,
-								@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse req) {		
+								@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest req, HttpServletResponse res) {		
 
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ERROR ON COMMENT SUBMITING {}", error.getDefaultMessage()));
-			model.addAttribute(NEW_LINK, comment);
-			LOGGER.error("Validation failed of comment: {}", comment);
-			req.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return SUBMIT_LINK;
+			bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ON COMMENT {} : CODES {} MESSAGE: {}", 
+															comment, error.getCodes(), error.getDefaultMessage()));	
+			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			attributes.addFlashAttribute(ERROR, true);
 		} else {
 			comment.setUser((User) userDetailsService.loadUserByUsername(userDetails.getUsername()));
 			attributes.addFlashAttribute(SUCCESS, true);
 			commentRepository.saveAndFlush(comment);
-			return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 		}
+		return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 	}		
 	
 	@PostMapping(value = "/link/search")
@@ -159,10 +166,10 @@ public class LinkController {
 	public List<String> completeSearch(String search, Model model, HttpServletResponse req) {		
 		return tagService.findSuitableTags(search);
 	}
-	
-	@GetMapping(value = "/cleanUp")
-	public String cleanUpModel(SessionStatus sessionStatus) {
-		sessionStatus.setComplete();
-		return "redirect:/login?logout=complete";
+		
+	private UserDTO mapUserToUserDto(String usrName) {
+		User usrObj = Optional.ofNullable((User) userDetailsService.loadUserByUsername(usrName))
+								.orElseThrow(()-> new UsernameNotFoundException("user not found"));
+		return modelMapper.map(usrObj, UserDTO.class);
 	}
 }
