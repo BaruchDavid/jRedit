@@ -20,7 +20,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
@@ -49,12 +48,7 @@ public class AuthController {
 	 * @return view for login / logout
 	 */
 	@GetMapping({"/login"})
-	public String login(HttpServletRequest request,  
-						SessionStatus sessionStatus, Model model) {		
-		String logout = request.getParameter("logout");
-		if(logout!=null && logout.isEmpty()) {
-			return "redirect:/links/cleanUp";
-		}
+	public String login(HttpServletRequest request) {
 		return "auth/login"; 
 	}
 		
@@ -72,7 +66,7 @@ public class AuthController {
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));
 		if(authenticatedUser.isPresent()) {
-			//Umstellen auf UserDto
+			
 			User usr = userService.getUserWithLinks(authenticatedUser.get().getUsername());
 			member = UserDTO.builder()
 							  .firstName(usr.getFirstName())

@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.exception;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 
 /**
@@ -28,6 +31,9 @@ public class GlobalControllerAdvisor {
 	public static final String DEFAULT_APPLICATION_ERROR = "error/basicError";
 	public static final String ANONYMOUS_USER = "anonymousUser";
 	public static final String ANONYMOUS = "anonymous";
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
@@ -36,13 +42,13 @@ public class GlobalControllerAdvisor {
 			IllegalAccessException.class, NumberFormatException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-		User user = new User();	
+		UserDTO user = new UserDTO();	
 		String view = USER_ERROR_VIEW;
 		String visitorName="";
 		if(authetication.isPresent()) {
 			visitorName = authetication.get().getName();
 			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) { 
-				user = (User) userDetailsService.loadUserByUsername(visitorName);	
+				user = modelMapper.map((User) userDetailsService.loadUserByUsername(visitorName), UserDTO.class);	
 			}else { 
 				user.setFirstName("dear visitor");	
 			}
@@ -77,9 +83,10 @@ public class GlobalControllerAdvisor {
 		return createErrorView(req.getRequestURL().toString(),user, view);
 	}
 
-	private ModelAndView createErrorView(String req, User user, String errorView) {
+	private ModelAndView createErrorView(String req, UserDTO user, String errorView) {
 		
 		ModelAndView mav = new ModelAndView();
+		mav.addObject("userDto", user);
 		mav.addObject("user", user);
 		mav.addObject("url", req);
 		mav.setViewName(errorView);

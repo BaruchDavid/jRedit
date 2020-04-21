@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -40,6 +41,7 @@ public class Comment extends Auditable implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long commentId;
 	
+	@NotEmpty(message = "comment text must be present")
 	private String commentText;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
