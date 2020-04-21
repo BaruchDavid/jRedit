@@ -50,8 +50,8 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
 	
-	@NotEmpty(message = "mail must be entered ")
-	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
+	//@NotEmpty(message = "mail must be entered ")
+	//@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	@Column(unique = true, nullable=false)
 	private String email;
 	
@@ -61,15 +61,15 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Lob
 	private byte[] profileFoto;
 
-	@NotEmpty(message = "you must enter First Name.")
+	//@NotEmpty(message = "you must enter First Name.")
 	@Column(length = 50)
 	private String firstName;
 	
-	@NotEmpty(message = "you must enter Second Name.")
+	//@NotEmpty(message = "you must enter Second Name.")
 	@Column(length = 50)
 	private String secondName;
 	
-	@NotEmpty(message = "Please enter alias.")
+	//@NotEmpty(message = "Please enter alias.")
 	@Column(nullable = false, unique = true)
 	private  String aliasName;
 
@@ -88,7 +88,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private List<Comment> userComments = new ArrayList<>();
 	
 	@Builder.Default
-	@NotNull
+	//@NotNull
 	@Column(nullable = false)
 	private boolean enabled=false;
 
@@ -107,8 +107,8 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private String activationCode;
 
 	public User(
-			@NotEmpty(message = "mail must be entered ") 
-			@Size(message = "email must be between 8 and 20 signs", min = 8, max = 20) String email,
+//			@NotEmpty(message = "mail must be entered ") 
+//			@Size(message = "email must be between 8 and 20 signs", min = 8, max = 20) String email,
 			String password) {
 		super();
 		this.email = email;
@@ -141,7 +141,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 	
 	@Override
 	public String getUsername() {
-
 		return email;
 	}
 

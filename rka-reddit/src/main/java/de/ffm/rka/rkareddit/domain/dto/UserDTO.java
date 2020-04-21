@@ -32,6 +32,7 @@ public class UserDTO {
 	private String email;
 	
 	@Column(length = 100)
+	@Size(message = "password must be between  8 and 20 signs",min = 8, max = 20)
 	private String password;
 	
 	@NotEmpty(message = "please confirm your password")

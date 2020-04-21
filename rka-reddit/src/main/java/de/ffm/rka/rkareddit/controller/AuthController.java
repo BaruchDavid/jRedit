@@ -103,7 +103,8 @@ public class AuthController {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			final int badRequest = 400;
-			LOGGER.warn("Validation Error during registration {}", bindingResult.getAllErrors());
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
+												error.getCodes(), error.getDefaultMessage()));
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());
 			model.addAttribute("user", userDto);
 			res.setStatus(badRequest);
