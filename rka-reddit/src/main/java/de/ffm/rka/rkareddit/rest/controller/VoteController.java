@@ -3,10 +3,12 @@ package de.ffm.rka.rkareddit.rest.controller;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +43,7 @@ public class VoteController {
 	@GetMapping("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}")
 	public int vote(@PathVariable Long  linkId, 
 					@PathVariable short direction, 
-					@PathVariable int voteCount, Model model, HttpServletRequest req) {
+					@PathVariable int voteCount, Model model, HttpServletRequest req, HttpServletResponse res) {
 		LOGGER.info("USER AUTHETICATION DETAILS FOR VOTE {}", req.getUserPrincipal());
 		try {
 			Optional<Link> link = linkRepository.findById(linkId);
@@ -54,6 +56,7 @@ public class VoteController {
 				return voteCounter;
 			}
 		} catch (RuntimeException e) {
+			res.setStatus(HttpStatus.FORBIDDEN.value());
 			LOGGER.error("NO PERMISSION FOR USER TO VOTE", e);
 		}
 		return voteCount;

@@ -110,7 +110,7 @@ public class AuthControllerTest {
 	 * @author RKA
 	 */
 	@Test
-	public void registerNewUser() throws Exception {
+	public void registerFailPwToShortNewUser() throws Exception {
 
 	    	this.mockMvc.perform(post("/register")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -121,10 +121,36 @@ public class AuthControllerTest {
 								.param("password", "tata")
 								.param("confirmPassword", "tata"))
 	    					.andDo(print())
+							.andExpect(status().is(400))
+							.andExpect(model().attributeHasFieldErrorCode("userDTO", "password","Size"))
+							.andExpect(forwardedUrl("auth/register"));
+	}
+	
+	@Test
+	public void registerNewUserSuccess() throws Exception {
+
+	    	this.mockMvc.perform(post("/register")
+								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+								.param("firstName", "Plau")
+								.param("secondName", "Grbn")
+								.param("aliasName", "grünes")
+								.param("email", "Grbein@com.de")
+								.param("password", "tatatata")
+								.param("confirmPassword", "tatatata"))
+	    					.andDo(print())
 							.andExpect(status().is3xxRedirection())
 							.andExpect(flash().attribute("success", true));
 	}
 	
+	@Test
+	public void showRegisterViewAsUnautheticatedTest() throws Exception {
+			UserDTO user = UserDTO.builder().build();
+            this.mockMvc.perform(get("/register"))
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("userDto", user))
+					.andExpect(forwardedUrl("auth/register"));  
+	}
 
 	@Test
 	public void activateAccountTest() throws Exception {		

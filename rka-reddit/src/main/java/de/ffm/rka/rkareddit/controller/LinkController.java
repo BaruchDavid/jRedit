@@ -73,7 +73,7 @@ public class LinkController {
 	 * @param page contains a page-number, page-size and sorting
 	 */
 	@GetMapping({"/",""})
-	public String list(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
+	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
 						@AuthenticationPrincipal UserDetails user, Model model) {
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		LOGGER.info("{} Links has been found", links.getSize());
@@ -90,7 +90,7 @@ public class LinkController {
 	
 	
 	@GetMapping("link/{linkId}")
-	public String read(Model model, @PathVariable Long linkId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
+	public String link(Model model, @PathVariable Long linkId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
 		if(link.isPresent()) {
 			Link currentLink = link.get();
@@ -127,12 +127,13 @@ public class LinkController {
 	}
 	
 	@PostMapping("/link/create")
-	public String newLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletRequest request,
+	public String newLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletResponse response,
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
 		if(bindingResult.hasErrors()) {
 			LOGGER.error("Validation failed of link: {}", link);
 			model.addAttribute(NEW_LINK, link);
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			return SUBMIT_LINK;
 		} else {
 			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
@@ -144,14 +145,14 @@ public class LinkController {
 	}	
 	
 	@PostMapping(value = "/link/comments")
-	public String saveNewComment(@Valid Comment comment, BindingResult bindingResult, 
+	public String newComment(@Valid Comment comment, BindingResult bindingResult, 
 								RedirectAttributes attributes,Model model,
 								@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest req, HttpServletResponse res) {		
 
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ON COMMENT {} : CODES {} MESSAGE: {}", 
 															comment, error.getCodes(), error.getDefaultMessage()));	
-			res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			attributes.addFlashAttribute(ERROR, true);
 		} else {
 			comment.setUser((User) userDetailsService.loadUserByUsername(userDetails.getUsername()));
@@ -161,9 +162,9 @@ public class LinkController {
 		return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 	}		
 	
-	@PostMapping(value = "/link/search")
+	@PostMapping(value = "/link/search/tags")
 	@ResponseBody
-	public List<String> completeSearch(String search, Model model, HttpServletResponse req) {		
+	public List<String> search(String search, Model model, HttpServletResponse req) {		
 		return tagService.findSuitableTags(search);
 	}
 		

@@ -54,7 +54,7 @@ public class ProfileMetaDataController {
 	@ResponseBody
 //	@Cacheable("user")
 //	@CacheEvict(value="userInfo", allEntries=true)
-	public List<String> getInformation(@AuthenticationPrincipal UserDetails userPrincipal,
+	public List<String> innformationContent(@AuthenticationPrincipal UserDetails userPrincipal,
 			@RequestParam(required = false) String user, HttpServletRequest req,
 			Model model) {
 		List<String> informations = new ArrayList<>();
@@ -75,7 +75,7 @@ public class ProfileMetaDataController {
 
 	@GetMapping(value = "/information/content/user-pic")
 	@ResponseBody
-	public ResponseEntity<byte[]> getImageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
+	public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
 		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);
 		String requestedUser = usrDetail.isPresent()? usrDetail.get().getUsername():req.getParameter("user");
 		HttpHeaders headers = new HttpHeaders();

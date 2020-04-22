@@ -41,10 +41,9 @@ public class TagController {
 	 * @param request
 	 * @return view for login / logout
 	 */
-	@Secured({"ROLE_ADMIN"})
 	@PostMapping(value ="/tag/create", consumes = MediaType.ALL_VALUE)
 	@ResponseBody
-	public TagVO saveNewTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model) {		
+	public TagVO newTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model) {		
 		Tag nTag = Tag.builder()
 					  .tagId(0l)
 					  .tagName(tag.substring(0,tag.indexOf('=')))
@@ -59,10 +58,9 @@ public class TagController {
 		}
 	}	
 	
-	@Secured({"ROLE_ADMIN"})
 	@DeleteMapping(value ="/tag/deleteTag/{tagId}")
 	@ResponseBody
-	public String deleteTagWithoutRelation(@PathVariable long tagId, @AuthenticationPrincipal UserDetails user, Model model) {		
+	public String tagWithoutRelation(@PathVariable long tagId, @AuthenticationPrincipal UserDetails user, Model model) {		
 		String deletedTagId = "";
 		Optional<Tag> tag = tagService.selectTagWithLinks(tagId);
 		if (tag.isPresent()

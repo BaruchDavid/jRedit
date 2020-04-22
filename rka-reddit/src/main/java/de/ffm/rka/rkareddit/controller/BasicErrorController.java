@@ -29,7 +29,7 @@ public class BasicErrorController implements ErrorController{
 	}
 	
 	@GetMapping("/error")
-    public String handleError(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
+    public String error(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
 		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
 		User user = User.builder()
 						.firstName("Gast")

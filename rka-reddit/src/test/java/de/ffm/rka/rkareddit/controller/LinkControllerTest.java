@@ -149,8 +149,7 @@ public class LinkControllerTest {
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 														.param("commentText", "hallo kommentar"))
 	    					.andDo(print())
-							.andExpect(status().is(302))
-							.andExpect(redirectedUrl("http://localhost/login"));
+							.andExpect(status().is(401));
 	}
 	
 
@@ -228,8 +227,7 @@ public class LinkControllerTest {
 							.param("url", "http://welt.de")
 							)
   					.andDo(print())
-					.andExpect(status().is3xxRedirection())
-					.andExpect(redirectedUrl("http://localhost/login"));	
+					.andExpect(status().is(401));	
     }
 	
 	@Test
@@ -254,8 +252,7 @@ public class LinkControllerTest {
 	public void createNewLinkTestAsUnautheticated() throws Exception {
     	this.mockMvc.perform(get("/links/link/create"))
   					.andDo(print())
-					.andExpect(status().is(302))
-					.andExpect(redirectedUrl("http://localhost/login"));
+					.andExpect(status().is(401));
     }
 		
 	/**
@@ -264,7 +261,7 @@ public class LinkControllerTest {
 	@Test
 	public void getTags() throws Exception {
 		List<String> expList = Arrays.asList("TypeScript","JavaScript","Delphi/Object Pascal");
-		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/search")
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/search/tags")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 							.param("search", "sc"))
 					    	.andDo(print())
@@ -286,7 +283,6 @@ public class LinkControllerTest {
 		
             this.mockMvc.perform(get("/links/link/create"))
 					.andDo(print())
-					.andExpect(status().is(302))
-					.andExpect(redirectedUrl("http://localhost/login"));  
+					.andExpect(status().is(401));  
 	}
 }
