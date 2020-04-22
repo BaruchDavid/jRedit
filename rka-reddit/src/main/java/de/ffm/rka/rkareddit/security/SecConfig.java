@@ -5,6 +5,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 /**
@@ -50,7 +53,9 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable()
  					.headers().frameOptions().disable()
  			.and()
-
+ 			.exceptionHandling()
+ 			.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+ 			.and()
  			.authorizeRequests()			
 							.antMatchers("/","/links/","/resources/**").permitAll()	
 							.antMatchers("/login*","/profile/public").permitAll()
@@ -58,9 +63,9 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 							.antMatchers("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
 							.antMatchers(HttpMethod.POST, "/tags/tag/create", "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
 							.antMatchers(HttpMethod.DELETE, "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
-							.antMatchers(HttpMethod.GET, "/links/link/create").hasRole(ADMIN.name())
-							.antMatchers(HttpMethod.POST, "/links/link/create").hasRole(ADMIN.name())
-							.antMatchers(HttpMethod.POST, "/links/link/comments").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.GET, "/links/link/create").hasRole(USER.name())
+							.antMatchers(HttpMethod.POST, "/links/link/create").hasRole(USER.name())
+							.antMatchers(HttpMethod.POST, "/links/link/comments").hasRole(USER.name())
 							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
 							
