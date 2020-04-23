@@ -20,8 +20,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,9 +47,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
-	
-	//@NotEmpty(message = "mail must be entered ")
-	//@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
+
 	@Column(unique = true, nullable=false)
 	private String email;
 	
@@ -61,15 +57,12 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Lob
 	private byte[] profileFoto;
 
-	//@NotEmpty(message = "you must enter First Name.")
 	@Column(length = 50)
 	private String firstName;
 	
-	//@NotEmpty(message = "you must enter Second Name.")
 	@Column(length = 50)
 	private String secondName;
 	
-	//@NotEmpty(message = "Please enter alias.")
 	@Column(nullable = false, unique = true)
 	private  String aliasName;
 
@@ -88,7 +81,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private List<Comment> userComments = new ArrayList<>();
 	
 	@Builder.Default
-	//@NotNull
 	@Column(nullable = false)
 	private boolean enabled=false;
 
@@ -107,11 +99,8 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private String activationCode;
 
 	public User(
-//			@NotEmpty(message = "mail must be entered ") 
-//			@Size(message = "email must be between 8 and 20 signs", min = 8, max = 20) String email,
-			String password) {
-		super();
-		this.email = email;
+			String mail, String password) {
+		this.email = mail;
 		this.password = password;
 	}
 

@@ -2,8 +2,6 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 
 import java.util.Optional;
-
-
 import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -25,7 +23,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 public class UserDTO {
-
+	
 	@NotEmpty(message = "mail must be entered ")
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	@Column(unique = true, nullable=false)
@@ -60,5 +58,5 @@ public class UserDTO {
 		String sName = Optional.ofNullable(secondName).orElse("");
 		fullName = fName.concat(" ").concat(sName);
 		return fullName;
-	}	
+	}
 }

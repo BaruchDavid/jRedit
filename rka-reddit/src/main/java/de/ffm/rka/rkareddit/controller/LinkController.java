@@ -4,12 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,7 +30,6 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
@@ -52,7 +46,6 @@ public class LinkController {
 	private static final String SUCCESS = "success";
 	private static final String ERROR = "error";
 	private static final String USER_DTO = "userDto";
-	private ModelMapper modelMapper;
 	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
@@ -62,10 +55,9 @@ public class LinkController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
-	public LinkController(LinkService linkService, CommentRepository commentRepository, ModelMapper modelMapper) {
+	public LinkController(LinkService linkService, CommentRepository commentRepository) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
-		this.modelMapper = modelMapper;
 	}
 
 	/**
@@ -81,7 +73,7 @@ public class LinkController {
 											.boxed()
 											.collect(Collectors.toList());		
 		if(user != null) {
-			model.addAttribute(USER_DTO, mapUserToUserDto(user.getUsername()));
+			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
 		}	
 		model.addAttribute("links",links);
  		model.addAttribute("pageNumbers",totalPages);	
@@ -97,7 +89,7 @@ public class LinkController {
 			Comment comment = new Comment();
 			comment.setLink(currentLink);	
 			if (user != null) {
-				model.addAttribute(USER_DTO, mapUserToUserDto(user.getUsername()));
+				model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
 			}			
 			model.addAttribute("link",currentLink);
 			model.addAttribute("comment",comment);
@@ -117,7 +109,7 @@ public class LinkController {
 	
 	@GetMapping("/link/create")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
-		model.addAttribute(USER_DTO, mapUserToUserDto(user.getUsername()));		
+		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));		
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
 			link.addTag(Tag.builder().tagName("").build());
@@ -166,11 +158,5 @@ public class LinkController {
 	@ResponseBody
 	public List<String> search(String search, Model model, HttpServletResponse req) {		
 		return tagService.findSuitableTags(search);
-	}
-		
-	private UserDTO mapUserToUserDto(String usrName) {
-		User usrObj = Optional.ofNullable((User) userDetailsService.loadUserByUsername(usrName))
-								.orElseThrow(()-> new UsernameNotFoundException("user not found"));
-		return modelMapper.map(usrObj, UserDTO.class);
 	}
 }
