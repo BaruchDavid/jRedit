@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,11 +20,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 
 
@@ -35,10 +36,11 @@ public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 	private static final String USER_DTO = "userDto";
 	private UserService userService;
-	private ModelMapper modelMapper;
-	public AuthController(UserService userService, ModelMapper modelMapper) {
+	private UserDetailsServiceImpl userDetailsService;
+	
+	public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService) {
 		this.userService = userService;
-		this.modelMapper = modelMapper;
+		this.userDetailsService = userDetailsService;
 	}
 
 	/**
@@ -66,11 +68,7 @@ public class AuthController {
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));		
 		authenticatedUser.ifPresent(user -> {
-			User usr = userService.getUserWithLinks(user.getUsername());
-			UserDTO member = UserDTO.builder()
-							  .firstName(usr.getFirstName())
-							  .secondName(usr.getSecondName())
-							  .build();
+			UserDTO member = userDetailsService.mapUserToUserDto(user.getUsername());
 			model.addAttribute(USER_DTO, member);
 		});
 		
@@ -100,7 +98,7 @@ public class AuthController {
 	 * @return user
 	 */
 	@PostMapping("/register")
-	public String newUser(@Valid UserDTO userDto, BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
+	public String user(@Valid UserDTO userDto, BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
@@ -111,7 +109,8 @@ public class AuthController {
 			return "auth/register";
 		} else {
 			userService.register(userDto);
-			attributes.addFlashAttribute("success",true);	
+			attributes.addFlashAttribute("success",true);
+			LOGGER.info("REGISTER SUCCESSFULY{}",userDto);
 			return "redirect:/register";
 		}
 	}
@@ -125,7 +124,7 @@ public class AuthController {
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
 			userService.save(newUser);
-			UserDTO userDTO = modelMapper.map(user.get(), UserDTO.class);
+			UserDTO userDTO = userDetailsService.mapUserToUserDto(user.get().getUsername());
 			userService.sendWelcomeEmail(userDTO);
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
 			model.addAttribute("user", userDTO);
@@ -134,6 +133,31 @@ public class AuthController {
 			LOGGER.info("USER {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email);
 			return "redirect:/"; 
 		}
+	}
+	
+	@PutMapping("/profile/private/me/update")
+    public String user(@Valid UserDTO userDto, RedirectAttributes attributes, BindingResult bindingResult, HttpServletResponse res, Model model)    {
+		if(bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
+												error.getCodes(), error.getDefaultMessage()));
+			model.addAttribute("validationErrors", bindingResult.getAllErrors());
+			model.addAttribute("user", userDto);
+			res.setStatus(HttpStatus.BAD_REQUEST.value());
+			return "auth/register";
+		} else {
+			userService.register(userDto);
+			attributes.addFlashAttribute("success",true);
+			LOGGER.info("REGISTER SUCCESSFULY{}",userDto);
+			return "redirect:/register";
+		}
+    }
+	
+	@GetMapping("/profile/private/me/{email:.+}")
+	public String userInfo(@PathVariable String email, Model model) {
+		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
+								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+		model.addAttribute(USER_DTO, user);
+		return "auth/profileEdit";
 	}
 }
 
