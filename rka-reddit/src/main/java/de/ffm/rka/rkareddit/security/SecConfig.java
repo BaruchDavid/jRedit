@@ -60,6 +60,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 							.antMatchers("/","/links/","/resources/**").permitAll()	
 							.antMatchers("/login*","/profile/public").permitAll()
 							.antMatchers("/profile/private").authenticated()
+							.antMatchers("/register").not().authenticated()
 							.antMatchers("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
 							.antMatchers(HttpMethod.POST, "/tags/tag/create", "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
 							.antMatchers(HttpMethod.DELETE, "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())

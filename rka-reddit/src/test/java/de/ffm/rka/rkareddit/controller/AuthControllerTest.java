@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.controller;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,6 +33,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
@@ -51,27 +53,16 @@ public class AuthControllerTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private AuthController authController;
-
-	@Autowired
 	private UserService userService;
 	
 	@Autowired
-	private GlobalControllerAdvisor globalControllerAdvice;
-
+	private WebApplicationContext context;
 	
-	/**
-	 * Using Standalone-Configuration, no SpringApplicationContext.
-	 * All additional elements (filter, advices, interceptors) must be set manualy
-	 */
 	@Before
 	public void setup() {
-        MockitoAnnotations.initMocks(this);
-		this.mockMvc = MockMvcBuilders.standaloneSetup(authController)
-										.addInterceptors(new ApplicationHandlerInterceptor())
-										.setControllerAdvice(globalControllerAdvice)		
-										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
-										.build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+									.apply(springSecurity())
+									.build();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -82,7 +73,7 @@ public class AuthControllerTest {
 		List<Link> posts = user.getUserLinks();
 		List<Comment> comments = userService.getUserWithComments("romakapt@gmx.de").getUserComments();		
 		ResultActions resultActions = this.mockMvc.perform(get("/profile/private"))
-					.andDo(print());
+													.andDo(print());
 		MvcResult result = resultActions.andReturn();
 	    assertTrue(posts.containsAll((List<Link>) result.getModelAndView().getModel().get("posts")));
 	    assertTrue(comments.containsAll((List<Comment>) result.getModelAndView().getModel().get("comments")));
@@ -123,7 +114,7 @@ public class AuthControllerTest {
 	    					.andDo(print())
 							.andExpect(status().is(400))
 							.andExpect(model().attributeHasFieldErrorCode("userDTO", "password","Size"))
-							.andExpect(forwardedUrl("auth/register"));
+							.andExpect(view().name("auth/register"));
 	}
 	
 	@Test
@@ -149,7 +140,17 @@ public class AuthControllerTest {
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("userDto", user))
-					.andExpect(forwardedUrl("auth/register"));  
+					.andExpect(view().name("auth/register"));  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void showRegisterViewAsAutheticatedTest() throws Exception {
+			UserDTO user = UserDTO.builder().build();
+            this.mockMvc.perform(get("/register"))
+					.andDo(print())
+					.andExpect(status().is(403))
+					.andExpect(forwardedUrl("/links/"));  
 	}
 
 	@Test

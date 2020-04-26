@@ -53,14 +53,9 @@ public class LinkControllerTest {
 	
 	private EntityManager entityManager;
 	
-	/**
-	 * Using Standalone-Configuration, no SpringApplicationContext.
-	 * All additional elements (filter, advices, interceptors) must be set manualy
-	 */
 	@Before
 	public void setup() {
 
-        MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
 										.apply(springSecurity())
 										.build();
