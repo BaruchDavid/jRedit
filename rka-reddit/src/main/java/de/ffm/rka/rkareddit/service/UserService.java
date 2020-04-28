@@ -63,6 +63,13 @@ public class UserService {
 		return userDto;
 	}
 	
+	public UserDTO updateUser(UserDTO userDto) {
+		User newUser = modelMapper.map(userDto, User.class);
+		userRepository.saveAndFlush(newUser);
+		return userDto;
+		
+	}
+	
 	/**
 	 * fetch User with retrieved List<Link> with mail
 	 * @param userId

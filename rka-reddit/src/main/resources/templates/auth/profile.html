@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
 <head th:replace="~{layouts/main_layout :: head(title = ' Login')}">
 </head>
 <body>
@@ -21,7 +21,7 @@
                     <a class="nav-link" href="#">Preferences</a>
                 </li>
                 
- 				<li class="nav-item dropdown">
+ 				<li class="nav-item dropdown" sec:authorize="isAuthenticated()">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Preferences
 					</a>

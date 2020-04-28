@@ -41,7 +41,9 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
+/** spring-test-support is enabled */
+@RunWith(SpringRunner.class) 
+/** enable of application-context */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class LinkControllerTest {

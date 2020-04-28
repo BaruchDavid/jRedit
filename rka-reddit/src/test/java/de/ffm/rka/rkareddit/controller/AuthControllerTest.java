@@ -18,10 +18,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
@@ -41,6 +43,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
 
@@ -51,7 +54,10 @@ import de.ffm.rka.rkareddit.service.UserService;
 public class AuthControllerTest {
 
 	private MockMvc mockMvc;
-
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
 	@Autowired
 	private UserService userService;
 	
@@ -176,6 +182,7 @@ public class AuthControllerTest {
 		if(user.isPresent()) {
         this.mockMvc.perform(get("/profile/public/grom@gmx.de"))
 				.andDo(print())
+				.andExpect(view().name("auth/profile"))
 				.andExpect(status().isOk())
 				.andExpect(model().attribute("userContent", user.get()));  
 		} else {
@@ -191,7 +198,7 @@ public class AuthControllerTest {
         this.mockMvc.perform(get("/profile/public/grm@gmx.de"))
 				.andDo(print())
 				.andExpect(status().is(401))
-				.andExpect(forwardedUrl("error/application"));  
+				.andExpect(view().name("error/application"));  
 	}
 
 	@Test
@@ -209,10 +216,7 @@ public class AuthControllerTest {
 	public void showPrivateProfileAsAutheticated() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
         if(user.isPresent()) {
-        	UserDTO userDto = UserDTO.builder()
-        							 .firstName(user.get().getFirstName())
-        							 .secondName(user.get().getSecondName())
-        							 .build();        							 
+        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
         	this.mockMvc.perform(get("/profile/private"))
 						.andDo(print())
 						.andExpect(status().isOk())
