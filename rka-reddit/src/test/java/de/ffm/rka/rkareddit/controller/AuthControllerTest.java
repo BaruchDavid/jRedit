@@ -243,4 +243,56 @@ public class AuthControllerTest {
         	fail("user for test-request not found");
         }  
 	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void showEditProfilePage() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+        if(user.isPresent()) {
+        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
+        	this.mockMvc.perform(get("/profile/private/me/romakapt@gmx.de"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("userDto", userDto));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void showEditProfilePageForUnknownUser() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+        if(user.isPresent()) { 
+        	this.mockMvc.perform(get("/profile/private/me/romapt@gmx.de"))
+			.andDo(print())
+			.andExpect(status().is(401))
+			.andExpect(view().name("error/application"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void saveChangesOnAuthUser() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+       
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
+        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        			.param("firstName", "baruc-david")
+        			.param("email", "romakapt@gmx.de")
+        			.param("secondName", "rka.odem")
+        			.param("aliasName", "worker"))
+        			.andDo(print())
+			        .andExpect(status().is3xxRedirection())
+			        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
+			        .andExpect(flash().attributeExists("success"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	
 }

@@ -24,9 +24,13 @@ import lombok.ToString;
 @Builder
 public class UserDTO {
 	
+	/** marker interface */
+	public interface ValidationChangeUserGroup {
+
+	}
+	
 	@NotEmpty(message = "mail must be entered ")
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
-	@Column(unique = true, nullable=false)
 	private String email;
 	
 	@Column(length = 100)
@@ -36,19 +40,16 @@ public class UserDTO {
 	@NotEmpty(message = "please confirm your password")
 	private String confirmPassword;
 	
-	@NotEmpty(message = "you must enter First Name.")
-	@Column(length = 50)
+	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserGroup.class})
 	private String firstName;
 	
-	@NotEmpty(message = "you must enter Second Name.")
-	@Column(length = 50)
+	@NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserGroup.class})
 	private String secondName;
 	
 	@JsonIgnore
 	private  String fullName;
 	
-	@NotEmpty(message = "Please enter alias.")
-	@Column(nullable = false, unique = true)
+	@NotEmpty(message = "Please enter alias.", groups = {ValidationChangeUserGroup.class})
 	private  String aliasName;
 	
 	private String activationCode;

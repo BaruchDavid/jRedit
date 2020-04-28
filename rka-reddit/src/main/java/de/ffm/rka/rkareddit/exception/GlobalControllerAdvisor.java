@@ -55,7 +55,7 @@ public class GlobalControllerAdvisor {
 		} else {
 			user.setFirstName("dear visitor");
 		}
-		LOGGER.error("EXCEPTION ACCURED: {} FOR USER {} ON REQUESTED URL {} {}", exception.getMessage(), 
+		LOGGER.error("EXCEPTION ACCURED: MESSAGE {} FOR USER{} ON REQUESTED URL {} {}", exception.getMessage(), 
 																			visitorName, 
 																			req.getMethod(),
 																			req.getRequestURL());

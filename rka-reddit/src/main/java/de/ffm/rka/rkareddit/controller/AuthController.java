@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -136,7 +137,9 @@ public class AuthController {
 	}
 	
 	@PutMapping("/profile/private/me/update")
-    public String user(@Valid UserDTO userDto, RedirectAttributes attributes, BindingResult bindingResult, HttpServletResponse res, Model model)    {
+    public String user(@Validated(UserDTO.ValidationChangeUserGroup.class) UserDTO userDto, 
+    								RedirectAttributes attributes, BindingResult bindingResult, 
+    								HttpServletResponse res, Model model)    {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
 												error.getCodes(), error.getDefaultMessage()));
@@ -145,10 +148,10 @@ public class AuthController {
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "auth/register";
 		} else {
-			userService.register(userDto);
+			userService.changeUserDetails(userDto);
 			attributes.addFlashAttribute("success",true);
-			LOGGER.info("REGISTER SUCCESSFULY{}",userDto);
-			return "redirect:/register";
+			LOGGER.info("USER CHAGEND SUCCESSFULY{}",userDto);
+			return "redirect:/profile/private/me/".concat(userDto.getEmail());
 		}
     }
 	

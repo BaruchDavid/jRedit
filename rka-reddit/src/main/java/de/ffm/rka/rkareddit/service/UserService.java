@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,23 @@ public class UserService {
 		userRepository.saveAndFlush(newUser);
 		sendActivatonEmail(userDto);
 		return userDto;
+	}
+	
+	/**
+	 * changes user details
+	 * @param userDto
+	 */
+	public void changeUserDetails(UserDTO userDto) {
+		
+		User user = userRepository.findByEmail(userDto.getEmail())
+							.orElseThrow(() -> { 
+										LOGGER.warn("{} Could not be found to be changed", userDto.getEmail());
+										return new  UsernameNotFoundException(userDto.getEmail());
+										});
+		user.setFirstName(userDto.getFirstName());
+		user.setSecondName(userDto.getSecondName());
+		user.setAliasName(userDto.getAliasName());
+		userRepository.save(user);
 	}
 	
 	public UserDTO updateUser(UserDTO userDto) {
