@@ -50,6 +50,7 @@ public class UserDTO {
 	private  String fullName;
 	
 	@NotEmpty(message = "Please enter alias.", groups = {ValidationChangeUserGroup.class})
+	@Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserGroup.class})
 	private  String aliasName;
 	
 	private String activationCode;

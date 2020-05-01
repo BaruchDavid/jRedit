@@ -276,8 +276,7 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveChangesOnAuthUser() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-       
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
         	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -289,6 +288,26 @@ public class AuthControllerTest {
 			        .andExpect(status().is3xxRedirection())
 			        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
 			        .andExpect(flash().attributeExists("success"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void saveChangesOnAuthUserWithValidationChangeUserGroup() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
+        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        			.param("firstName", "baruc-david")
+        			.param("email", "romakapt@gmx.de")
+        			.param("secondName", "rka.odem")
+        			.param("aliasName", "wor"))
+        			.andDo(print())
+			        .andExpect(status().is3xxRedirection())
+			        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
+			        .andExpect(flash().attributeExists("bindingError"));
         } else {
         	fail("user for test-request not found");
         }  

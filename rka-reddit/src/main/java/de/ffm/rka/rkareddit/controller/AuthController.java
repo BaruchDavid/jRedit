@@ -36,6 +36,8 @@ import de.ffm.rka.rkareddit.service.UserService;
 public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 	private static final String USER_DTO = "userDto";
+	private static final String SUCCESS = "success";
+	private static final String BINDING_ERROR = "bindingError";
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
 	
@@ -110,7 +112,7 @@ public class AuthController {
 			return "auth/register";
 		} else {
 			userService.register(userDto);
-			attributes.addFlashAttribute("success",true);
+			attributes.addFlashAttribute(SUCCESS,true);
 			LOGGER.info("REGISTER SUCCESSFULY{}",userDto);
 			return "redirect:/register";
 		}
@@ -138,27 +140,35 @@ public class AuthController {
 	
 	@PutMapping("/profile/private/me/update")
     public String user(@Validated(UserDTO.ValidationChangeUserGroup.class) UserDTO userDto, 
-    								RedirectAttributes attributes, BindingResult bindingResult, 
-    								HttpServletResponse res, Model model)    {
+    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
+    								 Model model)    {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
 												error.getCodes(), error.getDefaultMessage()));
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());
 			model.addAttribute("user", userDto);
+			attributes.addFlashAttribute(BINDING_ERROR,true);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			return "auth/register";
+			return "redirect:/profile/private/me/".concat(userDto.getEmail());
 		} else {
 			userService.changeUserDetails(userDto);
-			attributes.addFlashAttribute("success",true);
+			attributes.addFlashAttribute(SUCCESS,true);
+			res.setStatus(HttpStatus.OK.value());
 			LOGGER.info("USER CHAGEND SUCCESSFULY{}",userDto);
 			return "redirect:/profile/private/me/".concat(userDto.getEmail());
 		}
     }
 	
 	@GetMapping("/profile/private/me/{email:.+}")
-	public String userInfo(@PathVariable String email, Model model) {
+	public String userInfo(@PathVariable String email, HttpServletResponse response, Model model) {
 		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
 								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+		if (model.containsAttribute(SUCCESS)) {
+			model.addAttribute(SUCCESS, true);
+		} else if(model.containsAttribute(BINDING_ERROR)) {
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			model.addAttribute(BINDING_ERROR, true);
+		}
 		model.addAttribute(USER_DTO, user);
 		return "auth/profileEdit";
 	}
