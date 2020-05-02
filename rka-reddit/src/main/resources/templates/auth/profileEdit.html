@@ -10,7 +10,7 @@
     <div class="row" th:if="${success}">
         <div class="col-md-3"></div>
         <div class="col-md-6 alert alert-success" role="alert" >
-            You have successfully registered with us. Please check your email to activate your account.
+            You have successfully edit your data. 
         </div>
         <div class="col-md-3"></div>
     </div>
@@ -92,65 +92,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3 field-label-responsive">
-            <label for="email">E-Mail Address</label>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
-                    <input type="text"
-                           name="email"
-                           class="form-control"
-                           id="email"
-                           placeholder="you@example.com"
-                           th:field="*{email}"
-                           required autofocus>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <div class="row">
-        <div class="col-md-3 field-label-responsive">
-            <label for="password">Password</label>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group has-danger">
-                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fas fa-key"></i></div>
-                    <input type="password"
-                           name="password"
-                           class="form-control"
-                           id="password"
-                           placeholder="Password"
-                           th:field="*{password}"
-                           required>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3 field-label-responsive">
-            <label for="password">Confirm Password</label>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem">
-                        <i class="fas fa-key"></i>
-                    </div>
-                    <input type="password"
-                           name="confirmPassword"
-                           class="form-control"
-                           id="confirmPassword"
-                           placeholder="Confirm Password"
-                           th:field="*{confirmPassword}"
-                           required>
-                </div> 
-            </div>
-        </div>
-    </div>
- -->    <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <button type="submit" class="btn btn-success"><i class="fa fa-user-circle"></i>Change me</button>

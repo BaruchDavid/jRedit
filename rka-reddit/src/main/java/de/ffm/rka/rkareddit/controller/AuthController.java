@@ -90,7 +90,7 @@ public class AuthController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping({"/register"})
+	@GetMapping({"/registration"})
 	public String registration(Model model) {	
 		model.addAttribute(USER_DTO, UserDTO.builder().build());
 		return "auth/register"; 
@@ -100,7 +100,7 @@ public class AuthController {
 	 * register user into system
 	 * @return user
 	 */
-	@PostMapping("/register")
+	@PostMapping("/registration")
 	public String user(@Valid UserDTO userDto, BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
@@ -114,11 +114,11 @@ public class AuthController {
 			userService.register(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
 			LOGGER.info("REGISTER SUCCESSFULY{}",userDto);
-			return "redirect:/register";
+			return "redirect:/registration";
 		}
 	}
 	
-	@GetMapping({"/activate/{email}/{activationCode}"})
+	@GetMapping({"/activation/{email}/{activationCode}"})
 	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, Model model) {	
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
 		Optional<User> user = userService.findUserByMailAndActivationCode(email, activationCode);

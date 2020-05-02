@@ -13,7 +13,7 @@
                 <h4>Submit Link</h4>
                 <br/>
                 <!-- th:object("${newLink}") ist Binding zum Model-Backend im Contrller-->
-                <form method="POST" th:action="@{/links/link/create}" th:object="${newLink}">
+                <form method="POST" th:action="@{/links/link}" th:object="${newLink}">
                     <div class="form-group">
                         <label for="title">Title</label>
                         <input type="text"

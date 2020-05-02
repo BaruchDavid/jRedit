@@ -2,7 +2,7 @@ $(function() {
 	$("#field_location").autocomplete({
 		source : function(request, response) {
 			$.ajax({
-				url : "/jReditt/links/link/search/tags",
+				url : "/jReditt/links/link/tags",
 				type : 'post',
 				dataType : "text",
 				data : {

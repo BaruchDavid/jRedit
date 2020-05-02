@@ -107,7 +107,7 @@ public class LinkController {
 		}
 	}
 	
-	@GetMapping("/link/create")
+	@GetMapping("/link")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
 		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));		
 		Link link = new Link();
@@ -118,7 +118,7 @@ public class LinkController {
 		return SUBMIT_LINK;
 	}
 	
-	@PostMapping("/link/create")
+	@PostMapping("/link")
 	public String newLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletResponse response,
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
@@ -154,9 +154,9 @@ public class LinkController {
 		return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 	}		
 	
-	@PostMapping(value = "/link/search/tags")
+	@PostMapping(value = "/link/tags")
 	@ResponseBody
-	public List<String> search(String search, Model model, HttpServletResponse req) {		
+	public List<String> searchTags(String search, Model model, HttpServletResponse req) {		
 		return tagService.findSuitableTags(search);
 	}
 }

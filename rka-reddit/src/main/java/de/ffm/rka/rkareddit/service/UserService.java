@@ -51,6 +51,7 @@ public class UserService {
 	 * @author RKA
 	 * @return user
 	 */
+	@Transactional(readOnly = false)
 	public UserDTO register(UserDTO userDto) {
 		User newUser = modelMapper.map(userDto, User.class);
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
@@ -68,6 +69,7 @@ public class UserService {
 	 * changes user details
 	 * @param userDto
 	 */
+	@Transactional(readOnly = false)
 	public void changeUserDetails(UserDTO userDto) {
 		
 		User user = userRepository.findByEmail(userDto.getEmail())
@@ -78,7 +80,7 @@ public class UserService {
 		user.setFirstName(userDto.getFirstName());
 		user.setSecondName(userDto.getSecondName());
 		user.setAliasName(userDto.getAliasName());
-		userRepository.save(user);
+		userRepository.saveAndFlush(user);
 	}
 	
 	public UserDTO updateUser(UserDTO userDto) {

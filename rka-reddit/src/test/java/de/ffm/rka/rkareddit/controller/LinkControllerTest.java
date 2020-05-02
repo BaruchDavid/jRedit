@@ -201,7 +201,7 @@ public class LinkControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
-    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
+    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 							.param("tags[0].tagName", "java12")
 							.param("tags[1].tagName", "java13")
@@ -216,7 +216,7 @@ public class LinkControllerTest {
 	
 	@Test
 	public void saveNewLinkTestUnautheticated() throws Exception {
-    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/create")
+    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 							.param("tags[0].tagName", "java12")
 							.param("tags[1].tagName", "java13")
@@ -235,7 +235,7 @@ public class LinkControllerTest {
 				.firstName("baruc-david")
 				.secondName("rka")
 				.build();
-    	MvcResult result = this.mockMvc.perform(get("/links/link/create"))
+    	MvcResult result = this.mockMvc.perform(get("/links/link"))
   					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(view().name("link/submit"))
@@ -247,7 +247,7 @@ public class LinkControllerTest {
 
 	@Test
 	public void createNewLinkTestAsUnautheticated() throws Exception {
-    	this.mockMvc.perform(get("/links/link/create"))
+    	this.mockMvc.perform(get("/links/link"))
   					.andDo(print())
 					.andExpect(status().is(401));
     }
@@ -258,7 +258,7 @@ public class LinkControllerTest {
 	@Test
 	public void getTags() throws Exception {
 		List<String> expList = Arrays.asList("TypeScript","JavaScript","Delphi/Object Pascal");
-		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/search/tags")
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/tags")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 							.param("search", "sc"))
 					    	.andDo(print())
@@ -278,7 +278,7 @@ public class LinkControllerTest {
 	@WithAnonymousUser
 	public void linkCreateAsAnonymous() throws Exception {
 		
-            this.mockMvc.perform(get("/links/link/create"))
+            this.mockMvc.perform(get("/links/link"))
 					.andDo(print())
 					.andExpect(status().is(401));  
 	}

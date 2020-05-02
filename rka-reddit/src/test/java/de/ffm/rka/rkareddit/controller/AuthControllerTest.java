@@ -91,7 +91,7 @@ public class AuthControllerTest {
 	@Test
 	public void registerNewInvalidUser() throws Exception {
 
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/register")
+	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/registration")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 								.param("firstName", "Paul")
 								.param("secondName", "Grom")
@@ -109,7 +109,7 @@ public class AuthControllerTest {
 	@Test
 	public void registerFailPwToShortNewUser() throws Exception {
 
-	    	this.mockMvc.perform(post("/register")
+	    	this.mockMvc.perform(post("/registration")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 								.param("firstName", "Plau")
 								.param("secondName", "Grbn")
@@ -126,7 +126,7 @@ public class AuthControllerTest {
 	@Test
 	public void registerNewUserSuccess() throws Exception {
 
-	    	this.mockMvc.perform(post("/register")
+	    	this.mockMvc.perform(post("/registration")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 								.param("firstName", "Plau")
 								.param("secondName", "Grbn")
@@ -142,7 +142,7 @@ public class AuthControllerTest {
 	@Test
 	public void showRegisterViewAsUnautheticatedTest() throws Exception {
 			UserDTO user = UserDTO.builder().build();
-            this.mockMvc.perform(get("/register"))
+            this.mockMvc.perform(get("/registration"))
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("userDto", user))
@@ -153,7 +153,7 @@ public class AuthControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void showRegisterViewAsAutheticatedTest() throws Exception {
 			UserDTO user = UserDTO.builder().build();
-            this.mockMvc.perform(get("/register"))
+            this.mockMvc.perform(get("/registration"))
 					.andDo(print())
 					.andExpect(status().is(403))
 					.andExpect(forwardedUrl("/links/"));  
@@ -161,14 +161,14 @@ public class AuthControllerTest {
 
 	@Test
 	public void activateAccountTest() throws Exception {		
-            this.mockMvc.perform(get("/activate/romakapt@gmx.de/activation"))
+            this.mockMvc.perform(get("/activation/romakapt@gmx.de/activation"))
 					.andDo(print())
 					.andExpect(view().name("auth/activated"));  
 	}
 	
 	@Test
 	public void activateInvalidAccountTest() throws Exception {		
-            this.mockMvc.perform(get("/activate/romakapt@gmx.de/actiion"))
+            this.mockMvc.perform(get("/activation/romakapt@gmx.de/actiion"))
 					.andDo(print())
 					.andExpect(redirectedUrl("/"));  
 	}
