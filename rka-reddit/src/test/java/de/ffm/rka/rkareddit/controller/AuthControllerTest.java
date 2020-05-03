@@ -28,6 +28,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -212,6 +213,7 @@ public class AuthControllerTest {
 	 * show profile site of login user
 	 */
 	@Test
+	@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
 	@WithUserDetails("romakapt@gmx.de")
 	public void showPrivateProfileAsAutheticated() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
