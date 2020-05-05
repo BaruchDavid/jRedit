@@ -141,7 +141,7 @@ public class AuthController {
 	@PutMapping("/profile/private/me/update")
     public String user(@Validated(UserDTO.ValidationChangeUserGroup.class) UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
-    								 Model model)    {
+    								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
 												error.getCodes(), error.getDefaultMessage()));
@@ -151,6 +151,7 @@ public class AuthController {
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "redirect:/profile/private/me/".concat(userDto.getEmail());
 		} else {
+			userDto.setEmail(userDetails.getUsername());
 			userService.changeUserDetails(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.OK.value());
