@@ -141,7 +141,7 @@ public class AuthControllerTest {
 	}
 	
 	@Test
-	public void showRegisterViewAsUnautheticatedTest() throws Exception {
+	public void showRegisterViewAsUnautheticatedTest() throws Exception { 
 			UserDTO user = UserDTO.builder().build();
             this.mockMvc.perform(get("/registration"))
 					.andDo(print())
@@ -263,7 +263,7 @@ public class AuthControllerTest {
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
-	public void showEditProfilePageForUnknownUser() throws Exception {
+	public void showEditProfilePageForKnownUser() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
         if(user.isPresent()) { 
         	this.mockMvc.perform(get("/profile/private/me/romapt@gmx.de"))
@@ -280,7 +280,7 @@ public class AuthControllerTest {
 	public void saveChangesOnAuthUser() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
+			this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
         			.param("firstName", "baruc-david")
         			.param("email", "romakapt@gmx.de")
@@ -288,8 +288,9 @@ public class AuthControllerTest {
         			.param("aliasName", "worker"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
-			        .andExpect(flash().attributeExists("success"));
+			        .andExpect(redirectedUrl("/profile/private/"))
+			        .andExpect(flash().attributeExists("success"))
+			        .andReturn();
         } else {
         	fail("user for test-request not found");
         }  

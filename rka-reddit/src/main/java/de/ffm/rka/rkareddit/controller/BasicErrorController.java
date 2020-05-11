@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 
 @Controller
@@ -31,16 +32,16 @@ public class BasicErrorController implements ErrorController{
 	@GetMapping("/error")
     public String error(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
 		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
-		User user = User.builder()
+		UserDTO user = UserDTO.builder()
 						.firstName("Gast")
 						.secondName("")
 						.build();
-		if(!ANONYMOUS.equals(authetication.getName())){
-			user = (User) userDetailsService.loadUserByUsername(authetication.getName());
+		if(!ANONYMOUS.equals(authetication.getName())){			
+			user =  userDetailsService.mapUserToUserDto(authetication.getName());
 		}
 		
 		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", request.getRequestURL(), ex.getMessage(), resp.getStatus());
-		model.addAttribute("user", user);
+		model.addAttribute("userDto", user);
         return "error/pageNotFound";
     }
 

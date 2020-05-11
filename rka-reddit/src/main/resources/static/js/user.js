@@ -5,7 +5,7 @@ $(document).ready(function(){
 	  .then(blob=>{
 	    var img = URL.createObjectURL(blob);
 	    document.getElementById('profilePic').setAttribute('src', img);
-	  })
+	  });
 	
 	fetch('/jReditt/profile/information/content?user='+user, {method: 'GET'})
 	.then(function(response){
@@ -23,6 +23,12 @@ $(document).ready(function(){
 			$('#userName').text('Username: ' + data.message);
 		}
 		
-	})    
-
+	});
 });
+
+$( "#displayMessage" ).show(function() {
+	setTimeout(() => {
+		$('#displayMessage').css('display', 'none');
+	}, 3000);
+});
+

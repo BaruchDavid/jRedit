@@ -24,21 +24,26 @@ import lombok.ToString;
 @Builder
 public class UserDTO {
 	
-	/** marker interface */
+	/** marker interface for user changes */
 	public interface ValidationChangeUserGroup {
-
+	}
+	
+	/** marker interface for user registration */
+	public interface ValidationUserRegistration {
 	}
 	
 	@NotEmpty(message = "mail must be entered ")
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	private String email;
 	
-	@Column(length = 100)
-	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20)
+	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserRegistration.class})
 	private String password;
 	
-	@NotEmpty(message = "please confirm your password")
+	@NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})
 	private String confirmPassword;
+	
+	@NotEmpty(message = "please type new your new password")
+	private String newPassword;
 	
 	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserGroup.class})
 	private String firstName;

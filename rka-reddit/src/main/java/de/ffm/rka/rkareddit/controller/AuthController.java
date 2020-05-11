@@ -79,7 +79,9 @@ public class AuthController {
 		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail())
 																	.getUserComments())
 											.orElse(new ArrayList<Comment>());
-		
+		if (model.containsAttribute(SUCCESS)) {
+			model.addAttribute(SUCCESS, true);
+		}		
 		model.addAttribute("userContent", pageContentUser);
 		model.addAttribute("posts", userLinks);
 		model.addAttribute("comments", userComments);
@@ -101,7 +103,8 @@ public class AuthController {
 	 * @return user
 	 */
 	@PostMapping("/registration")
-	public String user(@Valid UserDTO userDto, BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
+	public String user(@Validated(UserDTO.ValidationUserRegistration.class) UserDTO userDto, 
+								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
@@ -113,7 +116,7 @@ public class AuthController {
 		} else {
 			userService.register(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
-			LOGGER.info("REGISTER SUCCESSFULY{}",userDto);
+			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);
 			return "redirect:/registration";
 		}
 	}
@@ -154,9 +157,9 @@ public class AuthController {
 			userDto.setEmail(userDetails.getUsername());
 			userService.changeUserDetails(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
-			res.setStatus(HttpStatus.OK.value());
-			LOGGER.info("USER CHAGEND SUCCESSFULY{}",userDto);
-			return "redirect:/profile/private/me/".concat(userDto.getEmail());
+			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
+			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
+			return "redirect:/profile/private/";
 		}
     }
 	
@@ -172,6 +175,14 @@ public class AuthController {
 		}
 		model.addAttribute(USER_DTO, user);
 		return "auth/profileEdit";
+	}
+	
+	@GetMapping("/profile/private/me/{email:.+}/password")
+	public String changePassword(@PathVariable String email, HttpServletResponse response, Model model) {
+		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
+								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+		model.addAttribute(USER_DTO, user);
+		return "auth/passwordChange";
 	}
 }
 
