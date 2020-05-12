@@ -3,15 +3,17 @@ package de.ffm.rka.rkareddit.exception;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.springframework.http.HttpStatus;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
@@ -24,11 +26,13 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
  * @author kaproma
  *
  */
-@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.controller"})
+//@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit"})
+@ControllerAdvice
 public class GlobalControllerAdvisor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
 	public static final String USER_ERROR_VIEW = "error/application";
 	public static final String DEFAULT_APPLICATION_ERROR = "error/basicError";
+	public static final String PAGE_NOT_FOUND = "error/pageNotFound";
 	public static final String ANONYMOUS_USER = "anonymousUser";
 	public static final String ANONYMOUS = "anonymous";
 	
@@ -38,7 +42,7 @@ public class GlobalControllerAdvisor {
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 
-	@ExceptionHandler(value = { UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
+	@ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class, UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
 			IllegalAccessException.class, NumberFormatException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
@@ -75,6 +79,10 @@ public class GlobalControllerAdvisor {
 		case "AccessDeniedException":
 			res.setStatus(403);
 			break;
+		case "HttpRequestMethodNotSupportedException":
+			view = PAGE_NOT_FOUND;
+			res.setStatus(404);
+			break;
 		default:
 			res.setStatus(500);
 			break;
@@ -82,6 +90,32 @@ public class GlobalControllerAdvisor {
 
 		return createErrorView(req.getRequestURL().toString(),user, view);
 	}
+	
+	/**
+	 * 405 - Method Not Allowed
+	 * @param e
+	 * @return
+	 */
+//	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+//	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+//	public ModelAndView handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest req) {
+//		LOGGER.error("[METHOD NOT ALLOWED] " + e.getMessage());
+//		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+//		UserDTO user = new UserDTO();	
+//		String view = USER_ERROR_VIEW;
+//		String visitorName="";
+//		if(authetication.isPresent()) {
+//			visitorName = authetication.get().getName();
+//			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) { 
+//				user = modelMapper.map((User) userDetailsService.loadUserByUsername(visitorName), UserDTO.class);	
+//			}else { 
+//				user.setFirstName("dear visitor");	
+//			}
+//		} else {
+//			user.setFirstName("dear visitor");
+//		}
+//	    return createErrorView(req.getRequestURL().toString(),user, view);
+//	}
 
 	private ModelAndView createErrorView(String req, UserDTO user, String errorView) {
 		
