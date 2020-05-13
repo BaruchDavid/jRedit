@@ -83,6 +83,24 @@ public class UserService {
 		userRepository.saveAndFlush(user);
 	}
 	
+	/**
+	 * change user Password
+	 * @param userDto
+	 */
+	@Transactional(readOnly = false)
+	public void changeUserPassword(UserDTO userDto) {
+		
+		User user = userRepository.findByEmail(userDto.getEmail())
+							.orElseThrow(() -> { 
+										LOGGER.warn("{} Could not be found to be changed", userDto.getEmail());
+										return new  UsernameNotFoundException(userDto.getEmail());
+										});
+		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
+		String secret = encoder.encode(userDto.getNewPassword());
+		user.setPassword(secret);
+		user.setConfirmPassword(secret);
+		userRepository.saveAndFlush(user);
+	}
 	public UserDTO updateUser(UserDTO userDto) {
 		User newUser = modelMapper.map(userDto, User.class);
 		userRepository.saveAndFlush(newUser);

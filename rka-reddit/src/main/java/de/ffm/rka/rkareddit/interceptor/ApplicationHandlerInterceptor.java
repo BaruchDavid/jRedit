@@ -4,10 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -79,14 +77,12 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 		return resultList;
 	}
 
-
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
-			LOGGER.info("PAGE NOT FOUND: {} {} with Status: {}",request.getMethod(),  request.getRequestURL(), response.getStatus()); 
-		}else {
-			super.postHandle(request, response, handler, modelAndView);
+			LOGGER.info("PAGE NOT FOUND IN INTERCEPTOR-POST-HANDLE: {} {} with Status: {}",request.getMethod(),  
+					request.getRequestURL(), response.getStatus());
 		}
 	}
 }

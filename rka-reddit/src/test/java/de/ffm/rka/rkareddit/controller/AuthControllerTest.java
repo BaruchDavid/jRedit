@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -14,6 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import java.util.List;
 import java.util.Optional;
+
+import javax.validation.constraints.AssertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -302,11 +306,11 @@ public class AuthControllerTest {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
         	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
-        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        			.param("firstName", "baruc-david")
-        			.param("email", "romakapt@gmx.de")
-        			.param("secondName", "rka.odem")
-        			.param("aliasName", "wor"))
+		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		        			.param("firstName", "baruc-david")
+		        			.param("email", "romakapt@gmx.de")
+		        			.param("secondName", "rka.odem")
+		        			.param("aliasName", "wor"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
 			        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
@@ -316,5 +320,49 @@ public class AuthControllerTest {
         }  
 	}
 	
+	/**
+	 * old pw is ok
+	 * new pw is ok
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void saveAuthUserWithValidationChangeUserPasswordGroupOK() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
+		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		        			.param("email", "romakapt@gmx.de")
+		        			.param("password", "roman")
+		        			.param("confirmNewPassword", "rororo")
+		        			.param("newPassword", "rororo"))
+        			.andDo(print())
+			        .andExpect(status().is3xxRedirection())
+			        .andExpect(view().name("redirect:/profile/private/"))
+        			.andExpect(flash().attribute("success", true));
+        	user = userService.findUserById("romakapt@gmx.de");
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
 	
+	/**
+	 * @author RKA
+	 * send register request as autheticated user
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void registerAsAutheticated() throws Exception {
+
+	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/registration")
+								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+								.param("firstName", "Paul")
+								.param("secondName", "Grom")
+								.param("aliasName", "grünes")
+								.param("password", "tata")
+								.param("confirmPassword", "tata"))
+	    					.andDo(print())
+							.andExpect(status().is(403))
+							.andExpect(forwardedUrl("/links/"));
+	}
+
 }

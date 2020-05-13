@@ -32,18 +32,26 @@ public class UserDTO {
 	public interface ValidationUserRegistration {
 	}
 	
+	/** marker interface for user password change */
+	public interface ValidationUserChangePassword {
+	}
+	
 	@NotEmpty(message = "mail must be entered ")
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	private String email;
 	
-	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserRegistration.class})
+	@Size(message = "password must be between  5 and 20 signs",min = 5,
+			max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
 	private String password;
 	
 	@NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})
 	private String confirmPassword;
 	
-	@NotEmpty(message = "please type new your new password")
+	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserChangePassword.class})
 	private String newPassword;
+	
+	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+	private String confirmNewPassword;
 	
 	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserGroup.class})
 	private String firstName;
