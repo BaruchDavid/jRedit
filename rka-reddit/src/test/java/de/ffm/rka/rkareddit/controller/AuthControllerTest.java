@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.controller;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -15,21 +14,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import java.util.List;
 import java.util.Optional;
-
-import javax.validation.constraints.AssertTrue;
-
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.Test; 
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
@@ -46,9 +38,6 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
-import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
 
@@ -128,6 +117,26 @@ public class AuthControllerTest {
 							.andExpect(view().name("auth/register"));
 	}
 	
+	/**
+	 * @author RKA
+	 */
+	@Test
+	public void registerFailFirstPwSecondPwAreNotMatched() throws Exception {
+
+	    	this.mockMvc.perform(post("/registration")
+								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+								.param("firstName", "Plau")
+								.param("secondName", "Grbn")
+								.param("aliasName", "grünes")
+								.param("email", "Grbein@com.de")
+								.param("password", "tatata")
+								.param("confirmPassword", "tutata"))
+	    					.andDo(print())
+							.andExpect(status().is(400))
+							.andExpect(model().attributeErrorCount("userDTO", 1)) 
+							.andExpect(view().name("auth/register"));
+	}
+	
 	@Test
 	public void registerNewUserSuccess() throws Exception {
 
@@ -157,8 +166,7 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void showRegisterViewAsAutheticatedTest() throws Exception {
-			UserDTO user = UserDTO.builder().build();
-            this.mockMvc.perform(get("/registration"))
+			this.mockMvc.perform(get("/registration"))
 					.andDo(print())
 					.andExpect(status().is(403))
 					.andExpect(forwardedUrl("/links/"));  
@@ -339,7 +347,25 @@ public class AuthControllerTest {
 			        .andExpect(status().is3xxRedirection())
 			        .andExpect(view().name("redirect:/profile/private/"))
         			.andExpect(flash().attribute("success", true));
-        	user = userService.findUserById("romakapt@gmx.de");
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void saveAuthUserWithValidationChangeUserPasswordGroupFalseMethod() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/romakapt@gmx.de/password")
+		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		        			.param("email", "romakapt@gmx.de")
+		        			.param("password", "roman")
+		        			.param("confirmNewPassword", "rororo")
+		        			.param("newPassword", "rororo"))
+        			.andDo(print())
+			        .andExpect(status().is(404))
+			        .andExpect(view().name("error/pageNotFound"));
         } else {
         	fail("user for test-request not found");
         }  
@@ -365,4 +391,27 @@ public class AuthControllerTest {
 							.andExpect(forwardedUrl("/links/"));
 	}
 
+	/**
+	 * @author RKA
+	 * send register request as autheticated user
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changePasswordWrongOldPassword() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
+		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		        			.param("email", "romakapt@gmx.de")
+		        			.param("password", "ronan")
+		        			.param("confirmNewPassword", "rororo")
+		        			.param("newPassword", "rororo"))
+        			.andDo(print())
+			        .andExpect(status().is(400))
+			        .andExpect(view().name("auth/passwordChange"))
+        			.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
 }

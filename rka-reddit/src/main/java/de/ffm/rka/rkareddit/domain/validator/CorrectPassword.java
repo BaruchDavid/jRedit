@@ -9,18 +9,13 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-/**
- * Custom Validator for Password
- * @author RKA
- *
- */
 @Documented
-@Constraint(validatedBy = PasswordMatchValidator.class)
-@Target({ElementType.TYPE})
+@Constraint(validatedBy = RightPasswordValidator.class)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PasswordMatcher {
+public @interface CorrectPassword {
 
-	String message () default "Password and Password Confirmation do not match";
+	String message () default "Password is incorrect";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {}; 
 }

@@ -16,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
- * sending several emails from tempalate
+ * sending several email from template
  * @author RKA
  *
  */

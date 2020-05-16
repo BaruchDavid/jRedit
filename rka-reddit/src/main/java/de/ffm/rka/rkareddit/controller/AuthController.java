@@ -3,11 +3,8 @@ package de.ffm.rka.rkareddit.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,6 +27,7 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.domain.validator.Validationgroups;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 
@@ -106,14 +104,14 @@ public class AuthController {
 	 * @return user
 	 */
 	@PostMapping("/registration")
-	public String user(@Validated(UserDTO.ValidationUserRegistration.class) UserDTO userDto, 
+	public String userRegistration(@Validated(Validationgroups.ValidationUserRegistration.class) UserDTO userDto, 
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
 												error.getCodes(), error.getDefaultMessage()));
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());
-			model.addAttribute("userDto", userDto);
+			model.addAttribute(USER_DTO, userDto);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "auth/register";
 		} else {
@@ -145,14 +143,14 @@ public class AuthController {
 	}
 	
 	@PutMapping("/profile/private/me/update")
-    public String user(@Validated(UserDTO.ValidationChangeUserGroup.class) UserDTO userDto, 
+    public String user(@Validated(Validationgroups.ValidationChangeUserGroup.class) UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
 												error.getCodes(), error.getDefaultMessage()));
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());
-			model.addAttribute("user", userDto);
+			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(BINDING_ERROR,true);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "redirect:/profile/private/me/".concat(userDto.getEmail());
@@ -167,19 +165,23 @@ public class AuthController {
     }
 	
 	@PutMapping("/profile/private/me/{email:.+}/password")
-    public String userPasswordChange(@Validated(UserDTO.ValidationUserChangePassword.class) UserDTO userDto, 
+    public String userPasswordChange(@Validated(Validationgroups.ValidationUserChangePassword.class) UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
+		
 		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
-			final boolean isEqual = userDto.getPassword().equals(userDto.getNewPassword());
-			bindingResult.getAllErrors().add(new ObjectError("User.newPassword", String.valueOf(isEqual)));
+			final boolean isNewMatchsOldPw = userDto.getPassword().equals(userDto.getNewPassword());
+			if (isNewMatchsOldPw) {
+				bindingResult.getAllErrors().add(new ObjectError("User.newPassword", String.valueOf(isNewMatchsOldPw)));
+			}
+			
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
 												error.getCodes(), error.getDefaultMessage()));
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());
-			model.addAttribute("user", userDto);
+			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(BINDING_ERROR,true);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			return "redirect:/profile/private/me/".concat(userDto.getEmail());
+			return "auth/passwordChange";
 		} else {
 			userDto.setEmail(userDetails.getUsername());
 			userService.changeUserPassword(userDto);

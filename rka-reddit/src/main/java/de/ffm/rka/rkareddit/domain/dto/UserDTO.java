@@ -2,11 +2,14 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 
 import java.util.Optional;
-import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.ffm.rka.rkareddit.domain.validator.CorrectPassword;
 import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
+import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationChangeUserGroup;
+import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangePassword;
+import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserRegistration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@PasswordMatcher
+@PasswordMatcher(groups = {ValidationUserRegistration.class})
 @Getter @Setter 
 @EqualsAndHashCode
 @ToString
@@ -24,24 +27,13 @@ import lombok.ToString;
 @Builder
 public class UserDTO {
 	
-	/** marker interface for user changes */
-	public interface ValidationChangeUserGroup {
-	}
-	
-	/** marker interface for user registration */
-	public interface ValidationUserRegistration {
-	}
-	
-	/** marker interface for user password change */
-	public interface ValidationUserChangePassword {
-	}
-	
 	@NotEmpty(message = "mail must be entered ")
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	private String email;
 	
 	@Size(message = "password must be between  5 and 20 signs",min = 5,
 			max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
+	@CorrectPassword(groups = {ValidationUserChangePassword.class})
 	private String password;
 	
 	@NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})

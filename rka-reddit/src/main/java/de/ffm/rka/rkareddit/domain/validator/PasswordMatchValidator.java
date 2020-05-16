@@ -10,7 +10,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
  * @author RKA
  *
  */
-public class PasswordValidator implements ConstraintValidator<PasswordMatcher, UserDTO>{
+public class PasswordMatchValidator implements ConstraintValidator<PasswordMatcher, UserDTO>{
 
 	@Override
 	public boolean isValid(UserDTO user, ConstraintValidatorContext context) {
