@@ -38,6 +38,7 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.domain.validator.OldPasswordNewPasswordNotMatcher;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
 
@@ -393,7 +394,7 @@ public class AuthControllerTest {
 
 	/**
 	 * @author RKA
-	 * send register request as autheticated user
+	 * passwordchange with wrong old password
 	 */
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
@@ -411,6 +412,53 @@ public class AuthControllerTest {
 			        .andExpect(view().name("auth/passwordChange"))
         			.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
         } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	/**
+	 * @author RKA
+	 * passwordchange with new-password and new-password-confirmation not equal
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changePasswordNewPwNotEqualNewPWConfirm() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
+		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		        			.param("email", "romakapt@gmx.de")
+		        			.param("password", "roman")
+		        			.param("confirmNewPassword", "rororo")
+		        			.param("newPassword", "bobobo"))
+        			.andDo(print())
+			        .andExpect(status().is(400))
+			        .andExpect(view().name("auth/passwordChange"))
+        			.andExpect(model().attributeHasErrors("userDTO"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	/**
+	 * old and new password should not be equal
+	 * @throws Exception
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changePasswordNewAndOldShouldNotBeQual() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+		if(user.isPresent()) { 
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
+		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+		        			.param("email", "romakapt@gmx.de")
+		        			.param("password", "roman")
+		        			.param("confirmNewPassword", "roman")
+		        			.param("newPassword", "roman"))
+        			.andDo(print())
+			        .andExpect(status().is(400))
+			        .andExpect(view().name("auth/passwordChange"));
+         } else {
         	fail("user for test-request not found");
         }  
 	}

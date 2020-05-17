@@ -169,12 +169,7 @@ public class AuthController {
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		
-		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
-			final boolean isNewMatchsOldPw = userDto.getPassword().equals(userDto.getNewPassword());
-			if (isNewMatchsOldPw) {
-				bindingResult.getAllErrors().add(new ObjectError("User.newPassword", String.valueOf(isNewMatchsOldPw)));
-			}
-			
+		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {		
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
 												error.getCodes(), error.getDefaultMessage()));
 			model.addAttribute("validationErrors", bindingResult.getAllErrors());

@@ -20,7 +20,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordMatcher {
 
-	String message () default "Password and Password Confirmation do not match";
+	String message () default "Password and password Confirmation do not match";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {}; 
 }

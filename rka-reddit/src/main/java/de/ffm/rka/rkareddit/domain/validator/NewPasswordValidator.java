@@ -2,19 +2,16 @@ package de.ffm.rka.rkareddit.domain.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 
-/**
- * 
- * validates given constraint for given object
- * @author RKA
- *
- */
-public class PasswordMatchValidator implements ConstraintValidator<PasswordMatcher, UserDTO>{
+/** new password and new password confirmation should be equal */
+public class NewPasswordValidator implements ConstraintValidator<NewPasswordMatcher, UserDTO>{
 
 	@Override
 	public boolean isValid(UserDTO user, ConstraintValidatorContext context) {
 		
-		return user.getPassword().equals(user.getConfirmPassword());
+		return user.getNewPassword().equals(user.getConfirmNewPassword());
 	}
+
 }

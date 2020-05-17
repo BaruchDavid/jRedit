@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.domain.validator;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,13 +8,12 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Documented
-@Constraint(validatedBy = CorrectPasswordValidator.class)
-@Target(ElementType.FIELD)
+@Constraint(validatedBy = NewPasswordValidator.class)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CorrectPassword {
+public @interface NewPasswordMatcher {
 
-	String message () default "Password is incorrect";
+	String message () default "new password and password confirmation must be equal";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {}; 
 }
