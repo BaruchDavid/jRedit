@@ -8,7 +8,9 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -24,7 +26,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
  */
 @Service
 public class MailService {
-	private static final String FAIL_TO_SEND = "FAIL TO SEND EMAIL";
+	private static final String FAIL_TO_SEND = "FAIL TO SEND EMAIL {}";
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
 	private final JavaMailSender mailSender;
 	private final SpringTemplateEngine templateEngine;
@@ -49,17 +51,20 @@ public class MailService {
 			MimeMessage mimeMessage = this.mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
 			message.setTo(to);
-			message.setFrom("noreplay@jReditt.com");
+			message.setFrom("noreplay@jReditt.com");	
 			message.setSubject(subject);
 			message.setText(content,isHtml);
 			mailSender.send(mimeMessage);
 			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", List.of(mimeMessage.getAllRecipients()));
-		} catch (MailException  | MessagingException  e) {
-			LOGGER.error(FAIL_TO_SEND, e);
-		} catch (Exception  e) {
-			LOGGER.error("system error", e);
-		} 
-		
+		} catch (MailAuthenticationException  e) {
+			LOGGER.error(FAIL_TO_SEND , "MailAuthenticationException", e);
+		} catch (MailSendException e) {
+			LOGGER.error(FAIL_TO_SEND, "MailSendException", e);
+		} catch (MailException e) {
+			LOGGER.error(FAIL_TO_SEND, "MailException", e);
+		} catch (MessagingException e) {
+			LOGGER.error(FAIL_TO_SEND, "MessagingException", e);
+		}
 	}
 	/**
 	 * creates temaplte for email

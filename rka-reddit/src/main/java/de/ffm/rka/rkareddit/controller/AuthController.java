@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -115,6 +116,7 @@ public class AuthController {
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "auth/register";
 		} else {
+			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 			userService.register(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
 			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);

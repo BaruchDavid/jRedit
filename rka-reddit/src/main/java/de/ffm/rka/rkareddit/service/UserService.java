@@ -59,9 +59,8 @@ public class UserService {
 		newUser.setPassword(secret);
 		newUser.setConfirmPassword(secret);
 		newUser.addRole(roleService.findByName("ROLE_USER"));
-		newUser.setActivationCode(UUID.randomUUID().toString());
-		userRepository.saveAndFlush(newUser);
 		sendActivatonEmail(userDto);
+		userRepository.saveAndFlush(newUser);
 		return userDto;
 	}
 	
