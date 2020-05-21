@@ -5,6 +5,8 @@ import java.util.Locale;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.sql.rowset.serial.SerialException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 
 /**
  * sending several email from template
@@ -34,7 +37,7 @@ public class MailService {
 
 	@Value("${linkMeEmailService}")
 	private String baseUrl;
-	
+		
 	public MailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
 		super();
 		this.mailSender = mailSender;
@@ -43,9 +46,10 @@ public class MailService {
 	
 	/**
 	 * sends emal ansychron
+	 * @throws ServiceException 
 	 */
 	@Async
-	public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
+	public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) throws ServiceException {
 		LOGGER.info("TRY SEND EMAIL TO {} witch Subject {}", to, subject);
 		try {
 			MimeMessage mimeMessage = this.mailSender.createMimeMessage();
@@ -56,21 +60,18 @@ public class MailService {
 			message.setText(content,isHtml);
 			mailSender.send(mimeMessage);
 			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", List.of(mimeMessage.getAllRecipients()));
-		} catch (MailAuthenticationException  e) {
+		} catch (MailException | MessagingException e) {
 			LOGGER.error(FAIL_TO_SEND , "MailAuthenticationException", e);
-		} catch (MailSendException e) {
-			LOGGER.error(FAIL_TO_SEND, "MailSendException", e);
-		} catch (MailException e) {
-			LOGGER.error(FAIL_TO_SEND, "MailException", e);
-		} catch (MessagingException e) {
-			LOGGER.error(FAIL_TO_SEND, "MessagingException", e);
-		}
+			throw new ServiceException("Registierung fehlgeschlagen, Email konnte nicht versendet werden,"
+					+ "bitte versuchen Sie es später noch mal");
+		} 
 	}
 	/**
 	 * creates temaplte for email
+	 * @throws ServiceException 
 	 */
 	@Async
-	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) {
+	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) throws ServiceException {
 		LOGGER.info("CREATE EMAIL FOR {}", userDto);
 		Locale locale =  Locale.ENGLISH;
 		Context context  = new Context(locale);
@@ -83,17 +84,19 @@ public class MailService {
 	
 	/**
 	 * activation mail sending
+	 * @throws ServiceException 
 	 */
 	@Async
-	public void sendActivationEmail(UserDTO user) {
+	public void sendActivationEmail(UserDTO user) throws ServiceException {
 		sendEmailFromTemplate(user, "mail/activation",  "LinkMe User Activation"); 
 	}
 	
 	/**
 	 * welcome mail sending
+	 * @throws ServiceException 
 	 */
 	@Async
-	public void sendWelcomeEmail(UserDTO user) {
+	public void sendWelcomeEmail(UserDTO user) throws ServiceException {
 		sendEmailFromTemplate(user, "mail/welcome",  "Welcom new LinkMe User"); 
 	}
 	

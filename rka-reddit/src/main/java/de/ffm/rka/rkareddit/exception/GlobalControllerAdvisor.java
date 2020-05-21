@@ -41,7 +41,7 @@ public class GlobalControllerAdvisor {
 	UserDetailsServiceImpl userDetailsService;
 
 	@ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class, UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
-			IllegalAccessException.class, NumberFormatException.class, Exception.class})
+			IllegalAccessException.class, NumberFormatException.class, ServiceException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		UserDTO user = new UserDTO();	
@@ -81,6 +81,10 @@ public class GlobalControllerAdvisor {
 			view = PAGE_NOT_FOUND;
 			res.setStatus(404);
 			break;
+		case "ServiceException":
+			view = DEFAULT_APPLICATION_ERROR;
+			res.setStatus(504);
+			break;	
 		default:
 			res.setStatus(500);
 			break;

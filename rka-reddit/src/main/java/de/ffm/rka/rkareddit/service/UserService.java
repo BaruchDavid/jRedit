@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
@@ -50,9 +51,10 @@ public class UserService {
 	 * send activation email
 	 * @author RKA
 	 * @return user
+	 * @throws ServiceException 
 	 */
 	@Transactional(readOnly = false)
-	public UserDTO register(UserDTO userDto) {
+	public UserDTO register(UserDTO userDto) throws ServiceException {
 		User newUser = modelMapper.map(userDto, User.class);
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		String secret = encoder.encode(newUser.getPassword());
@@ -123,11 +125,11 @@ public class UserService {
 		return userRepository.findByEmailAndActivationCode(mail, code);
 	}
 	
-	private void sendActivatonEmail(UserDTO user) {
+	private void sendActivatonEmail(UserDTO user) throws ServiceException {
 		mailService.sendActivationEmail(user);
 	}
 	
-	public void sendWelcomeEmail(UserDTO user) {
+	public void sendWelcomeEmail(UserDTO user) throws ServiceException {
 		mailService.sendWelcomeEmail(user);
 	}
 	
@@ -169,7 +171,7 @@ public class UserService {
 		return userRepository.fetchUserWithComments(userId);
 	}
 
-	public boolean lockUser(String userName) {
+	public boolean lockUser(String userName) throws ServiceException {
 		Optional<User> dbUser = userRepository.findByEmail(userName);
 		boolean locked = false;
 		if(dbUser.isPresent()) {

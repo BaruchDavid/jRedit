@@ -29,6 +29,7 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 
@@ -103,10 +104,11 @@ public class AuthController {
 	/**
 	 * register user into system
 	 * @return user
+	 * @throws ServiceException 
 	 */
 	@PostMapping("/registration")
 	public String userRegistration(@Validated(Validationgroups.ValidationUserRegistration.class) UserDTO userDto, 
-								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) {
+								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) throws ServiceException {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
@@ -125,7 +127,7 @@ public class AuthController {
 	}
 	
 	@GetMapping({"/activation/{email}/{activationCode}"})
-	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, Model model) {	
+	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, Model model) throws ServiceException {	
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
 		Optional<User> user = userService.findUserByMailAndActivationCode(email, activationCode);
 		if(user.isPresent()) {			

@@ -33,7 +33,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
@@ -43,7 +42,8 @@ import de.ffm.rka.rkareddit.service.UserService;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
+				classes = SpringSecurityTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class AuthControllerTest {
 
@@ -57,6 +57,7 @@ public class AuthControllerTest {
 	
 	@Autowired
 	private WebApplicationContext context;
+	
 	
 	@Before
 	public void setup() {
@@ -96,6 +97,9 @@ public class AuthControllerTest {
 							.andExpect(status().is(400))
 							.andExpect(view().name("auth/register"));
 	}
+	
+	
+
 	
 	/**
 	 * @author RKA

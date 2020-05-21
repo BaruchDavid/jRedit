@@ -27,6 +27,7 @@
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					  <a class="dropdown-item" th:href="@{'/profile/private/me/' + ${userDto.getEmail()}}">Me</a>
 					  <a class="dropdown-item" th:href="@{'/profile/private/me/' + ${userDto.getEmail()}} + '/password'">Change password</a>
+					  <a class="dropdown-item" th:href="@{'/profile/private/me/' + ${userDto.getEmail()}} + '/password'">Change email</a>
 					  <div class="dropdown-divider"></div>
 					  <a class="dropdown-item" href="#">Ask admin</a>
 					</div>
