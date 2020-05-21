@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layouts/main_layout :: head(title = 'Springit - Register for an account')}">
+</head>
+<body>
+
+    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+
+    <div class="row" th:if="${validationErrors}">
+       	<div class="col-md-3"></div>
+    </div>
+    <!-- User password form -->
+    <form class="form-horizontal" role="form" th:method="PUT" th:action="@{/profile/private/me/update/{userDto.getEmail()}}" th:object="${userDto}" th:if="!${success}">
+    <div class="row" th:if="${validationErrors}">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <span class="text-danger align-middle">
+                <ul th:each="error : ${validationErrors}">
+                    <li th:text="${error.getDefaultMessage()}"></li>
+                </ul>
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h2>Change your email</h2>
+            <hr>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-md-3 field-label-responsive">
+            <label for="email">New e-mail Address</label>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
+                    <input type="text"
+                           name="email"
+                           class="form-control"
+                           id="email"
+                           placeholder="you@example.com"
+                           th:field="*{newEmail}"
+                           required autofocus>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 field-label-responsive">
+            <label for="password">Password</label>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group has-danger">
+                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                    <div class="input-group-addon" style="width: 2.6rem"><i class="fas fa-key"></i></div>
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           id="password"
+                           placeholder="old password"
+                           th:field="*{password}"
+                           required>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-success"><i class="fa fa-user-circle"></i> change password</button>
+        </div>
+    </div>
+</form>
+<div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
+</body>
+</html>

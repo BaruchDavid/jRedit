@@ -168,6 +168,36 @@ public class AuthController {
 		}
     }
 	
+	@GetMapping("/profile/private/me/update/{email:.+}")
+	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
+		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
+								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+		model.addAttribute(USER_DTO, user);
+		return "auth/emailChange";
+	}
+	
+	@PutMapping("/profile/private/me/update/{email:.+}")
+    public String userEmailUpdate(@Validated(Validationgroups.ValidationChangeUserGroup.class) UserDTO userDto, 
+    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
+    								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
+		if(bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
+												error.getCodes(), error.getDefaultMessage()));
+			model.addAttribute("validationErrors", bindingResult.getAllErrors());
+			model.addAttribute(USER_DTO, userDto);
+			attributes.addFlashAttribute(BINDING_ERROR,true);
+			res.setStatus(HttpStatus.BAD_REQUEST.value());
+			return "redirect:/profile/private/me/".concat(userDto.getEmail());
+		} else {
+			userDto.setEmail(userDetails.getUsername());
+			userService.changeUserDetails(userDto);
+			attributes.addFlashAttribute(SUCCESS,true);
+			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
+			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
+			return "redirect:/profile/private/";
+		}
+    }
+	
 	@PutMapping("/profile/private/me/{email:.+}/password")
     public String userPasswordChange(@Validated(Validationgroups.ValidationUserChangePassword.class) UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
@@ -205,16 +235,6 @@ public class AuthController {
 								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
 		model.addAttribute(USER_DTO, user);
 		return "auth/passwordChange";
-	}
-	
-	@GetMapping("/")
-	public String basicHandler() {
-		return "";
-	}
-	
-	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public String exceptionHanlder() {
-		return "";
 	}
 }
 

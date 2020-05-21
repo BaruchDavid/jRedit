@@ -279,6 +279,22 @@ public class AuthControllerTest {
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
+	public void showChangeEmailPage() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+        if(user.isPresent()) {
+        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
+        	this.mockMvc.perform(get("/profile/private/me/update/romakapt@gmx.de"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("userDto", userDto))
+			.andExpect(view().name("auth/emailChange"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
 	public void showEditProfilePageForKnownUser() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
         if(user.isPresent()) { 

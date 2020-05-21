@@ -35,6 +35,10 @@ public class UserDTO {
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
 	private String email;
 	
+	@NotEmpty(message = "mail must be entered ")
+	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
+	private String newEmail;
+	
 	@Size(message = "password must be between  5 and 20 signs",min = 5,
 			max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
 	@CorrectPassword(groups = {ValidationUserChangePassword.class})
