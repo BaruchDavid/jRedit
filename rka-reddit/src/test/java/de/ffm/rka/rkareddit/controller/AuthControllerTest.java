@@ -44,7 +44,7 @@ import de.ffm.rka.rkareddit.service.UserService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
 				classes = SpringSecurityTestConfig.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthControllerTest {
 
 	private MockMvc mockMvc;
@@ -288,6 +288,22 @@ public class AuthControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("userDto", userDto))
 			.andExpect(view().name("auth/emailChange"));
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void showChangePasswordPage() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+        if(user.isPresent()) {
+        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
+        	this.mockMvc.perform(get("/profile/private/me/romakapt@gmx.de/password"))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("userDto", userDto))
+			.andExpect(view().name("auth/passwordChange"));
         } else {
         	fail("user for test-request not found");
         }  
