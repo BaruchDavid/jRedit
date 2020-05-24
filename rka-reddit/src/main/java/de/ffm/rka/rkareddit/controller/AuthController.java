@@ -143,8 +143,8 @@ public class AuthController {
 			model.addAttribute("user", userDTO);
 			return "auth/activated"; 
 		}else {
-			LOGGER.info("USER {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email);
-			return "redirect:/"; 
+			LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);
+			return "redirect:/error/registrationError"; 
 		}
 	}
 	
@@ -179,9 +179,9 @@ public class AuthController {
 	}
 	
 	@PutMapping("/profile/private/me/update/{email:.+}")
-    public String userEmailUpdate(@Validated(Validationgroups.ValidationChangeUserGroup.class) UserDTO userDto, 
+    public String userEmailUpdate(UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
-    								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
+    								 @AuthenticationPrincipal UserDetails userDetails, Model model) throws ServiceException    {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
 												error.getCodes(), error.getDefaultMessage()));
@@ -191,11 +191,11 @@ public class AuthController {
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "redirect:/profile/private/me/".concat(userDto.getEmail());
 		} else {
-			userDto.setEmail(userDetails.getUsername());
-			userService.changeUserDetails(userDto);
+			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
+			userService.register(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
-			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
+			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);			
 			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }

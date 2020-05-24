@@ -187,7 +187,7 @@ public class AuthControllerTest {
 	public void activateInvalidAccountTest() throws Exception {		
             this.mockMvc.perform(get("/activation/romakapt@gmx.de/actiion"))
 					.andDo(print())
-					.andExpect(redirectedUrl("/"));  
+					.andExpect(redirectedUrl("/error/registrationError"));  
 	}
 	
 	/**
@@ -325,7 +325,7 @@ public class AuthControllerTest {
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
-	public void saveChangesOnAuthUser() throws Exception {
+	public void saveChangesOnAuthUserOK() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
 			this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
@@ -334,6 +334,26 @@ public class AuthControllerTest {
         			.param("email", "romakapt@gmx.de")
         			.param("secondName", "rka.odem")
         			.param("aliasName", "worker"))
+        			.andDo(print())
+			        .andExpect(status().is3xxRedirection())
+			        .andExpect(redirectedUrl("/profile/private/"))
+			        .andExpect(flash().attributeExists("success"))
+			        .andReturn();
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changeUserEmailOK() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
+		if(user.isPresent()) { 
+			this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update/romakapt@gmx.de")
+        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        			.param("email", "romakapt@gmx.de")
+        			.param("newEmail", "kaproma@yahoo.de")
+        			.param("password", "roman"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
 			        .andExpect(redirectedUrl("/profile/private/"))

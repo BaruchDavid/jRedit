@@ -43,5 +43,11 @@ public class BasicErrorController implements ErrorController{
 		model.addAttribute("userDto", user);
         return "error/pageNotFound";
     }
+	
+	@GetMapping("/error/registrationError")
+    public String registrationError(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
+		LOGGER.error("SHOW REGISTRATION-ERROR-VEW");
+        return "error/registrationError";
+    }
 
 }

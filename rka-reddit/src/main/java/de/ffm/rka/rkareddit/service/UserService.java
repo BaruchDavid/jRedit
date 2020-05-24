@@ -47,6 +47,7 @@ public class UserService {
 	 * set activation code
 	 * disable user before saving
 	 * send activation email
+	 * reregister user
 	 * @author RKA
 	 * @return user
 	 * @throws ServiceException 
@@ -54,6 +55,11 @@ public class UserService {
 	@Transactional(readOnly = false)
 	public UserDTO register(UserDTO userDto) throws ServiceException {
 		User newUser = modelMapper.map(userDto, User.class);
+		if(userDto.getNewEmail()!=null && !userDto.getNewEmail().isEmpty()) {
+			newUser = getUser(userDto.getEmail());
+			newUser.setEmail(userDto.getNewEmail());
+			userDto.setEmail(userDto.getNewEmail());
+		}
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		String secret = encoder.encode(newUser.getPassword());
 		newUser.setPassword(secret);
@@ -71,15 +77,20 @@ public class UserService {
 	@Transactional(readOnly = false)
 	public void changeUserDetails(UserDTO userDto) {
 		
-		User user = userRepository.findByEmail(userDto.getEmail())
-							.orElseThrow(() -> { 
-										LOGGER.warn("{} Could not be found to be changed", userDto.getEmail());
-										return new  UsernameNotFoundException(userDto.getEmail());
-										});
+		User user = getUser(userDto.getEmail());
 		user.setFirstName(userDto.getFirstName());
 		user.setSecondName(userDto.getSecondName());
 		user.setAliasName(userDto.getAliasName());
 		userRepository.saveAndFlush(user);
+	}
+
+	private User getUser(String userMail) {
+		User user = userRepository.findByEmail(userMail)
+							.orElseThrow(() -> { 
+										LOGGER.warn("{} Could not be found to be changed", userMail);
+										return new  UsernameNotFoundException(userMail);
+										});
+		return user;
 	}
 	
 	/**
@@ -89,11 +100,7 @@ public class UserService {
 	@Transactional(readOnly = false)
 	public void changeUserPassword(UserDTO userDto) {
 		
-		User user = userRepository.findByEmail(userDto.getEmail())
-							.orElseThrow(() -> { 
-										LOGGER.warn("{} Could not be found to be changed", userDto.getEmail());
-										return new  UsernameNotFoundException(userDto.getEmail());
-										});
+		User user = getUser(userDto.getEmail());
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		String secret = encoder.encode(userDto.getNewPassword());
 		user.setPassword(secret);
@@ -154,10 +161,7 @@ public class UserService {
 	 */
 	@Cacheable("userInfo")
 	public Optional<User> findUserById(String username){
-		LOGGER.info("TRY TO FIND SER BY USERNAME {}", username);
-		Optional<User> existsUser = userRepository.findByEmail(username);
-		existsUser.ifPresent(user -> LOGGER.info("USER FOUND WITH ID {}", user.getUserId()));
-		return existsUser;
+		return Optional.of(getUser(username));
 	}
 
 	/**
@@ -170,7 +174,7 @@ public class UserService {
 	}
 
 	public boolean lockUser(String userName) throws ServiceException {
-		Optional<User> dbUser = userRepository.findByEmail(userName);
+		Optional<User> dbUser = Optional.of(getUser(userName));
 		boolean locked = false;
 		if(dbUser.isPresent()) {
 			dbUser.get().setEnabled(false);
@@ -187,4 +191,6 @@ public class UserService {
 		// TODO Auto-generated method stub
 		return userRepository.findAll();
 	}
+	
+	
 }
