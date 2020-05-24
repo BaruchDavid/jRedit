@@ -17,8 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +39,10 @@ public class AuthController {
 	private static final String USER_DTO = "userDto";
 	private static final String SUCCESS = "success";
 	private static final String BINDING_ERROR = "bindingError";
+	private static final String VALIDATION_ERRORS = "validationErrors";
+	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
+	private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private/";
+	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
 	
@@ -113,7 +115,7 @@ public class AuthController {
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
 												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute("validationErrors", bindingResult.getAllErrors());
+			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
 			model.addAttribute(USER_DTO, userDto);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "auth/register";
@@ -151,9 +153,9 @@ public class AuthController {
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
 												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute("validationErrors", bindingResult.getAllErrors());
+			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
 			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(BINDING_ERROR,true);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -164,14 +166,14 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
-			return "redirect:/profile/private/";
+			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }
 	
 	@GetMapping("/profile/private/me/update/{email:.+}")
 	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
 		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
 		model.addAttribute(USER_DTO, user);
 		return "auth/emailChange";
 	}
@@ -181,9 +183,9 @@ public class AuthController {
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
 												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute("validationErrors", bindingResult.getAllErrors());
+			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
 			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(BINDING_ERROR,true);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -194,7 +196,7 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
-			return "redirect:/profile/private/";
+			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }
 	
@@ -204,9 +206,9 @@ public class AuthController {
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		
 		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {		
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Update user validation Error: {} message: {}", 
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
 												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute("validationErrors", bindingResult.getAllErrors());
+			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
 			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(BINDING_ERROR,true);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -217,14 +219,14 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER PASSWORD CHAGEND SUCCESSFULY {}",userDto);
-			return "redirect:/profile/private/";
+			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }
 	
 	@GetMapping("/profile/private/me/{email:.+}")
 	public String userInfo(@PathVariable String email, HttpServletResponse response, Model model) {
 		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
 		model.addAttribute(USER_DTO, user);
 		return "auth/profileEdit";
 	}
@@ -232,7 +234,7 @@ public class AuthController {
 	@GetMapping("/profile/private/me/{email:.+}/password")
 	public String changePassword(@PathVariable String email, HttpServletResponse response, Model model) {
 		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-								.orElseThrow(() -> new UsernameNotFoundException("User not found for profile view"));
+								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
 		model.addAttribute(USER_DTO, user);
 		return "auth/passwordChange";
 	}
