@@ -13,4 +13,8 @@ public interface Validationgroups {
 	/** marker interface for user password change */
 	public interface ValidationUserChangePassword {
 	}
+	
+	/** marker interface for user password change */
+	public interface ValidationUserChangeEmail {
+	}
 }

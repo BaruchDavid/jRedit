@@ -6,10 +6,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.validator.CorrectPassword;
+import de.ffm.rka.rkareddit.domain.validator.EmailNotEqualToNewEmail;
 import de.ffm.rka.rkareddit.domain.validator.NewPasswordMatcher;
 import de.ffm.rka.rkareddit.domain.validator.PasswordMatcher;
 import de.ffm.rka.rkareddit.domain.validator.OldPasswordNewPasswordNotMatcher;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationChangeUserGroup;
+import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangeEmail;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangePassword;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserRegistration;
 import lombok.AllArgsConstructor;
@@ -20,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
+@EmailNotEqualToNewEmail(groups = {ValidationUserChangeEmail.class})
 @NewPasswordMatcher(groups = {ValidationUserChangePassword.class})
 @PasswordMatcher(groups = {ValidationUserRegistration.class})
 @Getter @Setter 
@@ -41,7 +43,7 @@ public class UserDTO {
 	
 	@Size(message = "password must be between  5 and 20 signs",min = 5,
 			max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
-	@CorrectPassword(groups = {ValidationUserChangePassword.class})
+	@CorrectPassword(groups = {ValidationUserChangePassword.class, ValidationUserChangeEmail.class})
 	private String password;
 	
 	@NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})

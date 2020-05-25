@@ -51,12 +51,6 @@ public class AuthControllerOverridenPropsTest {
 	private MockMvc mockMvc;
 	
 	@Autowired
-	private ModelMapper modelMapper;
-	
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
 	private WebApplicationContext context;
 	
 	

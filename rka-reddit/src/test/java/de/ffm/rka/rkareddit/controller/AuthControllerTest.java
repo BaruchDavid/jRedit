@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -14,7 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import java.util.List;
 import java.util.Optional;
+
+import org.hamcrest.beans.HasProperty;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test; 
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
@@ -30,6 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -37,8 +42,11 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
+import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
+
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -349,16 +357,45 @@ public class AuthControllerTest {
 	public void changeUserEmailOK() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update/romakapt@gmx.de")
+			this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/update/romakapt@gmx.de")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
         			.param("email", "romakapt@gmx.de")
         			.param("newEmail", "kaproma@yahoo.de")
-        			.param("password", "roman"))
+        			.param("password", "roman")
+					.param("confirmPassword", "roman"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
 			        .andExpect(redirectedUrl("/profile/private/"))
 			        .andExpect(flash().attributeExists("success"))
 			        .andReturn();
+        } else {
+        	fail("user for test-request not found");
+        }  
+	}
+	
+	/**
+	 * old and new email are equal
+	 * password is empty
+	 * @throws Exception
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changeUserEmailNotOK() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
+		if(user.isPresent()) { 
+			this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/update/romakapt@gmx.de")
+        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        			.param("email", "romakapt@gmx.de")
+        			.param("newEmail", "romakapt@gmx.de")
+        			.param("password", "doman")
+					.param("confirmPassword", "doman"))
+        			.andDo(print())
+			        .andExpect(status().is(400))
+			        .andExpect(view().name("auth/emailChange"))
+			        .andExpect(globalErrors().hasGlobalError("userDTO", "old and new email must be different"))
+			        .andExpect(model().errorCount(2))
+			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
+
         } else {
         	fail("user for test-request not found");
         }  
