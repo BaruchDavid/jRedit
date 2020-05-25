@@ -108,9 +108,11 @@ public class AuthController {
 	 * @return user
 	 * @throws ServiceException 
 	 */
-	@PostMapping("/registration")
-	public String userRegistration(@Validated(Validationgroups.ValidationUserRegistration.class) UserDTO userDto, 
-								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, Model model) throws ServiceException {
+	@PostMapping(value = {"/registration", "/profile/private/me/update/romakapt@gmx.de"})
+	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
+														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
+								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
+								HttpServletRequest req, Model model) throws ServiceException {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
@@ -118,13 +120,13 @@ public class AuthController {
 			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
 			model.addAttribute(USER_DTO, userDto);
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			return "auth/register";
+			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
 		} else {
 			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 			userService.register(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
 			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);
-			return "redirect:/registration";
+			return  req.getRequestURI().contains("registration")? "redirect:/registration": REDIRECT_TO_PRIVATE_PROFILE;
 		}
 	}
 	
@@ -178,27 +180,27 @@ public class AuthController {
 		return "auth/emailChange";
 	}
 	
-	@PutMapping("/profile/private/me/update/{email:.+}")
-    public String userEmailUpdate(UserDTO userDto, 
-    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
-    								 @AuthenticationPrincipal UserDetails userDetails, Model model) throws ServiceException    {
-		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
-												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-			model.addAttribute(USER_DTO, userDto);
-			attributes.addFlashAttribute(BINDING_ERROR,true);
-			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			return "redirect:/profile/private/me/".concat(userDto.getEmail());
-		} else {
-			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
-			userService.register(userDto);
-			attributes.addFlashAttribute(SUCCESS,true);
-			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
-			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);			
-			return REDIRECT_TO_PRIVATE_PROFILE;
-		}
-    }
+//	@PutMapping("/profile/private/me/update/{email:.+}")
+//    public String userEmailUpdate(UserDTO userDto, 
+//    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
+//    								 @AuthenticationPrincipal UserDetails userDetails, Model model) throws ServiceException    {
+//		if(bindingResult.hasErrors()) {
+//			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
+//												error.getCodes(), error.getDefaultMessage()));
+//			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
+//			model.addAttribute(USER_DTO, userDto);
+//			attributes.addFlashAttribute(BINDING_ERROR,true);
+//			res.setStatus(HttpStatus.BAD_REQUEST.value());
+//			return "redirect:/profile/private/me/".concat(userDto.getEmail());
+//		} else {
+//			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
+//			userService.register(userDto);
+//			attributes.addFlashAttribute(SUCCESS,true);
+//			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
+//			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);			
+//			return REDIRECT_TO_PRIVATE_PROFILE;
+//		}
+//    }
 	
 	@PutMapping("/profile/private/me/{email:.+}/password")
     public String userPasswordChange(@Validated(Validationgroups.ValidationUserChangePassword.class) UserDTO userDto, 
