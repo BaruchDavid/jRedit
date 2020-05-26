@@ -41,8 +41,9 @@ public class AuthController {
 	private static final String BINDING_ERROR = "bindingError";
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
-	private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private/";
+	private static final String REDIRECT_TO_LOGOUT = "redirect:/logout";
 	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
+	private static final String NEW_REGISTERED_MAIL = "newEmail";
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
 	
@@ -71,7 +72,7 @@ public class AuthController {
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email, 
 								Model model) {
-		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);	
+		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));		
@@ -108,7 +109,7 @@ public class AuthController {
 	 * @return user
 	 * @throws ServiceException 
 	 */
-	@PostMapping(value = {"/registration", "/profile/private/me/update/romakapt@gmx.de"})
+	@PostMapping(value = {"/registration", "/profile/private/me/update/{email:.+}"})
 	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
 														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
@@ -123,21 +124,31 @@ public class AuthController {
 			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
 		} else {
 			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
-			userService.register(userDto);
-			attributes.addFlashAttribute(SUCCESS,true);
+			userDto = userService.register(userDto);
+			attributes.addFlashAttribute(SUCCESS, true);
+			attributes.addFlashAttribute(NEW_REGISTERED_MAIL, userDto.getEmail());
 			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);
-			return  req.getRequestURI().contains("registration")? "redirect:/registration": REDIRECT_TO_PRIVATE_PROFILE;
+			return  req.getRequestURI().contains("registration")? "redirect:/registration": REDIRECT_TO_LOGOUT;
 		}
 	}
 	
-	@GetMapping({"/activation/{email}/{activationCode}"})
-	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, Model model) throws ServiceException {	
+	@GetMapping(value={"/activation/{email}/{activationCode}", "/mailchange/{email}/{activationCode}"})
+	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, HttpServletRequest req, Model model) throws ServiceException {	
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-		Optional<User> user = userService.findUserByMailAndActivationCode(email, activationCode);
+		Optional<User> user;
+		boolean isNewEmail = false;
+		if(req.getRequestURI().contains("mailchange")) {
+			user = userService.findUserByMailAndReActivationCode(email, activationCode);
+			isNewEmail = true;
+		} else {
+			user = userService.findUserByMailAndActivationCode(email, activationCode);
+		}
+		
 		if(user.isPresent()) {			
 			User newUser = user.get();
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
+			newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
 			userService.save(newUser);
 			UserDTO userDTO = userDetailsService.mapUserToUserDto(user.get().getUsername());
 			userService.sendWelcomeEmail(userDTO);
@@ -168,7 +179,7 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
-			return REDIRECT_TO_PRIVATE_PROFILE;
+			return REDIRECT_TO_LOGOUT;
 		}
     }
 	
@@ -179,29 +190,7 @@ public class AuthController {
 		model.addAttribute(USER_DTO, user);
 		return "auth/emailChange";
 	}
-	
-//	@PutMapping("/profile/private/me/update/{email:.+}")
-//    public String userEmailUpdate(UserDTO userDto, 
-//    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
-//    								 @AuthenticationPrincipal UserDetails userDetails, Model model) throws ServiceException    {
-//		if(bindingResult.hasErrors()) {
-//			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
-//												error.getCodes(), error.getDefaultMessage()));
-//			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-//			model.addAttribute(USER_DTO, userDto);
-//			attributes.addFlashAttribute(BINDING_ERROR,true);
-//			res.setStatus(HttpStatus.BAD_REQUEST.value());
-//			return "redirect:/profile/private/me/".concat(userDto.getEmail());
-//		} else {
-//			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
-//			userService.register(userDto);
-//			attributes.addFlashAttribute(SUCCESS,true);
-//			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
-//			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);			
-//			return REDIRECT_TO_PRIVATE_PROFILE;
-//		}
-//    }
-	
+		
 	@PutMapping("/profile/private/me/{email:.+}/password")
     public String userPasswordChange(@Validated(Validationgroups.ValidationUserChangePassword.class) UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
@@ -221,7 +210,7 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER PASSWORD CHAGEND SUCCESSFULY {}",userDto);
-			return REDIRECT_TO_PRIVATE_PROFILE;
+			return REDIRECT_TO_LOGOUT;
 		}
     }
 	

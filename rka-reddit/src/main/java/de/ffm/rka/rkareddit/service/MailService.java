@@ -72,6 +72,7 @@ public class MailService {
 		Locale locale =  Locale.ENGLISH;
 		Context context  = new Context(locale);
 		context.setVariable("user", userDto);
+		context.setVariable("activation", userDto);
 		context.setVariable("baseURL", baseUrl);
 		String content = templateEngine.process(temlateName, context);
 		sendEmail(userDto.getEmail(), subject, content, false, true);
@@ -84,7 +85,11 @@ public class MailService {
 	 */
 	@Async
 	public void sendActivationEmail(UserDTO user) throws ServiceException {
-		sendEmailFromTemplate(user, "mail/activation",  "LinkMe User Activation"); 
+		sendEmailFromTemplate(user, "mail/activation",  "LinkMe user Activation"); 
+	}
+	@Async
+	public void sendEmailToNewEmailAccount(UserDTO user) throws ServiceException {
+		sendEmailFromTemplate(user, "mail/new_email_activation",  "LinkMe user email change"); 
 	}
 	
 	/**

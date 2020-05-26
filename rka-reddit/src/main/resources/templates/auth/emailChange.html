@@ -10,8 +10,7 @@
     <div class="row" th:if="${validationErrors}">
        	<div class="col-md-3"></div>
     </div>
-    <!-- User password form -->
-    <form class="form-horizontal" role="form" th:method="PUT" th:action="@{/profile/private/me/update/{userDto.getEmail()}}" th:object="${userDto}" th:if="!${success}">
+    <form class="form-horizontal" role="form" th:object="${userDto}" th:method="POST" th:action="@{/profile/private/me/update/} + ${email}" >
     <div class="row" th:if="${validationErrors}">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -25,11 +24,11 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <h2>Change your email</h2>
+            <h2>Change your Email</h2>
             <hr>
         </div>
     </div>
-     <div class="row">
+    <div class="row">
         <div class="col-md-3 field-label-responsive">
             <label for="email">New e-mail Address</label>
         </div>
@@ -50,7 +49,7 @@
     </div>
     <div class="row">
         <div class="col-md-3 field-label-responsive">
-            <label for="password">Password</label>
+            <label for="password"></label>
         </div>
         <div class="col-md-6">
             <div class="form-group has-danger">
@@ -60,23 +59,26 @@
                            name="password"
                            class="form-control"
                            id="password"
-                           placeholder="password"
+                           placeholder="old password"
                            th:field="*{password}"
                            required>
                 </div>
             </div>
         </div>
-        <div class="col-md-6" style="display:none">
+    </div>
+    <div class="row">
+        <div class="col-md-3 field-label-responsive">
+            <label for="confirmPassword"></label>
+        </div>
+        <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem">
-                        <i class="fas fa-key"></i>
-                    </div>
+                    <div class="input-group-addon" style="width: 2.6rem"><i class="fad fa-key"></i></div>
                     <input type="password"
                            name="confirmPassword"
                            class="form-control"
                            id="confirmPassword"
-                           placeholder="Confirm Password"
+                           placeholder="confirm new password"
                            th:field="*{confirmPassword}"
                            required>
                 </div> 

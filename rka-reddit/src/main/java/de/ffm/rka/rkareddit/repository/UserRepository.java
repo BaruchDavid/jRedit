@@ -14,6 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	Optional<User> findByEmail(String email);
 	Optional<User> findByEmailAndActivationCode(String email, String code);
+	Optional<User> findByNewEmailAndActivationCode(String email, String activationCode);
 	
 	/**git
 	 * email is unique value like id for fetching Roles
@@ -44,5 +45,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "LEFT OUTER JOIN FETCH usr.userComments "
 			+ "WHERE usr.email =:email")
 	User fetchUserWithComments(@Param("email") String userId);
+	
+	
 	
 }

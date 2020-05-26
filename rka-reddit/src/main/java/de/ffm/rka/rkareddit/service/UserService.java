@@ -55,21 +55,30 @@ public class UserService {
 	@Transactional(readOnly = false)
 	public UserDTO register(UserDTO userDto) throws ServiceException {
 		User newUser = modelMapper.map(userDto, User.class);
+		String secret = "";
 		if(userDto.getNewEmail()!=null && !userDto.getNewEmail().isEmpty()) {
 			newUser = getUser(userDto.getEmail());
-			newUser.setEmail(userDto.getNewEmail());
 			userDto.setEmail(userDto.getNewEmail());
+			newUser.setNewEmail(userDto.getNewEmail());
+			newUser.setActivationCode(userDto.getActivationCode());
+			sendEmailToNewUserEmailAddress(userDto);
+		} else {
+			BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
+			secret = encoder.encode(newUser.getPassword());
+			newUser.setPassword(secret);
+			newUser.setConfirmPassword(secret);
+			newUser.addRole(roleService.findByName("ROLE_USER"));
+			sendActivatonEmail(userDto);
 		}
-		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-		String secret = encoder.encode(newUser.getPassword());
-		newUser.setPassword(secret);
-		newUser.setConfirmPassword(secret);
-		newUser.addRole(roleService.findByName("ROLE_USER"));
-		sendActivatonEmail(userDto);
-		userRepository.saveAndFlush(newUser);
+		userDto = modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
 		return userDto;
 	}
 	
+	private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException {
+		mailService.sendEmailToNewEmailAccount(userDto);
+		
+	}
+
 	/**
 	 * changes user details
 	 * @param userDto
@@ -190,6 +199,11 @@ public class UserService {
 	public List<User> findAll() {
 		// TODO Auto-generated method stub
 		return userRepository.findAll();
+	}
+
+	public Optional<User> findUserByMailAndReActivationCode(String email, String activationCode) {
+		// TODO Auto-generated method stub
+		return userRepository.findByNewEmailAndActivationCode(email, activationCode);
 	}
 	
 	

@@ -65,6 +65,9 @@ public class User extends Auditable implements UserDetails, Serializable {
 	
 	@Column(nullable = false, unique = true)
 	private  String aliasName;
+	
+	@Column(nullable = true, unique = false)
+	private  String newEmail;
 
 	/**
 	 * Link is a owner of this Relation
