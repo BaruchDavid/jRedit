@@ -1,5 +1,5 @@
 INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, confirm_password,creation_date)
-VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'baruc-david', 'rka', 'worker', null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
+VALUES(1, 'romakapt@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'baruc-david', 'rka', 'worker', 'romakapt@gmx.de', null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
 
 INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, confirm_password, creation_date)
 VALUES(2, 'dascha@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'dascha', 'unknown', 'ceo', null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());

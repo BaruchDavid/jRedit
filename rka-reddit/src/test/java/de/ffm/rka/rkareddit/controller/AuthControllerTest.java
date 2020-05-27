@@ -192,6 +192,13 @@ public class AuthControllerTest {
 	}
 	
 	@Test
+	public void changeEmailFromLinkTest() throws Exception {		
+            this.mockMvc.perform(get("/mailchange/romakapt@gmx.de/activation"))
+					.andDo(print())
+					.andExpect(view().name("auth/activated"));  
+	}
+	
+	@Test
 	public void activateInvalidAccountTest() throws Exception {		
             this.mockMvc.perform(get("/activation/romakapt@gmx.de/actiion"))
 					.andDo(print())
@@ -344,7 +351,7 @@ public class AuthControllerTest {
         			.param("aliasName", "worker"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/profile/private/"))
+			        .andExpect(redirectedUrl("/profile/private"))
 			        .andExpect(flash().attributeExists("success"))
 			        .andReturn();
         } else {
@@ -365,7 +372,7 @@ public class AuthControllerTest {
 					.param("confirmPassword", "roman"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/profile/private/"))
+			        .andExpect(redirectedUrl("/logout"))
 			        .andExpect(flash().attributeExists("success"))
 			        .andReturn();
         } else {
@@ -438,7 +445,7 @@ public class AuthControllerTest {
 		        			.param("newPassword", "rororo"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
-			        .andExpect(view().name("redirect:/profile/private/"))
+			        .andExpect(view().name("redirect:/profile/private"))
         			.andExpect(flash().attribute("success", true));
         } else {
         	fail("user for test-request not found");

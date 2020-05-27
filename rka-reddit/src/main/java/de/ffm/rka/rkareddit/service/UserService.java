@@ -202,7 +202,7 @@ public class UserService {
 	}
 
 	public Optional<User> findUserByMailAndReActivationCode(String email, String activationCode) {
-		// TODO Auto-generated method stub
+		userRepository.findByEmail(email);
 		return userRepository.findByNewEmailAndActivationCode(email, activationCode);
 	}
 	

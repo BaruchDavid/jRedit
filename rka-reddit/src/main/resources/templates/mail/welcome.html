@@ -7,7 +7,9 @@
 </head>
 <body>
     <h1>linkMe Welcome</h1>
-    <p th:text="|Dear ${user.getFullName()}|">Dear Username</p>
-    <p>Welcome to linkMe World</p>
+    <div th:object = "${user}">
+    	<p th:text="|Dear *{fullName}|"></p>
+    	<p>Welcome to linkMe World</p>
+    </div>
 </body>
 </html>

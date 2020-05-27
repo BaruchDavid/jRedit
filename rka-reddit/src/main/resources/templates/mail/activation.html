@@ -6,9 +6,12 @@
     <title>Activate your Account</title>
 </head>
 <body>
-    <h1>Springit User Activation</h1>
-    <p th:text="|Dear ${user.getFullName()}|">Dear Username</p>
-    <p>Thank you for signing up for a free account with us at linkMe. Please click on the link below to activate your account.</p>
-    <a th:href="${baseURL} + '/jReditt/activation/' + ${user.getEmail()} + '/' + ${user.getActivationCode()}">Activate Account</a>
+	<div th:object="${user}">
+		<h1>LinkIn User Activation</h1>
+    	<p th:text="|Dear ${user.fullName}|">Dear User</p>
+    	<p>Thank you for signing up for a free account with us at linkMe. Please click on the link below to activate your account.</p>
+    	<a th:href="${baseURL} + '/jReditt/activation/' + *{email} + '/' + *{activationCode}">Activate Account</a>	
+	</div>
+    
 </body>
 </html>

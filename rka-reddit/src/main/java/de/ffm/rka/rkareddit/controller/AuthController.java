@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,8 +44,8 @@ public class AuthController {
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
 	private static final String REDIRECT_TO_LOGOUT = "redirect:/logout";
+	private static final String REDIRECT_TO_PRIVATE_PROFIL = "redirect:/profile/private";
 	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
-	private static final String NEW_REGISTERED_MAIL = "newEmail";
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
 	
@@ -126,7 +128,6 @@ public class AuthController {
 			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 			userDto = userService.register(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
-			attributes.addFlashAttribute(NEW_REGISTERED_MAIL, userDto.getEmail());
 			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);
 			return  req.getRequestURI().contains("registration")? "redirect:/registration": REDIRECT_TO_LOGOUT;
 		}
@@ -179,17 +180,10 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
-			return REDIRECT_TO_LOGOUT;
+			return REDIRECT_TO_PRIVATE_PROFIL;
 		}
     }
 	
-	@GetMapping("/profile/private/me/update/{email:.+}")
-	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
-		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
-		model.addAttribute(USER_DTO, user);
-		return "auth/emailChange";
-	}
 		
 	@PutMapping("/profile/private/me/{email:.+}/password")
     public String userPasswordChange(@Validated(Validationgroups.ValidationUserChangePassword.class) UserDTO userDto, 
@@ -210,7 +204,7 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER PASSWORD CHAGEND SUCCESSFULY {}",userDto);
-			return REDIRECT_TO_LOGOUT;
+			return REDIRECT_TO_PRIVATE_PROFIL;
 		}
     }
 	
@@ -228,6 +222,15 @@ public class AuthController {
 								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
 		model.addAttribute(USER_DTO, user);
 		return "auth/passwordChange";
+	}
+	
+	@GetMapping("/profile/private/me/update/{email:.+}")
+	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
+		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
+				.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
+		user.setNewEmail(StringUtils.EMPTY);
+		model.addAttribute(USER_DTO, user);
+		return "auth/emailChange";
 	}
 }
 
