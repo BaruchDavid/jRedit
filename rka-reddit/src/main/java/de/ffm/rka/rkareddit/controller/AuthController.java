@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -111,7 +112,7 @@ public class AuthController {
 	 * @return user
 	 * @throws ServiceException 
 	 */
-	@PostMapping(value = {"/registration", "/profile/private/me/update/{email:.+}"})
+	@PostMapping(value = {"/registration"})
 	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
 														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
@@ -125,11 +126,37 @@ public class AuthController {
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
 		} else {
-			userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 			userDto = userService.register(userDto);
+			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
 			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);
-			return  req.getRequestURI().contains("registration")? "redirect:/registration": REDIRECT_TO_LOGOUT;
+			return  "redirect:/registration";
+		}
+	}
+	
+	/**
+	 * user changes own email address
+	 * @return new userDto object and success
+	 * @throws ServiceException
+	 */
+	@PatchMapping(value = {"/profile/private/me/update/{email:.+}"})
+	public String userChangeEmail(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
+														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
+								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
+								HttpServletRequest req, Model model) throws ServiceException {
+		LOGGER.info("TRY TO REGISTER {}",userDto);
+		if(bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
+												error.getCodes(), error.getDefaultMessage()));
+			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
+			model.addAttribute(USER_DTO, userDto);
+			res.setStatus(HttpStatus.BAD_REQUEST.value());
+			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
+		} else {
+			userDto = userService.changeEmail(userDto);
+			attributes.addFlashAttribute(SUCCESS, true);
+			LOGGER.info("CHANGE EMAIL SUCCESSFULY {}", userDto);
+			return REDIRECT_TO_LOGOUT;
 		}
 	}
 	
@@ -150,6 +177,7 @@ public class AuthController {
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
 			newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
+			newUser.setNewEmail(StringUtils.EMPTY);
 			userService.save(newUser);
 			UserDTO userDTO = userDetailsService.mapUserToUserDto(user.get().getUsername());
 			userService.sendWelcomeEmail(userDTO);

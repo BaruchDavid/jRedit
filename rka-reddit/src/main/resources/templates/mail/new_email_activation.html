@@ -6,12 +6,20 @@
     <title>Activate your Account</title>
 </head>
 <body>
-	<div th:object="${user}">
+	 <h1>User email change</h1>
+    <div th:object = "${user}">
+    	<p th:text="|Dear *{fullName}|"></p>
+    	<p>Please confirm your new email adrress.</p>
+	    <p>Your account will not be updated, until you don't follow below link.</p>
+	    <a th:href="${baseURL} + '/jReditt/mailchange/' + *{email} + '/' + *{activationCode}">Activate Account</a>
+    </div>
+
+	<!-- <div th:object="${user}">
 		<h1>User email change</h1>
 	    <p th:text="|Dear *{fullName}|"></p>
 	    <p>Please confirm your new email adrress.</p>
 	    <p>Your account will not be updated, until you don't follow below link.</p>
 	    <a th:href="${baseURL} + '/jReditt/mailchange/' + *{email} + '/' + *{activationCode}">Activate Account</a>
-	</div>
+	</div> -->
     </body>
 </html>

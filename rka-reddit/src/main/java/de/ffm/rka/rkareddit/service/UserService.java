@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,25 +56,30 @@ public class UserService {
 	 */
 	@Transactional(readOnly = false)
 	public UserDTO register(UserDTO userDto) throws ServiceException {
+		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 		User newUser = modelMapper.map(userDto, User.class);
 		String secret = "";
-		if(userDto.getNewEmail()!=null && !userDto.getNewEmail().isEmpty()) {
-			newUser = getUser(userDto.getEmail());
-			userDto.setEmail(userDto.getNewEmail());
-			newUser.setNewEmail(userDto.getNewEmail());
-			newUser.setActivationCode(userDto.getActivationCode());
-			sendEmailToNewUserEmailAddress(userDto);
-		} else {
-			BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-			secret = encoder.encode(newUser.getPassword());
-			newUser.setPassword(secret);
-			newUser.setConfirmPassword(secret);
-			newUser.addRole(roleService.findByName("ROLE_USER"));
-			sendActivatonEmail(userDto);
-		}
-		userDto = modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
-		return userDto;
+		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
+		secret = encoder.encode(newUser.getPassword());
+		newUser.setPassword(secret);
+		newUser.setConfirmPassword(secret);
+		newUser.addRole(roleService.findByName("ROLE_USER"));
+		sendActivatonEmail(userDto);
+		return modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
 	}
+	
+	@Transactional(readOnly = false)
+	public UserDTO changeEmail(UserDTO userDto) throws ServiceException {
+		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
+		User newUser = getUser(userDto.getEmail());
+		userDto.setEmail(userDto.getNewEmail());
+		newUser.setNewEmail(userDto.getNewEmail());
+		newUser.setActivationCode(userDto.getActivationCode());
+		LOGGER.info("User changes Email: OLD {} NEW {}", newUser.getEmail(), newUser.getNewEmail());
+		sendEmailToNewUserEmailAddress(userDto);
+		return modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
+	}
+	
 	
 	private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException {
 		mailService.sendEmailToNewEmailAccount(userDto);
@@ -202,7 +209,6 @@ public class UserService {
 	}
 
 	public Optional<User> findUserByMailAndReActivationCode(String email, String activationCode) {
-		userRepository.findByEmail(email);
 		return userRepository.findByNewEmailAndActivationCode(email, activationCode);
 	}
 	

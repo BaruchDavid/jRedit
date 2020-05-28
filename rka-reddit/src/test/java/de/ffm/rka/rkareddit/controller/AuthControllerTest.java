@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.hamcrest.beans.HasProperty;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -152,17 +153,17 @@ public class AuthControllerTest {
 	@Test
 	public void registerNewUserSuccess() throws Exception {
 
-	    	this.mockMvc.perform(post("/registration")
-								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-								.param("firstName", "Plau")
-								.param("secondName", "Grbn")
-								.param("aliasName", "grünes")
-								.param("email", "Grbein@com.de")
-								.param("password", "tatatata")
-								.param("confirmPassword", "tatatata"))
-	    					.andDo(print())
-							.andExpect(status().is3xxRedirection())
-							.andExpect(flash().attribute("success", true));
+    	this.mockMvc.perform(post("/registration")
+							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+							.param("firstName", "Plau")
+							.param("secondName", "Grbn")
+							.param("aliasName", "grünes")
+							.param("email", "Grbein@com.de")
+							.param("password", "tatatata")
+							.param("confirmPassword", "tatatata"))
+    					.andDo(print())
+						.andExpect(status().is3xxRedirection())
+						.andExpect(flash().attribute("success", true));
 	}
 	
 	@Test
@@ -292,11 +293,17 @@ public class AuthControllerTest {
         }  
 	}
 	
+	/**
+	 * only for testcase new email will be keeped in db,
+	 * cause get-request on activation looks wo this email
+	 * and when no one is present, error will be thrown
+	 */
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void showChangeEmailPage() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-        if(user.isPresent()) {
+		if(user.isPresent()) {
+			user.get().setNewEmail(StringUtils.EMPTY); 
         	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
         	this.mockMvc.perform(get("/profile/private/me/update/romakapt@gmx.de"))
 			.andDo(print())
@@ -364,7 +371,7 @@ public class AuthControllerTest {
 	public void changeUserEmailOK() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/update/romakapt@gmx.de")
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
         			.param("email", "romakapt@gmx.de")
         			.param("newEmail", "kaproma@yahoo.de")
@@ -390,7 +397,7 @@ public class AuthControllerTest {
 	public void changeUserEmailNotOK() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/update/romakapt@gmx.de")
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
         			.param("email", "romakapt@gmx.de")
         			.param("newEmail", "romakapt@gmx.de")
@@ -399,8 +406,8 @@ public class AuthControllerTest {
         			.andDo(print())
 			        .andExpect(status().is(400))
 			        .andExpect(view().name("auth/emailChange"))
-			        .andExpect(globalErrors().hasGlobalError("userDTO", "old and new email must be different"))
 			        .andExpect(model().errorCount(2))
+			        .andExpect(globalErrors().hasGlobalError("userDTO", "old and new email must be different"))
 			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
 
         } else {
