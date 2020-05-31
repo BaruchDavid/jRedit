@@ -13,7 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface EmailNotEqualToNewEmail {
-	String message () default "old and new email must be different";
+	String message () default "Old and new email must be different";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {}; 
 }

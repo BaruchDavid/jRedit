@@ -145,8 +145,7 @@ public class AuthControllerTest {
 								.param("password", "tatata")
 								.param("confirmPassword", "tutata"))
 	    					.andDo(print())
-							.andExpect(status().is(400))
-							.andExpect(model().attributeErrorCount("userDTO", 1)) 
+							.andExpect(globalErrors().hasOneGlobalError("userDTO", "Password and password confirmation do not match")) 
 							.andExpect(view().name("auth/register"));
 	}
 	
@@ -388,8 +387,8 @@ public class AuthControllerTest {
 	}
 	
 	/**
-	 * old and new email are equal
-	 * password is empty
+	 * old and new email are equal ==> wrong
+	 * password is wrong
 	 * @throws Exception
 	 */
 	@Test
@@ -407,12 +406,43 @@ public class AuthControllerTest {
 			        .andExpect(status().is(400))
 			        .andExpect(view().name("auth/emailChange"))
 			        .andExpect(model().errorCount(2))
-			        .andExpect(globalErrors().hasGlobalError("userDTO", "old and new email must be different"))
+			        .andExpect(globalErrors().hasOneGlobalError("userDTO", "Old and new email must be different"))
 			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
 
         } else {
         	fail("user for test-request not found");
         }  
+	}
+	
+	/**
+	 * old and new email are equal ==> wrong
+	 * password is wrong
+	 * confirm-password and password is not equal
+	 * @throws Exception
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changeUserEmailNotOKAllErrors() throws Exception {
+	
+ 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
+ 		if(user.isPresent()) { 
+ 			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
+         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+         			.param("email", "romakapt@gmx.de")
+         			.param("newEmail", "romakapt@gmx.de")
+         			.param("password", "doman")
+ 					.param("confirmPassword", "soman"))
+         			.andDo(print())
+ 			        .andExpect(status().is(400))
+ 			        .andExpect(view().name("auth/emailChange"))
+ 			        .andExpect(model().errorCount(3))
+ 			        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
+ 			        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
+ 			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
+ 
+         } else {
+         	fail("user for test-request not found");
+         }  
 	}
 	
 	@Test

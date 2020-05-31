@@ -13,16 +13,11 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 public class PasswordMatchValidator implements ConstraintValidator<PasswordMatcher, UserDTO>{
 
 	/**
-	 * checks new password is matching of confimed new password during registration
+	 * checks new password is matching of confirmed new password during registration
 	 */
 	@Override
 	public boolean isValid(UserDTO user, ConstraintValidatorContext context) {
 		
-		if(user.getPassword() != null && user.getNewEmail() == null) {
-			return user.getPassword().equals(user.getConfirmPassword());
-		} else {
-			return true;
-		}
-		
+		return user.getPassword().equals(user.getConfirmPassword());		
 	}
 }

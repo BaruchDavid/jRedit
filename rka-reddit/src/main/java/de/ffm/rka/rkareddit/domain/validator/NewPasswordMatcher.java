@@ -13,7 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NewPasswordMatcher {
 
-	String message () default "new password and password confirmation must be equal";
+	String message () default "New password and password confirmation must be equal";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {}; 
 }
