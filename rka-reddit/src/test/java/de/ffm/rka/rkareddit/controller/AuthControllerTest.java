@@ -428,7 +428,6 @@ public class AuthControllerTest {
  		if(user.isPresent()) { 
  			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
          			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-         			.param("email", "romakapt@gmx.de")
          			.param("newEmail", "romakapt@gmx.de")
          			.param("password", "doman")
  					.param("confirmPassword", "soman"))
