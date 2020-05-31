@@ -67,16 +67,17 @@ public class MailService {
 	 * @throws ServiceException 
 	 */
 	@Async
-	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) throws ServiceException {
+	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) throws ServiceException {		
+		sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, temlateName), false, true);
+	}
+	
+	private String createEmailContext(String baseUrl, UserDTO userDto, String temlateName) {
 		LOGGER.info("CREATE EMAIL FOR {}", userDto);
 		Locale locale =  Locale.ENGLISH;
 		Context context  = new Context(locale);
 		context.setVariable("user", userDto);
-		context.setVariable("activation", userDto);
 		context.setVariable("baseURL", baseUrl);
-		String content = templateEngine.process(temlateName, context);
-		sendEmail(userDto.getEmail(), subject, content, false, true);
-		
+		return templateEngine.process(temlateName, context);
 	}
 	
 	/**

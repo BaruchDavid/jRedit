@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 /**
@@ -31,7 +30,7 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecConfig extends WebSecurityConfigurerAdapter {
-		
+	
 	@Bean
     public AuthenticationSuccessHandler userSuccessfullAthenticationHandler(){
         return new UserSuccessfullAthenticationHandler();
@@ -79,7 +78,8 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 			.and()
 		    .exceptionHandling().accessDeniedPage("/links/")
 		    .and()
-			.logout().invalidateHttpSession(true)
+			.logout().logoutUrl("/logout")
+					.invalidateHttpSession(true)
 					.clearAuthentication(true)
 			.and()
 			.rememberMe().key("uniqueAndSecret")

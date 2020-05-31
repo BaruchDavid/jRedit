@@ -74,7 +74,7 @@ public class LinkService {
 	}
 
 
-	public long findAllByUser(User user) {
+	public long findAllLinksByUser(User user) {
 		return linkRepository.countByUser(user);
 	}
 	

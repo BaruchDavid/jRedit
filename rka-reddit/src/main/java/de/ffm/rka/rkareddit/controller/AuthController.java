@@ -3,16 +3,14 @@ package de.ffm.rka.rkareddit.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -44,8 +42,8 @@ public class AuthController {
 	private static final String BINDING_ERROR = "bindingError";
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
-	private static final String REDIRECT_TO_LOGOUT = "redirect:/logout";
 	private static final String REDIRECT_TO_PRIVATE_PROFIL = "redirect:/profile/private";
+	private static final String REDIRECT_TO_LOGOUT = "redirect:/logout";
 	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
@@ -153,6 +151,9 @@ public class AuthController {
 			res.setStatus(HttpStatus.BAD_REQUEST.value());
 			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
 		} else {
+			final String newEmail = userDto.getNewEmail();
+			userDto = userDetailsService.mapUserToUserDto(userDto.getEmail());
+			userDto.setNewEmail(newEmail);
 			userDto = userService.changeEmail(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
 			LOGGER.info("CHANGE EMAIL SUCCESSFULY {}", userDto);
@@ -171,13 +172,14 @@ public class AuthController {
 		} else {
 			user = userService.findUserByMailAndActivationCode(email, activationCode);
 		}
-		
+		SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
 		if(user.isPresent()) {			
 			User newUser = user.get();
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
 			newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
 			newUser.setNewEmail(StringUtils.EMPTY);
+			newUser.setActivationCode(StringUtils.EMPTY);
 			userService.save(newUser);
 			UserDTO userDTO = userDetailsService.mapUserToUserDto(user.get().getUsername());
 			userService.sendWelcomeEmail(userDTO);

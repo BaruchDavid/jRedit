@@ -1,16 +1,23 @@
 package de.ffm.rka.rkareddit.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.repository.UserRepository;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
@@ -22,30 +29,25 @@ import edu.emory.mathcs.backport.java.util.Collections;
 @RunWith(SpringRunner.class)
 @Transactional
 @SpringBootTest
-public class LinkServiceTest {
+public class EmailServiceTest {
 
 	@Autowired
-    private LinkService linkService ;
+    private MailService mailService;
+	
+	@Autowired
+    private UserRepository userRepository;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	/**
 	 * test for test_env for user on service-layer
 	 */
 	@Test
 	public void linkSizeForUserOne() {
-		User user = new User();
-		user.setUserId(1l);
-		assertEquals(5l, linkService.findAllLinksByUser(user));
+		Optional<User> user = userRepository.findByEmail("romakapt@gmx.de");
+		UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
+		String context = ReflectionTestUtils.invokeMethod(mailService, "createEmailContext", "localhost", userDto, "mail/new_email_activation");
+		assertTrue("should contains dear baruch-david rka", context.contains("Dear baruc-david rka"));
 	}
-	
-	@Test
-	public void linkPrettyTimeTest() {
-		Link link = Link.builder()
-						.title("test")
-						.url("http://test.de")
-						.tags(Collections.emptyList())
-						.build();
-		link = linkService.saveLink(link);
-		assertEquals("gerade eben", link.getElapsedTime());		
-	}
-
 }
