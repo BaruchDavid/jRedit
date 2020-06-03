@@ -18,14 +18,20 @@ import org.springframework.stereotype.Component;
 public class GlobalAccessDeniedHandler implements AccessDeniedHandler{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalAccessDeniedHandler.class);
-	
+	private static final String LOGIN = "login";
+	private static final String REGISTER = "registration";
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
        if (auth != null) {
     	   LOGGER.warn("USER: {} WITH ADDRESS {} ATTEMPTED ILLIGAL ACCES TO PROTECTED URL: {} ",auth.getName(), request.getRemoteAddr(), request.getRequestURI());
-    	   response.sendRedirect(request.getContextPath().concat("/error/accessDenied"));
+    	   if(request.getRequestURI().contains(LOGIN)
+    		 || request.getRequestURI().contains(REGISTER)) {
+    		   response.sendRedirect(request.getContextPath().concat("/links"));
+    	   } else {
+    		   response.sendRedirect(request.getContextPath().concat("/error/accessDenied"));
+    	   }
        }
 	}
 
