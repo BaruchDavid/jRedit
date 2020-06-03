@@ -24,7 +24,7 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
  * @author kaproma
  *
  */
-//@ControllerAdvice(basePackages = {"de.ffm.rka.rkareddit"})
+
 @ControllerAdvice
 public class GlobalControllerAdvisor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
@@ -52,17 +52,19 @@ public class GlobalControllerAdvisor {
 			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) { 
 				user = modelMapper.map((User) userDetailsService.loadUserByUsername(visitorName), UserDTO.class);	
 			}else { 
-				user.setFirstName("dear visitor");	
+				user.setFirstName("guest");	
 			}
 		} else {
-			user.setFirstName("dear visitor");
+			user.setFirstName("guest");
 		}
-		LOGGER.error("EXCEPTION ACCURED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exception.getMessage(), 
+		final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
+		LOGGER.error("EXCEPTION {} ACCURED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exceptionType, exception.getMessage(), 
 																			visitorName, 
 																			req.getMethod(),
 																			req.getRequestURL());
 
-		switch (getExceptionName(exception.getClass().getCanonicalName())) {
+		switch (exceptionType) {
+		case "ValidationException":
 		case "MethodArgumentTypeMismatchException":
 		case "IllegalArgumentException":
 		case "NullPointerException":
