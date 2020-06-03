@@ -76,4 +76,30 @@ public class BasicErrorControllerTest {
 					.andExpect(redirectedUrl("/error/accessDenied"))
 					.andReturn();
 	}
+	
+	@Test
+	@WithUserDetails("dascha@gmx.de")
+	public void requestDirektAccessDenied() throws Exception {
+		this.mockMvc.perform(get("/error/accessDenied"))
+					.andDo(print())
+					.andExpect(status().is(403))
+					.andReturn();
+	}
+	
+	@Test
+	@WithUserDetails("dascha@gmx.de")
+	public void requestDirektErrorPage() throws Exception {
+		this.mockMvc.perform(get("/error"))
+					.andDo(print())
+					.andExpect(status().is(404))
+					.andReturn();
+	}
+	
+	@Test
+	public void requestDirektErrorPageAsAnonoymus() throws Exception {
+		this.mockMvc.perform(get("/error"))
+					.andDo(print())
+					.andExpect(status().is(404))
+					.andReturn();
+	}
 }

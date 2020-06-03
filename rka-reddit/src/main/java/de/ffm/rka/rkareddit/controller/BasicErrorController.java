@@ -45,6 +45,7 @@ public class BasicErrorController implements ErrorController{
 		}
 		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", request.getRequestURL(), ex.getMessage(), resp.getStatus());
 		model.addAttribute("userDto", user);
+		resp.setStatus(404);
         return "error/pageNotFound";
     }
 	
