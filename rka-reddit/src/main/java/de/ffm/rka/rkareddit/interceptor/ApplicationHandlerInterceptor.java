@@ -13,6 +13,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 
 /**
@@ -36,7 +37,9 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		LOGGER.info("current URL in preHandle {}  {}", request.getMethod(), request.getRequestURL());
+		LOGGER.info("REMOTE ADDRESS {} ACCESS IN PRE HANDLE-INTERCEPTOR TO {} "
+				+ " {} WITH STATUS: {}", request.getRemoteAddr(), 
+					request.getMethod(),  request.getRequestURL(), response.getStatus());
 		
 		if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
@@ -48,12 +51,15 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
             		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
             		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
             		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
-            } else if (String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
-            		|| (String.valueOf(response.getStatus()).startsWith(IS_400_ERROR))) {
+            } else if ((String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
+            		|| (String.valueOf(response.getStatus()).startsWith(IS_400_ERROR)))
+            		&& !request.getRequestURI().contains("error")) {
     			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
+    			response.sendRedirect("error");
+    			return false;
     		}     		
         }
-		return super.preHandle(request, response, handler);
+		return true;
 	}
 	
 	public static List<String> getRequestHeaderList(HttpServletRequest request) {
@@ -81,8 +87,9 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
-			LOGGER.info("PAGE NOT FOUND IN INTERCEPTOR-POST-HANDLE: {} {} with Status: {}",request.getMethod(),  
-					request.getRequestURL(), response.getStatus());
+			LOGGER.info("REMOTE ADDRESS {} ACCESS IN POST HANDLE-INTERCEPTOR TO {} "
+						+ "PAGE NOT FOUND  {} {} WITH STATUS: {}", request.getRemoteAddr(), 
+							request.getMethod(),  request.getRequestURL(), response.getStatus());
 		}
 	}
 }
