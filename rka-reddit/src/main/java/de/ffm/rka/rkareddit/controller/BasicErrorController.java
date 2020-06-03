@@ -1,5 +1,8 @@
 package de.ffm.rka.rkareddit.controller;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,13 +37,12 @@ public class BasicErrorController implements ErrorController{
     public String error(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
 		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
 		UserDTO user = UserDTO.builder()
-						.firstName("Gast")
+						.firstName("Guest")
 						.secondName("")
 						.build();
 		if(!ANONYMOUS.equals(authetication.getName())){			
 			user =  userDetailsService.mapUserToUserDto(authetication.getName());
 		}
-		
 		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", request.getRequestURL(), ex.getMessage(), resp.getStatus());
 		model.addAttribute("userDto", user);
         return "error/pageNotFound";
@@ -50,4 +54,12 @@ public class BasicErrorController implements ErrorController{
         return "error/registrationError";
     }
 
+	@GetMapping("/error/accessDenied")
+    public String accessDenied(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
+		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
+		UserDTO user =  userDetailsService.mapUserToUserDto(authetication.getName());
+		model.addAttribute("userDto", user);
+		resp.setStatus(403);
+		return "error/accessDenied";
+    }
 }

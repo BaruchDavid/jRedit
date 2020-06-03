@@ -15,9 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+
+import de.ffm.rka.rkareddit.exception.GlobalAccessDeniedHandler;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 /**
@@ -46,20 +49,24 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
         return new UserDetailsServiceImpl();
     }
 		
+	@Bean
+	public AccessDeniedHandler getAccessDeniedHandler() {
+		return new GlobalAccessDeniedHandler();
+	}
+	
+	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		final int oneDay = 86400;
 		http.csrf().disable()
  					.headers().frameOptions().disable()
  			.and()
- 			.exceptionHandling()
- 			.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
- 			.and()
  			.authorizeRequests()			
 							.antMatchers("/","/links/","/resources/**").permitAll()	
 							.antMatchers("/login*","/profile/public").permitAll()
-							.antMatchers("/profile/private").authenticated()
+							.antMatchers(HttpMethod.GET, "/profile/private").hasRole(USER.name())
 							.antMatchers("/registration").not().authenticated()
+							.antMatchers("/login*").not().authenticated()
 							.antMatchers("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
 							.antMatchers(HttpMethod.POST, "/tags/tag/create", "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
 							.antMatchers(HttpMethod.DELETE, "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
@@ -82,14 +89,19 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 					.invalidateHttpSession(true)
 					.clearAuthentication(true)
 			.and()
+ 			.exceptionHandling().accessDeniedHandler(getAccessDeniedHandler())		
+ 								//.accessDeniedPage("/error/accessDenied")
+			.and()
 			.rememberMe().key("uniqueAndSecret")
 						 .tokenValiditySeconds(oneDay)
 			.and()
 			.sessionManagement()
 						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)						
 						.maximumSessions(1)
-						.expiredUrl("/login?oneSession");	
+						.expiredUrl("/login?oneSession")
+			;	
 	}
+
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
