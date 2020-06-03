@@ -99,7 +99,7 @@ public class AuthController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping({"/registration"})
+	@GetMapping(value = {"/registration/", "/registration"})
 	public String registration(Model model) {	
 		model.addAttribute(USER_DTO, UserDTO.builder().build());
 		return "auth/register"; 
@@ -137,7 +137,7 @@ public class AuthController {
 	 * @return new userDto object and success
 	 * @throws ServiceException
 	 */
-	@PatchMapping(value = {"/profile/private/me/update/{email:.+}"})
+	@PatchMapping(value = {"/profile/private/me/update/email/{email:.+}"})
 	public String userChangeEmail(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
 														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
@@ -254,7 +254,7 @@ public class AuthController {
 		return "auth/passwordChange";
 	}
 	
-	@GetMapping("/profile/private/me/update/{email:.+}")
+	@GetMapping("/profile/private/me/update/email/{email:.+}")
 	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
 		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
 				.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));

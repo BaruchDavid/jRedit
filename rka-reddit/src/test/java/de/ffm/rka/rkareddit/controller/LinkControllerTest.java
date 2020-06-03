@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -145,7 +146,7 @@ public class LinkControllerTest {
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 														.param("commentText", "hallo kommentar"))
 	    					.andDo(print())
-							.andExpect(status().is(401));
+							.andExpect(status().is(302));
 	}
 	
 
@@ -223,7 +224,8 @@ public class LinkControllerTest {
 							.param("url", "http://welt.de")
 							)
   					.andDo(print())
-					.andExpect(status().is(401));	
+					.andExpect(status().is(302))	
+					.andExpect(redirectedUrlPattern("**/login"));	
     }
 	
 	@Test
@@ -248,7 +250,8 @@ public class LinkControllerTest {
 	public void createNewLinkTestAsUnautheticated() throws Exception {
     	this.mockMvc.perform(get("/links/link"))
   					.andDo(print())
-					.andExpect(status().is(401));
+					.andExpect(status().is(302))
+    				.andExpect(redirectedUrlPattern("**/login"));
     }
 		
 	/**
@@ -279,6 +282,7 @@ public class LinkControllerTest {
 		
             this.mockMvc.perform(get("/links/link"))
 					.andDo(print())
-					.andExpect(status().is(401));  
+					.andExpect(status().is(302))
+					.andExpect(redirectedUrlPattern("**/login*"));  
 	}
 }

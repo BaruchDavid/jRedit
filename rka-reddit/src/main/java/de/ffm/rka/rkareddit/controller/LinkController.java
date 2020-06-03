@@ -37,7 +37,6 @@ import de.ffm.rka.rkareddit.service.TagServiceImpl;
 
 
 @Controller
-@RequestMapping("/links")
 public class LinkController {
 	private LinkService linkService;
 	private CommentRepository commentRepository;
@@ -64,7 +63,7 @@ public class LinkController {
 	 * load links with all there attributes alike votes, comments, user for each link
 	 * @param page contains a page-number, page-size and sorting
 	 */
-	@GetMapping({"/",""})
+	@GetMapping({"/","", "/links/", "/links"})
 	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
 						@AuthenticationPrincipal UserDetails user, Model model) {
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
@@ -81,7 +80,7 @@ public class LinkController {
 	}
 	
 	
-	@GetMapping("link/{linkId}")
+	@GetMapping("/links/link/{linkId}")
 	public String link(Model model, @PathVariable Long linkId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
 		Optional<Link> link = linkService.findLinkByLinkId(linkId);
 		if(link.isPresent()) {
@@ -107,7 +106,7 @@ public class LinkController {
 		}
 	}
 	
-	@GetMapping("/link")
+	@GetMapping("/links/link")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
 		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));		
 		Link link = new Link();
@@ -118,7 +117,7 @@ public class LinkController {
 		return SUBMIT_LINK;
 	}
 	
-	@PostMapping("/link")
+	@PostMapping("/links/link")
 	public String newLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletResponse response,
 							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
 		
@@ -136,7 +135,7 @@ public class LinkController {
 		}
 	}	
 	
-	@PostMapping(value = "/link/comments")
+	@PostMapping(value = "/links/link/comments")
 	public String newComment(@Valid Comment comment, BindingResult bindingResult, 
 								RedirectAttributes attributes,Model model,
 								@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest req, HttpServletResponse res) {		
@@ -154,7 +153,7 @@ public class LinkController {
 		return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
 	}		
 	
-	@PostMapping(value = "/link/tags")
+	@PostMapping(value = "/links/link/tags")
 	@ResponseBody
 	public List<String> searchTags(String search, Model model, HttpServletResponse req) {		
 		return tagService.findSuitableTags(search);

@@ -10,7 +10,7 @@
     <div class="row" th:if="${validationErrors}">
        	<div class="col-md-3"></div>
     </div>
-    <form class="form-horizontal" role="form" th:object="${userDto}" th:method="PATCH" th:action="@{/profile/private/me/update/} + ${email}" >
+    <form class="form-horizontal" role="form" th:object="${userDto}" th:method="PATCH" th:action="@{/profile/private/me/update/email/} + ${email}" >
     <div class="row" th:if="${validationErrors}">
         <div class="col-md-3"></div>
         <div class="col-md-6">

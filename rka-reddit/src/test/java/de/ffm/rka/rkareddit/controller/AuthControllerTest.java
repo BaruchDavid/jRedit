@@ -180,8 +180,8 @@ public class AuthControllerTest {
 	public void showRegisterViewAsAutheticatedTest() throws Exception {
 			this.mockMvc.perform(get("/registration"))
 					.andDo(print())
-					.andExpect(status().is(403))
-					.andExpect(forwardedUrl("/links/"));  
+					.andExpect(status().is(302))
+					.andExpect(redirectedUrl("/links"));  
 	}
 
 	@Test
@@ -304,7 +304,7 @@ public class AuthControllerTest {
 		if(user.isPresent()) {
 			user.get().setNewEmail(StringUtils.EMPTY); 
         	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
-        	this.mockMvc.perform(get("/profile/private/me/update/romakapt@gmx.de"))
+        	this.mockMvc.perform(get("/profile/private/me/update/email/romakapt@gmx.de"))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("userDto", userDto))
@@ -370,7 +370,7 @@ public class AuthControllerTest {
 	public void changeUserEmailOK() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
         			.param("email", "romakapt@gmx.de")
         			.param("newEmail", "kaproma@yahoo.de")
@@ -396,7 +396,7 @@ public class AuthControllerTest {
 	public void changeUserEmailNotOK() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
 		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
         			.param("email", "romakapt@gmx.de")
         			.param("newEmail", "romakapt@gmx.de")
@@ -426,7 +426,7 @@ public class AuthControllerTest {
 	
  		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
  		if(user.isPresent()) { 
- 			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/romakapt@gmx.de")
+ 			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
          			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
          			.param("newEmail", "romakapt@gmx.de")
          			.param("password", "doman")
@@ -523,8 +523,8 @@ public class AuthControllerTest {
 								.param("password", "tata")
 								.param("confirmPassword", "tata"))
 	    					.andDo(print())
-							.andExpect(status().is(403))
-							.andExpect(forwardedUrl("/links/"));
+							.andExpect(status().is(302))
+							.andExpect(redirectedUrl("/links"));
 	}
 
 	/**
@@ -596,5 +596,33 @@ public class AuthControllerTest {
          } else {
         	fail("user for test-request not found");
         }  
+	}
+	
+	/**
+	 * 302 -> redirects from access-denied handler to error-page
+	 * @throws Exception
+	 */
+	@Test
+	@WithUserDetails("dascha@gmx.de")
+	public void linksPageForAutheticatedUserOnLogin() throws Exception {
+		this.mockMvc.perform(get("/login**"))
+					.andDo(print())
+					.andExpect(status().is(302))
+					.andExpect(redirectedUrl("/links"))
+					.andReturn();
+	}
+	
+	/**
+	 * 302 -> redirects from access-denied handler to error-page
+	 * @throws Exception
+	 */
+	@Test
+	@WithUserDetails("dascha@gmx.de")
+	public void linksPageForAutheticatedUserOnRegistration() throws Exception {
+		this.mockMvc.perform(get("/registration"))
+					.andDo(print())
+					.andExpect(status().is(302))
+					.andExpect(redirectedUrl("/links"))
+					.andReturn();
 	}
 }
