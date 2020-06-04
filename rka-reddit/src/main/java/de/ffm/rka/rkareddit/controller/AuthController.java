@@ -154,7 +154,7 @@ public class AuthController {
 			final String newEmail = userDto.getNewEmail();
 			userDto = userDetailsService.mapUserToUserDto(userDto.getEmail());
 			userDto.setNewEmail(newEmail);
-			userDto = userService.changeEmail(userDto);
+			userDto = userService.emailChange(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
 			LOGGER.info("CHANGE EMAIL SUCCESSFULY {}", userDto);
 			return REDIRECT_TO_LOGOUT;
@@ -164,27 +164,11 @@ public class AuthController {
 	@GetMapping(value={"/activation/{email}/{activationCode}", "/mailchange/{email}/{activationCode}"})
 	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, HttpServletRequest req, Model model) throws ServiceException {	
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-		Optional<User> user;
-		boolean isNewEmail = false;
-		if(req.getRequestURI().contains("mailchange")) {
-			user = userService.findUserByMailAndReActivationCode(email, activationCode);
-			isNewEmail = true;
-		} else {
-			user = userService.findUserByMailAndActivationCode(email, activationCode);
-		}
-		SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
-		if(user.isPresent()) {			
-			User newUser = user.get();
-			newUser.setEnabled(true);
-			newUser.setConfirmPassword(newUser.getPassword());
-			newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
-			newUser.setNewEmail(StringUtils.EMPTY);
-			newUser.setActivationCode(StringUtils.EMPTY);
-			userService.save(newUser);
-			UserDTO userDTO = userDetailsService.mapUserToUserDto(user.get().getUsername());
-			userService.sendWelcomeEmail(userDTO);
-			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
+		final boolean isNewEmail = req.getRequestURI().contains("mailchange") ? true : false;
+		Optional<UserDTO> userDTO = userService.emailActivation(email, activationCode, isNewEmail);
+		if(userDTO.isPresent()) {
 			model.addAttribute("user", userDTO);
+			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
 			return "auth/activated"; 
 		}else {
 			LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);

@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 
 /**
@@ -34,9 +37,11 @@ public class UserService {
 	private RoleService roleService;
 	private final MailService mailService;
 	private ModelMapper modelMapper;
+	private UserDetailsServiceImpl userDetailsService;
 	
-	public UserService(MailService mailService,UserRepository userRepository, RoleService roleService, ModelMapper modelMapper) {
-
+	public UserService(MailService mailService, UserRepository userRepository, 
+						RoleService roleService, ModelMapper modelMapper, UserDetailsServiceImpl userDetailsService) {
+		this.userDetailsService = userDetailsService;
 		this.userRepository = userRepository;
 		this.roleService= roleService;
 		this.mailService  = mailService;
@@ -69,7 +74,7 @@ public class UserService {
 	}
 	
 	@Transactional(readOnly = false)
-	public UserDTO changeEmail(UserDTO userDto) throws ServiceException {
+	public UserDTO emailChange(UserDTO userDto) throws ServiceException {
 		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 		User newUser = getUser(userDto.getEmail());
 		userDto.setEmail(userDto.getNewEmail());
@@ -79,6 +84,31 @@ public class UserService {
 		sendEmailToNewUserEmailAddress(userDto);
 		return modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
 	}
+	
+	@Transactional(readOnly = false)
+	public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
+		Optional<User> user = Optional.empty();
+		if(isNewEmail) {
+			user = findUserByMailAndReActivationCode(email, activationCode);
+		} else {
+			user = findUserByMailAndActivationCode(email, activationCode);
+		}
+		Optional<UserDTO> userDTO = Optional.empty();
+		SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+		if(user.isPresent()) {			
+			User newUser = user.get();
+			newUser.setEnabled(true);
+			newUser.setConfirmPassword(newUser.getPassword());
+			newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
+			newUser.setNewEmail(StringUtils.EMPTY);
+			newUser.setActivationCode(StringUtils.EMPTY);
+			save(newUser);
+			userDTO = Optional.of(userDetailsService.mapUserToUserDto(user.get().getUsername()));
+			sendWelcomeEmail(userDTO.get());
+		}
+		return userDTO;
+	}
+	
 	
 	
 	private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException {
