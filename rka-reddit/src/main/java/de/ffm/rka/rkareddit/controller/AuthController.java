@@ -201,6 +201,7 @@ public class AuthController {
 			userDto.setEmail(userDetails.getUsername());
 			userService.changeUserDetails(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
+			attributes.addFlashAttribute(REDIRECT_MESSAGE,"your profile has been updated");
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
 			return REDIRECT_TO_PRIVATE_PROFIL;
