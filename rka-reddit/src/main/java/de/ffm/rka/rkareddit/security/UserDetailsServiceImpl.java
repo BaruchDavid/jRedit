@@ -6,11 +6,13 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.UserRepository;
@@ -41,4 +43,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		return modelMapper.map(usrObj, UserDTO.class);
 	}
 
+	public void reloadUserAuthetication(final String newEmail) {
+		Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
+		Authentication newAuth = SecurityContextHolder.createEmptyContext().getAuthentication();
+		User user = userRepository.findByEmailWithRoles(newEmail);
+		newAuth = new UsernamePasswordAuthenticationToken(user, oldAuth.getCredentials(), oldAuth.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(newAuth);
+	}
+	
 }

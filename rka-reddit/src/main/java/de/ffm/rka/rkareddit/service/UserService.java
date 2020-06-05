@@ -49,14 +49,9 @@ public class UserService {
 	}
 	
 	/**
-	 * decodes pw
-	 * assign role
-	 * set activation code
-	 * disable user before saving
-	 * send activation email
-	 * reregister user
-	 * @author RKA
-	 * @return user
+	 * decodes pw assign role set activation code
+	 * disable user before saving , send activation email reregister user
+	 * @return UserDTO
 	 * @throws ServiceException 
 	 */
 	@Transactional(readOnly = false)
@@ -88,13 +83,12 @@ public class UserService {
 	@Transactional(readOnly = false)
 	public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
 		Optional<User> user = Optional.empty();
+		Optional<UserDTO> userDTO = Optional.empty();
 		if(isNewEmail) {
 			user = findUserByMailAndReActivationCode(email, activationCode);
 		} else {
 			user = findUserByMailAndActivationCode(email, activationCode);
 		}
-		Optional<UserDTO> userDTO = Optional.empty();
-		SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
 		if(user.isPresent()) {			
 			User newUser = user.get();
 			newUser.setEnabled(true);
@@ -103,6 +97,7 @@ public class UserService {
 			newUser.setNewEmail(StringUtils.EMPTY);
 			newUser.setActivationCode(StringUtils.EMPTY);
 			save(newUser);
+			userDetailsService.reloadUserAuthetication(email);
 			userDTO = Optional.of(userDetailsService.mapUserToUserDto(user.get().getUsername()));
 			sendWelcomeEmail(userDTO.get());
 		}
@@ -234,7 +229,6 @@ public class UserService {
 	}
 
 	public List<User> findAll() {
-		// TODO Auto-generated method stub
 		return userRepository.findAll();
 	}
 

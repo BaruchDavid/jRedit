@@ -193,9 +193,11 @@ public class AuthControllerTest {
 	
 	@Test
 	public void changeEmailFromLinkTest() throws Exception {		
-            this.mockMvc.perform(get("/mailchange/romakapt@gmx.de/activation"))
+            this.mockMvc.perform(get("/mailchange/kaproma@yahoo.de/activation"))
 					.andDo(print())
-					.andExpect(view().name("auth/activated"));  
+					.andExpect(status().is(302))
+					.andExpect(flash().attribute("redirectMessage", "your new email has been activated"))
+					.andExpect(redirectedUrl("/profile/private"));  
 	}
 	
 	@Test
@@ -378,7 +380,7 @@ public class AuthControllerTest {
 					.param("confirmPassword", "roman"))
         			.andDo(print())
 			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/logout"))
+			        .andExpect(redirectedUrl("/profile/private"))
 			        .andExpect(flash().attributeExists("success"))
 			        .andReturn();
         } else {

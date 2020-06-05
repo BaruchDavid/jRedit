@@ -91,12 +91,12 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 			.and()
 		    .exceptionHandling().accessDeniedPage("/links/")
 		    .and()
-			.logout().logoutUrl("/logout")
+			.logout().deleteCookies("JSESSIONID")
+					.logoutUrl("/logout")
 					.invalidateHttpSession(true)
 					.clearAuthentication(true)
 			.and()
  			.exceptionHandling().accessDeniedHandler(getAccessDeniedHandler())		
- 								//.accessDeniedPage("/error/accessDenied")
 			.and()
 			.rememberMe().key("uniqueAndSecret")
 						 .tokenValiditySeconds(oneDay)
@@ -111,7 +111,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authenticationProvider());
+		auth.authenticationProvider(authenticationProvider()).eraseCredentials(false);
 	}
 	
 	@Bean

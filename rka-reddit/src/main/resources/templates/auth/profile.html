@@ -10,7 +10,7 @@
 <!--     th:if="${success}" -->
     <div id="profile" class="container">
     	<div th:if="${success}" id="displayMessage" class="alert alert-success" role="alert" >
-            Your profile has been changed!
+           <p th:text="${redirectMessage}">Welcome to our grocery store!</p>
         </div>
         <div class="row">
             <ul class="nav">

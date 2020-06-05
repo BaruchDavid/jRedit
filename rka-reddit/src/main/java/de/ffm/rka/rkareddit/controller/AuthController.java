@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -32,18 +31,17 @@ import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 
-
-
 @Controller
 public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 	private static final String USER_DTO = "userDto";
 	private static final String SUCCESS = "success";
+	private static final String REGISTRATION = "/registration";
+	private static final String REDIRECT_MESSAGE = "redirectMessage";
 	private static final String BINDING_ERROR = "bindingError";
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
 	private static final String REDIRECT_TO_PRIVATE_PROFIL = "redirect:/profile/private";
-	private static final String REDIRECT_TO_LOGOUT = "redirect:/logout";
 	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
@@ -88,6 +86,7 @@ public class AuthController {
 											.orElse(new ArrayList<Comment>());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
+			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
 		}		
 		model.addAttribute("userContent", pageContentUser);
 		model.addAttribute("posts", userLinks);
@@ -99,7 +98,7 @@ public class AuthController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping(value = {"/registration/", "/registration"})
+	@GetMapping(value = {REGISTRATION, REGISTRATION+"/"})
 	public String registration(Model model) {	
 		model.addAttribute(USER_DTO, UserDTO.builder().build());
 		return "auth/register"; 
@@ -110,7 +109,7 @@ public class AuthController {
 	 * @return user
 	 * @throws ServiceException 
 	 */
-	@PostMapping(value = {"/registration"})
+	@PostMapping(value = {REGISTRATION})
 	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
 														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
@@ -156,20 +155,30 @@ public class AuthController {
 			userDto.setNewEmail(newEmail);
 			userDto = userService.emailChange(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
+			attributes.addFlashAttribute(REDIRECT_MESSAGE, "you got email, check it out!");
 			LOGGER.info("CHANGE EMAIL SUCCESSFULY {}", userDto);
-			return REDIRECT_TO_LOGOUT;
+			return REDIRECT_TO_PRIVATE_PROFIL;
 		}
 	}
 	
 	@GetMapping(value={"/activation/{email}/{activationCode}", "/mailchange/{email}/{activationCode}"})
-	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, HttpServletRequest req, Model model) throws ServiceException {	
+	public String accountActivation(@PathVariable String email, @PathVariable String activationCode, 
+									HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException {	
 		LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-		final boolean isNewEmail = req.getRequestURI().contains("mailchange") ? true : false;
+		boolean isNewEmail = false;
+		String returnLink = "auth/activated";
+		if(req.getRequestURI().contains("mailchange")) {
+			isNewEmail = true;
+			returnLink = "redirect:/profile/private";
+			attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
+			attributes.addFlashAttribute(SUCCESS,true);
+		} 
 		Optional<UserDTO> userDTO = userService.emailActivation(email, activationCode, isNewEmail);
+		
 		if(userDTO.isPresent()) {
-			model.addAttribute("user", userDTO);
+			model.addAttribute(USER_DTO, userDTO.get());
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
-			return "auth/activated"; 
+			return returnLink; 
 		}else {
 			LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);
 			return "redirect:/error/registrationError"; 
@@ -216,6 +225,7 @@ public class AuthController {
 			userDto.setEmail(userDetails.getUsername());
 			userService.changeUserPassword(userDto);
 			attributes.addFlashAttribute(SUCCESS,true);
+			attributes.addFlashAttribute(REDIRECT_MESSAGE,"your password has been changed!");
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
 			LOGGER.info("USER PASSWORD CHAGEND SUCCESSFULY {}",userDto);
 			return REDIRECT_TO_PRIVATE_PROFIL;
