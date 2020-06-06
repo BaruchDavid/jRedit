@@ -38,8 +38,8 @@
             </ul>
         </div>
 		
-        <div class="row">            
-            <div class="col-7">
+        <div class="row">
+            <div class="col">
 	            <div class="row link" th:each="link : ${posts}">
 		                <p class="title">
 		                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.getTitle()}">Title Goes Here</a>
@@ -63,11 +63,8 @@
             <div class="col-3 offset-1">
                 <div class="row">
                     <div class="card col-12">
-                        <img class="card-img-top" id="profilePic" src="static/images/profile_small.png"  alt="Card image cap">
+                        <img class="card-img-top" id="profilePic" src="#"  alt="Card image cap">
                         <div class="card-body">
-                            <!-- <p class="card-text">
-                                <a href="/u/therealdanvega">/u/therealdanvega</a>
-                            </p> -->
                             <a href="submit.html"><button type="button" class="btn btn-primary btn-lg btn-block">New Post</button></a>
                         </div>
                     </div>
