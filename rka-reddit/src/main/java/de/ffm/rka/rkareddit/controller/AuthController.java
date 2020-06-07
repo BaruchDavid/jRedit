@@ -81,8 +81,9 @@ public class AuthController {
 		});
 		
 		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks()).orElse(new ArrayList<Link>());	
-		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail())
-																	.getUserComments())
+		
+		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail()))
+											.map(User::getUserComments)
 											.orElse(new ArrayList<Comment>());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);

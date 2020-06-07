@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
@@ -249,6 +250,7 @@ public class AuthControllerTest {
 	@Test
 	@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
 	@WithUserDetails("romakapt@gmx.de")
+	@Transactional
 	public void showPrivateProfileAsAutheticated() throws Exception {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
         if(user.isPresent()) {
@@ -257,7 +259,8 @@ public class AuthControllerTest {
 						.andDo(print())
 						.andExpect(status().isOk())
 						.andExpect(model().attribute("userContent", user.get()))
-						.andExpect(model().attribute("userDto", userDto));
+						.andExpect(model().attribute("userDto", userDto))
+						.andExpect(model().attribute("comments", user.get().getUserComments()));
         } else {
         	fail("user for test-request not found");
         }  
