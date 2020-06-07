@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
@@ -330,6 +331,16 @@ public class AuthControllerTest {
         } else {
         	fail("user for test-request not found");
         }  
+	}
+	
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void showChangePasswordPageForUnexistedUser() throws Exception {      
+    	this.mockMvc.perform(get("/profile/private/me/tomakapt@gmx.de/password"))
+		.andDo(print())
+		.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()))
+		.andExpect(view().name("error/application"));
+       
 	}
 	
 	@Test

@@ -235,24 +235,19 @@ public class AuthController {
 	
 	@GetMapping("/profile/private/me/{email:.+}")
 	public String userInfo(@PathVariable String email, HttpServletResponse response, Model model) {
-		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
-		model.addAttribute(USER_DTO, user);
+		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(email));
 		return "auth/profileEdit";
 	}
 	
 	@GetMapping("/profile/private/me/{email:.+}/password")
 	public String changePassword(@PathVariable String email, HttpServletResponse response, Model model) {
-		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-								.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
-		model.addAttribute(USER_DTO, user);
+		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(email));
 		return "auth/passwordChange";
 	}
 	
 	@GetMapping("/profile/private/me/update/email/{email:.+}")
 	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
-		UserDTO user = Optional.ofNullable(userDetailsService.mapUserToUserDto(email))
-				.orElseThrow(() -> new UsernameNotFoundException(NO_USER_FOR_PROFILE_VIEW));
+		UserDTO user = userDetailsService.mapUserToUserDto(email);
 		user.setNewEmail(StringUtils.EMPTY);
 		model.addAttribute(USER_DTO, user);
 		return "auth/emailChange";

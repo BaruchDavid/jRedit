@@ -32,15 +32,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) {
 		return Optional.ofNullable(userRepository.findByEmailWithRoles(username))
 										.orElseThrow(() -> { 
-															LOGGER.warn("{} Could not be found", username);
+															LOGGER.error("USER {} could not be found", username);
 															return new  UsernameNotFoundException(username); 
 															});
 	}
 	
 	public UserDTO mapUserToUserDto(String usrName) {
-		User usrObj = Optional.ofNullable((User) loadUserByUsername(usrName))
-								.orElseThrow(()-> new UsernameNotFoundException("user not found"));
-		return modelMapper.map(usrObj, UserDTO.class);
+		return modelMapper.map((User)loadUserByUsername(usrName), UserDTO.class);
 	}
 
 	public void reloadUserAuthetication(final String newEmail) {

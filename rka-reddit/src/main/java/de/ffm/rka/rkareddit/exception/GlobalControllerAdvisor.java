@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.exception;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.HttpStatus;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,26 +71,26 @@ public class GlobalControllerAdvisor {
 		case "IllegalArgumentException":
 		case "NullPointerException":
 			view = DEFAULT_APPLICATION_ERROR;
-			res.setStatus(400);
+			res.setStatus(HttpStatus.SC_BAD_REQUEST);
 			break;
 		case "UserAuthenticationLostException":
 		case "AuthenticationCredentialsNotFoundException":
 		case "UsernameNotFoundException":
-			res.setStatus(401);
+			res.setStatus(HttpStatus.SC_UNAUTHORIZED);
 			break;		
 		case "AccessDeniedException":
-			res.setStatus(403);
+			res.setStatus(HttpStatus.SC_FORBIDDEN);
 			break;
 		case "HttpRequestMethodNotSupportedException":
 			view = PAGE_NOT_FOUND;
-			res.setStatus(404);
+			res.setStatus(HttpStatus.SC_NOT_FOUND);
 			break;
 		case "ServiceException":
 			view = DEFAULT_APPLICATION_ERROR;
-			res.setStatus(504);
+			res.setStatus(HttpStatus.SC_GATEWAY_TIMEOUT);
 			break;	
 		default:
-			res.setStatus(500);
+			res.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			break;
 		}
 
