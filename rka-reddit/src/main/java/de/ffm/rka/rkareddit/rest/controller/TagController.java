@@ -1,23 +1,17 @@
 package de.ffm.rka.rkareddit.rest.controller;
 
-import java.util.Optional;
-
+import de.ffm.rka.rkareddit.domain.Tag;
+import de.ffm.rka.rkareddit.service.TagServiceImpl;
+import de.ffm.rka.rkareddit.vo.TagVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import de.ffm.rka.rkareddit.domain.Tag;
-import de.ffm.rka.rkareddit.service.TagServiceImpl;
-import de.ffm.rka.rkareddit.vo.TagVO;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 
 @RestController

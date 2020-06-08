@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.security;
 
-import static de.ffm.rka.rkareddit.security.Role.*;
+import de.ffm.rka.rkareddit.exception.GlobalAccessDeniedHandler;
+import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import de.ffm.rka.rkareddit.exception.GlobalAccessDeniedHandler;
-import de.ffm.rka.rkareddit.util.BeanUtil;
+
+import static de.ffm.rka.rkareddit.security.Role.*;
 
 /**
  * This is a configuration service for authentication

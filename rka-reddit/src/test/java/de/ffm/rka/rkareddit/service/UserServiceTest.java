@@ -1,13 +1,13 @@
 package de.ffm.rka.rkareddit.service;
 
-import static org.junit.Assert.assertEquals;
-
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+
+import static org.junit.Assert.assertEquals;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)

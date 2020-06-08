@@ -1,16 +1,15 @@
 package de.ffm.rka.rkareddit.config;
 
-import java.util.List;
-import java.util.Optional;
-
+import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.service.UserService;
+import de.ffm.rka.rkareddit.util.FileNIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 
-import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.service.UserService;
-import de.ffm.rka.rkareddit.util.FileNIO;
+import java.util.List;
+import java.util.Optional;
 
 public class DatabaseLoader implements CommandLineRunner{
 

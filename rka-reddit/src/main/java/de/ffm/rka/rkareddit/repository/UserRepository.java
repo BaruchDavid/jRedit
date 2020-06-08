@@ -1,13 +1,12 @@
 package de.ffm.rka.rkareddit.repository;
 
 
-import java.util.Optional;
-
+import de.ffm.rka.rkareddit.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import de.ffm.rka.rkareddit.domain.User;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 	

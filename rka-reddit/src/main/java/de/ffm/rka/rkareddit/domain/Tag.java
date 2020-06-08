@@ -1,24 +1,15 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
+import de.ffm.rka.rkareddit.domain.validator.TagResolver;
+import lombok.*;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.validation.constraints.NotNull;
-import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import de.ffm.rka.rkareddit.domain.validator.TagResolver;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 
 @Entity(name="Tag")

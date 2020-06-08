@@ -1,14 +1,12 @@
 package de.ffm.rka.rkareddit.domain.validator;
 
-import java.util.Optional;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import java.util.Optional;
 
 /**
  * 

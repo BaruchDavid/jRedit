@@ -1,8 +1,6 @@
 package de.ffm.rka.rkareddit.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import org.modelmapper.ModelMapper;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +14,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
-import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class AppConfig implements WebMvcConfigurer{

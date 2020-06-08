@@ -1,8 +1,9 @@
 package de.ffm.rka.rkareddit.domain.validator;
 
+import de.ffm.rka.rkareddit.domain.Tag;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import de.ffm.rka.rkareddit.domain.Tag;
 
 /**
  * 

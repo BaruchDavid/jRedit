@@ -1,11 +1,10 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
+import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
+import de.ffm.rka.rkareddit.rest.controller.TagController;
+import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,10 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
-import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
-import de.ffm.rka.rkareddit.rest.controller.TagController;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)

@@ -1,11 +1,10 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.domain.Role;
+import de.ffm.rka.rkareddit.repository.RoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import de.ffm.rka.rkareddit.domain.Role;
-import de.ffm.rka.rkareddit.repository.RoleRepository;
 
 @Service
 public class RoleService {

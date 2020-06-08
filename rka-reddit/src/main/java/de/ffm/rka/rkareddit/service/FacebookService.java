@@ -1,5 +1,7 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.domain.FbPost;
+import de.ffm.rka.rkareddit.domain.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +14,6 @@ import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
-import de.ffm.rka.rkareddit.domain.FbPost;
-import de.ffm.rka.rkareddit.domain.Link;
 
 @Service
 public class FacebookService {

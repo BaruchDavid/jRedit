@@ -1,8 +1,17 @@
 package de.ffm.rka.rkareddit.domain;
 
 
-import static java.util.Date.from;
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
+import de.ffm.rka.rkareddit.util.BeanUtil;
+import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.URL;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,31 +19,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotEmpty;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.URL;
-import org.ocpsoft.prettytime.PrettyTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+
+import static java.util.Date.from;
 
 @Entity
 @Getter @Setter

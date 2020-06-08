@@ -1,24 +1,21 @@
 package de.ffm.rka.rkareddit.rest.controller;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import javax.servlet.http.HttpServletResponse;
+import de.ffm.rka.rkareddit.domain.FbPost;
+import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.service.FacebookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import de.ffm.rka.rkareddit.domain.FbPost;
-import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.service.FacebookService;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @RestController
 public class FbController {
