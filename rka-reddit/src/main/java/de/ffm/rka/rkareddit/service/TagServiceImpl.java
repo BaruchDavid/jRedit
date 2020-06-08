@@ -23,7 +23,6 @@ public class TagServiceImpl {
 	}
 
 	public Optional<Tag> findTagOnName(String tag) {
-		// TODO Auto-generated method stub
 		return tagRepository.findByName(tag);
 	}
 	

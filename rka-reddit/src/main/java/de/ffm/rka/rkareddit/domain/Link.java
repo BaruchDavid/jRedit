@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -37,7 +38,7 @@ import lombok.ToString;
 
 @Entity
 @Getter @Setter
-@ToString(exclude = {"user", "comments", "vote", "tags"}) 
+@ToString(exclude = {"user", "comments", "vote", "tags", "users"}) 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -75,6 +76,9 @@ public class Link extends Auditable implements Serializable{
 	)
 	private List<Tag> tags = new ArrayList<>();
 
+	@ManyToMany(mappedBy= "userClickedLinks")
+	private Collection<User> users;
+	
 	@Builder.Default
 	private int voteCount = 0;
 	

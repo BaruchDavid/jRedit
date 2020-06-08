@@ -33,7 +33,7 @@ import lombok.ToString;
 
 @Entity
 @Getter @Setter 
-@ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto"})
+@ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto", "userClickedLinks"})
 @AllArgsConstructor
 @Builder
 public class User extends Auditable implements UserDetails, Serializable {
@@ -98,6 +98,15 @@ public class User extends Auditable implements UserDetails, Serializable {
 			inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
 	)
 	private Set<Role> roles = new HashSet<>();
+	
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "user_clickedLinks",
+			joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
+			inverseJoinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId")
+	)
+	private List<Link> userClickedLinks = new ArrayList<>();
+	
 
 	private String activationCode;
 
