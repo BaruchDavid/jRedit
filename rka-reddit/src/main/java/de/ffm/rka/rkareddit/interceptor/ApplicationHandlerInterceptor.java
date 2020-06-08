@@ -12,8 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 
 /**

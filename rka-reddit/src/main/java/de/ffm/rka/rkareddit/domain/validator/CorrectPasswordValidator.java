@@ -2,17 +2,10 @@ package de.ffm.rka.rkareddit.domain.validator;
 
 
 import java.util.Optional;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.util.BeanUtil;
-
 
 /**
  * checks if users current password is correct
