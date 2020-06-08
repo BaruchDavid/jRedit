@@ -1,8 +1,5 @@
 package de.ffm.rka.rkareddit.service;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.Optional;
 
 import org.junit.Test;
@@ -14,11 +11,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
-import de.ffm.rka.rkareddit.domain.Link;
+
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.UserRepository;
-import edu.emory.mathcs.backport.java.util.Collections;
+
+
 
 /**
  * Testclass for Servicelayer
