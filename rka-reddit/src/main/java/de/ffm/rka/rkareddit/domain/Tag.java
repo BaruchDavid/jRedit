@@ -45,14 +45,19 @@ public class Tag extends Auditable implements Serializable {
 	
 	@Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Tag))
-            return false;
-        Tag other = (Tag) o;
- 
-        return tagId != null &&
-        		tagId.equals(other.getTagId());
-    }
+		boolean result;
+		if (this == o) {
+			result = true;
+		} else if (!(o instanceof Tag)) {
+			result = false;
+		} else {
+			Tag other = (Tag) o;
+			result = tagId != null &&
+					tagId.equals(other.getTagId());
+		}
+
+		return result;
+	}
 	 
     @Override
     public int hashCode() {

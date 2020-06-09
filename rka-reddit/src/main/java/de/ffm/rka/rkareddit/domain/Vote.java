@@ -39,14 +39,19 @@ public class Vote extends Auditable implements Serializable {
 		
 	@Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vote))
-            return false;
-        Vote other = (Vote) o;
- 
-        return voteId != null &&
-        		voteId.equals(other.getVoteId());
-    }
+		boolean result;
+		if (this == o) {
+			result = true;
+		} else if (!(o instanceof Vote)) {
+			result = false;
+		} else {
+			Vote other = (Vote) o;
+			result = voteId != null &&
+					voteId.equals(other.getVoteId());
+		}
+
+		return result;
+	}
 	 
     @Override
     public int hashCode() {

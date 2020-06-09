@@ -34,14 +34,19 @@ public class Role implements Serializable {
 	
 	@Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Role))
-            return false;
-        Role other = (Role) o;
- 
-        return roleId != null &&
-        		roleId.equals(other.getRoleId());
-    }
+		boolean result;
+		if (this == o) {
+			result = true;
+		} else if (!(o instanceof Role)) {
+			result = false;
+		} else {
+			Role other = (Role) o;
+			result = roleId != null &&
+					roleId.equals(other.getRoleId());
+		}
+
+		return result;
+	}
 	 
     @Override
     public int hashCode() {

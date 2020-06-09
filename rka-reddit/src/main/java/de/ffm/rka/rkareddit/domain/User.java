@@ -152,12 +152,16 @@ public class User extends Auditable implements UserDetails, Serializable {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof User))
-			return false;
-		User other = (User) o;
-		return userId != null && userId.equals(other.getUserId());
+		boolean result;
+		if (this == o) {
+			result = true;
+		} else if (!(o instanceof User)) {
+			result = false;
+		} else {
+			User other = (User) o;
+			result = userId != null && userId.equals(other.getUserId());
+		}
+		return result;
 	}
 	 
     @Override

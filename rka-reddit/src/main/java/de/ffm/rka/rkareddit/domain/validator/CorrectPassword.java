@@ -4,6 +4,9 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+/**
+ * marker for checking correct password
+ */
 @Documented
 @Constraint(validatedBy = CorrectPasswordValidator.class)
 @Target(ElementType.FIELD)

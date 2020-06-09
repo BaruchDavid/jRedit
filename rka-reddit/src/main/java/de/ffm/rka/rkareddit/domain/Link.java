@@ -84,7 +84,7 @@ public class Link extends Auditable implements Serializable{
 	
 	@Getter 
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
-    
+
 	public Link(String title, String url) {
 
 		this.title = title;
@@ -138,14 +138,18 @@ public class Link extends Auditable implements Serializable{
 
 	@Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Link))
-            return false;
-        Link other = (Link) o;
- 
-        return linkId != null &&
-        		linkId.equals(other.getLinkId());
-    }
+		boolean result;
+		if (this == o) {
+			result = true;
+		} else if (!(o instanceof Link)) {
+			result = false;
+		} else {
+			Link other = (Link) o;
+			result = linkId != null &&
+					linkId.equals(other.getLinkId());
+		}
+		return result;
+	}
 	 
     @Override
     public int hashCode() {

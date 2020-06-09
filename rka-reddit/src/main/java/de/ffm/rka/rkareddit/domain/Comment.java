@@ -52,14 +52,19 @@ public class Comment extends Auditable implements Serializable{
 	
 	@Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Comment))
-            return false;
-        Comment other = (Comment) o;
- 
-        return commentId != null &&
-        		commentId.equals(other.getCommentId());
-    }
+		boolean result;
+		if (this == o) {
+			result = true;
+		} else if (!(o instanceof Comment)) {
+			result = false;
+		} else {
+			Comment other = (Comment) o;
+			result = commentId != null &&
+					commentId.equals(other.getCommentId());
+		}
+
+		return result;
+	}
 	 
     @Override
     public int hashCode() {
