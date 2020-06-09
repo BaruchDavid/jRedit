@@ -10,7 +10,6 @@ import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,8 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
@@ -38,25 +35,24 @@ import java.util.stream.IntStream;
 
 @Controller
 public class LinkController {
-	private LinkService linkService;
-	private CommentRepository commentRepository;
+	private final LinkService linkService;
+	private final CommentRepository commentRepository;
 	private static final String NEW_LINK = "newLink";
 	private static final String SUBMIT_LINK = "link/submit";
 	private static final String SUCCESS = "success";
 	private static final String ERROR = "error";
 	private static final String USER_DTO = "userDto";
-	
-	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
-	
-	@Autowired
-	private TagServiceImpl tagService;
+	private final UserDetailsServiceImpl userDetailsService;
+	private final TagServiceImpl tagService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
-	public LinkController(LinkService linkService, CommentRepository commentRepository) {
+	public LinkController(LinkService linkService, CommentRepository commentRepository,
+						  UserDetailsServiceImpl userDetailsService, TagServiceImpl tagService) {
 		this.linkService = linkService;
 		this.commentRepository = commentRepository;
+		this.userDetailsService = userDetailsService;
+		this.tagService = tagService;
 	}
 
 	/**
@@ -137,8 +133,8 @@ public class LinkController {
 	
 	@PostMapping(value = "/links/link/comments")
 	public String newComment(@Valid Comment comment, BindingResult bindingResult, 
-								RedirectAttributes attributes,Model model,
-								@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest req, HttpServletResponse res) {		
+								RedirectAttributes attributes, @AuthenticationPrincipal UserDetails userDetails,
+							 	HttpServletResponse res) {
 
 		if(bindingResult.hasErrors()) {
 			bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ON COMMENT {} : CODES {} MESSAGE: {}", 
@@ -155,7 +151,7 @@ public class LinkController {
 	
 	@PostMapping(value = "/links/link/tags")
 	@ResponseBody
-	public List<String> searchTags(String search, Model model, HttpServletResponse req) {		
+	public List<String> searchTags(String search) {
 		return tagService.findSuitableTags(search);
 	}
 }
