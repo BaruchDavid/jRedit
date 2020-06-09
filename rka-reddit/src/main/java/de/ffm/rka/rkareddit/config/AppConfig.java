@@ -38,7 +38,7 @@ public class AppConfig implements WebMvcConfigurer{
 
 	
 	@Bean
-	public SpringSecurityDialect securitydialectThymeleafSec5() {
+	public SpringSecurityDialect securityDialectThymeleaf() {
 		return new SpringSecurityDialect();
 	}
 	
@@ -49,8 +49,7 @@ public class AppConfig implements WebMvcConfigurer{
 	}
 
 	/**
-	 * spring-bean for converting pictures to bytearray for browser
-	 * @return
+	 * @return spring-bean for converting pictures to bytearray for browser
 	 */
 	@Bean
 	public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {

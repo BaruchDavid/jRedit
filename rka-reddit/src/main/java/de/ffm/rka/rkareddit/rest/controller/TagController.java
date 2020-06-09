@@ -30,20 +30,20 @@ public class TagController {
 	 * method for login and logout
 	 * during logout, request parameter contains 'logout' param
 	 * after session-timeout, you will be redirected to login again
-	 * @param request
 	 * @return view for login / logout
 	 */
 	@PostMapping(value ="/tag/create", consumes = MediaType.ALL_VALUE)
 	@ResponseBody
-	public TagVO newTag(@RequestBody String tag, @AuthenticationPrincipal UserDetails user, Model model) {		
+	public TagVO newTag(@RequestBody String tag) {
+		long id = 0;
 		Tag nTag = Tag.builder()
-					  .tagId(0l)
+					  .tagId(id)
 					  .tagName(tag.substring(0,tag.indexOf('=')))
 					  .build();
 		
-		Optional<Tag> availibleTag = tagService.findTagOnName(nTag.getTagName());
-		if (availibleTag.isPresent()) {
-			return new TagVO(availibleTag.get().getTagName(), availibleTag.get().getTagId());
+		Optional<Tag> availableTag = tagService.findTagOnName(nTag.getTagName());
+		if (availableTag.isPresent()) {
+			return new TagVO(availableTag.get().getTagName(), availableTag.get().getTagId());
 		} else {
 			LOGGER.info("AUTOCOMPLETE NO RESULT FOR: {}", tag);
 			return new TagVO(nTag.getTagName(), nTag.getTagId());
@@ -52,7 +52,7 @@ public class TagController {
 	
 	@DeleteMapping(value ="/tag/deleteTag/{tagId}")
 	@ResponseBody
-	public String tagWithoutRelation(@PathVariable long tagId, @AuthenticationPrincipal UserDetails user, Model model) {		
+	public String tagWithoutRelation(@PathVariable long tagId) {
 		String deletedTagId = "";
 		Optional<Tag> tag = tagService.selectTagWithLinks(tagId);
 		if (tag.isPresent()

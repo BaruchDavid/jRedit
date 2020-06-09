@@ -14,24 +14,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This controlleradvice works only on @REstController-Classes, not on @Controller-Classes
+ * This controller advice works only on @REstController-Classes, not on @Controller-Classes
  * @author kaproma
  *
  */
 @RestControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.rest.controller"})
 class GlobalRESTExceptionHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalRESTExceptionHandler.class);
-	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR,reason="information not availible")
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR, reason="information not available")
 	@ResponseBody
 	@ExceptionHandler(value = {UserAuthenticationLostException.class, NullPointerException.class, IllegalArgumentException.class})
 	public List<String> internalError(HttpServletRequest req, Exception err){
 		LOGGER.error("REST CONTROLLER EXCEPTION {} {} on: {}", err.getMessage(), req.getMethod(), req.getRequestURL());
-		List<String> informations = new ArrayList<>();
-		informations.add("fehler1");
-		informations.add("fehler2");
-		informations.add("fehler3");
-		informations.add("fehler4");
-		return  informations;
+		List<String> information = new ArrayList<>();
+		information.add("fehler1");
+		information.add("fehler2");
+		information.add("fehler3");
+		information.add("fehler4");
+		return  information;
 		
 	}
 }

@@ -18,23 +18,21 @@ public class AuditorAwareImpl implements AuditorAware<String>{
 
 	
 	/**
-	 * will be invoked for auditing, when trying to save anythng 
+	 * will be invoked for auditing, when trying to save anything
 	 */
 	@Override
 	public Optional<String> getCurrentAuditor() {
-		Optional<String> audithUser = Optional.empty();
+		Optional<String> authenticatedUser = Optional.empty();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(authentication != null) {
-			LOGGER.info("AUDITING USER AUTHETICATION DETAILS {}", authentication.getPrincipal());
+			LOGGER.info("AUDITING USER AUTHENTICATION DETAILS {}", authentication.getPrincipal());
 			if (!(authentication instanceof AnonymousAuthenticationToken)) {
-			   audithUser = Optional.ofNullable(authentication.getName());
+				authenticatedUser = Optional.ofNullable(authentication.getName());
 			}
 		}else {
 			LOGGER.warn("AUDITING MOCK IS USING.");
-			audithUser = Optional.of("romakapt@gmx.de");
+			authenticatedUser = Optional.of("romakapt@gmx.de");
 		}
-		
-		
-		return audithUser;
+		return authenticatedUser;
 	}
 }

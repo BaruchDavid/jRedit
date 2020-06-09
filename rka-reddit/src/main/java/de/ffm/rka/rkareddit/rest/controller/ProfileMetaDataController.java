@@ -7,7 +7,6 @@ import de.ffm.rka.rkareddit.util.FileNIO;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,40 +30,42 @@ import java.util.Optional;
 public class ProfileMetaDataController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataController.class);
-	
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private FileNIO fileNIO;
-	
-	@Autowired
-	ApplicationContext applicationContext;
+
+	private final UserService userService;
+
+	private final FileNIO fileNIO;
+
+	private final ApplicationContext applicationContext;
+
+	public ProfileMetaDataController(UserService userService, FileNIO fileNIO, ApplicationContext applicationContext) {
+		this.userService = userService;
+		this.fileNIO = fileNIO;
+		this.applicationContext = applicationContext;
+	}
 
 	/**
-	 * shows user informations on profile-page on right side
+	 * shows user information on profile-page on right side
 	 */
 	@GetMapping("/information/content")
 	@ResponseBody
 //	@Cacheable("user")
 //	@CacheEvict(value="userInfo", allEntries=true)
-	public List<String> innformationContent(@AuthenticationPrincipal UserDetails userPrincipal,
-			@RequestParam(required = false) String user, HttpServletRequest req,
-			Model model) {
-		List<String> informations = new ArrayList<>();
+	public List<String> informationContent(@AuthenticationPrincipal UserDetails userPrincipal,
+			@RequestParam(required = false) String user) {
+		List<String> information = new ArrayList<>();
 		
 		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);
 		String requestedUser = usrDetail.isPresent() && user == null? usrDetail.get().getUsername():user;
 		User currentUser = userService.getUserWithLinks(requestedUser);
 		long userLinkSize = currentUser.getUserLinks().size();
 		long userCommentSize = userService.getUserWithComments(requestedUser).getUserComments().size();
-		informations.add(String.valueOf(userLinkSize));
-		informations.add(String.valueOf(userCommentSize));
-		informations.add(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(currentUser.getCreationDate()));
-		informations.add(requestedUser);
+		information.add(String.valueOf(userLinkSize));
+		information.add(String.valueOf(userCommentSize));
+		information.add(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(currentUser.getCreationDate()));
+		information.add(requestedUser);
 		LOGGER.debug("For user {} has been found {} links", requestedUser,userLinkSize);
 		LOGGER.debug("For user {} has been found {} comments", requestedUser, userCommentSize);
-		return informations;
+		return information;
 	}
 
 	@GetMapping(value = "/information/content/user-pic")

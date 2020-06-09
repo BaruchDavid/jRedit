@@ -26,10 +26,9 @@ public class DatabaseLoader implements CommandLineRunner{
 		
 		List<User> users = userService.findAll();
 		Optional<byte[]> pic = fileNIO.readPictureToByte("static/images/profile_small.png");
-		users.stream()
-			.forEach(user -> 
+		users.forEach(user ->
 			{
-				user.setProfileFoto(pic.get());
+				pic.ifPresent(picture -> user.setProfileFoto(pic.get()));
 				if(user.getUserId()==3) {
 					user.setEnabled(false);
 				}
