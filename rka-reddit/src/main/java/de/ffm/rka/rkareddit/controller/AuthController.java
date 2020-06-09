@@ -54,7 +54,7 @@ public class AuthController {
 	 * @return view for login / logout
 	 */
 	@GetMapping({"/login"})
-	public String login() {
+	public String login(HttpServletRequest request) {
 		return "auth/login"; 
 	}
 		
