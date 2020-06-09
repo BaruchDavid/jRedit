@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
@@ -233,6 +234,9 @@ public class UserService {
 	public Optional<User> findUserByMailAndReActivationCode(String email, String activationCode) {
 		return userRepository.findByNewEmailAndActivationCode(email, activationCode);
 	}
-	
-	
+
+
+    public User getUserClickedLinks(String requestedUser) {
+		return userRepository.findClickedUserLinks(requestedUser);
+    }
 }

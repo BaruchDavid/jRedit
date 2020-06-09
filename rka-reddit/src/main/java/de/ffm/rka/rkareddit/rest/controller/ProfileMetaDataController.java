@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.rest.controller;
 
 
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.FileNIO;
@@ -66,6 +67,25 @@ public class ProfileMetaDataController {
 		LOGGER.debug("For user {} has been found {} links", requestedUser,userLinkSize);
 		LOGGER.debug("For user {} has been found {} comments", requestedUser, userCommentSize);
 		return information;
+	}
+
+	/**
+	 * @param userPrincipal for authentication
+	 * @return list of clicked Links
+	 */
+	@GetMapping("/information/userClickedLinks")
+	@ResponseBody
+	public List<Link> userClickedLinksHistory(@AuthenticationPrincipal UserDetails userPrincipal) {
+		List<Link> userClickedLinks = new ArrayList<>();
+		String requestedUser= Optional.ofNullable(userPrincipal)
+										.map(UserDetails::getUsername)
+										.orElse("");
+		if(!requestedUser.isEmpty()) {
+			userClickedLinks = userService.getUserClickedLinks(requestedUser).getUserClickedLinks();
+		}
+
+
+		return userClickedLinks;
 	}
 
 	@GetMapping(value = "/information/content/user-pic")
