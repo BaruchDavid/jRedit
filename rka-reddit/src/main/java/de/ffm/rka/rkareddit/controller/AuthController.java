@@ -38,10 +38,9 @@ public class AuthController {
 	private static final String BINDING_ERROR = "bindingError";
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
-	private static final String REDIRECT_TO_PRIVATE_PROFIL = "redirect:/profile/private";
-	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
-	private UserService userService;
-	private UserDetailsServiceImpl userDetailsService;
+	private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
+	private final UserService userService;
+	private final UserDetailsServiceImpl userDetailsService;
 	
 	public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService) {
 		this.userService = userService;
@@ -52,22 +51,21 @@ public class AuthController {
 	 * method for login and logout
 	 * during logout, request parameter contains 'logout' param
 	 * after session-timeout, you will be redirected to login again
-	 * @param request
 	 * @return view for login / logout
 	 */
 	@GetMapping({"/login"})
-	public String login(HttpServletRequest request) {
+	public String login() {
 		return "auth/login"; 
 	}
 		
 	/**
 	 * set user info, user links and their comments
-	 * @throws Exception 
+	 * @throws UsernameNotFoundException on non exists user
 	 */
 	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email, 
-								Model model) {
+								Model model) throws UsernameNotFoundException {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
@@ -77,11 +75,11 @@ public class AuthController {
 			model.addAttribute(USER_DTO, member);
 		});
 		
-		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks()).orElse(new ArrayList<Link>());	
+		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks()).orElse(new ArrayList<>());
 		
 		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail()))
 											.map(User::getUserComments)
-											.orElse(new ArrayList<Comment>());
+											.orElse(new ArrayList<>());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
@@ -93,8 +91,8 @@ public class AuthController {
 	}
 	
 	/**
-	 * @param model
-	 * @return
+	 * @param model to save userDto object
+	 * @return view for registration
 	 */
 	@GetMapping(value = {REGISTRATION, REGISTRATION+"/"})
 	public String registration(Model model) {	
@@ -105,7 +103,7 @@ public class AuthController {
 	/**
 	 * register user into system
 	 * @return user
-	 * @throws ServiceException 
+	 * @throws ServiceException will be triggered on any errors
 	 */
 	@PostMapping(value = {REGISTRATION})
 	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
@@ -114,25 +112,22 @@ public class AuthController {
 								HttpServletRequest req, Model model) throws ServiceException {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
-												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-			model.addAttribute(USER_DTO, userDto);
-			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
+			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
 			userDto = userService.register(userDto);
 			model.addAttribute(USER_DTO, userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
-			LOGGER.info("REGISTER SUCCESSFULY {}", userDto);
-			return  "redirect:/registration";
+			LOGGER.info("REGISTER SUCCESSFULLY {}", userDto);
+			return  "redirect:".concat(REGISTRATION);
 		}
 	}
-	
+
+
+
 	/**
 	 * user changes own email address
 	 * @return new userDto object and success
-	 * @throws ServiceException
+	 * @throws ServiceException will be triggered on any errors
 	 */
 	@PatchMapping(value = {"/profile/private/me/update/email/{email:.+}"})
 	public String userChangeEmail(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
@@ -141,12 +136,7 @@ public class AuthController {
 								HttpServletRequest req, Model model) throws ServiceException {
 		LOGGER.info("TRY TO REGISTER {}",userDto);
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}", 
-												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-			model.addAttribute(USER_DTO, userDto);
-			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
+			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
 			final String newEmail = userDto.getNewEmail();
 			userDto = userDetailsService.mapUserToUserDto(userDto.getEmail());
@@ -154,8 +144,8 @@ public class AuthController {
 			userDto = userService.emailChange(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
 			attributes.addFlashAttribute(REDIRECT_MESSAGE, "you got email, check it out!");
-			LOGGER.info("CHANGE EMAIL SUCCESSFULY {}", userDto);
-			return REDIRECT_TO_PRIVATE_PROFIL;
+			LOGGER.info("CHANGE EMAIL SUCCESSFULLY {}", userDto);
+			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
 	}
 	
@@ -188,12 +178,7 @@ public class AuthController {
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
-												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-			model.addAttribute(USER_DTO, userDto);
-			attributes.addFlashAttribute(BINDING_ERROR,true);
-			res.setStatus(HttpStatus.BAD_REQUEST.value());
+			manageValidationErrors(userDto, bindingResult, res, attributes, model);
 			return "redirect:/profile/private/me/".concat(userDto.getEmail());
 		} else {
 			userDto.setEmail(userDetails.getUsername());
@@ -201,24 +186,56 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			attributes.addFlashAttribute(REDIRECT_MESSAGE,"your profile has been updated");
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
-			LOGGER.info("USER CHAGEND SUCCESSFULY {}",userDto);
-			return REDIRECT_TO_PRIVATE_PROFIL;
+			LOGGER.info("USER CHANGED SUCCESSFULLY {}",userDto);
+			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }
-	
-		
+
+
+	/**
+	 * validates input for user or password changes
+	 * @param userDto saves failed user object
+	 * @param bindingResult contains errors
+	 * @param res set status
+	 * @param attributes set attributes for redirect
+	 * @param model saves userDto
+	 */
+	private void manageValidationErrors(@Validated(Validationgroups.ValidationChangeUserGroup.class) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes, Model model) {
+		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE,
+											error.getCodes(), error.getDefaultMessage()));
+		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
+		model.addAttribute(USER_DTO, userDto);
+		attributes.addFlashAttribute(BINDING_ERROR,true);
+		res.setStatus(HttpStatus.BAD_REQUEST.value());
+	}
+
+	/**
+	 * validates input for registration or email change
+	 * @param userDto contains failed object
+	 * @param bindingResult contains all errors
+	 * @param res set status
+	 * @param req current request
+	 * @param model saves userDto model and errors
+	 * @return either registration view or email change view
+	 */
+	private String manageValidationErrors(@Validated({Validationgroups.ValidationUserRegistration.class,
+			Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, HttpServletRequest req, Model model) {
+		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}",
+				error.getCodes(), error.getDefaultMessage()));
+		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
+		model.addAttribute(USER_DTO, userDto);
+		res.setStatus(HttpStatus.BAD_REQUEST.value());
+		return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
+	}
+
+
 	@PutMapping("/profile/private/me/{email:.+}/password")
     public String userPasswordChange(@Validated(Validationgroups.ValidationUserChangePassword.class) UserDTO userDto, 
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		
-		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {		
-			bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE, 
-												error.getCodes(), error.getDefaultMessage()));
-			model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-			model.addAttribute(USER_DTO, userDto);
-			attributes.addFlashAttribute(BINDING_ERROR,true);
-			res.setStatus(HttpStatus.BAD_REQUEST.value());
+		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
+			manageValidationErrors(userDto, bindingResult, res, attributes, model);
 			return "auth/passwordChange";
 		} else {
 			userDto.setEmail(userDetails.getUsername());
@@ -226,25 +243,25 @@ public class AuthController {
 			attributes.addFlashAttribute(SUCCESS,true);
 			attributes.addFlashAttribute(REDIRECT_MESSAGE,"your password has been changed!");
 			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
-			LOGGER.info("USER PASSWORD CHAGEND SUCCESSFULY {}",userDto);
-			return REDIRECT_TO_PRIVATE_PROFIL;
+			LOGGER.info("USER PASSWORD CHANGED SUCCESSFULLY {}",userDto);
+			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }
 	
 	@GetMapping("/profile/private/me/{email:.+}")
-	public String userInfo(@PathVariable String email, HttpServletResponse response, Model model) {
+	public String userInfo(@PathVariable String email, Model model) {
 		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(email));
 		return "auth/profileEdit";
 	}
 	
 	@GetMapping("/profile/private/me/{email:.+}/password")
-	public String changePassword(@PathVariable String email, HttpServletResponse response, Model model) {
+	public String changePassword(@PathVariable String email, Model model) {
 		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(email));
 		return "auth/passwordChange";
 	}
 	
 	@GetMapping("/profile/private/me/update/email/{email:.+}")
-	public String userEmailUpdateView(@PathVariable String email, HttpServletResponse response, Model model) {
+	public String userEmailUpdateView(@PathVariable String email, Model model) {
 		UserDTO user = userDetailsService.mapUserToUserDto(email);
 		user.setNewEmail(StringUtils.EMPTY);
 		model.addAttribute(USER_DTO, user);
