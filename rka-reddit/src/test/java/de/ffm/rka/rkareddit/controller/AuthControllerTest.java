@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
 				classes = SpringSecurityTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 public class AuthControllerTest {
 
 	private MockMvc mockMvc;
@@ -629,21 +630,5 @@ public class AuthControllerTest {
 					.andDo(print())
 					.andExpect(status().is(302))
 					.andExpect(redirectedUrl("/links"));
-	}
-
-	@Test
-	@WithUserDetails("romakapt@gmx.de")
-	public void clickedLinksHistoryForAuthenticatedUser() throws Exception {
-		this.mockMvc.perform(get("/profile/information/userClickedLinks"))
-				.andDo(print())
-				.andExpect(status().is(200));
-	}
-
-	@Test
-	public void clickedLinksHistoryForUnauthenticatedUser() throws Exception {
-		this.mockMvc.perform(get("/information/userClickedLinks"))
-				.andDo(print())
-				.andExpect(status().is(302))
-				.andExpect(redirectedUrl("/links"));
 	}
 }

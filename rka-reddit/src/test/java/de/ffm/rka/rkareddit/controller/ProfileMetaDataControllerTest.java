@@ -3,7 +3,9 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.rest.controller.ProfileMetaDataController;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -21,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -29,10 +32,12 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -42,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = SpringSecurityTestConfig.class
 )
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
+@Transactional
 public class ProfileMetaDataControllerTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataControllerTest.class);
@@ -101,7 +107,30 @@ public class ProfileMetaDataControllerTest {
 		ImageIO.write(bImage2, "png", receivedUserPic);
 		LOGGER.info("RECEIVED IMAGE READABLE: {}", receivedUserPic.canRead());
 		LOGGER.info("RECEIVED IMAGE HAS BEEN DELETED: {}", receivedUserPic.delete());
+	}
 
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void clickedLinksHistoryForAuthenticatedUser() throws Exception {
+		MvcResult result = this.mockMvc.perform(get("/profile/information/userClickedLinks"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andReturn();
+		final String stringRes = result.getResponse().getContentAsString();
+		assertTrue(stringRes.contains("\"linkId\":1"));
+		assertTrue(stringRes.contains("\"linkId\":2"));
+		assertTrue(stringRes.contains("\"linkId\":3"));
+	}
+
+
+	@Test
+	public void clickedLinksHistoryForUnauthenticatedUser() throws Exception {
+		MvcResult result  = this.mockMvc.perform(get("/profile/information/userClickedLinks"))
+				.andDo(print())
+				.andExpect(status().is(200))
+				.andReturn();
+		final String stringRes = result.getResponse().getContentAsString();
+		assertEquals(stringRes, "[]");
 	}
 
 }
