@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layouts/main_layout :: head(title = ' Login')}">
 </head>
 <body>
@@ -85,13 +86,8 @@
                 </div>
                 <div class="row">
                     <div class="card col-12">
-                        <h5 class="card-title recentLinks">Recent Links Clicked</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><a href="#">What's new in Spring Boot 2</a></li>
-                            <li class="list-group-item"><a href="#">10 Features in Java 10</a></li>
-                            <li class="list-group-item"><a href="#">9 Features in Java 9</a></li>
-                            <li class="list-group-item"><a href="#">8 Features in Java 8</a></li>
-                            <li class="list-group-item"><a href="#">7 Reasons not to use Java 7</a></li>
+                        <h5 id="linkHisTitle" class="card-title recentLinks">Recent Links Clicked</h5>
+                        <ul id="linkHis" class="list-group list-group-flush">
                         </ul>
                     </div>
                 </div>

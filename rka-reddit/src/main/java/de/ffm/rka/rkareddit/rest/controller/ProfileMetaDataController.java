@@ -75,16 +75,14 @@ public class ProfileMetaDataController {
 	 */
 	@GetMapping("/information/userClickedLinks")
 	@ResponseBody
-	public List<Link> userClickedLinksHistory(@AuthenticationPrincipal UserDetails userPrincipal) {
+	public List<Link> userClickedLinksHistory(@RequestParam(name="user") String user, @AuthenticationPrincipal UserDetails userPrincipal) {
 		List<Link> userClickedLinks = new ArrayList<>();
 		String requestedUser= Optional.ofNullable(userPrincipal)
-										.map(UserDetails::getUsername)
-										.orElse("");
-		if(!requestedUser.isEmpty()) {
+				.map(UserDetails::getUsername)
+				.orElse("");
+		if(user.equals(requestedUser) && !requestedUser.isEmpty()){
 			userClickedLinks = userService.findUserClickedLinks(requestedUser);
 		}
-
-
 		return userClickedLinks;
 	}
 

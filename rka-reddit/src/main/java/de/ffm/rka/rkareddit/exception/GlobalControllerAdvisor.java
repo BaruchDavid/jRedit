@@ -66,32 +66,33 @@ public class GlobalControllerAdvisor {
 																			req.getRequestURL());
 
 		switch (exceptionType) {
-		case "ValidationException":
-		case "MethodArgumentTypeMismatchException":
-		case "IllegalArgumentException":
-		case "NullPointerException":
-			view = DEFAULT_APPLICATION_ERROR;
-			res.setStatus(HttpStatus.SC_BAD_REQUEST);
-			break;
-		case "UserAuthenticationLostException":
-		case "AuthenticationCredentialsNotFoundException":
-		case "UsernameNotFoundException":
-			res.setStatus(HttpStatus.SC_UNAUTHORIZED);
-			break;		
-		case "AccessDeniedException":
-			res.setStatus(HttpStatus.SC_FORBIDDEN);
-			break;
-		case "HttpRequestMethodNotSupportedException":
-			view = PAGE_NOT_FOUND;
-			res.setStatus(HttpStatus.SC_NOT_FOUND);
-			break;
-		case "ServiceException":
-			view = DEFAULT_APPLICATION_ERROR;
-			res.setStatus(HttpStatus.SC_GATEWAY_TIMEOUT);
-			break;	
-		default:
-			res.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			break;
+			case "MissingServletRequestParameterException":
+			case "ValidationException":
+			case "MethodArgumentTypeMismatchException":
+			case "IllegalArgumentException":
+			case "NullPointerException":
+				view = DEFAULT_APPLICATION_ERROR;
+				res.setStatus(HttpStatus.SC_BAD_REQUEST);
+				break;
+			case "UserAuthenticationLostException":
+			case "AuthenticationCredentialsNotFoundException":
+			case "UsernameNotFoundException":
+				res.setStatus(HttpStatus.SC_UNAUTHORIZED);
+				break;
+			case "AccessDeniedException":
+				res.setStatus(HttpStatus.SC_FORBIDDEN);
+				break;
+			case "HttpRequestMethodNotSupportedException":
+				view = PAGE_NOT_FOUND;
+				res.setStatus(HttpStatus.SC_NOT_FOUND);
+				break;
+			case "ServiceException":
+				view = DEFAULT_APPLICATION_ERROR;
+				res.setStatus(HttpStatus.SC_GATEWAY_TIMEOUT);
+				break;
+			default:
+				res.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				break;
 		}
 
 		return createErrorView(req.getRequestURL().toString(),user, view);
