@@ -29,11 +29,11 @@ import java.util.*;
 public class UserService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
-	private UserRepository userRepository;
-	private RoleService roleService;
+	private final UserRepository userRepository;
+	private final RoleService roleService;
 	private final MailService mailService;
-	private ModelMapper modelMapper;
-	private UserDetailsServiceImpl userDetailsService;
+	private final ModelMapper modelMapper;
+	private final UserDetailsServiceImpl userDetailsService;
 	
 	public UserService(MailService mailService, UserRepository userRepository, 
 						RoleService roleService, ModelMapper modelMapper, UserDetailsServiceImpl userDetailsService) {
@@ -54,7 +54,7 @@ public class UserService {
 	public UserDTO register(UserDTO userDto) throws ServiceException {
 		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 		User newUser = modelMapper.map(userDto, User.class);
-		String secret = "";
+		String secret;
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		secret = encoder.encode(newUser.getPassword());
 		newUser.setPassword(secret);
@@ -78,7 +78,7 @@ public class UserService {
 	
 	@Transactional(readOnly = false)
 	public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
-		Optional<User> user = Optional.empty();
+		Optional<User> user;
 		Optional<UserDTO> userDTO = Optional.empty();
 		if(isNewEmail) {
 			user = findUserByMailAndReActivationCode(email, activationCode);
@@ -109,7 +109,7 @@ public class UserService {
 
 	/**
 	 * changes user details
-	 * @param userDto
+	 * @param  userDto hold changes to be saved
 	 */
 	@Transactional(readOnly = false)
 	public void changeUserDetails(UserDTO userDto) {
@@ -122,21 +122,19 @@ public class UserService {
 	}
 
 	private User getUser(String userMail) {
-		User user = userRepository.findByEmail(userMail)
-							.orElseThrow(() -> { 
+		return userRepository.findByEmail(userMail)
+							.orElseThrow(() -> {
 										LOGGER.warn("{} Could not be found to be changed", userMail);
 										return new  UsernameNotFoundException(userMail);
 										});
-		return user;
 	}
 	
 	/**
 	 * change user Password
-	 * @param userDto
+	 * @param userDto hold changes to be saved
 	 */
 	@Transactional(readOnly = false)
 	public void changeUserPassword(UserDTO userDto) {
-		
 		User user = getUser(userDto.getEmail());
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		String secret = encoder.encode(userDto.getNewPassword());
@@ -153,7 +151,7 @@ public class UserService {
 	
 	/**
 	 * fetch User with retrieved List<Link> with mail
-	 * @param userId
+	 * @param userId is a user email
 	 */
 	public User getUserWithLinks(String userId){
 		return userRepository.fetchUserWithLinks(userId);
@@ -184,8 +182,7 @@ public class UserService {
 	
 	@Transactional(readOnly = false)
 	public void saveUsers(User...users ) {
-		Arrays.asList(users).stream()
-							.forEach(user -> {
+		Arrays.asList(users).forEach(user -> {
 								LOGGER.info("TRY TO SAVE USER {}", user.getEmail());
 								User userSaved = userRepository.saveAndFlush(user);
 								LOGGER.info("USER SAVED WITH ID {} AND USERNAME {} ", userSaved.getUserId(),userSaved.getEmail());
@@ -203,10 +200,9 @@ public class UserService {
 
 	/**
 	 * fetch User with retrieved List<Comment> with mail
-	 * @param userId
+	 * @param userId is user email
 	 */
 	public User getUserWithComments(String userId) {
-		
 		return userRepository.fetchUserWithComments(userId);
 	}
 

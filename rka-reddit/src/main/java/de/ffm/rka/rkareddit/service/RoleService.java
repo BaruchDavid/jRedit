@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoleService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RoleService.class);
-	private RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 	
 	
 	public RoleService(RoleRepository roleRepository) {

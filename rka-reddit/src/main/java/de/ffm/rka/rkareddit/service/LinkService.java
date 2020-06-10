@@ -27,7 +27,7 @@ import java.util.Optional;
 public class LinkService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
-	private LinkRepository linkRepository;
+	private final LinkRepository linkRepository;
 		
 	public LinkService( LinkRepository linkRepository) {
 
@@ -66,8 +66,7 @@ public class LinkService {
 					  .filter(tag -> tag.getTagName().length()==0)
 					  .forEach(tags::add);
 		link.getTags().removeAll(tags);		
-		link.getTags().stream()
-					  .forEach(tag -> tag.getLinks().add(link));
+		link.getTags().forEach(tag -> tag.getLinks().add(link));
 		LOGGER.info("TRY TO SAVE LINK {}", link);
 		return Optional.ofNullable(linkRepository.save(link)).orElse(new Link("link not availible", "http://jReditt.com"));
 	}

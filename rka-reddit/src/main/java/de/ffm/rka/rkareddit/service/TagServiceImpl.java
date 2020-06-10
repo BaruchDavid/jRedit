@@ -18,6 +18,10 @@ public class TagServiceImpl {
 		return tagRepository.findTagByName(tagName);
 	}
 
+	/**
+	 * @param tag for saving
+	 * @return new tag id
+	 */
 	public long saveTag(Tag tag) {
 		Tag newTag = tagRepository.save(tag);
 		return newTag.getTagId();

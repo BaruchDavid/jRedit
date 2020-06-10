@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CommentService {
 
-	private CommentRepository commentRepository;
+	private final CommentRepository commentRepository;
 	
 	public CommentService( CommentRepository commentReptory) {
 
