@@ -132,10 +132,9 @@ public class ProfileMetaDataControllerTest {
 
 	@Test
 	public void clickedLinksHistoryForEmptyUser() throws Exception {
-		MvcResult result  = this.mockMvc.perform(get("/profile/information/userClickedLinks"))
-				.andDo(print())
-				.andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
-				.andReturn();
+		this.mockMvc.perform(get("/profile/information/userClickedLinks"))
+			.andDo(print())
+			.andExpect(status().is(HttpStatus.SC_BAD_REQUEST));
 	}
 
 }

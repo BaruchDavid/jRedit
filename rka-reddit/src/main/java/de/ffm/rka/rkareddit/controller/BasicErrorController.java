@@ -3,9 +3,9 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,23 +20,26 @@ import javax.servlet.http.HttpServletResponse;
 public class BasicErrorController implements ErrorController{
 	private static final Logger LOGGER = LoggerFactory.getLogger(BasicErrorController.class);
 	public static final String ANONYMOUS = "anonymousUser";
-	@Autowired
-	UserDetailsServiceImpl userDetailsService;
+	private final UserDetailsServiceImpl userDetailsService;
 	
 	@Override
 	public String getErrorPath() {
 		return "/error";
 	}
-	
+
+	public BasicErrorController(UserDetailsServiceImpl userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
+
 	@GetMapping("/error")
     public String error(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
-		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserDTO user = UserDTO.builder()
 						.firstName("Guest")
 						.secondName("")
 						.build();
-		if(!ANONYMOUS.equals(authetication.getName())){			
-			user =  userDetailsService.mapUserToUserDto(authetication.getName());
+		if(!ANONYMOUS.equals(authentication.getName())){
+			user =  userDetailsService.mapUserToUserDto(authentication.getName());
 		}
 		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", request.getRequestURL(), ex.getMessage(), resp.getStatus());
 		model.addAttribute("userDto", user);
@@ -45,15 +48,17 @@ public class BasicErrorController implements ErrorController{
     }
 	
 	@GetMapping("/error/registrationError")
-    public String registrationError(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
-		LOGGER.error("SHOW REGISTRATION-ERROR-VEW");
+    public String registrationError(HttpServletRequest request, HttpServletResponse resp, Exception ex) {
+		LOGGER.error("SHOW REGISTRATION-ERROR-VEW {} WITH EXCEPTION {}", request.getRequestURI(), ex.getMessage());
+		resp.setStatus(HttpStatus.SC_BAD_REQUEST);
         return "error/registrationError";
     }
 
 	@GetMapping("/error/accessDenied")
     public String accessDenied(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
-		Authentication authetication = SecurityContextHolder.getContext().getAuthentication();
-		UserDTO user =  userDetailsService.mapUserToUserDto(authetication.getName());
+		LOGGER.error("SHOW ACCESS-DENIED-VEW {} WITH EXCEPTION {}", request.getRequestURI(), ex.getMessage());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDTO user =  userDetailsService.mapUserToUserDto(authentication.getName());
 		model.addAttribute("userDto", user);
 		resp.setStatus(403);
 		return "error/accessDenied";

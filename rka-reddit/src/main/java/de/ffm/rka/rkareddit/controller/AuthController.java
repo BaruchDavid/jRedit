@@ -55,7 +55,8 @@ public class AuthController {
 	 */
 	@GetMapping({"/login"})
 	public String login(HttpServletRequest request) {
-		return "auth/login"; 
+		LOGGER.info("login view {}",request.getRequestURI());
+		return "auth/login";
 	}
 		
 	/**
