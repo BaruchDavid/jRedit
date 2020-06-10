@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
@@ -31,10 +32,12 @@ public class Comment extends Auditable implements Serializable{
 	
 	@NotEmpty(message = "comment text must be present")
 	private String commentText;
-	
+
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User user;
-	
+
+	@JsonIgnore
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Link link;

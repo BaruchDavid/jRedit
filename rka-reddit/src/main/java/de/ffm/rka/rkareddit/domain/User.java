@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Entity
+
 @Getter @Setter 
 @ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto", "userClickedLinks"})
 @AllArgsConstructor

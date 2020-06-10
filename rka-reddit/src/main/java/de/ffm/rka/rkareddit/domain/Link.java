@@ -10,6 +10,8 @@ import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
@@ -51,6 +53,7 @@ public class Link extends Auditable implements Serializable{
 			 fetch=FetchType.LAZY,
 			 orphanRemoval = true,
 			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JsonIgnore
 	private List<Vote> vote = new ArrayList<>();
 	
 	@Builder.Default
@@ -60,15 +63,18 @@ public class Link extends Auditable implements Serializable{
 			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
 			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
 	)
+	@JsonIgnore
 	private List<Tag> tags = new ArrayList<>();
 
 	@ManyToMany(mappedBy= "userClickedLinks")
-	private Collection<User> users;
+	@JsonIgnore
+	private List<User> usersLinksHistory;
 	
 	@Builder.Default
 	private int voteCount = 0;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonIgnore
 	private User user;
 		
 	/**
