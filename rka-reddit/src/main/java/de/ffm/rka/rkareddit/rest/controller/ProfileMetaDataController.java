@@ -81,7 +81,7 @@ public class ProfileMetaDataController {
 										.map(UserDetails::getUsername)
 										.orElse("");
 		if(!requestedUser.isEmpty()) {
-			userClickedLinks = userService.getUserClickedLinks(requestedUser).getUserClickedLinks();
+			userClickedLinks = userService.findUserClickedLinks(requestedUser);
 		}
 
 
