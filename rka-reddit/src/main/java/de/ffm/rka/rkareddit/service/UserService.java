@@ -17,10 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * manages login- and register-process
@@ -235,8 +232,14 @@ public class UserService {
 		return userRepository.findByNewEmailAndActivationCode(email, activationCode);
 	}
 
-
-    public User getUserClickedLinks(String requestedUser) {
-		return userRepository.findClickedUserLinks(requestedUser);
-    }
+	/**
+	 * retrieve list of previously clicked links
+	 * @param requestedUser is a account owner, no public visitor
+	 * @return either list of links oder empty list
+	 */
+	public List<Link> findUserClickedLinks(final String requestedUser){
+		return Optional.ofNullable(userRepository.findClickedUserLinks(requestedUser))
+						.map(User::getUserClickedLinks)
+						.orElse(Collections.emptyList());
+	}
 }

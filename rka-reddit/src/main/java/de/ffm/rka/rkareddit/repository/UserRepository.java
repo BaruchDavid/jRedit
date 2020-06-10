@@ -47,7 +47,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("SELECT usr "
 			+ "FROM User usr "
-			+ "JOIN FETCH usr.userClickedLinks "
+			+ "LEFT OUTER JOIN FETCH usr.userClickedLinks "
 			+ "WHERE usr.email =:email")
     User findClickedUserLinks(@Param("email") String requestedUser);
 }
