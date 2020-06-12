@@ -3,7 +3,7 @@ package de.ffm.rka.rkareddit.domain.validator;
 public interface Validationgroups {
 
 	/** marker interface for user changes */
-	public interface ValidationChangeUserGroup {
+	public interface ValidationChangeUserProperties {
 	}
 	
 	/** marker interface for user registration */

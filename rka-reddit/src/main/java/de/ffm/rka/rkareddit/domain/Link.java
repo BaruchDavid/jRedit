@@ -11,15 +11,16 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.List;
 
 import static java.util.Date.from;
@@ -39,7 +40,14 @@ public class Link extends Auditable implements Serializable{
 	private Long linkId;
 	
 	@NotEmpty(message = "title is required")
+	//@Size(min=5, max = 50, message = "maximal 50 letter allowed")
+	//@Length(min = 5, max = 50, message = "maximal 50 letters allowed")
+	@Column(length = 50)
 	private String title;
+
+	//@Size(min=0, max = 100, message = "maximal 100 letter allowed")
+	@Column(length = 100, nullable = true)
+	private String description;
 	
 	@NotEmpty(message = "url is required")
 	@URL(message = "valid url is required")

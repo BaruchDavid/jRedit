@@ -3,7 +3,7 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.validator.*;
-import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationChangeUserGroup;
+import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationChangeUserProperties;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangeEmail;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangePassword;
 import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserRegistration;
@@ -12,10 +12,10 @@ import lombok.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Optional;
-
+//ToDO für jede Validierungsgruppe die Feldre überprüfen!!!!!
 @EmailNotEqualToNewEmail(groups = {ValidationUserChangeEmail.class})
 @NewPasswordMatcher(groups = {ValidationUserChangePassword.class})
-@PasswordMatcher(groups = {ValidationUserRegistration.class})
+@PasswordMatcher(groups = {ValidationUserRegistration.class, ValidationUserChangeEmail.class})
 @Getter @Setter 
 @EqualsAndHashCode
 @ToString
@@ -24,12 +24,12 @@ import java.util.Optional;
 @Builder
 public class UserDTO {
 	
-	@NotEmpty(message = "mail must be entered ")
-	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
+	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserRegistration.class})
+	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20,  groups = {ValidationUserRegistration.class})
 	private String email;
 	
-	@NotEmpty(message = "mail must be entered ")
-	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20)
+	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserChangeEmail.class})
+	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20, groups = {ValidationUserChangeEmail.class})
 	private String newEmail;
 	
 	@Size(message = "password must be between  5 and 20 signs",min = 5,
@@ -47,17 +47,21 @@ public class UserDTO {
 	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserChangePassword.class})
 	private String confirmNewPassword;
 	
-	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserGroup.class})
+	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserProperties.class,
+																ValidationUserRegistration.class})
 	private String firstName;
 	
-	@NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserGroup.class})
+	@NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserProperties.class,
+																ValidationUserRegistration.class})
 	private String secondName;
 	
 	@JsonIgnore
 	private  String fullName;
 	
-	@NotEmpty(message = "Please enter alias.", groups = {ValidationChangeUserGroup.class})
-	@Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserGroup.class})
+	@NotEmpty(message = "Please enter alias.", groups = {ValidationChangeUserProperties.class,
+															ValidationUserRegistration.class})
+	@Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserProperties.class,
+																				ValidationUserRegistration.class})
 	private  String aliasName;
 	
 	private String activationCode;
