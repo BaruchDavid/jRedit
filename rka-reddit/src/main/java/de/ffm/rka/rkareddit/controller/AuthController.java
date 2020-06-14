@@ -107,11 +107,10 @@ public class AuthController {
 	 * @throws ServiceException will be triggered on any errors
 	 */
 	@PostMapping(value = {REGISTRATION})
-	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
-														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
+	public String userRegistration(@Validated(value = {Validationgroups.ValidationUserRegistration.class}) UserDTO userDto,
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
 								HttpServletRequest req, Model model) throws ServiceException {
-		LOGGER.info("TRY TO REGISTER {}",userDto);
+		LOGGER.info("TRY TO REGISTER {}", userDto);
 		if(bindingResult.hasErrors()) {
 			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
@@ -131,11 +130,10 @@ public class AuthController {
 	 * @throws ServiceException will be triggered on any errors
 	 */
 	@PatchMapping(value = {"/profile/private/me/update/email/{email:.+}"})
-	public String userChangeEmail(@Validated(value = {Validationgroups.ValidationUserRegistration.class,
-														Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto, 
+	public String userChangeEmail(@Validated(value = {Validationgroups.ValidationUserChangeEmail.class}) UserDTO userDto,
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
 								HttpServletRequest req, Model model) throws ServiceException {
-		LOGGER.info("TRY TO REGISTER {}",userDto);
+		LOGGER.info("TRY TO CHANGE EMAIL OF USER {}",userDto);
 		if(bindingResult.hasErrors()) {
 			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
@@ -175,7 +173,7 @@ public class AuthController {
 	}
 	
 	@PutMapping("/profile/private/me/update")
-    public String user(@Validated(Validationgroups.ValidationChangeUserGroup.class) UserDTO userDto, 
+    public String user(@Validated(Validationgroups.ValidationChangeUserProperties.class) UserDTO userDto,
     								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
     								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
 		if(bindingResult.hasErrors()) {
@@ -201,7 +199,9 @@ public class AuthController {
 	 * @param attributes set attributes for redirect
 	 * @param model saves userDto
 	 */
-	private void manageValidationErrors(@Validated(Validationgroups.ValidationChangeUserGroup.class) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes, Model model) {
+	private void manageValidationErrors(@Validated(Validationgroups.ValidationChangeUserProperties.class) UserDTO userDto,
+										BindingResult bindingResult, HttpServletResponse res,
+										RedirectAttributes attributes, Model model) {
 		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE,
 											error.getCodes(), error.getDefaultMessage()));
 		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());

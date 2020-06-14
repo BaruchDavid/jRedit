@@ -421,6 +421,52 @@ public class AuthControllerTest {
         	fail("user for test-request not found");
         }  
 	}
+
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changeUserEmailtoSmall() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+		if(user.isPresent()) {
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
+					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+					.param("email", "romakapt@gmx.de")
+					.param("newEmail", "r@e")
+					.param("password", "doman")
+					.param("confirmPassword", "doman"))
+					.andDo(print())
+					.andExpect(status().is(400))
+					.andExpect(view().name("auth/emailChange"))
+					.andExpect(model().errorCount(2))
+					.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
+					.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "Size"));
+
+		} else {
+			fail("user for test-request not found");
+		}
+	}
+
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changeUserEmailtoBig() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+		if(user.isPresent()) {
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
+					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+					.param("email", "romakapt@gmx.de")
+					.param("newEmail", "radfadfadfsddsdfadfadfsdsdfs@de")
+					.param("password", "doman")
+					.param("confirmPassword", "doman"))
+					.andDo(print())
+					.andExpect(status().is(400))
+					.andExpect(view().name("auth/emailChange"))
+					.andExpect(model().errorCount(2))
+					.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
+					.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "Size"));
+
+		} else {
+			fail("user for test-request not found");
+		}
+	}
 	
 	/**
 	 * old and new email are equal ==> wrong
@@ -442,11 +488,10 @@ public class AuthControllerTest {
          			.andDo(print())
  			        .andExpect(status().is(400))
  			        .andExpect(view().name("auth/emailChange"))
- 			        .andExpect(model().errorCount(3))
  			        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
  			        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
- 			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
- 
+ 			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
+ 					.andExpect(model().errorCount(3));
          } else {
          	fail("user for test-request not found");
          }  

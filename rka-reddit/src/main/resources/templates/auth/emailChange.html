@@ -30,17 +30,17 @@
     </div>
     <div class="row">
         <div class="col-md-3 field-label-responsive">
-            <label for="email">New e-mail Address</label>
+            <label for="newEemail">New e-mail Address</label>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
                     <input type="text"
-                           name="email"
+                           name="newEmail"
                            class="form-control"
-                           id="email"
-                           placeholder="you@example.com"
+                           id="newEemail"
+                           placeholder="you.new@example.com"
                            th:field="*{newEmail}"
                            required autofocus>
                 </div>
@@ -78,7 +78,7 @@
                            name="confirmPassword"
                            class="form-control"
                            id="confirmPassword"
-                           placeholder="confirm new password"
+                           placeholder="confirm password"
                            th:field="*{confirmPassword}"
                            required>
                 </div> 
