@@ -445,6 +445,33 @@ public class AuthControllerTest {
 		}
 	}
 
+	/**
+	 * validator vor NotEmpty
+	 * confirmPw invokes pw-and-confirmPw matcher
+	 * @throws Exception
+	 */
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void changeUserEmailnoEmail() throws Exception {
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");
+		if(user.isPresent()) {
+			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
+					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+					.param("email", "romakapt@gmx.de")
+					.param("password", "roman"))
+					.andDo(print())
+					.andExpect(status().is(400))
+					.andExpect(view().name("auth/emailChange"))
+					.andExpect(model().errorCount(3))
+					.andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
+					.andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
+					.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "NotEmpty"));
+
+		} else {
+			fail("user for test-request not found");
+		}
+	}
+
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changeUserEmailtoBig() throws Exception {

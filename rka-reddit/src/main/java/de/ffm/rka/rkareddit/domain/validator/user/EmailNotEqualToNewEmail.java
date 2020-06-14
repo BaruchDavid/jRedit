@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator;
+package de.ffm.rka.rkareddit.domain.validator.user;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
-@Constraint(validatedBy = EmailValidator.class)
+@Constraint(validatedBy = EmailToNewEmailValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface EmailNotEqualToNewEmail {

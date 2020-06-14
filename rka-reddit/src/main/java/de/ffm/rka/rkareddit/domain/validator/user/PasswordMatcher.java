@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator;
+package de.ffm.rka.rkareddit.domain.validator.user;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

@@ -1,6 +1,7 @@
-package de.ffm.rka.rkareddit.domain.validator;
+package de.ffm.rka.rkareddit.domain.validator.user;
 
 
+import de.ffm.rka.rkareddit.domain.validator.BCryptPwEncoderManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
  * checks if users current password is correct
  *
  */
-public class CorrectPasswordValidator implements ConstraintValidator<CorrectPassword, String>, BCryptPwEncoderManager{
+public class CorrectPasswordValidator implements ConstraintValidator<CorrectPassword, String>, BCryptPwEncoderManager {
 	
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {

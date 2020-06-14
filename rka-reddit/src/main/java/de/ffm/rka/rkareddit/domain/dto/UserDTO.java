@@ -2,17 +2,17 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.ffm.rka.rkareddit.domain.validator.*;
-import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationChangeUserProperties;
-import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangeEmail;
-import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserChangePassword;
-import de.ffm.rka.rkareddit.domain.validator.Validationgroups.ValidationUserRegistration;
+import de.ffm.rka.rkareddit.domain.validator.user.*;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationChangeUserProperties;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserChangeEmail;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserChangePassword;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserRegistration;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Optional;
-//ToDO für jede Validierungsgruppe die Feldre überprüfen!!!!!
+
 @EmailNotEqualToNewEmail(groups = {ValidationUserChangeEmail.class})
 @NewPasswordMatcher(groups = {ValidationUserChangePassword.class})
 @PasswordMatcher(groups = {ValidationUserRegistration.class, ValidationUserChangeEmail.class})

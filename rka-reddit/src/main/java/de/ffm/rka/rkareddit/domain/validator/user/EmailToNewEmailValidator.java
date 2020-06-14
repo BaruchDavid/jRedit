@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator;
+package de.ffm.rka.rkareddit.domain.validator.user;
 
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import org.springframework.security.core.Authentication;
@@ -14,23 +14,18 @@ import java.util.Optional;
  * @author RKA
  *
  */
-public class EmailValidator implements ConstraintValidator<EmailNotEqualToNewEmail, UserDTO>{
+public class EmailToNewEmailValidator implements ConstraintValidator<EmailNotEqualToNewEmail, UserDTO>{
 
 	/**
-	 * checks if current email is not equal to new email during email changing
+	 * when newEmail is not empty, so check this with current email
+	 * otherwise is newEmail empty and return false anyway
 	 */
 	@Override
 	public boolean isValid(UserDTO userDto, ConstraintValidatorContext context) {
 		if(userDto.getNewEmail() != null) {
-			Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-			if (authetication.isPresent()) {
-				return !authetication.get().getName().equals(userDto.getNewEmail());
-			} else {
-				return false;
-			}
-			
+			return !userDto.getEmail().equals(userDto.getNewEmail());
 		} else {
-			return true;
+			return false;
 		}
 	}	
 }
