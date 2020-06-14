@@ -57,7 +57,7 @@
                 <div class="col-1">&nbsp;</div>
                 <div class="col-11">
 					<!-- th:field="*{body}" -->					
-					<form id="frmAddComment" method="POST" th:action="@{/links/link/comments}" th:object="${comment}" >
+					<form id="frmAddComment" method="POST" th:action="@{/comments/comment}" th:object="${comment}" >
                         <input type="hidden" th:field="*{link}"/>
                         <div class="form-group">
                             <textarea class="form-control" id="comment" rows="3" th:field="*{commentText}"></textarea>

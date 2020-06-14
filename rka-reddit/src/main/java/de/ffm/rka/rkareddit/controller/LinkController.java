@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,7 +61,7 @@ public class LinkController {
 	 * @param page contains a page-number, page-size and sorting
 	 */
 	@GetMapping({"/","", "/links/", "/links"})
-	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "linkId") Pageable page,
+	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
 						@AuthenticationPrincipal UserDetails user, Model model) {
 		Page<Link> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
 		LOGGER.info("{} Links has been found", links.getSize());
@@ -95,7 +96,6 @@ public class LinkController {
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 				model.addAttribute(ERROR, model.containsAttribute(ERROR));
 			}
-			
 			return "link/link_view";
 		}else {
 			return "redirect:/links";
@@ -114,9 +114,9 @@ public class LinkController {
 	}
 	
 	@PostMapping("/links/link")
-	public String newLink(@Valid Link link, @AuthenticationPrincipal UserDetails user, Model model, HttpServletResponse response,
-							BindingResult bindingResult, RedirectAttributes redirectAttributes) {		
-		
+	public String newLink(@Validated Link link, @AuthenticationPrincipal UserDetails user,
+						  Model model, HttpServletResponse response, BindingResult bindingResult,
+						  RedirectAttributes redirectAttributes) {
 		if(bindingResult.hasErrors()) {
 			LOGGER.error("Validation failed of link: {}", link);
 			model.addAttribute(NEW_LINK, link);
@@ -130,25 +130,7 @@ public class LinkController {
 			return "redirect:/links/link/{linkId}";
 		}
 	}	
-	
-	@PostMapping(value = "/links/link/comments")
-	public String newComment(@Valid Comment comment, BindingResult bindingResult, 
-								RedirectAttributes attributes, @AuthenticationPrincipal UserDetails userDetails,
-							 	HttpServletResponse res) {
 
-		if(bindingResult.hasErrors()) {
-			bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ON COMMENT {} : CODES {} MESSAGE: {}", 
-															comment, error.getCodes(), error.getDefaultMessage()));	
-			res.setStatus(HttpStatus.BAD_REQUEST.value());
-			attributes.addFlashAttribute(ERROR, true);
-		} else {
-			comment.setUser((User) userDetailsService.loadUserByUsername(userDetails.getUsername()));
-			attributes.addFlashAttribute(SUCCESS, true);
-			commentRepository.saveAndFlush(comment);
-		}
-		return "redirect:/links/link/".concat(comment.getLink().getLinkId().toString());
-	}		
-	
 	@PostMapping(value = "/links/link/tags")
 	@ResponseBody
 	public List<String> searchTags(String search) {
