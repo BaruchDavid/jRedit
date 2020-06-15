@@ -1,9 +1,14 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,9 +16,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 /**
@@ -28,10 +35,12 @@ public class LinkService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
 	private final LinkRepository linkRepository;
-		
-	public LinkService( LinkRepository linkRepository) {
-
+	private final ModelMapper modelMapper;
+	private final UserDetailsServiceImpl userDetailsService;
+	public LinkService(LinkRepository linkRepository, ModelMapper modelMapper, UserDetailsServiceImpl userDetailsService) {
 		this.linkRepository = linkRepository;
+		this.modelMapper = modelMapper;
+		this.userDetailsService = userDetailsService;
 	}
 
 	/**
@@ -48,11 +57,11 @@ public class LinkService {
 	 * return all availible links
 	 * @autor RKA
 	 */
-	public Optional<Link> findLinkByLinkId(Long linkId){
-		LOGGER.info("TRY TO FIND LINK WITH ID {}", linkId);
-		Optional<Link> link = linkRepository.findById(linkId);
-		link.ifPresent(val -> LOGGER.info("LINK HAS BEEN FOUND WITH ID {}",val.getLinkId()));
-		return link;
+	public Link findLinkByTitleSignature(final String signature) throws ServiceException {
+		LOGGER.info("FIND LINK WITH SIGNATUR {}", signature);
+		final long id = convertEpochSecToId(signature);
+		return linkRepository.findById(id)
+									.orElseThrow(() ->new ServiceException("not found"));
 	}		
 	
 	/**
@@ -60,15 +69,44 @@ public class LinkService {
 	 * @author RKA
 	 */
 	@Transactional(readOnly = false)
-	public Link saveLink(Link link) {
-		List<Tag> tags = new ArrayList<>(); 
-		link.getTags().stream()
-					  .filter(tag -> tag.getTagName().length()==0)
+	public LinkDTO saveLink(final String username, LinkDTO linkDto) {
+
+		Link link = modelMapper.map(linkDto, Link.class);
+		link.setUser((User)userDetailsService.loadUserByUsername(username));
+		List<Tag> tags = new ArrayList<>();
+		linkDto.getTags().stream()
+					  .filter(tag -> tag.getTagName().isEmpty())
 					  .forEach(tags::add);
 		link.getTags().removeAll(tags);		
 		link.getTags().forEach(tag -> tag.getLinks().add(link));
-		LOGGER.info("TRY TO SAVE LINK {}", link);
-		return Optional.ofNullable(linkRepository.save(link)).orElse(new Link("link not availible", "http://jReditt.com"));
+		LOGGER.debug("TRY TO SAVE LINK {}", link);
+		Link newLink = linkRepository.save(link);
+		LOGGER.info("LINK SAVED {}", newLink);
+		String sig = convertLDTtoEpochSec(newLink.getCreationDate()).concat(String.valueOf(newLink.getLinkId()));
+		linkDto = modelMapper.map(newLink, LinkDTO.class);
+		linkDto.setLinkSignature(sig);
+		return Optional.ofNullable(linkDto)
+						.orElse(new LinkDTO("link not availible", "http://jReditt.com"));
+	}
+
+	/**
+	 *
+	 * @param time creation date
+	 * @return creatation date as milli
+	 */
+	private String convertLDTtoEpochSec(LocalDateTime time){
+		Instant instant = time.atZone(ZoneId.systemDefault()).toInstant();
+		return String.valueOf(instant.toEpochMilli());
+	}
+
+	/**
+	 *
+	 * @param timeInSeconds which represend creation date
+	 * @return creation date as localdatetime
+	 */
+	private long convertEpochSecToId(final String timeInSeconds){
+		final int timeLatters = 13;
+		return Long.valueOf(timeInSeconds.substring(timeLatters, timeInSeconds.length()));
 	}
 
 

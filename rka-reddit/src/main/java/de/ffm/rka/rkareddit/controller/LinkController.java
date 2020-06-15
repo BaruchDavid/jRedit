@@ -4,10 +4,13 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -75,31 +78,35 @@ public class LinkController {
  		model.addAttribute("pageNumbers",totalPages);	
 		return "link/link_list";
 	}
-	
-	
-	@GetMapping("/links/link/{linkId}")
-	public String link(Model model, @PathVariable Long linkId, @AuthenticationPrincipal UserDetails user, HttpServletResponse response){
-		Optional<Link> link = linkService.findLinkByLinkId(linkId);
-		if(link.isPresent()) {
-			Link currentLink = link.get();
-			Comment comment = new Comment();
-			comment.setLink(currentLink);	
-			if (user != null) {
-				model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
-			}			
-			model.addAttribute("link",currentLink);
-			model.addAttribute("comment",comment);
-			
-			if (model.containsAttribute(SUCCESS)) {
-				model.addAttribute(SUCCESS, model.containsAttribute(SUCCESS));
-			} else if(model.containsAttribute(ERROR)) {
-				response.setStatus(HttpStatus.BAD_REQUEST.value());
-				model.addAttribute(ERROR, model.containsAttribute(ERROR));
-			}
-			return "link/link_view";
-		}else {
-			return "redirect:/links";
+
+	/**
+	 *
+	 * @param model
+	 * @param signature for linkDTO
+	 * @param user current user
+	 * @param response set status
+	 * @return either link view in success or links-overview
+	 */
+	@GetMapping("/links/link/{signature}")
+	public String link(Model model, @PathVariable String signature,
+					   @AuthenticationPrincipal UserDetails user, HttpServletResponse response) throws ServiceException {
+
+		Link link = linkService.findLinkByTitleSignature(signature);
+		Comment comment = Comment.builder().link(link).build();
+		if (user != null) {
+			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
 		}
+		model.addAttribute("link",link);
+		model.addAttribute("comment",comment);
+
+		if (model.containsAttribute(SUCCESS)) {
+			model.addAttribute(SUCCESS, model.containsAttribute(SUCCESS));
+		} else if(model.containsAttribute(ERROR)) {
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			model.addAttribute(ERROR, model.containsAttribute(ERROR));
+		}
+		return "link/link_view";
+
 	}
 	
 	@GetMapping("/links/link")
@@ -112,9 +119,18 @@ public class LinkController {
 		model.addAttribute(NEW_LINK, link);
 		return SUBMIT_LINK;
 	}
-	
+
+	/**
+	 * @param link to be saved
+	 * @param user authenticated
+	 * @param model save current state
+	 * @param response set status
+	 * @param bindingResult for errors
+	 * @param redirectAttributes for message user
+	 * @return success ref to new link
+	 */
 	@PostMapping("/links/link")
-	public String newLink(@Validated Link link, @AuthenticationPrincipal UserDetails user,
+	public String newLink(@Validated LinkDTO link, @AuthenticationPrincipal UserDetails user,
 						  Model model, HttpServletResponse response, BindingResult bindingResult,
 						  RedirectAttributes redirectAttributes) {
 		if(bindingResult.hasErrors()) {
@@ -123,11 +139,9 @@ public class LinkController {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			return SUBMIT_LINK;
 		} else {
-			link.setUser((User)userDetailsService.loadUserByUsername(user.getUsername()));
-			linkService.saveLink(link);
-			redirectAttributes.addAttribute("linkId", link.getLinkId())
-								.addFlashAttribute(SUCCESS, true);			
-			return "redirect:/links/link/{linkId}";
+			LinkDTO newLink = linkService.saveLink(user.getUsername(),link);
+			redirectAttributes.addFlashAttribute(SUCCESS, true);
+			return "redirect:/links/link/".concat(newLink.getLinkSignature());
 		}
 	}	
 

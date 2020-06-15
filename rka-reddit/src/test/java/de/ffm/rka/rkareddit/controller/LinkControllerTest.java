@@ -104,52 +104,6 @@ public class LinkControllerTest {
 	}
 
 	/**
-	 * @author RKA
-	 * testing new post of valid comment
-	 */
-	@Test
-	@WithUserDetails("romakapt@gmx.de")
-	public void postNewComment() throws Exception {
-
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/comments")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("link.linkId", "1")
-														.param("commentText", "hallo kommentar"))
-	    					.andDo(print())
-							.andExpect(status().is3xxRedirection())
-							.andExpect(redirectedUrl("/links/link/1"))
-							.andExpect(flash().attributeExists("success"));
-	}
-	/**
-	 * @author RKA
-	 * testing new comment with invalid link as Autheticated user
-	 * without suitable link
-	 */
-	@Test
-	@WithUserDetails("romakapt@gmx.de")
-	public void rejectCommentWithoutSuitableLinkId() throws Exception {
-
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/comments")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("commentText", "hallo kommentar"))
-	    					.andDo(print())
-							.andExpect(status().is4xxClientError())
-							.andExpect(view().name("error/basicError"));
-	}
-	
-	@Test
-	public void rejectCommentWithoutSuitableLinkIdAsUnautheticated() throws Exception {
-
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/comments")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("commentText", "hallo kommentar"))
-	    					.andDo(print())
-							.andExpect(status().is(302));
-	}
-	
-
-	    
-	/**
 	 * test for illegal link
 	 */
 	@Test
@@ -171,7 +125,7 @@ public class LinkControllerTest {
 	@Test
 	public void readLinkTestAsUnautheticated() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);	
-		this.mockMvc.perform(get("/links/link/1"))
+		this.mockMvc.perform(get("/links/link/15921918064981"))
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("link", currentLink))
@@ -186,7 +140,7 @@ public class LinkControllerTest {
 				.firstName("baruc-david")
 				.secondName("rka")
 				.build();
-		MvcResult result =  this.mockMvc.perform(get("/links/link/1"))
+		MvcResult result =  this.mockMvc.perform(get("/links/link/15921918064981"))
 					.andDo(print())
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("link", currentLink))
@@ -199,17 +153,20 @@ public class LinkControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
-    	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
+    	MvcResult res = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 							.param("tags[0].tagName", "java12")
 							.param("tags[1].tagName", "java13")
 							.param("title", "welt.de")
+							.param("description", "news")
 							.param("url", "http://welt.de")
 							)
   					.andDo(print())
 					.andExpect(status().is3xxRedirection())
-					.andExpect(redirectedUrl("/links/link/12"))
-					.andExpect(flash().attribute("success", true));	
+					.andExpect(flash().attribute("success", true))
+					.andReturn();
+    	String signatur = res.getResponse().getRedirectedUrl().split("/")[3];
+     	assertEquals("12",signatur.substring(13,signatur.length()));
     }
 	
 	@Test

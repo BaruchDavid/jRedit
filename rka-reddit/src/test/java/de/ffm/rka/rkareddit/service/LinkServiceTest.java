@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,12 +40,12 @@ public class LinkServiceTest {
 	
 	@Test
 	public void linkPrettyTimeTest() {
-		Link link = Link.builder()
+		LinkDTO link = LinkDTO.builder()
 						.title("test")
 						.url("http://test.de")
 						.tags(Collections.emptyList())
 						.build();
-		link = linkService.saveLink(link);
+		link = linkService.saveLink("romakapt@gmx.de",link);
 		assertEquals("gerade eben", link.getElapsedTime());		
 	}
 

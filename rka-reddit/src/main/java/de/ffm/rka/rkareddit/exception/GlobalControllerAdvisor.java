@@ -71,6 +71,7 @@ public class GlobalControllerAdvisor {
 			case "MethodArgumentTypeMismatchException":
 			case "IllegalArgumentException":
 			case "NullPointerException":
+			case "NumberFormatException":
 				view = DEFAULT_APPLICATION_ERROR;
 				res.setStatus(HttpStatus.SC_BAD_REQUEST);
 				break;
