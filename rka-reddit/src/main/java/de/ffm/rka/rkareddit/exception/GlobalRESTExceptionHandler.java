@@ -18,7 +18,7 @@ import java.util.List;
  * @author kaproma
  *
  */
-@RestControllerAdvice(basePackages = {"de.ffm.rka.rkareddit.rest.controller"})
+@RestControllerAdvice
 class GlobalRESTExceptionHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalRESTExceptionHandler.class);
 	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR, reason="information not available")

@@ -42,8 +42,9 @@ public class GlobalControllerAdvisor {
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 
-	@ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class, UserAuthenticationLostException.class, NullPointerException.class,IllegalArgumentException.class,
-			IllegalAccessException.class, NumberFormatException.class, ServiceException.class, Exception.class})
+	@ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class, UserAuthenticationLostException.class, NullPointerException.class,
+								IllegalArgumentException.class, IllegalAccessException.class,
+								NumberFormatException.class, ServiceException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		UserDTO user = new UserDTO();	
