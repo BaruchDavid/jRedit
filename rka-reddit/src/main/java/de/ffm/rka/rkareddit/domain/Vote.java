@@ -2,9 +2,7 @@ package de.ffm.rka.rkareddit.domain;
 
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,6 +10,8 @@ import java.io.Serializable;
 
 @ToString(exclude = "link")
 @Getter @Setter
+@Builder
+@AllArgsConstructor
 @Entity
 public class Vote extends Auditable implements Serializable {
 	
@@ -27,11 +27,13 @@ public class Vote extends Auditable implements Serializable {
 	@NotNull
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Link link = new Link();
-
+	/*
 	public Vote(@NotNull Link link,@NotNull short direction) {
 		this.direction = direction;
 		this.link = link;
 	}
+	*/
+
 
 	public Vote() {
 		this.direction = 0;

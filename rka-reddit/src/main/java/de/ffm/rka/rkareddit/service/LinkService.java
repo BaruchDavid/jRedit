@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.service;
 
-import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
@@ -8,20 +7,17 @@ import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
+import java.util.stream.Collectors;
 
 /**
  * maintance all business logik for link treating
@@ -35,17 +31,14 @@ public class LinkService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
 	private final LinkRepository linkRepository;
-	private final ModelMapper modelMapper;
 	private final UserDetailsServiceImpl userDetailsService;
-	public LinkService(LinkRepository linkRepository, ModelMapper modelMapper, UserDetailsServiceImpl userDetailsService) {
+	public LinkService(LinkRepository linkRepository, UserDetailsServiceImpl userDetailsService) {
 		this.linkRepository = linkRepository;
-		this.modelMapper = modelMapper;
 		this.userDetailsService = userDetailsService;
 	}
 
 	/**
 	 * return all availible links
-	 * @autor RKA
 	 */
 	public List<Link> findAllLinks(){
 		List<Link> links = linkRepository.findAll();
@@ -55,13 +48,13 @@ public class LinkService {
 	
 	/**
 	 * return all availible links
-	 * @autor RKA
 	 */
-	public Link findLinkByTitleSignature(final String signature) throws ServiceException {
+	public LinkDTO findLinkBySignature(final String signature) throws ServiceException {
 		LOGGER.info("FIND LINK WITH SIGNATUR {}", signature);
-		final long id = convertEpochSecToId(signature);
-		return linkRepository.findById(id)
+		final long id = LinkDTO.convertEpochSecToId(signature);
+		Link link = linkRepository.findById(id)
 									.orElseThrow(() ->new ServiceException("not found"));
+		return LinkDTO.getMapLinkToDto(link);
 	}		
 	
 	/**
@@ -71,50 +64,36 @@ public class LinkService {
 	@Transactional(readOnly = false)
 	public LinkDTO saveLink(final String username, LinkDTO linkDto) {
 
-		Link link = modelMapper.map(linkDto, Link.class);
+		Link link = LinkDTO.getMapDtoToLink(linkDto);
 		link.setUser((User)userDetailsService.loadUserByUsername(username));
 		List<Tag> tags = new ArrayList<>();
 		linkDto.getTags().stream()
-					  .filter(tag -> tag.getTagName().isEmpty())
+					  .filter( tag -> tag.getTagName().isEmpty())
 					  .forEach(tags::add);
 		link.getTags().removeAll(tags);		
 		link.getTags().forEach(tag -> tag.getLinks().add(link));
 		LOGGER.debug("TRY TO SAVE LINK {}", link);
 		Link newLink = linkRepository.save(link);
 		LOGGER.info("LINK SAVED {}", newLink);
-		String sig = convertLDTtoEpochSec(newLink.getCreationDate()).concat(String.valueOf(newLink.getLinkId()));
-		linkDto = modelMapper.map(newLink, LinkDTO.class);
-		linkDto.setLinkSignature(sig);
-		return Optional.ofNullable(linkDto)
+		linkDto = LinkDTO.getMapLinkToDto(newLink);
+		return Optional.of(linkDto)
 						.orElse(new LinkDTO("link not availible", "http://jReditt.com"));
 	}
-
-	/**
-	 *
-	 * @param time creation date
-	 * @return creatation date as milli
-	 */
-	private String convertLDTtoEpochSec(LocalDateTime time){
-		Instant instant = time.atZone(ZoneId.systemDefault()).toInstant();
-		return String.valueOf(instant.toEpochMilli());
-	}
-
-	/**
-	 *
-	 * @param timeInSeconds which represend creation date
-	 * @return creation date as localdatetime
-	 */
-	private long convertEpochSecToId(final String timeInSeconds){
-		final int timeLatters = 13;
-		return Long.valueOf(timeInSeconds.substring(timeLatters, timeInSeconds.length()));
-	}
-
 
 	public long findAllLinksByUser(User user) {
 		return linkRepository.countByUser(user);
 	}
-	
-	public Page<Link> fetchAllLinksWithUsersCommentsVotes(Pageable pageable){
-		return linkRepository.findAll(pageable);
+
+	/**
+	 * retrieve link objects and map to linkDTO
+	 * @param pageable, number for one page
+	 * @return linkDto objects as PageImpl
+	 */
+	public Page<LinkDTO> fetchAllLinksWithUsersCommentsVotes(Pageable pageable){
+		Page<Link> ln = linkRepository.findAll(pageable);
+		List<LinkDTO> links = ln.stream()
+								.map(link -> LinkDTO.getMapLinkToDto(link))
+								.collect(Collectors.toList());
+		return new PageImpl<>(links, pageable, ln.getTotalElements());
 	}
 }

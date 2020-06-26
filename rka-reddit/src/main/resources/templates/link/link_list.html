@@ -11,14 +11,24 @@
         <!-- links -->
         <div class="row link" th:each="link : ${links}">
             <div class="col-1">
-                <div><a href="#" class="upvote" th:data-id="${link.getLinkId()}"><i class="fas fa-arrow-up"></i></a></div>
-                <div><span th:id="|votecount-${link.getLinkId()}|" class="votecount" th:text="${link.getVoteCount()}">0</span></div>
-                <div><a href="#" class="downvote" th:data-id="${link.getLinkId()}" th:disabled="true"><i class="fas fa-arrow-down"></i></a></div>
-            
+                <div>
+                    <a href="#" class="upvote" th:data-id="${link.getLinkSignature()}">
+                        <i class="fas fa-arrow-up"></i>
+                    </a>
+                </div>
+                <div>
+                    <span th:id="|votecount-${link.getLinkSignature()}|"
+                          class="votecount" th:text="${link.getVoteCount()}">0</span>
+                </div>
+                <div>
+                    <a href="#" class="downvote" th:data-id="${link.getLinkSignature()}" th:disabled="true">
+                        <i class="fas fa-arrow-down"></i>
+                    </a>
+                </div>
             </div>
             <div class="col-11">
                 <p class="title">
-                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.getTitle()}">Title Goes Here</a>
+                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkSignature()}}" th:text="${link.getTitle()}">Title Goes Here</a>
                     <span class="domain">(<a th:href="${link.url}" th:text="${link.getHoster()}" target="_blank"></a>)</span>
                 </p>
                 <p class="description">
@@ -30,7 +40,7 @@
                     <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
                 </p>
                 <p>
-                    <a th:href="@{'/links/link/' + ${link.getLinkId()} + '#comments'}" class="comments"
+                    <a th:href="@{'/links/link/' + ${link.getLinkSignature()} + '#comments'}" class="comments"
                         th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
                     <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
                 </p>

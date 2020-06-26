@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -124,18 +125,20 @@ public class LinkControllerTest {
 	 */
 	@Test
 	public void readLinkTestAsUnautheticated() throws Exception {
-		Link currentLink = entityManager.find(Link.class, 1l);	
+		Link currentLink = entityManager.find(Link.class, 1l);
+		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
 		this.mockMvc.perform(get("/links/link/15921918064981"))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(model().attribute("link", currentLink))
+					.andExpect(model().attribute("linkDto", linkDTO))
 					.andExpect(view().name("link/link_view"));
 	}
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void readLinkTestAsAutheticated() throws Exception {
-		Link currentLink = entityManager.find(Link.class, 1l);	
+		Link currentLink = entityManager.find(Link.class, 1l);
+		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
 		UserDTO userDto = UserDTO.builder()
 				.firstName("baruc-david")
 				.secondName("rka")
@@ -143,7 +146,7 @@ public class LinkControllerTest {
 		MvcResult result =  this.mockMvc.perform(get("/links/link/15921918064981"))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(model().attribute("link", currentLink))
+					.andExpect(model().attribute("linkDto", linkDTO))
 					.andExpect(view().name("link/link_view"))
 					.andReturn();
 		UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");

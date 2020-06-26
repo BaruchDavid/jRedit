@@ -2,13 +2,13 @@ package de.ffm.rka.rkareddit.rest.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Vote;
-import de.ffm.rka.rkareddit.repository.LinkRepository;
-import de.ffm.rka.rkareddit.repository.VoteRepository;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.exception.ServiceException;
+import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.service.VoteService;
+import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,41 +21,34 @@ import java.util.Optional;
 public class VoteController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VoteController.class);
-	
-	@Autowired
-	private VoteRepository voteRepository;
-	
-	@Autowired
-	private LinkRepository linkRepository;
-	
-	
+
+	private final VoteService voteService;
+
+	public VoteController(VoteService voteService) {
+		this.voteService = voteService;
+	}
+
+
 	/**
 	 * 
-	 * @param linkId which will be voted
+	 * @param lSig which will be voted
 	 * @param direction down or top
 	 * @param voteCount is sum of votes
 	 * @return new sum of votes
 	 * @author Roman
 	 */
-	@GetMapping("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}")
-	public int vote(@PathVariable Long  linkId, 
+	@GetMapping("/vote/link/{lSig}/direction/{direction}/votecount/{voteCount}")
+	public int vote(@PathVariable String  lSig,
 					@PathVariable short direction, 
-					@PathVariable int voteCount, Model model, HttpServletRequest req, HttpServletResponse res) {
-		LOGGER.info("USER AUTHETICATION DETAILS FOR VOTE {}", req.getUserPrincipal());
-		try {
-			Optional<Link> link = linkRepository.findById(linkId);
-			if(link.isPresent()) {
-				Link linkObj = link.get();
-				Vote vote = new Vote(linkObj, direction);
-				int voteCounter = voteCount + direction;
-				linkObj.setVoteCount(voteCounter);
-				voteRepository.saveAndFlush(vote);	
-				return voteCounter;
-			}
-		} catch (RuntimeException e) {
-			res.setStatus(HttpStatus.FORBIDDEN.value());
-			LOGGER.error("NO PERMISSION FOR USER TO VOTE", e);
+					@PathVariable int voteCount, HttpServletRequest req, HttpServletResponse res) throws ServiceException {
+
+		Vote vote = voteService.saveVote(direction, lSig, voteCount);
+		if (vote.getVoteId() != null) {
+			return vote.getLink().getVoteCount();
+		} else {
+			res.setStatus(HttpStatus.SC_BAD_REQUEST);
+			LOGGER.warn("VOTE LOST FOR LINK-SIG {} FROM USER {}", lSig, req.getUserPrincipal());
+			return voteCount;
 		}
-		return voteCount;
 	}
 }

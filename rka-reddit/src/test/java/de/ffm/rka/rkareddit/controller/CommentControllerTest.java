@@ -1,8 +1,11 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.repository.LinkRepository;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +50,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CommentControllerTest {
 
 	private MockMvc mockMvc;
+
+	@Autowired
+	private LinkRepository linkRepository;
 
 	@Autowired
 	private WebApplicationContext context;
@@ -110,14 +116,15 @@ public class CommentControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
-
+		//LinkDTO linkDTO =
+		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(linkRepository.findByLinkId(1).get());
 	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("link.linkId", "1")
+														.param("lSig", linkDTO.getLinkSignature())
 														.param("commentText", "hallo kommentar"))
 	    					.andDo(print())
 							.andExpect(status().is3xxRedirection())
-							.andExpect(redirectedUrl("/links/link/1"))
+							.andExpect(redirectedUrlPattern("/links/link/*1"))
 							.andExpect(flash().attributeExists("success"));
 	}
 	/**
