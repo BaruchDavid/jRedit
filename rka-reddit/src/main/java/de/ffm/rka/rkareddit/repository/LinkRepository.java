@@ -20,9 +20,9 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 	/**
 	 * find all comments for each user
 	 */
-	@Query(value = "select l " +
-		   "from Link l " +
-		   "inner join fetch l.user",
+	@Query(value = "SELECT l " +
+		   "FROM Link l " +
+		   "INNER JOIN FETCH l.user ORDER BY l.linkId DESC",
 		   countQuery = "SELECT COUNT(l) FROM Link l INNER JOIN l.user")
 	Page<Link> findAll(Pageable pageable);
 
