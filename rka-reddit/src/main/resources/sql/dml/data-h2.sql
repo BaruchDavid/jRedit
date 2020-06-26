@@ -9,7 +9,7 @@ VALUES(3, 'grom@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwa
 
 
 INSERT INTO LINK(link_id,  title, description, url,  VOTE_COUNT, creation_Date, user_user_id)
-VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', '','https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing',  0,NOW(),1);
+VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', '','https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing',  5,NOW(),1);
 INSERT INTO LINK(link_id,  title, description, url,  VOTE_COUNT, creation_Date, user_user_id)
 VALUES(2,  'Device in Java Web Application Spring Mobile', '','https://www.opencodez.com/java/device-detection-using-spring-mobile.htm',  1,NOW(),1);
 INSERT INTO LINK(link_id,  title, description, url,  VOTE_COUNT, creation_Date, user_user_id)
