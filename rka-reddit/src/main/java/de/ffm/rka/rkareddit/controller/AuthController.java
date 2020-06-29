@@ -72,7 +72,7 @@ public class AuthController {
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));		
 		authenticatedUser.ifPresent(user -> {
-			UserDTO member = userDetailsService.mapUserToUserDto(user.getUsername());
+			UserDTO member = userDetailsService.mapUserToUserDto((User)user);
 			model.addAttribute(USER_DTO, member);
 		});
 		
@@ -250,22 +250,25 @@ public class AuthController {
     }
 	
 	@GetMapping("/profile/private/me/{email:.+}")
-	public String userInfo(@PathVariable String email, Model model) {
-		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(email));
+	public String userInfo(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
+						   Model model) {
+		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto((User)user));
 		return "auth/profileEdit";
 	}
 	
 	@GetMapping("/profile/private/me/{email:.+}/password")
-	public String changePassword(@PathVariable String email, Model model) {
-		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(email));
+	public String changePassword(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
+								 Model model) {
+		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto((User)user));
 		return "auth/passwordChange";
 	}
 	
 	@GetMapping("/profile/private/me/update/email/{email:.+}")
-	public String userEmailUpdateView(@PathVariable String email, Model model) {
-		UserDTO user = userDetailsService.mapUserToUserDto(email);
-		user.setNewEmail(StringUtils.EMPTY);
-		model.addAttribute(USER_DTO, user);
+	public String userEmailUpdateView(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
+									  Model model) {
+		UserDTO userDto = userDetailsService.mapUserToUserDto((User)user);
+		userDto.setNewEmail(StringUtils.EMPTY);
+		model.addAttribute(USER_DTO, userDto);
 		return "auth/emailChange";
 	}
 }
