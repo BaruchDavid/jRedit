@@ -42,7 +42,7 @@ public class LinkTransactionTest {
     private LinkService linkService ;
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkTransactionTest.class);
 	private EntityManager entityManager;
-	private static final int MAX_TRANSCATION_NUMBER = 2;
+	private static final int MAX_TRANSACTION_NUMBER = 2;
 	@Before
 	public void SetUp() {
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
@@ -50,7 +50,7 @@ public class LinkTransactionTest {
 	
 	/**
 	 * test for checking number of transactions during 
-	 * init-prozess of each link
+	 * init-process of each link
 	 * expected 11 links.
 	 */
 	@Test
@@ -63,56 +63,56 @@ public class LinkTransactionTest {
 		Statistics hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();	
 		Page<LinkDTO> links = linkService.fetchAllLinksWithUsersCommentsVotes(firstPageWithElevenElements);
 
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(11l, links.getNumberOfElements());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(0)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(0)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(11L, links.getNumberOfElements());
+		assertEquals(0L, (links.getContent().get(0)).getComments().size());
+		assertEquals(0L, (links.getContent().get(0)).getVote().size());
 
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(1)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(1)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(0L, (links.getContent().get(1)).getComments().size());
+		assertEquals(0L, (links.getContent().get(1)).getVote().size());
 
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(2)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(2)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(0L, (links.getContent().get(2)).getComments().size());
+		assertEquals(0L, (links.getContent().get(2)).getVote().size());
 
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(3)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(3)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(0L, (links.getContent().get(3)).getComments().size());
+		assertEquals(0L, (links.getContent().get(3)).getVote().size());
 
-		assertEquals(0l, ((LinkDTO)links.getContent().get(4)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(4)).getVote().size());
-
-		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(1l, ((LinkDTO)links.getContent().get(5)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(5)).getVote().size());
+		assertEquals(0L, (links.getContent().get(4)).getComments().size());
+		assertEquals(0L, (links.getContent().get(4)).getVote().size());
 
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(2l, ((LinkDTO)links.getContent().get(6)).getComments().size());
-		assertEquals(3l, ((LinkDTO)links.getContent().get(6)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(1L, links.getContent().get(5).getComments().size());
+		assertEquals(0L, (links.getContent().get(5)).getVote().size());
 
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(2l, ((LinkDTO)links.getContent().get(7)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(7)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(2L, (links.getContent().get(6)).getComments().size());
+		assertEquals(3L, (links.getContent().get(6)).getVote().size());
 
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(3l, ((LinkDTO)links.getContent().get(8)).getComments().size());
-		assertEquals(2l, ((LinkDTO)links.getContent().get(8)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(2L, (links.getContent().get(7)).getComments().size());
+		assertEquals(0L, (links.getContent().get(7)).getVote().size());
+
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(6l, ((LinkDTO)links.getContent().get(9)).getComments().size());
-		assertEquals(0l, ((LinkDTO)links.getContent().get(9)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(3L, (links.getContent().get(8)).getComments().size());
+		assertEquals(2L, (links.getContent().get(8)).getVote().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSCATION_NUMBER, hibernateStatistic.getQueryExecutionCount());
-		assertEquals(2l, ((LinkDTO)links.getContent().get(10)).getComments().size());
-		assertEquals(4l, ((LinkDTO)links.getContent().get(10)).getVote().size());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(6L, (links.getContent().get(9)).getComments().size());
+		assertEquals(0L, (links.getContent().get(9)).getVote().size());
+		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
+		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
+		assertEquals(2L, (links.getContent().get(10)).getComments().size());
+		assertEquals(4L, (links.getContent().get(10)).getVote().size());
 		
 		
 		links.forEach(link -> {
