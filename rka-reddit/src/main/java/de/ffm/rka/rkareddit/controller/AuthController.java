@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,11 +77,10 @@ public class AuthController {
 			model.addAttribute(USER_DTO, member);
 		});
 		
-		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks()).orElse(new ArrayList<>());
-		
-		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(pageContentUser.getEmail()))
-											.map(User::getUserComments)
-											.orElse(new ArrayList<>());
+		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
+										.orElse(Collections.emptyList());
+		List<Comment> userComments = Optional.ofNullable(pageContentUser.getUserComments())
+											.orElse(Collections.emptyList());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
