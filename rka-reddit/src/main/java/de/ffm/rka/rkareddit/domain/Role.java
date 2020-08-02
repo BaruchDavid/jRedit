@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Objects;
 
 
 @Entity
@@ -18,13 +19,13 @@ public class Role implements Serializable {
 	private static final long serialVersionUID = -2090774371747207972L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long roleId;
 	
 	@NotNull(message = "Rollenname darf nicht null sein")
 	private String name;
 	
-	@ManyToMany(mappedBy= "roles")
+	@ManyToMany(mappedBy= "roles", fetch = FetchType.LAZY)
 	private Collection<User> users;
 
 	public Role(@NotNull(message = "Rollenname darf nicht null sein") String name) {
@@ -50,6 +51,6 @@ public class Role implements Serializable {
 	 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(roleId);
     }
 }
