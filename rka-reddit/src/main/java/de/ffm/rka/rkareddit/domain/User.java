@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,22 +14,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Entity
-
+@Entity(name="User")
+@Table(name = "user")
 @Getter @Setter 
-@ToString(exclude = {"userLinks", "userComments", "roles", "profileFoto", "userClickedLinks"})
+@ToString(exclude = {"userLinks", "roles", "profileFoto", "userClickedLinks"})
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class User extends Auditable implements UserDetails, Serializable {
-
-	public User() {
-		this.enabled=false;
-	}
 	
 	private static final long serialVersionUID = -5987601453095162765L;
+	
+	
+
+//	GUID globale id selbst generieren
+//	UUID
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long userId;
 
 	@Column(unique = true, nullable=false)
@@ -59,12 +62,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Link> userLinks = new ArrayList<>();
 	
-	/**
-	 * Comment is a owner of this Relation
-	 */
-	@Builder.Default
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Comment> userComments = new ArrayList<>();
 	
 	@Builder.Default
 	@Column(nullable = false)
@@ -82,14 +79,20 @@ public class User extends Auditable implements UserDetails, Serializable {
 	)
 	private Set<Role> roles = new HashSet<>();
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-			name = "user_clickedLinks",
-			joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
-			inverseJoinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId")
-	)
+	@Builder.Default
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "usersLinksHistory")
+	@JsonIgnore
 	private List<Link> userClickedLinks = new ArrayList<>();
 	
+	public void addLink(Link link) {
+		userLinks.add(link);
+		link.setUser(this);
+	}
+	
+	public void removeLink(Link link) {
+		userLinks.remove(link);
+		link.setUser(null);
+	}
 
 	private String activationCode;
 
@@ -97,10 +100,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 			String mail, String password) {
 		this.email = mail;
 		this.password = password;
-	}
-
-	public void addCommentToUser(Comment comment) {
-		this.userComments.add(comment);
 	}
 
 	public void addLinkToUser(Link link) {
@@ -160,14 +159,19 @@ public class User extends Auditable implements UserDetails, Serializable {
 			result = false;
 		} else {
 			User other = (User) o;
-			result = userId != null && userId.equals(other.getUserId());
+			result = Objects.equals(email, other.email);
 		}
 		return result;
+		
 	}
 	 
     @Override
     public int hashCode() {
-        return 31;
+    	return Objects.hash(userId);
     }
 	
+    public void removeRole(Role role) {
+    	this.roles.remove(role);
+    	role.getUsers().remove(this);
+    }
 }

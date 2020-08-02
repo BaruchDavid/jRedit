@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity(name="Tag")
@@ -24,7 +25,7 @@ public class Tag extends Auditable implements Serializable {
 	private static final long serialVersionUID = -1764376324929313404L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long tagId;
 	
 	@NotNull
@@ -32,7 +33,7 @@ public class Tag extends Auditable implements Serializable {
 	private String tagName;
 		
 	@Builder.Default
-	@ManyToMany(mappedBy= "tags")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy= "tags")
 	private List<Link> links = new ArrayList<>();
 	
 	public void addLink(Link link) {
@@ -61,6 +62,6 @@ public class Tag extends Auditable implements Serializable {
 	 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(tagId);
     }
 }

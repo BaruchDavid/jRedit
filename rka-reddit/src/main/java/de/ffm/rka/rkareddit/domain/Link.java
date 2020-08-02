@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Date.from;
 
@@ -36,34 +37,20 @@ public class Link extends Auditable implements Serializable{
 	private static final long serialVersionUID = -5337989744648444109L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private Long linkId;
 	
 	@NotEmpty(message = "title is required")
-	//@Size(min=5, max = 50, message = "maximal 50 letter allowed")
-	//@Length(min = 5, max = 50, message = "maximal 50 letters allowed")
 	@Column(length = 50)
 	private String title;
 
-	//@Size(min=0, max = 100, message = "maximal 100 letter allowed")
 	@Column(length = 100, nullable = true)
 	private String description;
 	
-	@NotEmpty(message = "url is required")
-	@URL(message = "valid url is required")
+	@Column(nullable = false, unique = true)
 	private String url;
 	
-	/**
-	 * Vote is owner of this Relation
-	 */
-	@Builder.Default
-	@OneToMany(mappedBy = "link", 
-			 fetch=FetchType.LAZY,
-			 orphanRemoval = true,
-			 cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JsonIgnore
-	private List<Vote> vote = new ArrayList<>();
-	
+
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST})
 	@JoinTable(
@@ -72,24 +59,32 @@ public class Link extends Auditable implements Serializable{
 			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
 	)
 	@JsonIgnore
+	@Fetch(FetchMode.SUBSELECT)
 	private List<Tag> tags = new ArrayList<>();
 
-	@ManyToMany(mappedBy= "userClickedLinks")
+	@Builder.Default
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "user_clickedLinks",
+			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
+			inverseJoinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId")
+	)
 	@JsonIgnore
-	private List<User> usersLinksHistory;
+	private List<User> usersLinksHistory = new ArrayList<>();
 	
 	@Builder.Default
 	private int voteCount = 0;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
+	@JoinColumn(name = "user_id")
 	private User user;
 		
 	/**
 	 * Comment is a owner cause of mappedBy argument
 	 */
 	@Builder.Default
-	@OneToMany(mappedBy="link", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="link", fetch = FetchType.LAZY)
 	@Fetch(value = FetchMode.SUBSELECT)
 	private List<Comment> comments = new ArrayList<>();
 
@@ -115,17 +110,7 @@ public class Link extends Auditable implements Serializable{
 		URI domain = new URI(url);
 		return domain.getHost();
 	}
-	
-	public void addVote(Vote vote) {
-		this.vote.add(vote);
-		vote.setLink(this);
-	}
-	
-	public void removeVote(Vote vote) {
-		this.vote.remove(vote);
-		vote.setLink(null);
-	}
-	
+
 	public void addComment(Comment comment) {
 		comments.add(comment);
 		comment.setLink(this);
@@ -152,21 +137,25 @@ public class Link extends Auditable implements Serializable{
 
 	@Override
     public boolean equals(Object o) {
-		boolean result;
-		if (this == o) {
-			result = true;
-		} else if (!(o instanceof Link)) {
-			result = false;
-		} else {
-			Link other = (Link) o;
-			result = linkId != null &&
-					linkId.equals(other.getLinkId());
-		}
-		return result;
+		if (this == o) return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Link link = (Link) o;
+        return Objects.equals(url, link.url);
 	}
 	 
     @Override
     public int hashCode() {
-        return 31;
+    	return Objects.hash(linkId);
     }
+
+	public void addUserToLinkHistory(User userModel) {
+		this.usersLinksHistory.add(userModel);
+		//userModel.getUserClickedLinks().add(this); 
+	}
+	
+	public void removeUserFromHistory(User user) {
+		this.usersLinksHistory.remove(user);
+		//user.getUserClickedLinks().remove(this);
+	}
 }
