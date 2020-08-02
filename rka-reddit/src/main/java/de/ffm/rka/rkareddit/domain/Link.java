@@ -20,15 +20,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.ArrayList;
-
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static java.util.Date.from;
 
 @Entity
 @Getter @Setter
-@ToString(exclude = {"user", "comments", "vote", "tags", "users"}) 
+@ToString(exclude = {"user", "comments",  "tags", "users"}) 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -60,7 +61,7 @@ public class Link extends Auditable implements Serializable{
 	)
 	@JsonIgnore
 	@Fetch(FetchMode.SUBSELECT)
-	private List<Tag> tags = new ArrayList<>();
+	private Set<Tag> tags = new HashSet<>();
 
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
@@ -70,7 +71,7 @@ public class Link extends Auditable implements Serializable{
 			inverseJoinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId")
 	)
 	@JsonIgnore
-	private List<User> usersLinksHistory = new ArrayList<>();
+	private Set<User> usersLinksHistory = new HashSet<>();
 	
 	@Builder.Default
 	private int voteCount = 0;
@@ -131,7 +132,7 @@ public class Link extends Auditable implements Serializable{
 		tag.getLinks().remove(this); 
 	}
 	
-	public List<Tag> getTags(){
+	public Set<Tag> getTags(){
 		return this.tags;
 	}
 

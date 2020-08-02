@@ -4,14 +4,12 @@ package de.ffm.rka.rkareddit.domain;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.TagResolver;
 import lombok.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity(name="Tag")
 @Getter @Setter
@@ -34,7 +32,7 @@ public class Tag extends Auditable implements Serializable {
 		
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy= "tags")
-	private List<Link> links = new ArrayList<>();
+	private Set<Link> links = new HashSet<>();
 	
 	public void addLink(Link link) {
 		links.add(link);

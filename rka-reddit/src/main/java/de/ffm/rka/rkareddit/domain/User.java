@@ -82,7 +82,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "usersLinksHistory")
 	@JsonIgnore
-	private List<Link> userClickedLinks = new ArrayList<>();
+	private Set<Link> userClickedLinks = new HashSet<>();
 	
 	public void addLink(Link link) {
 		userLinks.add(link);
