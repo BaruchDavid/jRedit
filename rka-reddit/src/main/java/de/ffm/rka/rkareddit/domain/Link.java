@@ -116,7 +116,7 @@ public class Link extends Auditable implements Serializable{
 		comment.setLink(this);
 	}
 	
-	public void remoteComment(Comment comment) {
+	public void removeComment(Comment comment) {
 		this.comments.add(comment);
 		comment.setLink(null);
 	}
