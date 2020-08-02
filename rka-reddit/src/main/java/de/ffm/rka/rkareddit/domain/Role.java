@@ -1,14 +1,21 @@
 package de.ffm.rka.rkareddit.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Objects;
 
 
 @Entity
@@ -26,7 +33,7 @@ public class Role implements Serializable {
 	private String name;
 	
 	@ManyToMany(mappedBy= "roles", fetch = FetchType.LAZY)
-	private Collection<User> users;
+	private Set<User> users = new HashSet<User>();
 
 	public Role(@NotNull(message = "Rollenname darf nicht null sein") String name) {
 		super();
