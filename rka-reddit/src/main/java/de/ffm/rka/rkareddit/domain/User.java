@@ -41,6 +41,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private String password;
 	
 	@Lob
+	@Basic(fetch=FetchType.LAZY)
 	private byte[] profileFoto;
 
 	@Column(length = 50)
