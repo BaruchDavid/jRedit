@@ -60,7 +60,7 @@ public class Link extends Auditable implements Serializable{
 			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
 	)
 	@JsonIgnore
-	@Fetch(FetchMode.SUBSELECT)
+	//@Fetch(FetchMode.SUBSELECT)
 	private Set<Tag> tags = new HashSet<>();
 
 	@Builder.Default
@@ -86,7 +86,7 @@ public class Link extends Auditable implements Serializable{
 	 */
 	@Builder.Default
 	@OneToMany(mappedBy="link", fetch = FetchType.LAZY)
-	@Fetch(value = FetchMode.SUBSELECT)
+	//@Fetch(value = FetchMode.SUBSELECT)
 	private List<Comment> comments = new ArrayList<>();
 
 	@Autowired
