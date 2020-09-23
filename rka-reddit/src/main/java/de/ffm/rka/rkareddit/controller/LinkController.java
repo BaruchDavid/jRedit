@@ -1,7 +1,9 @@
 package de.ffm.rka.rkareddit.controller;
 
+import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
+import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
@@ -26,8 +28,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -60,13 +66,14 @@ public class LinkController {
 	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
 						@AuthenticationPrincipal UserDetails user, Model model) {
 		Page<LinkDTO> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
-		LOGGER.info("{} Links has been found", links.getSize());
+		LOGGER.info("{} Links has been found for start page", links.getContent().size());
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
 											.boxed()
-											.collect(Collectors.toList());		
+											.collect(Collectors.toList());
 		if(user != null) {
 			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
-		}	
+		}
+		
 		model.addAttribute("links",links);
  		model.addAttribute("pageNumbers",totalPages);	
 		return "link/link_list";
@@ -76,21 +83,24 @@ public class LinkController {
 	 *
 	 * @param model
 	 * @param signature for linkDTO
-	 * @param user current user
+	 * @param userDetails current user
 	 * @param response set status
 	 * @return either link view in success or links-overview
 	 */
 	@GetMapping("/links/link/{signature}")
 	public String link(Model model, @PathVariable String signature,
-					   @AuthenticationPrincipal UserDetails user, HttpServletResponse response) throws ServiceException {
+					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
-		LinkDTO link = linkService.findLinkBySignature(signature);
-		if (user != null) {
-			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
-		}
-		model.addAttribute("linkDto",link);
+		Link link = linkService.findLinkModelBySignature(signature);
+		Optional.ofNullable(userDetails).ifPresent(logedUser -> {
+			User userModel = (User)userDetails;
+			linkService.saveLinkHistory(link, userModel);
+			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(userModel));
+		});
+		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(link);
+		model.addAttribute("linkDto",linkDTO);
 		CommentDTO comment = CommentDTO.builder()
-										.lSig(link.getLinkSignature())
+										.lSig(linkDTO.getLinkSignature())
 										.build();
 		model.addAttribute("commentDto",comment);
 
@@ -145,4 +155,26 @@ public class LinkController {
 	public List<String> searchTags(String search) {
 		return tagService.findSuitableTags(search);
 	}
+
+	/**
+	 * @param lSig which will be voted
+	 * @param direction down or top
+	 * @param voteCount is sum of votes
+	 * @return new sum of votes
+	 * @author RKA
+	 */
+	/*@GetMapping("/link/{lSig}/vote/direction/{direction}/votecount/{voteCount}")
+	public int vote(@PathVariable String  lSig,
+					@PathVariable short direction,
+					@PathVariable int voteCount, HttpServletRequest req, HttpServletResponse res) throws ServiceException {
+
+		int newCount = linkService.saveVote(direction, lSig, voteCount);
+		if (voteCount != newCount) {
+			return newCount;
+		} else {
+			res.setStatus(org.apache.commons.httpclient.HttpStatus.SC_BAD_REQUEST);
+			LOGGER.warn("VOTE LOST FOR LINK-SIG {} FROM USER {}", lSig, req.getUserPrincipal());
+			return voteCount;
+		}
+	}*/
 }

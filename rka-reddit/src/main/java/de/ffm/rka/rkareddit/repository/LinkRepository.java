@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,4 +28,7 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 	Page<Link> findAll(Pageable pageable);
 
     Optional<Link> findByLinkId(long id);
+
+    @Query("SELECT link FROM Link link WHERE link.linkId =:id")
+    Optional<Link> findLinkById(@Param("id") long id);
 }

@@ -36,7 +36,7 @@ import static java.util.Date.from;
 public class Link extends Auditable implements Serializable{
 
 	private static final long serialVersionUID = -5337989744648444109L;
-
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private Long linkId;
@@ -51,6 +51,11 @@ public class Link extends Auditable implements Serializable{
 	@Column(nullable = false, unique = true)
 	private String url;
 	
+	@Column(nullable = false)
+	private int commentCount;
+	
+	@Builder.Default
+	private int voteCount = 0;
 
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST})
@@ -73,8 +78,6 @@ public class Link extends Auditable implements Serializable{
 	@JsonIgnore
 	private Set<User> usersLinksHistory = new HashSet<>();
 	
-	@Builder.Default
-	private int voteCount = 0;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -152,11 +155,13 @@ public class Link extends Auditable implements Serializable{
 
 	public void addUserToLinkHistory(User userModel) {
 		this.usersLinksHistory.add(userModel);
-		//userModel.getUserClickedLinks().add(this); 
+		userModel.getUserClickedLinks().add(this); 
 	}
 	
 	public void removeUserFromHistory(User user) {
 		this.usersLinksHistory.remove(user);
-		//user.getUserClickedLinks().remove(this);
+		user.getUserClickedLinks().remove(this);
 	}
+	
+	
 }

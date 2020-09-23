@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
@@ -50,13 +52,29 @@ public class LinkService {
 	 * return all availible links
 	 */
 	public LinkDTO findLinkBySignature(final String signature) throws ServiceException {
+		Link linkModel = findLinkModel(signature);
+		return LinkDTO.getMapLinkToDto(linkModel);
+	}
+
+	public Link findLinkModelBySignature(final String signature) throws ServiceException {
+		return findLinkModel(signature);
+	}
+
+	/**
+	 * is package-private
+	 * find link object
+	 * @param signature
+	 * @return
+	 * @throws ServiceException
+	 */
+	Link findLinkModel(final String signature) throws  ServiceException{
 		LOGGER.info("FIND LINK WITH SIGNATUR {}", signature);
 		final long id = LinkDTO.convertEpochSecToId(signature);
-		Link link = linkRepository.findById(id)
-									.orElseThrow(() ->new ServiceException("not found"));
-		return LinkDTO.getMapLinkToDto(link);
-	}		
-	
+		return linkRepository.findLinkById(id)
+				.orElseThrow(() ->new ServiceException("not found"));
+
+	}
+
 	/**
 	 * create write transactional
 	 * @author RKA
@@ -77,7 +95,10 @@ public class LinkService {
 		LOGGER.info("LINK SAVED {}", newLink);
 		linkDto = LinkDTO.getMapLinkToDto(newLink);
 		return Optional.of(linkDto)
-						.orElse(new LinkDTO("link not availible", "http://jReditt.com"));
+						.orElse(LinkDTO.builder()
+								.title("not availible")
+								.url("localhost:5550/jReditt/")
+								.build());
 	}
 
 	public long findAllLinksByUser(User user) {
@@ -90,10 +111,27 @@ public class LinkService {
 	 * @return linkDto objects as PageImpl
 	 */
 	public Page<LinkDTO> fetchAllLinksWithUsersCommentsVotes(Pageable pageable){
-		Page<Link> ln = linkRepository.findAll(pageable);
-		List<LinkDTO> links = ln.stream()
-								.map(link -> LinkDTO.getMapLinkToDto(link))
+		Page<Link> ln = linkRepository.findAll(pageable);		
+		List<LinkDTO> links = ln.stream().map(link -> LinkDTO.getMapLinkToDto(link))
 								.collect(Collectors.toList());
 		return new PageImpl<>(links, pageable, ln.getTotalElements());
 	}
+	
+	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){
+		Page<Link> ln = linkRepository.findAll(pageable);
+		List<Comment> comments = ln.getContent().get(0).getComments();
+		comments.size();
+		return ln.getContent();
+	}
+
+	/**
+	 * save link which has been click for authenticated user
+	 */
+	@Transactional(readOnly = false)
+	public void saveLinkHistory(Link link, User user) {
+		//link.addUserToLinkHistory(user);
+		link = linkRepository.saveAndFlush(link);
+		LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
+	}
+
 }

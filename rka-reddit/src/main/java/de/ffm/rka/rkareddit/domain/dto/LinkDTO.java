@@ -7,6 +7,7 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +28,25 @@ import static java.util.Date.from;
 
 @Getter @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class LinkDTO implements Serializable {
 
-	private static final ModelMapper modelMapper = new ModelMapper();
+	private static ModelMapper modelMapper; 
 	private static final long serialVersionUID = 1748419915925154370L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkDTO.class);
-
+	
+	static {
+		modelMapper	= new ModelMapper();
+		modelMapper.getConfiguration().setAmbiguityIgnored(true);
+		modelMapper.addMappings(new PropertyMap<Link, LinkDTO>() {
+		    @Override
+		    protected void configure() {
+		        skip(destination.getComments());
+		        skip(destination.getTags());
+		    }
+		});
+	}
+	
 	@NotEmpty(message = "title is required")
 	@Size(min=5, max = 50, message = "maximal 50 letter allowed")
 	private String title;
@@ -53,6 +65,7 @@ public class LinkDTO implements Serializable {
 	@Getter
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 	private int voteCount = 0;
+	private int commentCount = 0;
 	private String createdBy;
 	private String lastModifiedBy;
 	private LocalDateTime creationDate;
@@ -71,13 +84,13 @@ public class LinkDTO implements Serializable {
 	 */
 	private Long linkId;
 
+
+	public LinkDTO() {
+		
+	}
+	
 	public String getLinkSignature(){
 		return this.linkSignature;
-	}
-
-	public LinkDTO(String title, String url) {
-		this.title = title;
-		this.url = url;
 	}
 	
 	public String getElapsedTime() {
@@ -88,16 +101,6 @@ public class LinkDTO implements Serializable {
 	public String getHoster() throws URISyntaxException {
 		URI domain = new URI(url);
 		return domain.getHost();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		LinkDTO linkDTO = (LinkDTO) o;
-		return Objects.equals(title, linkDTO.title) &&
-				Objects.equals(description, linkDTO.description) &&
-				Objects.equals(url, linkDTO.url);
 	}
 
 	private List<Tag> tags = new ArrayList<>();
@@ -117,6 +120,7 @@ public class LinkDTO implements Serializable {
 	}
 
 	public static LinkDTO getMapLinkToDto(Link link){
+
 		LinkDTO temp = modelMapper.map(link, LinkDTO.class);
 		temp.setLinkSignature(convertLDTtoEpochSec(link.getCreationDate())
 							.concat(String.valueOf(link.getLinkId())));
@@ -140,9 +144,26 @@ public class LinkDTO implements Serializable {
 		return id;
 	}
 
+	public List<CommentDTO> getComments() {
+		List<CommentDTO> comment = comments;
+		return comment;
+	}
+	
+	
 	@Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(this);
     }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LinkDTO linkDTO = (LinkDTO) o;
+		return Objects.equals(title, linkDTO.title) &&
+				Objects.equals(description, linkDTO.description) &&
+				Objects.equals(url, linkDTO.url);
+	}
+	
 
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head th:replace="~{layouts/main_layout :: head(title = 'link list')}">
 </head>
@@ -10,22 +10,22 @@
 		<nav th:replace="~{layouts/main_layout :: nav}"></nav>
         <!-- links -->
         <div class="row link" th:each="link : ${links}">
-            <div class="col-1">
-                <div>
-                    <a href="#" class="upvote" th:data-id="${link.getLinkSignature()}">
-                        <i class="fas fa-arrow-up"></i>
-                    </a>
-                </div>
-                <div>
+                <div class="col-1">
+                    <div>
+                        <a href="#" class="upvote" th:data-id="${link.getLinkSignature()}">
+                            <i class="fas fa-arrow-up"></i>
+                        </a>
+                    </div>
+                    <div>
                     <span th:id="|votecount-${link.getLinkSignature()}|"
                           class="votecount" th:text="${link.getVoteCount()}">0</span>
+                    </div>
+                    <div>
+                        <a href="#" class="downvote" th:data-id="${link.getLinkSignature()}" th:disabled="true">
+                            <i class="fas fa-arrow-down"></i>
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <a href="#" class="downvote" th:data-id="${link.getLinkSignature()}" th:disabled="true">
-                        <i class="fas fa-arrow-down"></i>
-                    </a>
-                </div>
-            </div>
             <div class="col-11">
                 <p class="title">
                     <a class="title " th:href="@{'/links/link/' + ${link.getLinkSignature()}}" th:text="${link.getTitle()}">Title Goes Here</a>
@@ -41,7 +41,7 @@
                 </p>
                 <p>
                     <a th:href="@{'/links/link/' + ${link.getLinkSignature()} + '#comments'}" class="comments"
-                        th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+                        th:text="|${link.getCommentCount()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
                     <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
                 </p>
             </div>
