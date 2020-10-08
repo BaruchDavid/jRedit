@@ -11,7 +11,7 @@
 <!--     th:if="${success}" -->
     <div id="profile" class="container">
     	<div th:if="${success}" id="displayMessage" class="alert alert-success" role="alert" >
-           <p th:text="${redirectMessage}">Welcome to our grocery store!</p>
+           <p th:text="${redirectMessage}">Welcome to our store!</p>
         </div>
         <div class="row">
             <ul class="nav">
@@ -20,8 +20,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Comments</a>
-                </li>                
- 				<li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                </li>  
+                <!-- TEST IM BACKEND NICHT VERGESSEN ZU IMPLEMENTIEREN !!!! -->              
+ 				<li class="nav-item dropdown" sec:authorize="isAuthenticated()" th:if="${userDto.getEmail() == userContent.getEmail()}"> 
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Preferences
 					</a>
@@ -33,12 +34,15 @@
 					  <a class="dropdown-item" href="#">Ask admin</a>
 					</div>
 				</li>
-                
-                
-                
+ 
             </ul>
         </div>
-		
+     
+       <!--  angemeldeter User: 
+        <p class="body" th:text="${userDto.getEmail()}"></p>
+        <br>
+        angeklickter User:
+        <p class="body" th:text="${userContent.getEmail()}"></p> -->
         <div class="row">
             <div class="col">
 	            <div class="row link" th:each="link : ${posts}">
@@ -55,12 +59,12 @@
 		                </p>
 		                <p>
 		                    <a th:href="@{'/links/link/' + ${link.getLinkId()} + '#comments'}" class="comments"
-		                        th:text="|${link.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+		                        th:text="|${link.getCommentCount()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
 		                    <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
 		                </p>
 	            </div>
-	        </div>
-            <!-- Right Side -->
+	        </div> 
+           <!--  Right Side -->
             <div class="col-3 offset-1">
                 <div class="row">
                     <div class="card col-12">
@@ -72,14 +76,13 @@
                 </div>
                 <div class="row">
                     <div class="card col-12">
-                        <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
                         <div class="card-body">
                             <h5 class="card-title">Your Information</h5>
                             <p class="card-text">
-                                <p id="userName">Username: </p>
-                                <p id="userSince">User Since: </p>
-                                <p id="linkSize">Links: </p>
-                                <p id="commentSize">Comments: </p>         	
+                                <p id="userName" th:text="${userContent.getFullName()}">Username: </p>
+                                <p id="userSince" th:text="${'User since: ' + userSince}">User Since: </p>
+                                <p id="linkSize" th:text="${'Links: ' + #lists.size(posts)}">Links: </p>
+                                <p id="commentSize" th:text="${'Comments: ' + #lists.size(comments)}">Comments: </p>         	
                             </p>
                         </div>
                     </div>
@@ -93,7 +96,7 @@
                 </div>
             </div>
 			
-        </div> <!-- // row -->
+        </div> 
     
     </div><!-- // profile -->
     <input type="hidden" id="user" name="user" th:value="${userContent.getEmail()}">
