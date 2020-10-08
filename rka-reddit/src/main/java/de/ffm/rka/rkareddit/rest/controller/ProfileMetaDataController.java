@@ -1,10 +1,18 @@
 package de.ffm.rka.rkareddit.rest.controller;
 
 
-import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.service.UserService;
-import de.ffm.rka.rkareddit.util.FileNIO;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +23,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.service.UserService;
+import de.ffm.rka.rkareddit.util.FileNIO;
 
 @RestController
 @RequestMapping("/profile")
@@ -45,45 +53,23 @@ public class ProfileMetaDataController {
 	}
 
 	/**
-	 * shows user information on profile-page on right side
-	 */
-	@GetMapping("/information/content")
-	@ResponseBody
-//	@Cacheable("user")
-//	@CacheEvict(value="userInfo", allEntries=true)
-	public List<String> informationContent(@AuthenticationPrincipal UserDetails userPrincipal,
-			@RequestParam(required = false) String user) {
-		List<String> information = new ArrayList<>();
-		
-		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);
-		String requestedUser = usrDetail.isPresent() && user == null? usrDetail.get().getUsername():user;
-		User currentUser = userService.getUserWithLinks(requestedUser);
-		long userLinkSize = currentUser.getUserLinks().size();
-		long userCommentSize = userService.getUserWithComments(requestedUser).getUserComments().size();
-		information.add(String.valueOf(userLinkSize));
-		information.add(String.valueOf(userCommentSize));
-		information.add(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(currentUser.getCreationDate()));
-		information.add(requestedUser);
-		LOGGER.debug("For user {} has been found {} links", requestedUser,userLinkSize);
-		LOGGER.debug("For user {} has been found {} comments", requestedUser, userCommentSize);
-		return information;
-	}
-
-	/**
 	 * @param userPrincipal for authentication
 	 * @return list of clicked Links
 	 */
 	@GetMapping("/information/userClickedLinks")
 	@ResponseBody
-	public List<Link> userClickedLinksHistory(@RequestParam(name="user") String user, @AuthenticationPrincipal UserDetails userPrincipal) {
-		List<Link> userClickedLinks = new ArrayList<>();
+	public List<LinkDTO> userClickedLinksHistory(@RequestParam(name="user") String user, @AuthenticationPrincipal UserDetails userPrincipal) {
+		List<LinkDTO> userClickedLinksDTO = new ArrayList<>();
 		String requestedUser= Optional.ofNullable(userPrincipal)
 				.map(UserDetails::getUsername)
 				.orElse("");
 		if(user.equals(requestedUser) && !requestedUser.isEmpty()){
-			userClickedLinks = userService.findUserClickedLinks(requestedUser);
-		}
-		return userClickedLinks;
+			Set<Link> userClickedLinks = userService.findUserClickedLinks(requestedUser);		
+			userClickedLinks.forEach(link -> {
+				userClickedLinksDTO.add(LinkDTO.getMapLinkToDto(link));
+			});
+		}		
+		return userClickedLinksDTO;
 	}
 
 	@GetMapping(value = "/information/content/user-pic")
@@ -93,10 +79,13 @@ public class ProfileMetaDataController {
 		String requestedUser = usrDetail.isPresent()? usrDetail.get().getUsername():req.getParameter("user");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setCacheControl(CacheControl.maxAge(1, java.util.concurrent.TimeUnit.HOURS));
-		User user = userService.getUserWithLinks(requestedUser);
-		String picPath = fileNIO.readByteToPic(user.getProfileFoto(), user.getEmail());
-		InputStream in = applicationContext.getResource("classpath:".concat(picPath)).getInputStream();
-		byte[] media = IOUtils.toByteArray(in);
+		byte[] media = new byte[0];
+		Optional<byte[]> userPic = userService.getUserPic(requestedUser);
+		if(userPic.isPresent()) {
+			String picPath = fileNIO.readByteToPic(userPic.get(), requestedUser);
+			InputStream in = applicationContext.getResource("classpath:".concat(picPath)).getInputStream();
+			media = IOUtils.toByteArray(in);
+		}		
 		return new ResponseEntity<>(media, headers, HttpStatus.OK);
 	}
 }
