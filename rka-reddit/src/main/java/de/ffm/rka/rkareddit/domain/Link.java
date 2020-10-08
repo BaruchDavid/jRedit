@@ -4,17 +4,11 @@ package de.ffm.rka.rkareddit.domain;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.URL;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,12 +18,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
 import static java.util.Date.from;
 
 @Entity
 @Getter @Setter
-@ToString(exclude = {"user", "comments",  "tags", "users"}) 
+//@ToString(exclude = {"user", "comments",  "tags"}) 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -65,7 +58,6 @@ public class Link extends Auditable implements Serializable{
 			inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "tagId")
 	)
 	@JsonIgnore
-	//@Fetch(FetchMode.SUBSELECT)
 	private Set<Tag> tags = new HashSet<>();
 
 	@Builder.Default
@@ -161,6 +153,12 @@ public class Link extends Auditable implements Serializable{
 	public void removeUserFromHistory(User user) {
 		this.usersLinksHistory.remove(user);
 		user.getUserClickedLinks().remove(this);
+	}
+
+	@Override
+	public String toString() {
+		return "Link [linkId=" + linkId + ", title=" + title + ", description=" + description + ", url=" + url
+				+ ", commentCount=" + commentCount + ", voteCount=" + voteCount + "]";
 	}
 	
 	
