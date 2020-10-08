@@ -35,9 +35,6 @@ public class GlobalControllerAdvisor {
 	public static final String PAGE_NOT_FOUND = "error/pageNotFound";
 	public static final String ANONYMOUS_USER = "anonymousUser";
 	public static final String ANONYMOUS = "anonymous";
-	
-	@Autowired
-	private ModelMapper modelMapper;
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
@@ -52,8 +49,8 @@ public class GlobalControllerAdvisor {
 		String visitorName="";
 		if(authetication.isPresent()) {
 			visitorName = authetication.get().getName();
-			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) { 
-				user = modelMapper.map((User) userDetailsService.loadUserByUsername(visitorName), UserDTO.class);	
+			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) {				
+				user = UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(visitorName));
 			}else { 
 				user.setFirstName("guest");	
 			}

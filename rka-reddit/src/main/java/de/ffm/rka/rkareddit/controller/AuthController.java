@@ -24,6 +24,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,28 +69,32 @@ public class AuthController {
 	 */
 	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
-								@PathVariable(required = false) String email, 
+								@PathVariable(required = false) String email, HttpServletRequest httpReq,
 								Model model) throws UsernameNotFoundException {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
-												.orElseThrow(()-> new UsernameNotFoundException("user not found"));		
+												.orElseThrow(()-> new UsernameNotFoundException("user not found"));	
+		UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
 		authenticatedUser.ifPresent(user -> {
-			UserDTO member = userDetailsService.mapUserToUserDto((User)user);
-			model.addAttribute(USER_DTO, member);
+			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(user.getUsername())));
 		});
-		
+
+
 		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptyList());
-		List<Comment> userComments = Optional.ofNullable(pageContentUser.getUserComments())
+		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(email)
+																	.getUserComment())
 											.orElse(Collections.emptyList());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
 		}		
-		model.addAttribute("userContent", pageContentUser);
+		model.addAttribute("userContent", contentUser);
 		model.addAttribute("posts", userLinks);
 		model.addAttribute("comments", userComments);
+		model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+														.format(contentUser.getCreationDate()));
 		return "auth/profile"; 
 	}
 	
@@ -138,7 +145,10 @@ public class AuthController {
 			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
 			final String newEmail = userDto.getNewEmail();
-			userDto = userDetailsService.mapUserToUserDto(userDto.getEmail());
+			/**
+			 * TODO: überprüfen, ob es notwendig ist 144 auszuführen.
+			 */
+			//userDto = userDetailsService.mapUserToUserDto(userDto.getEmail());
 			userDto.setNewEmail(newEmail);
 			userDto = userService.emailChange(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
@@ -252,21 +262,21 @@ public class AuthController {
 	@GetMapping("/profile/private/me/{email:.+}")
 	public String userInfo(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
 						   Model model) {
-		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto((User)user));
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
 		return "auth/profileEdit";
 	}
 	
 	@GetMapping("/profile/private/me/{email:.+}/password")
 	public String changePassword(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
 								 Model model) {
-		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto((User)user));
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
 		return "auth/passwordChange";
 	}
 	
 	@GetMapping("/profile/private/me/update/email/{email:.+}")
 	public String userEmailUpdateView(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
 									  Model model) {
-		UserDTO userDto = userDetailsService.mapUserToUserDto((User)user);
+		UserDTO userDto = UserDTO.mapUserToUserDto((User)user);
 		userDto.setNewEmail(StringUtils.EMPTY);
 		model.addAttribute(USER_DTO, userDto);
 		return "auth/emailChange";
