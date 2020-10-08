@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Entity(name="User")
 @Table(name = "user")
 @Getter @Setter 
-@ToString(exclude = {"userLinks", "roles", "profileFoto", "userClickedLinks"})
+@ToString(exclude = {"userLinks", "userComment", "roles", "profileFoto", "userClickedLinks"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -62,6 +62,10 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Link> userLinks = new ArrayList<>();
+	
+	@Builder.Default
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<Comment> userComment = new ArrayList<>();
 	
 	
 	@Builder.Default
@@ -118,7 +122,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 		roles.stream()
 			.map(role -> authorities.add(new SimpleGrantedAuthority(role.getName())))
 			.collect(Collectors.toList());
-		
 		return authorities;
 	}
 
