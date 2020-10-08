@@ -70,10 +70,25 @@ public class LinkDTO implements Serializable {
 	private String lastModifiedBy;
 	private LocalDateTime creationDate;
 	private LocalDateTime lastModifiedDate;
+	
+	/**dont call childElementUser for de/serialize json*/
+	@JsonIgnore
 	private List<CommentDTO> comments = new ArrayList<>();
+	
+	/**dont call childElementUser for de/serialize json*/
+	@JsonIgnore
 	private List<Vote> vote = new ArrayList<>();
+	
+	/**dont call childElementUser for de/serialize json*/
+	@JsonIgnore
+	private List<Tag> tags = new ArrayList<>();
+	
+	/**dont call childElementUser for de/serialize json*/
+	@JsonIgnore
 	private User user;
+	
 	private static final int TIME_LATTERS = 13;
+	
 	@JsonIgnore
 	private String linkSignature;
 
@@ -102,8 +117,6 @@ public class LinkDTO implements Serializable {
 		URI domain = new URI(url);
 		return domain.getHost();
 	}
-
-	private List<Tag> tags = new ArrayList<>();
 
 	/**
 	 *
@@ -164,6 +177,11 @@ public class LinkDTO implements Serializable {
 				Objects.equals(description, linkDTO.description) &&
 				Objects.equals(url, linkDTO.url);
 	}
-	
+
+	@Override
+	public String toString() {
+		return "LinkDTO [title=" + title + ", description=" + description + ", url=" + url + ", voteCount=" + voteCount
+				+ ", commentCount=" + commentCount + ", linkSignature=" + linkSignature + ", linkId=" + linkId + "]";
+	}
 
 }
