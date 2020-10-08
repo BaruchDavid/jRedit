@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaRepositories(basePackages = "de.ffm.rka.rkareddit.repository")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
-public class AppJapConfig {
+public class AppJpaConfig {
 
 	@Bean
 	public AuditorAware<String> auditorAware(){
