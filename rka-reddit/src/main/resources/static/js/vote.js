@@ -3,7 +3,7 @@ $('.upvote, .downvote').on('click', function(){
             const linkId = this.getAttribute('data-id');
             const voteCountVal = $('#votecount-'+this.getAttribute("data-id"));         
             
-            fetch('/jReditt/vote/link/'+linkId+'/direction/'+direction+'/votecount/'+voteCountVal.text())
+            fetch('/jReditt/link/'+linkId+'/vote/direction/'+direction+'/votecount/'+voteCountVal.text())
                     .then(
                         response => response.json())
                     .then(data => {
