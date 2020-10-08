@@ -38,6 +38,11 @@ public class Comment extends Auditable implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Link link;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	@JoinColumn(name = "user_id")
+	private User user;
+	
 	@Autowired
 	private transient PrettyTime prettyTime;
 
