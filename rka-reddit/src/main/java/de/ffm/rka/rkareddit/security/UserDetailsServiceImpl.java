@@ -25,8 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	@Autowired
-	private ModelMapper modelMapper;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) {
@@ -35,10 +33,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 															LOGGER.error("USER {} could not be found", username);
 															return new  UsernameNotFoundException(username); 
 															});
-	}
-	
-	public UserDTO mapUserToUserDto(String usrName) {
-		return modelMapper.map((User)loadUserByUsername(usrName), UserDTO.class);
 	}
 
 	public void reloadUserAuthetication(final String newEmail) {

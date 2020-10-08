@@ -94,7 +94,7 @@ public class UserService {
 			newUser.setActivationCode(StringUtils.EMPTY);
 			save(newUser);
 			userDetailsService.reloadUserAuthetication(email);
-			userDTO = Optional.of(userDetailsService.mapUserToUserDto(user.get().getUsername()));
+			userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
 			sendWelcomeEmail(userDTO.get());
 		}
 		return userDTO;
@@ -129,6 +129,12 @@ public class UserService {
 										});
 	}
 	
+	@Transactional
+	public Optional<byte[]> getUserPic(String userMail) {
+		return Optional.of(getUser(userMail).getProfileFoto());
+	}
+	
+	
 	/**
 	 * change user Password
 	 * @param userDto hold changes to be saved
@@ -156,7 +162,7 @@ public class UserService {
 	public User getUserWithLinks(String userId){
 		return userRepository.fetchUserWithLinks(userId);
 	}
-	
+		
 	/**
 	 * find user for activation
 	 */
@@ -233,9 +239,10 @@ public class UserService {
 	 * @param requestedUser is a account owner, no public visitor
 	 * @return either list of links oder empty list
 	 */
-	public List<Link> findUserClickedLinks(final String requestedUser){
-		return Optional.ofNullable(userRepository.findClickedUserLinks(requestedUser))
+	public Set<Link> findUserClickedLinks(final String requestedUser){
+		Set<Link> links = Optional.ofNullable(userRepository.findClickedUserLinks(requestedUser))
 						.map(User::getUserClickedLinks)
-						.orElse(Collections.emptyList());
+						.orElse(Collections.emptySet());
+		return links;
 	}
 }
