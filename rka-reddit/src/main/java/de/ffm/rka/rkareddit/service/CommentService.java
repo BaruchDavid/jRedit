@@ -36,13 +36,6 @@ public class CommentService {
 		this.linkService = linkService;
 	}
 	
-	/**
-	 * counts all comments undepends on links or posts
-	 */
-	public long countAllByUser(User user) {
-		return commentRepository.countByUser(user);
-	}
-	
 	public String getElapsedTimeFromComment(Comment com) {
 		return commentRepository.findById(com.getCommentId())
 								.map(Comment::getElapsedTime)
@@ -63,6 +56,6 @@ public class CommentService {
 	}
 
 	private Link getSuitableLink(String linkSignatur) throws ServiceException {
-		return LinkDTO.getMapDtoToLink(linkService.findLinkBySignature(linkSignatur));
+		return linkService.findLinkModel(linkSignatur);
 	}
 }
