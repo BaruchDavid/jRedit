@@ -6,6 +6,7 @@ import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.LinkService;
@@ -71,7 +72,7 @@ public class LinkController {
 											.boxed()
 											.collect(Collectors.toList());
 		if(user != null) {
-			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));
+			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
 		}
 		
 		model.addAttribute("links",links);
@@ -95,7 +96,7 @@ public class LinkController {
 		Optional.ofNullable(userDetails).ifPresent(logedUser -> {
 			User userModel = (User)userDetails;
 			linkService.saveLinkHistory(link, userModel);
-			model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(userModel));
+			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
 		});
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(link);
 		model.addAttribute("linkDto",linkDTO);
@@ -116,7 +117,7 @@ public class LinkController {
 	
 	@GetMapping("/links/link")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
-		model.addAttribute(USER_DTO, userDetailsService.mapUserToUserDto(user.getUsername()));		
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));		
 		Link link = new Link();
 		for(int i=0; i<4; ++i) {
 			link.addTag(Tag.builder().tagName("").build());
