@@ -37,7 +37,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import io.hypersistence.optimizer.HypersistenceOptimizer;
+//import io.hypersistence.optimizer.HypersistenceOptimizer;
 
 
 @ActiveProfiles("test")
@@ -50,9 +50,6 @@ import io.hypersistence.optimizer.HypersistenceOptimizer;
 public class AllControllersTransactionTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
 	private MockMvc mockMvc;
-
-	@Autowired
-	private HypersistenceOptimizer hypersistenceOptimizer;
 	
 	@Autowired
 	private WebApplicationContext context;
@@ -89,12 +86,8 @@ public class AllControllersTransactionTest {
 					.andExpect(model().attribute("pageNumbers", pages))
 					.andReturn();
 		LOGGER.info("QUERIES: ", hibernateStatistic.getQueries());
-		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", 5, hibernateStatistic.getQueryExecutionCount());
+		assertEquals("SHOULD EXECUTED ONLY FOUR JDBC STATMENTS", 5, hibernateStatistic.getQueryExecutionCount());
 	}
-	
-	@Test
-	public void test() {
-		assertTrue(hypersistenceOptimizer.getEvents().isEmpty());
-	}
+
 
 }
