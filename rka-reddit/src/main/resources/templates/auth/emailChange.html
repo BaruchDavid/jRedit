@@ -10,7 +10,7 @@
     <div class="row" th:if="${validationErrors}">
        	<div class="col-md-3"></div>
     </div>
-    <form class="form-horizontal" role="form" th:object="${userDto}" th:method="PATCH" th:action="@{/profile/private/me/update/email/} + ${email}" >
+    <form class="form-horizontal" role="form" th:object="${userDto}" th:method="PATCH" th:action="@{/profile/private/me/update/email/}" >
     <div class="row" th:if="${validationErrors}">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -29,6 +29,12 @@
         </div>
     </div>
     <div class="row">
+    	<input type="hidden"                           
+                     class="form-control"
+                     id="mail"                           
+                     th:field="*{email}">
+    </div>
+    <div class="row">
         <div class="col-md-3 field-label-responsive">
             <label for="newEemail">New e-mail Address</label>
         </div>
@@ -39,7 +45,7 @@
                     <input type="text"
                            name="newEmail"
                            class="form-control"
-                           id="newEemail"
+                           id="newEmail"
                            placeholder="you.new@example.com"
                            th:field="*{newEmail}"
                            required autofocus>

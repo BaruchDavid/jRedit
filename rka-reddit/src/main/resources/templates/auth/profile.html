@@ -27,9 +27,9 @@
 					  Preferences
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					  <a class="dropdown-item" th:href="@{'/profile/private/me/' + ${userDto.getEmail()}}">Me</a>
-					  <a class="dropdown-item" th:href="@{'/profile/private/me/' + ${userDto.getEmail()}} + '/password'">Change password</a>
-					  <a class="dropdown-item" th:href="@{'/profile/private/me/update/email/' + ${userDto.getEmail()}}">Change email</a>
+					  <a class="dropdown-item" th:href="@{/profile/private/me/}">Me</a>
+					  <a class="dropdown-item" th:href="@{/profile/private/me/password}">Change password</a>
+					  <a class="dropdown-item" th:href="@{/profile/private/me/update/email}">Change email</a>
 					  <div class="dropdown-divider"></div>
 					  <a class="dropdown-item" href="#">Ask admin</a>
 					</div>
@@ -99,7 +99,7 @@
         </div> 
     
     </div><!-- // profile -->
-    <input type="hidden" id="user" name="user" th:value="${userContent.getEmail()}">
+    <!-- <input type="hidden" id="user" name="user" th:value="${userContent.getEmail()}"> -->
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
 	<script th:src="@{/js/user.js}"></script>
 </body>

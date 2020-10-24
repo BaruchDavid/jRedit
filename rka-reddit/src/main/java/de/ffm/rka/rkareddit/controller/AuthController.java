@@ -43,6 +43,7 @@ public class AuthController {
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
 	private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
+	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
 	private final UserService userService;
 	private final UserDetailsServiceImpl userDetailsService;
 	
@@ -79,7 +80,6 @@ public class AuthController {
 		authenticatedUser.ifPresent(user -> {
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(user.getUsername())));
 		});
-
 
 		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptyList());
@@ -129,14 +129,12 @@ public class AuthController {
 		}
 	}
 
-
-
 	/**
 	 * user changes own email address
 	 * @return new userDto object and success
 	 * @throws ServiceException will be triggered on any errors
 	 */
-	@PatchMapping(value = {"/profile/private/me/update/email/{email:.+}"})
+	@PatchMapping(value = {"/profile/private/me/update/email"})
 	public String userChangeEmail(@Validated(value = {UserValidationgroups.ValidationUserChangeEmail.class}) UserDTO userDto,
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
 								HttpServletRequest req, Model model) throws ServiceException {
@@ -145,10 +143,6 @@ public class AuthController {
 			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
 			final String newEmail = userDto.getNewEmail();
-			/**
-			 * TODO: überprüfen, ob es notwendig ist 144 auszuführen.
-			 */
-			//userDto = userDetailsService.mapUserToUserDto(userDto.getEmail());
 			userDto.setNewEmail(newEmail);
 			userDto = userService.emailChange(userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
@@ -200,26 +194,46 @@ public class AuthController {
 		}
     }
 
-
-	/**
-	 * validates input for user or password changes
-	 * @param userDto saves failed user object
-	 * @param bindingResult contains errors
-	 * @param res set status
-	 * @param attributes set attributes for redirect
-	 * @param model saves userDto
-	 */
-	private void manageValidationErrors(@Validated(UserValidationgroups.ValidationChangeUserProperties.class) UserDTO userDto,
-										BindingResult bindingResult, HttpServletResponse res,
-										RedirectAttributes attributes, Model model) {
-		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE,
-											error.getCodes(), error.getDefaultMessage()));
-		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-		model.addAttribute(USER_DTO, userDto);
-		attributes.addFlashAttribute(BINDING_ERROR,true);
-		res.setStatus(HttpStatus.BAD_REQUEST.value());
+	@PutMapping("/profile/private/me/password")
+    public String userPasswordChange(@Validated(UserValidationgroups.ValidationUserChangePassword.class) UserDTO userDto,
+    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
+    								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
+		
+		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
+			manageValidationErrors(userDto, bindingResult, res, attributes, model);
+			return "auth/passwordChange";
+		} else {
+			userDto.setEmail(userDetails.getUsername());
+			userService.changeUserPassword(userDto);
+			attributes.addFlashAttribute(SUCCESS,true);
+			attributes.addFlashAttribute(REDIRECT_MESSAGE,"your password has been changed!");
+			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
+			LOGGER.info("USER PASSWORD CHANGED SUCCESSFULLY {}",userDto);
+			return REDIRECT_TO_PRIVATE_PROFILE;
+		}
+    }
+	//TODO: wozu email-variable, wenn man die email aus der UserDetails lesen kann
+	@GetMapping("/profile/private/me")
+	public String showViewForEmailChange(@AuthenticationPrincipal UserDetails user, Model model) {
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
+		return "auth/profileEdit";
 	}
-
+	
+	@GetMapping("/profile/private/me/password")
+	public String changePassword(@AuthenticationPrincipal UserDetails user,Model model) {		
+		User userForChange = (User) userDetailsService.loadUserByUsername(user.getUsername());
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userForChange));
+		return "auth/passwordChange";					
+	}
+	
+	@GetMapping("/profile/private/me/update/email")
+	public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
+		UserDTO userDto = UserDTO.mapUserToUserDto((User)user);
+		userDto.setNewEmail(StringUtils.EMPTY);
+		model.addAttribute(USER_DTO, userDto);
+		return "auth/emailChange";
+	}
+	
 	/**
 	 * validates input for registration or email change
 	 * @param userDto contains failed object
@@ -238,48 +252,24 @@ public class AuthController {
 		res.setStatus(HttpStatus.BAD_REQUEST.value());
 		return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
 	}
-
-
-	@PutMapping("/profile/private/me/{email:.+}/password")
-    public String userPasswordChange(@Validated(UserValidationgroups.ValidationUserChangePassword.class) UserDTO userDto,
-    								 BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
-    								 @AuthenticationPrincipal UserDetails userDetails, Model model)    {
-		
-		if(bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
-			manageValidationErrors(userDto, bindingResult, res, attributes, model);
-			return "auth/passwordChange";
-		} else {
-			userDto.setEmail(userDetails.getUsername());
-			userService.changeUserPassword(userDto);
-			attributes.addFlashAttribute(SUCCESS,true);
-			attributes.addFlashAttribute(REDIRECT_MESSAGE,"your password has been changed!");
-			res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
-			LOGGER.info("USER PASSWORD CHANGED SUCCESSFULLY {}",userDto);
-			return REDIRECT_TO_PRIVATE_PROFILE;
-		}
-    }
 	
-	@GetMapping("/profile/private/me/{email:.+}")
-	public String userInfo(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
-						   Model model) {
-		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
-		return "auth/profileEdit";
-	}
-	
-	@GetMapping("/profile/private/me/{email:.+}/password")
-	public String changePassword(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
-								 Model model) {
-		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
-		return "auth/passwordChange";
-	}
-	
-	@GetMapping("/profile/private/me/update/email/{email:.+}")
-	public String userEmailUpdateView(@PathVariable String email, @AuthenticationPrincipal UserDetails user,
-									  Model model) {
-		UserDTO userDto = UserDTO.mapUserToUserDto((User)user);
-		userDto.setNewEmail(StringUtils.EMPTY);
+	/**
+	 * validates input for user or password changes
+	 * @param userDto saves failed user object
+	 * @param bindingResult contains errors
+	 * @param res set status
+	 * @param attributes set attributes for redirect
+	 * @param model saves userDto
+	 */
+	private void manageValidationErrors(@Validated(UserValidationgroups.ValidationChangeUserProperties.class) UserDTO userDto,
+										BindingResult bindingResult, HttpServletResponse res,
+										RedirectAttributes attributes, Model model) {
+		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE,
+											error.getCodes(), error.getDefaultMessage()));
+		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
 		model.addAttribute(USER_DTO, userDto);
-		return "auth/emailChange";
+		attributes.addFlashAttribute(BINDING_ERROR,true);
+		res.setStatus(HttpStatus.BAD_REQUEST.value());
 	}
 }
 
