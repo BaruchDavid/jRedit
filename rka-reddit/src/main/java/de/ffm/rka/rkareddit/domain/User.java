@@ -31,7 +31,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 //	UUID
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
 
 	@Column(unique = true, nullable=false)
