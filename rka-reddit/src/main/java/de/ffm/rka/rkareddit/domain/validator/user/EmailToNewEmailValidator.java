@@ -22,10 +22,13 @@ public class EmailToNewEmailValidator implements ConstraintValidator<EmailNotEqu
 	 */
 	@Override
 	public boolean isValid(UserDTO userDto, ConstraintValidatorContext context) {
-		if(userDto.getNewEmail() != null) {
-			return !userDto.getEmail().equals(userDto.getNewEmail());
-		} else {
+		String oldMail = Optional.ofNullable(userDto.getEmail()).orElse("");
+		String newMail = Optional.ofNullable(userDto.getNewEmail()).orElse("");
+		if(oldMail.isEmpty() || newMail.isEmpty()) {
 			return false;
+		} else {
+			return !oldMail.equals(newMail);	
 		}
+
 	}	
 }
