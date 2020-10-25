@@ -61,7 +61,7 @@ public class VoteControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteOnIllegleLink() throws Exception {
-		this.mockMvc.perform(get("/vote/link/1/direction/1/votecount/1"))
+		this.mockMvc.perform(get("/link/01010/vote/direction/1/votecount/1"))
 					.andDo(print())
 					.andExpect(status().is(400))
 					.andExpect(view().name("error/basicError"));
@@ -72,7 +72,7 @@ public class VoteControllerTest {
 	public void increaseVoteWithIllegleCount() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
-		MvcResult mvcResult = this.mockMvc.perform(get("/vote/link/"+linkDTO.getLinkSignature()+"/direction/1/votecount/10"))
+		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/1/votecount/10"))
 				.andDo(print())
 				.andExpect(status().is(400))
 				.andReturn();
@@ -84,7 +84,7 @@ public class VoteControllerTest {
 	public void increaseVoteWithIllegleDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
-		MvcResult mvcResult = this.mockMvc.perform(get("/vote/link/"+linkDTO.getLinkSignature()+"/direction/10/votecount/1"))
+		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/10/votecount/1"))
 							.andDo(print())
 							.andExpect(status().is(400))
 							.andReturn();
@@ -97,7 +97,7 @@ public class VoteControllerTest {
 	public void increaseVoteWithIllegleNegativeDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
-		MvcResult mvcResult = this.mockMvc.perform(get("/vote/link/"+linkDTO.getLinkSignature()+"/direction/-2/votecount/1"))
+		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/-2/votecount/1"))
 				.andDo(print())
 				.andExpect(status().is(400))
 				.andReturn();
@@ -110,7 +110,7 @@ public class VoteControllerTest {
 	public void increaseVoteWithIllegleDirectionAndIllegleDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
-		MvcResult mvcResult = this.mockMvc.perform(get("/vote/link/"+linkDTO.getLinkSignature()+"/direction/10/votecount/3"))
+		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/10/votecount/3"))
 				.andDo(print())
 				.andExpect(status().is(400))
 				.andReturn();
@@ -126,8 +126,8 @@ public class VoteControllerTest {
 	public void increaseVote() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
-		MvcResult mvcResult = this.mockMvc.perform(get("/vote/link/"+
-													linkDTO.getLinkSignature()+"/direction/1/votecount/"
+		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+
+													linkDTO.getLinkSignature()+"/vote/direction/1/votecount/"
 													+linkDTO.getVoteCount()))
 				.andDo(print())
 				.andExpect(status().is(200))

@@ -1,11 +1,10 @@
 package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.Vote;
+
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
-//import de.ffm.rka.rkareddit.repository.VoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,13 +22,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class VoteService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VoteService.class);
-	//private final VoteRepository voteRepository;
-	private final LinkService linkService;
 	private final LinkRepository linkRepository;
 
-	public VoteService(LinkService linkService, LinkRepository linkRepository) {
-		//this.voteRepository = voteRepository;
-		this.linkService = linkService;
+	public VoteService(LinkRepository linkRepository) {
 		this.linkRepository = linkRepository;
 	}
 
@@ -40,21 +35,22 @@ public class VoteService {
 	 * @param voteCount current voteCount
 	 * @return empty invalid vote or edited voted
 	 * @throws IllegalArgumentException
+	 * @throws ServiceException will be thrown, when no link could be found and optional-link is empty
 	 */
 	@Transactional(readOnly = false)
-	public int saveVote(short direction, String linkSignatur, int voteCount) throws IllegalArgumentException  {
+	public int saveVote(short direction, String linkSignatur, int voteCount) throws IllegalArgumentException, ServiceException  {
 		final boolean isValidDirection = direction !=0 && direction < 2 && direction > -2 ? true : false;
 		final long linkId = LinkDTO.convertEpochSecToId(linkSignatur);
 		Optional<Link> link = linkRepository.findByLinkId(linkId);
-		if(link.isPresent() && isValidDirection){
-			link.map(lnk -> {
-							lnk.setVoteCount(lnk.getVoteCount() + direction);
-							return lnk;
-			});
+		int currentCount = link.map(Link::getVoteCount)
+								.orElseThrow(() -> new ServiceException("kein Vote für den Linksignatur: ".concat(linkSignatur)));
+		
+		if(currentCount == voteCount && isValidDirection) {
+			link.get().setVoteCount(currentCount+direction);
+			linkRepository.save(link.get());
 			return link.get().getVoteCount();
-		} else {
-			return voteCount;
 		}
 
+		return voteCount;
 	}
 }
