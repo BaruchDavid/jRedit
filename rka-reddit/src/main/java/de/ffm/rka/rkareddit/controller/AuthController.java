@@ -212,20 +212,26 @@ public class AuthController {
 			return REDIRECT_TO_PRIVATE_PROFILE;
 		}
     }
-	//TODO: wozu email-variable, wenn man die email aus der UserDetails lesen kann
+	
 	@GetMapping("/profile/private/me")
 	public String showViewForEmailChange(@AuthenticationPrincipal UserDetails user, Model model) {
-		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
+		getUserForView(user, model);
 		return "auth/profileEdit";
 	}
+
 	
 	@GetMapping("/profile/private/me/password")
 	public String changePassword(@AuthenticationPrincipal UserDetails user,Model model) {		
-		User userForChange = (User) userDetailsService.loadUserByUsername(user.getUsername());
-		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userForChange));
+		getUserForView(user, model);
 		return "auth/passwordChange";					
 	}
 	
+	private void getUserForView(UserDetails user, Model model) {
+		User requestedUser = (User) userDetailsService.loadUserByUsername(user.getUsername());
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(requestedUser));
+	}
+	
+
 	@GetMapping("/profile/private/me/update/email")
 	public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
 		UserDTO userDto = UserDTO.mapUserToUserDto((User)user);

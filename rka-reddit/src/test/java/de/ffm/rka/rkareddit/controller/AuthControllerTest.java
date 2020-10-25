@@ -1,16 +1,25 @@
 package de.ffm.rka.rkareddit.controller;
 
-import de.ffm.rka.rkareddit.domain.Comment;
-import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
-import de.ffm.rka.rkareddit.service.UserService;
+import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.Optional;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -29,18 +38,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-import java.util.Optional;
-
-import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+import de.ffm.rka.rkareddit.service.UserService;
 
 
 @ActiveProfiles("test")
@@ -54,20 +55,21 @@ public class AuthControllerTest {
 	private MockMvc mockMvc;
 	
 	@Autowired
-	private ModelMapper modelMapper;
-	
-	@Autowired
 	private UserService userService;
 	
 	@Autowired
 	private WebApplicationContext context;
 	
-	
+	private User romakaptUser;
+
+		
 	@Before
-	public void setup() {
+	public void setup() {			
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
 									.apply(springSecurity())
 									.build();
+        romakaptUser = userService.findUserById("romakapt@gmx.de").get();	
+        
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,8 +80,8 @@ public class AuthControllerTest {
 		ResultActions resultActions = this.mockMvc.perform(get("/profile/private"))
 													.andDo(print());
 		MvcResult result = resultActions.andReturn();
-	    //assertTrue(2, result.getModelAndView().getModel().get("comments").size()); //es müssen zwei kommentare sein, auf jdbc transaktionen achten
-	    //assertTrue(5, result.getModelAndView().getModel().get("posts").size()); //es muss x posts sein, auf jdbc transaktionen achten
+//	    assertTrue(2, result.getModelAndView().getModel().get("comments").size()); //es müssen zwei kommentare sein, auf jdbc transaktionen achten
+//	    assertTrue(5, result.getModelAndView().getModel().get("posts").size()); //es muss x posts sein, auf jdbc transaktionen achten
 		assertNotNull(result);
 	}
 	
@@ -206,16 +208,11 @@ public class AuthControllerTest {
 	 */
 	@Test
 	public void showPublicProfileAsUnautheticated() throws Exception {
-		Optional<User> user = userService.findUserById("grom@gmx.de");
-		if(user.isPresent()) {
         this.mockMvc.perform(get("/profile/public/grom@gmx.de"))
 				.andDo(print())
 				.andExpect(view().name("auth/profile"))
 				.andExpect(status().isOk())
-				.andExpect(model().attribute("userContent", user.get()));  
-		} else {
-			fail("user for test-request not found");
-		}
+				.andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(romakaptUser)));  	
 	}
 	
 	/**
@@ -244,18 +241,15 @@ public class AuthControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	@Transactional
 	public void showPrivateProfileAsAutheticated() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-        if(user.isPresent()) {
-        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
-        	this.mockMvc.perform(get("/profile/private"))
-						.andDo(print())
-						.andExpect(status().isOk())
-						.andExpect(model().attribute("userContent", user.get()))
-						.andExpect(model().attribute("userDto", userDto))
-						.andExpect(model().attribute("comments", user.get().getUserComment()));
-        } else {
-        	fail("user for test-request not found");
-        }  
+		Optional<User> user = userService.findUserById("romakapt@gmx.de");       
+    	UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
+    	this.mockMvc.perform(get("/profile/private"))
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(romakaptUser)))
+					.andExpect(model().attribute("userDto", userDto))
+					.andExpect(model().attribute("comments", romakaptUser.getUserComment()));
+       
 	}
 	
 	/**
@@ -264,12 +258,13 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void showPublicProfileAsAutheticated() throws Exception {
-		Optional<User> user = userService.findUserById("grom@gmx.de");
-        if(user.isPresent()) {
+		Optional<User> userContent = userService.findUserById("grom@gmx.de");
+        if(userContent.isPresent()) {
         	this.mockMvc.perform(get("/profile/public/grom@gmx.de"))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(model().attribute("userContent", user.get()));
+			.andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(userContent.get())))
+			.andExpect(model().attribute("userDto", UserDTO.mapUserToUserDto(romakaptUser)));
         } else {
         	fail("user for test-request not found");
         }  
@@ -277,17 +272,22 @@ public class AuthControllerTest {
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
-	public void showEditProfilePage() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-        if(user.isPresent()) {
-        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
-        	this.mockMvc.perform(get("/profile/private/me/romakapt@gmx.de"))
+	public void showEditProfilePage() throws Exception {		
+
+        	UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser); 
+        	this.mockMvc.perform(get("/profile/private/me"))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("userDto", userDto));
-        } else {
-        	fail("user for test-request not found");
-        }  
+	}
+	
+	@Test
+	public void showEditProfilePageForUnknownUser() throws Exception {
+        	this.mockMvc.perform(get("/profile/private/me"))
+			.andDo(print())
+			.andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+			.andExpect(view().name("error/application"));
+
 	}
 	
 	/**
@@ -301,8 +301,8 @@ public class AuthControllerTest {
 		Optional<User> user = userService.findUserById("romakapt@gmx.de");
 		if(user.isPresent()) {
 			user.get().setNewEmail(StringUtils.EMPTY); 
-        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
-        	this.mockMvc.perform(get("/profile/private/me/update/email/romakapt@gmx.de"))
+        	UserDTO userDto = UserDTO.mapUserToUserDto(user.get()); 
+        	this.mockMvc.perform(get("/profile/private/me/update/email"))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("userDto", userDto))
@@ -315,83 +315,48 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void showChangePasswordPage() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-        if(user.isPresent()) {
-        	UserDTO userDto = modelMapper.map(user.get(), UserDTO.class); 
-        	this.mockMvc.perform(get("/profile/private/me/romakapt@gmx.de/password"))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("userDto", userDto))
-			.andExpect(view().name("auth/passwordChange"));
-        } else {
-        	fail("user for test-request not found");
-        }  
-	}
-	
-	@Test
-	@WithUserDetails("romakapt@gmx.de")
-	public void showChangePasswordPageForUnexistedUser() throws Exception {      
-    	this.mockMvc.perform(get("/profile/private/me/tomakapt@gmx.de/password"))
+		
+    	UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser); 
+    	this.mockMvc.perform(get("/profile/private/me/password"))
 		.andDo(print())
-		.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()))
-		.andExpect(view().name("error/application"));
-       
+		.andExpect(status().isOk())
+		.andExpect(model().attribute("userDto", userDto))
+		.andExpect(view().name("auth/passwordChange")); 
 	}
-	
-	@Test
-	@WithUserDetails("romakapt@gmx.de")
-	public void showEditProfilePageForKnownUser() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-        if(user.isPresent()) { 
-        	this.mockMvc.perform(get("/profile/private/me/romapt@gmx.de"))
-			.andDo(print())
-			.andExpect(status().is(401))
-			.andExpect(view().name("error/application"));
-        } else {
-        	fail("user for test-request not found");
-        }  
-	}
-	
+		
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveChangesOnAuthUserOK() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
-		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
-        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        			.param("firstName", "baruc-david")
-        			.param("email", "romakapt@gmx.de")
-        			.param("secondName", "rka.odem")
-        			.param("aliasName", "worker"))
-        			.andDo(print())
-			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/profile/private"))
-			        .andExpect(flash().attributeExists("success"))
-			        .andReturn();
-        } else {
-        	fail("user for test-request not found");
-        }  
+
+		this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
+    			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+    			.param("firstName", "baruc-david")
+    			.param("email", "romakapt@gmx.de")
+    			.param("secondName", "rka.odem")
+    			.param("aliasName", "worker"))
+    			.andDo(print())
+		        .andExpect(status().is3xxRedirection())
+		        .andExpect(redirectedUrl("/profile/private"))
+		        .andExpect(flash().attributeExists("success"))
+		        .andReturn();
 	}
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changeUserEmailOK() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
-		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
-        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        			.param("email", "romakapt@gmx.de")
-        			.param("newEmail", "kaproma@yahoo.de")
-        			.param("password", "roman")
-					.param("confirmPassword", "roman"))
-        			.andDo(print())
-			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/profile/private"))
-			        .andExpect(flash().attributeExists("success"))
-			        .andReturn();
-        } else {
-        	fail("user for test-request not found");
-        }  
+		
+		this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
+    			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+    			.param("email", "romakapt@gmx.de")
+    			.param("newEmail", "kaproma@yahoo.de")
+    			.param("password", "roman")
+				.param("confirmPassword", "roman"))
+    			.andDo(print())
+		        .andExpect(status().is3xxRedirection())
+		        .andExpect(redirectedUrl("/profile/private"))
+		        .andExpect(flash().attributeExists("success"))
+		        .andReturn();
+      
 	}
 	
 	/**
@@ -402,47 +367,40 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changeUserEmailNotOK() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
-		if(user.isPresent()) { 
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
-        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        			.param("email", "romakapt@gmx.de")
-        			.param("newEmail", "romakapt@gmx.de")
-        			.param("password", "doman")
-					.param("confirmPassword", "doman"))
-        			.andDo(print())
-			        .andExpect(status().is(400))
-			        .andExpect(view().name("auth/emailChange"))
-			        .andExpect(model().errorCount(2))
-			        .andExpect(globalErrors().hasOneGlobalError("userDTO", "Old and new email must be different"))
-			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
 
-        } else {
-        	fail("user for test-request not found");
-        }  
+		this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
+    			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+    			.param("email", "romakapt@gmx.de")
+    			.param("newEmail", "romakapt@gmx.de")
+    			.param("password", "doman")
+				.param("confirmPassword", "doman"))
+    			.andDo(print())
+		        .andExpect(status().is(400))
+		        .andExpect(view().name("auth/emailChange"))
+		        .andExpect(model().errorCount(2))
+		        .andExpect(globalErrors().hasOneGlobalError("userDTO", "Old and new email must be different"))
+		        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
+
 	}
 
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changeUserEmailtoSmall() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-		if(user.isPresent()) {
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
-					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-					.param("email", "romakapt@gmx.de")
-					.param("newEmail", "r@e")
-					.param("password", "doman")
-					.param("confirmPassword", "doman"))
-					.andDo(print())
-					.andExpect(status().is(400))
-					.andExpect(view().name("auth/emailChange"))
-					.andExpect(model().errorCount(2))
-					.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
-					.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "Size"));
 
-		} else {
-			fail("user for test-request not found");
-		}
+		
+		this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("email", "romakapt@gmx.de")
+				.param("newEmail", "r@e")
+				.param("password", "doman")
+				.param("confirmPassword", "doman"))
+				.andDo(print())
+				.andExpect(status().is(400))
+				.andExpect(view().name("auth/emailChange"))
+				.andExpect(model().errorCount(2))
+				.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
+				.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "Size"));
+
 	}
 
 	/**
@@ -453,46 +411,37 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changeUserEmailnoEmail() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-		if(user.isPresent()) {
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
-					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-					.param("email", "romakapt@gmx.de")
-					.param("password", "roman"))
-					.andDo(print())
-					.andExpect(status().is(400))
-					.andExpect(view().name("auth/emailChange"))
-					.andExpect(model().errorCount(3))
-					.andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
-					.andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
-					.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "NotEmpty"));
+				
+		this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("email", "romakapt@gmx.de")
+				.param("password", "roman"))
+				.andDo(print())
+				.andExpect(status().is(400))
+				.andExpect(view().name("auth/emailChange"))
+				.andExpect(model().errorCount(3))
+				.andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
+				.andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
+				.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "NotEmpty"));
 
-		} else {
-			fail("user for test-request not found");
-		}
 	}
 
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
-	public void changeUserEmailtoBig() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-		if(user.isPresent()) {
-			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
-					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-					.param("email", "romakapt@gmx.de")
-					.param("newEmail", "radfadfadfsddsdfadfadfsdsdfs@de")
-					.param("password", "doman")
-					.param("confirmPassword", "doman"))
-					.andDo(print())
-					.andExpect(status().is(400))
-					.andExpect(view().name("auth/emailChange"))
-					.andExpect(model().errorCount(2))
-					.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
-					.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "Size"));
+	public void changeUserEmailtoBig() throws Exception {	
+		this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("email", "romakapt@gmx.de")
+				.param("newEmail", "radfadfadfsddsdfadfadfsdsdfs@de")
+				.param("password", "doman")
+				.param("confirmPassword", "doman"))
+				.andDo(print())
+				.andExpect(status().is(400))
+				.andExpect(view().name("auth/emailChange"))
+				.andExpect(model().errorCount(2))
+				.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
+				.andExpect(model().attributeHasFieldErrorCode("userDTO", "newEmail", "Size"));
 
-		} else {
-			fail("user for test-request not found");
-		}
 	}
 	
 	/**
@@ -504,44 +453,38 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changeUserEmailNotOKAllErrors() throws Exception {
-	
- 		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
- 		if(user.isPresent()) { 
- 			this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email/romakapt@gmx.de")
-         			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-         			.param("newEmail", "romakapt@gmx.de")
-         			.param("password", "doman")
- 					.param("confirmPassword", "soman"))
-         			.andDo(print())
- 			        .andExpect(status().is(400))
- 			        .andExpect(view().name("auth/emailChange"))
- 			        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
- 			        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
- 			        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
- 					.andExpect(model().errorCount(3));
-         } else {
-         	fail("user for test-request not found");
-         }  
+
+		this.mockMvc.perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
+     			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+     			.param("email", "romakapt@gmx.de")
+     			.param("newEmail", "romakapt@gmx.de")
+     			.param("password", "doman")
+				.param("confirmPassword", "soman"))
+     			.andDo(print())
+		        .andExpect(status().is(400))
+		        .andExpect(view().name("auth/emailChange"))
+		        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Old and new email must be different"))
+		        .andExpect(globalErrors().hasTwoGlobalErrors("userDTO", "Password and password confirmation do not match"))
+		        .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"))
+				.andExpect(model().errorCount(3));
+        
 	}
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveChangesOnAuthUserWithValidationChangeUserGroup() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
-		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
-		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-		        			.param("firstName", "baruc-david")
-		        			.param("email", "romakapt@gmx.de")
-		        			.param("secondName", "rka.odem")
-		        			.param("aliasName", "wor"))
-        			.andDo(print())
-			        .andExpect(status().is3xxRedirection())
-			        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
-			        .andExpect(flash().attributeExists("bindingError"));
-        } else {
-        	fail("user for test-request not found");
-        }  
+				
+    	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/update")
+	        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        			.param("firstName", "baruc-david")
+	        			.param("email", "romakapt@gmx.de")
+	        			.param("secondName", "rka.odem")
+	        			.param("aliasName", "wor"))
+    			.andDo(print())
+		        .andExpect(status().is3xxRedirection())
+		        .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
+		        .andExpect(flash().attributeExists("bindingError"));
+        
 	}
 	
 	/**
@@ -551,40 +494,34 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveAuthUserWithValidationChangeUserPasswordGroupOK() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
-		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
-		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-		        			.param("email", "romakapt@gmx.de")
-		        			.param("password", "roman")
-		        			.param("confirmNewPassword", "rororo")
-		        			.param("newPassword", "rororo"))
-        			.andDo(print())
-			        .andExpect(status().is3xxRedirection())
-			        .andExpect(view().name("redirect:/profile/private"))
-        			.andExpect(flash().attribute("success", true));
-        } else {
-        	fail("user for test-request not found");
-        }  
+		
+    	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/password")
+	        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        			.param("email", "romakapt@gmx.de")
+	        			.param("password", "roman")
+	        			.param("confirmNewPassword", "rororo")
+	        			.param("newPassword", "rororo"))
+    			.andDo(print())
+		        .andExpect(status().is3xxRedirection())
+		        .andExpect(view().name("redirect:/profile/private"))
+    			.andExpect(flash().attribute("success", true));
+      
 	}
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveAuthUserWithValidationChangeUserPasswordGroupFalseMethod() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");      
-		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/romakapt@gmx.de/password")
-		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-		        			.param("email", "romakapt@gmx.de")
-		        			.param("password", "roman")
-		        			.param("confirmNewPassword", "rororo")
-		        			.param("newPassword", "rororo"))
-        			.andDo(print())
-			        .andExpect(status().is(404))
-			        .andExpect(view().name("error/pageNotFound"));
-        } else {
-        	fail("user for test-request not found");
-        }  
+	
+    	this.mockMvc.perform(MockMvcRequestBuilders.post("/profile/private/me/password")
+	        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        			.param("email", "romakapt@gmx.de")
+	        			.param("password", "roman")
+	        			.param("confirmNewPassword", "rororo")
+	        			.param("newPassword", "rororo"))
+    			.andDo(print())
+		        .andExpect(status().is(404))
+		        .andExpect(view().name("error/pageNotFound"));
+        
 	}
 	
 	/**
@@ -614,21 +551,18 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changePasswordWrongOldPassword() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
-		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-		        			.param("email", "romakapt@gmx.de")
-		        			.param("password", "ronan")
-		        			.param("confirmNewPassword", "rororo")
-		        			.param("newPassword", "rororo"))
-        			.andDo(print())
-			        .andExpect(status().is(400))
-			        .andExpect(view().name("auth/passwordChange"))
-        			.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
-        } else {
-        	fail("user for test-request not found");
-        }  
+		
+    	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/password")
+	        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        			.param("email", "romakapt@gmx.de")
+	        			.param("password", "ronan")
+	        			.param("confirmNewPassword", "rororo")
+	        			.param("newPassword", "rororo"))
+    			.andDo(print())
+		        .andExpect(status().is(400))
+		        .andExpect(view().name("auth/passwordChange"))
+    			.andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
+        
 	}
 	
 	/**
@@ -638,9 +572,8 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changePasswordNewPwNotEqualNewPWConfirm() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
+		
+        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/password")
 		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 		        			.param("email", "romakapt@gmx.de")
 		        			.param("password", "roman")
@@ -650,9 +583,7 @@ public class AuthControllerTest {
 			        .andExpect(status().is(400))
 			        .andExpect(view().name("auth/passwordChange"))
         			.andExpect(model().attributeHasErrors("userDTO"));
-        } else {
-        	fail("user for test-request not found");
-        }  
+        
 	}
 	
 	/**
@@ -662,20 +593,16 @@ public class AuthControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void changePasswordNewAndOldShouldNotBeQual() throws Exception {
-		Optional<User> user = userService.findUserById("romakapt@gmx.de");
-		if(user.isPresent()) { 
-        	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/romakapt@gmx.de/password")
-		        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-		        			.param("email", "romakapt@gmx.de")
-		        			.param("password", "roman")
-		        			.param("confirmNewPassword", "roman")
-		        			.param("newPassword", "roman"))
-        			.andDo(print())
-			        .andExpect(status().is(400))
-			        .andExpect(view().name("auth/passwordChange"));
-         } else {
-        	fail("user for test-request not found");
-        }  
+		
+    	this.mockMvc.perform(MockMvcRequestBuilders.put("/profile/private/me/password")
+	        			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+	        			.param("email", "romakapt@gmx.de")
+	        			.param("password", "roman")
+	        			.param("confirmNewPassword", "roman")
+	        			.param("newPassword", "roman"))
+    			.andDo(print())
+		        .andExpect(status().is(400))
+		        .andExpect(view().name("auth/passwordChange"));      
 	}
 	
 	/**
