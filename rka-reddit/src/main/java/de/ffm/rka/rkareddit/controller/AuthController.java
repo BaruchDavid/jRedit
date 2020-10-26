@@ -227,7 +227,10 @@ public class AuthController {
 	}
 	
 	private void getUserForView(UserDetails user, Model model) {
-		User requestedUser = (User) userDetailsService.loadUserByUsername(user.getUsername());
+		String userName = Optional.ofNullable(user)
+								  .map(UserDetails::getUsername)
+								  .orElse("");
+		User requestedUser = (User) userDetailsService.loadUserByUsername(userName);
 		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(requestedUser));
 	}
 	

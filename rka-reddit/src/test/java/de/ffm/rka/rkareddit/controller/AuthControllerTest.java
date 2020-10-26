@@ -285,7 +285,7 @@ public class AuthControllerTest {
 	public void showEditProfilePageForUnknownUser() throws Exception {
         	this.mockMvc.perform(get("/profile/private/me"))
 			.andDo(print())
-			.andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+			.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()))
 			.andExpect(view().name("error/application"));
 
 	}
