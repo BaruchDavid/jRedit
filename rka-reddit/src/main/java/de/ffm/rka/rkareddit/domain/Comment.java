@@ -27,7 +27,7 @@ public class Comment extends Auditable implements Serializable{
 	private static final long serialVersionUID = -5839947949942907414L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long commentId;
 	
 	@NotEmpty(message = "comment text must be present")

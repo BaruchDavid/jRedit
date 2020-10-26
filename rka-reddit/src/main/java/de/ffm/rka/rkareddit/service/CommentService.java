@@ -26,7 +26,6 @@ public class CommentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommentService.class);
 	private final CommentRepository commentRepository;
 	private final UserDetailsServiceImpl userDetailsService;
-	private static final ModelMapper modelMapper = new ModelMapper();
 	private final LinkService linkService;
 
 	public CommentService(CommentRepository commentReptory, UserDetailsServiceImpl userDetailsService,
@@ -48,9 +47,9 @@ public class CommentService {
 	 */
 	public CommentDTO saveNewComment(final String userName, CommentDTO comment) throws ServiceException {
 		comment.setUser((User) userDetailsService.loadUserByUsername(userName));
-		Comment cm = modelMapper.map(comment, Comment.class);
+		Comment cm = CommentDTO.getMapDtoToComment(comment);
 		cm.setLink(getSuitableLink(comment.getLSig()));
-		comment = modelMapper.map(commentRepository.saveAndFlush(cm), CommentDTO.class);
+		comment = CommentDTO.getCommentToCommentDto(commentRepository.saveAndFlush(cm));
 		LOGGER.info("{} SAVED COMMENT FOR LINK {}", comment, comment.getLSig());
 		return comment;
 	}

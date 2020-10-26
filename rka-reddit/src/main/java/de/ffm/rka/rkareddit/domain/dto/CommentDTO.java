@@ -1,21 +1,28 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import static java.util.Date.from;
+
+import java.io.Serializable;
+import java.time.ZoneId;
+
+import javax.validation.constraints.NotEmpty;
+
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.*;
-import org.ocpsoft.prettytime.PrettyTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.time.ZoneId;
-
-import static java.util.Date.from;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 @ToString(exclude = "user")
@@ -25,9 +32,22 @@ import static java.util.Date.from;
 @AllArgsConstructor
 public class CommentDTO extends Auditable implements Serializable{
 	
+	private static ModelMapper modelMapper; 
 	private static final long serialVersionUID = -5839947949942907414L;
 	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 	private Long commentId;
+	
+	static {
+		modelMapper	= new ModelMapper();
+		modelMapper.getConfiguration().setAmbiguityIgnored(true);
+		modelMapper.addMappings(new PropertyMap<Comment, CommentDTO>() {
+		    @Override
+		    protected void configure() {
+		        skip(destination.getLinkDTO());
+		    }
+		});
+	}
+	
 	
 	@NotEmpty(message = "comment text must be present")
 	private String commentText;
@@ -49,6 +69,14 @@ public class CommentDTO extends Auditable implements Serializable{
 	public String getElapsedTime() {
 		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
 		return prettyTime.format(from(super.getCreationDate().atZone(ZONE_ID).toInstant()));
+	}
+	
+	public static Comment getMapDtoToComment(CommentDTO commentDto){
+		return modelMapper.map(commentDto, Comment.class);
+	}
+	
+	public static CommentDTO getCommentToCommentDto(Comment comment) {
+		return modelMapper.map(comment, CommentDTO.class);
 	}
 	
 	@Override

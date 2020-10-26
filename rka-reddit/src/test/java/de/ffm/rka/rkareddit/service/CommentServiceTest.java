@@ -20,13 +20,6 @@ public class CommentServiceTest {
     private CommentService commentService ;
 	
 	@Test
-	public void commentSizeForUserOne() {
-		User user = new User();
-		user.setUserId(1l);
-		assertEquals(10l, commentService.countAllByUser(user));
-	}
-
-	@Test
 	public void testPrettyTime() {
 		Comment comment = Comment.builder()
 								.commentId(1l)
