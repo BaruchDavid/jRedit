@@ -75,9 +75,6 @@ public class LinkDTO implements Serializable {
 	@JsonIgnore
 	private List<CommentDTO> comments = new ArrayList<>();
 	
-	/**dont call childElementUser for de/serialize json*/
-	@JsonIgnore
-	private List<Vote> vote = new ArrayList<>();
 	
 	/**dont call childElementUser for de/serialize json*/
 	@JsonIgnore
