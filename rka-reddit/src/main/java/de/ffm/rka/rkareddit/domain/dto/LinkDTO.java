@@ -153,12 +153,6 @@ public class LinkDTO implements Serializable {
 		}
 		return id;
 	}
-
-	public List<CommentDTO> getComments() {
-		List<CommentDTO> comment = comments;
-		return comment;
-	}
-	
 	
 	@Override
     public int hashCode() {

@@ -66,7 +66,7 @@ public class LinkController {
 	@GetMapping({"/","", "/links/", "/links"})
 	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
 						@AuthenticationPrincipal UserDetails user, Model model) {
-		Page<LinkDTO> links = linkService.fetchAllLinksWithUsersCommentsVotes(page);
+		Page<LinkDTO> links = linkService.fetchAllLinksWithUsers(page);
 		LOGGER.info("{} Links has been found for start page", links.getContent().size());
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
 											.boxed()
@@ -157,25 +157,13 @@ public class LinkController {
 		return tagService.findSuitableTags(search);
 	}
 
-	/**
-	 * @param lSig which will be voted
-	 * @param direction down or top
-	 * @param voteCount is sum of votes
-	 * @return new sum of votes
-	 * @author RKA
-	 */
-	/*@GetMapping("/link/{lSig}/vote/direction/{direction}/votecount/{voteCount}")
-	public int vote(@PathVariable String  lSig,
-					@PathVariable short direction,
-					@PathVariable int voteCount, HttpServletRequest req, HttpServletResponse res) throws ServiceException {
+	@GetMapping("/links/link/NOT_IN_USE_FOR_GUI_JUST_NOW/{signature}")
+	public String linkWithTags(Model model, @PathVariable String signature,
+					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
-		int newCount = linkService.saveVote(direction, lSig, voteCount);
-		if (voteCount != newCount) {
-			return newCount;
-		} else {
-			res.setStatus(org.apache.commons.httpclient.HttpStatus.SC_BAD_REQUEST);
-			LOGGER.warn("VOTE LOST FOR LINK-SIG {} FROM USER {}", lSig, req.getUserPrincipal());
-			return voteCount;
-		}
-	}*/
+		Link link = linkService.findLinkWithTags(signature);
+		
+		return "link/link_view";
+
+	}
 }

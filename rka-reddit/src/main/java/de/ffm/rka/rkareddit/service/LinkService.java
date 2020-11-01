@@ -74,6 +74,12 @@ public class LinkService {
 				.orElseThrow(() ->new ServiceException("not found"));
 
 	}
+	
+	public Link findLinkWithTags(final String signature) {
+		final long id = LinkDTO.convertEpochSecToId(signature);
+		return  linkRepository.findTagsForLink(id);
+		
+	}
 
 	/**
 	 * create write transactional
@@ -101,7 +107,7 @@ public class LinkService {
 								.build());
 	}
 
-	public long findAllLinksByUser(User user) {
+	public long countLinkByUser(User user) {
 		return linkRepository.countByUser(user);
 	}
 
@@ -110,7 +116,7 @@ public class LinkService {
 	 * @param pageable, number for one page
 	 * @return linkDto objects as PageImpl
 	 */
-	public Page<LinkDTO> fetchAllLinksWithUsersCommentsVotes(Pageable pageable){
+	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);		
 		List<LinkDTO> links = ln.stream().map(link -> LinkDTO.getMapLinkToDto(link))
 								.collect(Collectors.toList());
@@ -129,9 +135,8 @@ public class LinkService {
 	 */
 	@Transactional(readOnly = false)
 	public void saveLinkHistory(Link link, User user) {
-		//link.addUserToLinkHistory(user);
 		link = linkRepository.saveAndFlush(link);
 		LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
 	}
-
+	
 }

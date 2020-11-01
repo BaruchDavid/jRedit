@@ -31,7 +31,7 @@ public class Link extends Auditable implements Serializable{
 	private static final long serialVersionUID = -5337989744648444109L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long linkId;
 	
 	@NotEmpty(message = "title is required")

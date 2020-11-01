@@ -1,10 +1,27 @@
 package de.ffm.rka.rkareddit.controller;
 
-import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
-import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
-import de.ffm.rka.rkareddit.util.BeanUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.persistence.EntityManager;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,18 +41,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.persistence.EntityManager;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
+import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.Tag;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.util.BeanUtil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ActiveProfiles("test")
@@ -53,6 +66,9 @@ public class LinkControllerTest {
 	private WebApplicationContext context;
 	
 	private EntityManager entityManager;
+	
+	@Autowired
+	private LinkService linkService;
 	
 	@Before
 	public void setup() {
@@ -168,8 +184,24 @@ public class LinkControllerTest {
 					.andExpect(status().is3xxRedirection())
 					.andExpect(flash().attribute("success", true))
 					.andReturn();
-    	String signatur = res.getResponse().getRedirectedUrl().split("/")[3];
-     	assertEquals("12",signatur.substring(13,signatur.length()));
+    	String signature = res.getResponse().getRedirectedUrl().split("/")[3];
+     	assertEquals("12",signature.substring(13,signature.length()));
+     	Link link = linkService.findLinkWithTags(signature);
+     	assertEquals("welt.de", link.getTitle());
+     	assertEquals("news", link.getDescription());
+     	assertEquals("http://welt.de", link.getUrl());
+
+     	assertTrue(link.getTags().stream()
+     			.map(Tag::getTagName)
+     			.anyMatch(tagName -> "java12".equals(tagName)));
+     	
+     	assertTrue(link.getTags().stream()
+     			.map(Tag::getTagName)
+     			.anyMatch(tagName -> "java13".equals(tagName)));
+     	
+     	assertFalse(link.getTags().stream()
+     			.map(Tag::getTagName)
+     			.anyMatch(tagName -> "java".equals(tagName)));
     }
 	
 	@Test
