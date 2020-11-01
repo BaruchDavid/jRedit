@@ -23,7 +23,7 @@ public class Tag extends Auditable implements Serializable {
 	private static final long serialVersionUID = -1764376324929313404L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long tagId;
 	
 	@NotNull

@@ -35,7 +35,7 @@ public class LinkServiceTest {
 	public void linkSizeForUserOne() {
 		User user = new User();
 		user.setUserId(1l);
-		assertEquals(5l, linkService.findAllLinksByUser(user));
+		assertEquals(5l, linkService.countLinkByUser(user));
 	}
 	
 	@Test

@@ -32,7 +32,6 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final RoleService roleService;
 	private final MailService mailService;
-	private final ModelMapper modelMapper;
 	private final UserDetailsServiceImpl userDetailsService;
 	
 	public UserService(MailService mailService, UserRepository userRepository, 
@@ -41,7 +40,6 @@ public class UserService {
 		this.userRepository = userRepository;
 		this.roleService= roleService;
 		this.mailService  = mailService;
-		this.modelMapper = modelMapper;
 	}
 	
 	/**
@@ -52,16 +50,16 @@ public class UserService {
 	 */
 	@Transactional(readOnly = false)
 	public UserDTO register(UserDTO userDto) throws ServiceException {
-		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
-		User newUser = modelMapper.map(userDto, User.class);
+		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));		
+		User newUser = UserDTO.mapUserDtoToUser(userDto);
 		String secret;
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 		secret = encoder.encode(newUser.getPassword());
 		newUser.setPassword(secret);
 		newUser.setConfirmPassword(secret);
 		newUser.addRole(roleService.findByName("ROLE_USER"));
-		sendActivatonEmail(userDto);
-		return modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
+		sendActivatonEmail(userDto);		
+		return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
 	}
 	
 	@Transactional(readOnly = false)
@@ -73,7 +71,7 @@ public class UserService {
 		newUser.setActivationCode(userDto.getActivationCode());
 		LOGGER.info("User changes Email: OLD {} NEW {}", newUser.getEmail(), newUser.getNewEmail());
 		sendEmailToNewUserEmailAddress(userDto);
-		return modelMapper.map(userRepository.saveAndFlush(newUser), UserDTO.class);
+		return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
 	}
 	
 	@Transactional(readOnly = false)
@@ -149,7 +147,7 @@ public class UserService {
 		userRepository.saveAndFlush(user);
 	}
 	public UserDTO updateUser(UserDTO userDto) {
-		User newUser = modelMapper.map(userDto, User.class);
+		User newUser = UserDTO.mapUserDtoToUser(userDto);
 		userRepository.saveAndFlush(newUser);
 		return userDto;
 		
