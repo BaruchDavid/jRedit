@@ -61,31 +61,7 @@ public class ProfileMetaDataControllerTest {
 
 	}
 
-	/**
-	 * expectedValues
-	 * 1. how many links: 5
-	 * 2. how many comments: 11
-	 * 3. username
-	 */
-	@Test
-	@WithUserDetails("romakapt@gmx.de")
-	public void shouldReturnDefaultMessage() throws Exception {
-		String today = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(LocalDate.now());
-		MvcResult result = this.mockMvc.perform(get("/profile/information/content")
-													.sessionAttr("user", testConfig.getUsers().iterator().next())
-										.contentType(MediaType.TEXT_PLAIN)
-										.content("romakapt@gmx.de"))
-										.andDo(print())
-										.andExpect(status().isOk())
-										.andReturn();
-
-		LOGGER.info(result.getResponse().getContentAsString());
-		String[] resultValues = result.getResponse().getContentAsString().replace("[","").replace("]","").replace("\"","").split(",");
-		assertEquals("5", resultValues[0]);
-		assertEquals("10", resultValues[1]);
-		assertEquals(today, resultValues[2]);
-		assertEquals("romakapt@gmx.de", resultValues[3]);
-	}
+	
 
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
@@ -113,7 +89,7 @@ public class ProfileMetaDataControllerTest {
 				.andExpect(status().isOk())
 				.andReturn();
 		final String stringRes = result.getResponse().getContentAsString();
-		assertTrue(stringRes.contains("\"linkId\":1"));
+		assertTrue(stringRes.contains("\"linkId\":4"));
 		assertTrue(stringRes.contains("\"linkId\":2"));
 		assertTrue(stringRes.contains("\"linkId\":3"));
 	}

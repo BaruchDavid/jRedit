@@ -39,13 +39,14 @@ public class LinkServiceTest {
 	}
 	
 	@Test
-	public void linkPrettyTimeTest() {
+	public void linkPrettyTimeTest() throws InterruptedException {
 		LinkDTO link = LinkDTO.builder()
 						.title("test")
 						.url("http://test.de")
 						.tags(Collections.emptyList())
 						.build();
 		link = linkService.saveLink("romakapt@gmx.de",link);
+		Thread.sleep(5000l);
 		assertEquals("gerade eben", link.getElapsedTime());		
 	}
 
