@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups;
 import de.ffm.rka.rkareddit.exception.ServiceException;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class AuthController {
@@ -81,11 +84,17 @@ public class AuthController {
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(user.getUsername())));
 		});
 
-		List<Link> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
-										.orElse(Collections.emptyList());
-		List<Comment> userComments = Optional.ofNullable(userService.getUserWithComments(email)
+		List<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
+										.orElse(Collections.emptyList())
+										.stream()
+										.map(link -> LinkDTO.getMapLinkToDto(link))
+										.collect(Collectors.toList());
+		List<CommentDTO> userComments = Optional.ofNullable(userService.getUserWithComments(email)
 																	.getUserComment())
-											.orElse(Collections.emptyList());
+												.orElse(Collections.emptyList())
+												.stream()
+												.map(comment -> CommentDTO.getCommentToCommentDto(comment))
+												.collect(Collectors.toList());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));

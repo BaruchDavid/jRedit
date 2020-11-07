@@ -37,35 +37,8 @@
  
             </ul>
         </div>
-     
-       <!--  angemeldeter User: 
-        <p class="body" th:text="${userDto.getEmail()}"></p>
-        <br>
-        angeklickter User:
-        <p class="body" th:text="${userContent.getEmail()}"></p> -->
-        <div class="row">
-            <div class="col">
-	            <div class="row link" th:each="link : ${posts}">
-		                <p class="title">
-		                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.getTitle()}">Title Goes Here</a>
-		                    <span class="domain">
-		                    (<a th:href="${link.url}" th:text="${link.getHoster()}" target="_blank"></a>)
-		                    </span>
-		                </p>
-		                <p class="tagline ">submitted                    
-		                    <time th:title="${link.getCreationDate()}" th:datetime="${link.getCreationDate()}"
-		                        class="live-timestamp" th:text="${link.getElapsedTime()}"></time> by
-		                    <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
-		                </p>
-		                <p>
-		                    <a th:href="@{'/links/link/' + ${link.getLinkId()} + '#comments'}" class="comments"
-		                        th:text="|${link.getCommentCount()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
-		                    <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
-		                </p>
-	            </div>
-	        </div> 
-           <!--  Right Side -->
-            <div class="col-3 offset-1">
+        
+         <div class="col-2 offset-8">
                 <div class="row">
                     <div class="card col-12">
                         <img class="card-img-top" id="profilePic" src="#"  alt="Card image cap">
@@ -94,7 +67,86 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div>   
+        
+        
+     	<div class="row link" th:each="link : ${posts}">
+              
+            <div class="col-11">
+                <p class="title">
+                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkSignature()}}" th:text="${link.getTitle()}">Title Goes Here</a>
+                    <span class="domain">(<a th:href="${link.url}" th:text="${link.getHoster()}" target="_blank"></a>)</span>
+                </p>
+                <p class="description">
+                    <span class="active" th:text="${link.getDescription()}"></span>
+                </p>
+                <p class="tagline ">submitted                    
+                    <time th:title="${link.getCreationDate()}" th:datetime="${link.getCreationDate()}"
+                        class="live-timestamp" th:text="${link.getElapsedTime()}"></time> by
+                    <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
+                </p>
+                <p>
+                    <a th:href="@{'/links/link/' + ${link.getLinkSignature()} + '#comments'}" class="comments"
+                        th:text="|${link.getCommentCount()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+                    <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
+                </p>
+            </div> 
+        </div>
+        
+       
+        
+       <!--  <div class="row">
+            <div class="col-11">
+	            <div class="row link" th:each="link : ${posts}">
+		                <p class="title">
+		                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkId()}}" th:text="${link.getTitle()}">Title Goes Here</a>
+		                    <span class="domain">
+		                    (<a th:href="${link.url}" th:text="${link.getHoster()}" target="_blank"></a>)
+		                    </span>
+		                </p>
+		                <p class="tagline ">submitted                    
+		                    <time th:title="${link.getCreationDate()}" th:datetime="${link.getCreationDate()}"
+		                        class="live-timestamp" th:text="${link.getElapsedTime()}"></time> by
+		                    <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
+		                </p>
+		                <p>
+		                    <a th:href="@{'/links/link/' + ${link.getLinkId()} + '#comments'}" class="comments"
+		                        th:text="|${link.getCommentCount()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+		                    <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
+		                </p>
+	            </div>
+	        </div> 
+            Right Side
+            <div class="col-2 offset-1">
+                <div class="row">
+                    <div class="card col-12">
+                        <img class="card-img-top" id="profilePic" src="#"  alt="Card image cap">
+                        <div class="card-body">
+                            <a href="submit.html"><button type="button" class="btn btn-primary btn-lg btn-block">New Post</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card col-12">
+                        <div class="card-body">
+                            <h5 class="card-title">Your Information</h5>
+                            <p class="card-text">
+                                <p id="userName" th:text="${userContent.getFullName()}">Username: </p>
+                                <p id="userSince" th:text="${'User since: ' + userSince}">User Since: </p>
+                                <p id="linkSize" th:text="${'Links: ' + #lists.size(posts)}">Links: </p>
+                                <p id="commentSize" th:text="${'Comments: ' + #lists.size(comments)}">Comments: </p>         	
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card col-12">
+                        <h5 id="linkHisTitle" class="card-title recentLinks">Recent Links Clicked</h5>
+                        <ul id="linkHis" class="list-group list-group-flush">
+                        </ul>
+                    </div>
+                </div>
+            </div> -->
 			
         </div> 
     
