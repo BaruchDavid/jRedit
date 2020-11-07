@@ -11,7 +11,7 @@
 <!--     th:if="${success}" -->
     <div id="profile" class="container">
     	<div th:if="${success}" id="displayMessage" class="alert alert-success" role="alert" >
-           <p th:text="${redirectMessage}">Welcome to our store!</p>
+           <p th:text="${redirectMessage}">Welcome to your place!</p>
         </div>
         <div class="row">
             <ul class="nav">
@@ -72,7 +72,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Your Information</h5>
                            <p class="card-text">
-								<p id="userName" th:text="${userContent.getFullName()}">Username: </p>
+								<p id="userName" th:title="${userContent.getEmail()}" th:text="${userContent.getFullName()}">Username: </p>
 								<p id="userSince" th:text="${'User since: ' + userSince}">User Since: </p>
 								<p id="linkSize" th:text="${'Links: ' + #lists.size(posts)}">Links: </p>
 								<p id="commentSize" th:text="${'Comments: ' + #lists.size(comments)}">Comments: </p>         	
@@ -80,10 +80,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div id="linkHisTitle" class="row">
                     <div class="card col-12">
-                        <h5 class="card-title recentLinks">Recent Links Clicked</h5>
-                        <ul class="list-group list-group-flush">
+                        <h5 class="card-title recentLinks">Recent clicked links</h5>
+                        <ul id="linkHis" class="list-group list-group-flush">
                             
                         </ul>
                     </div>
@@ -94,7 +94,6 @@
 
     
     </div><!-- // profile -->
-    <!-- <input type="hidden" id="user" name="user" th:value="${userContent.getEmail()}"> -->
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
 	<script th:src="@{/js/user.js}"></script>
 </body>

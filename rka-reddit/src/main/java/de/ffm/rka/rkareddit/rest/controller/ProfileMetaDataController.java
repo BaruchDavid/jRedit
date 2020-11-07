@@ -68,7 +68,8 @@ public class ProfileMetaDataController {
 			userClickedLinks.forEach(link -> {
 				userClickedLinksDTO.add(LinkDTO.getMapLinkToDto(link));
 			});
-		}		
+		}
+		LOGGER.info("User {} clicked links history contains {} links", userPrincipal.getUsername(), userClickedLinksDTO.size() );
 		return userClickedLinksDTO;
 	}
 

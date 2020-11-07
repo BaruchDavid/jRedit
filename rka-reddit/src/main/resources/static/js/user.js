@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	const user = $('#user').val();
+	const user = $('#userName').attr("title");
 	fetch ('/jReditt/profile/information/userClickedLinks?user='+user, {method: 'GET'})
 		.then(function (response) {
 		   return response.json();
