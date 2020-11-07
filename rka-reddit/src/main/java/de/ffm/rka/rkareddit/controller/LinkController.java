@@ -47,15 +47,13 @@ public class LinkController {
 	private static final String SUCCESS = "success";
 	private static final String ERROR = "error";
 	private static final String USER_DTO = "userDto";
-	private final UserDetailsServiceImpl userDetailsService;
 	private final TagServiceImpl tagService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
 	public LinkController(LinkService linkService,
-						  UserDetailsServiceImpl userDetailsService, TagServiceImpl tagService) {
+						  TagServiceImpl tagService) {
 		this.linkService = linkService;
-		this.userDetailsService = userDetailsService;
 		this.tagService = tagService;
 	}
 

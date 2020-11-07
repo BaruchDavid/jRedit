@@ -8,28 +8,40 @@ INSERT INTO User(user_id, email, enabled, password, first_name, second_name, ali
 VALUES(3, 'grom@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'grom', 'grm', 'worker2', '', null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
 
 
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', '','https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing', 2, 5,NOW(),1);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(2,  'Device in Java Web Application Spring Mobile', '','https://www.opencodez.com/java/device-detection-using-spring-mobile.htm', 6, 1,NOW(),1);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(3,  'microservices with SpringBoot','Tutorial series about building microservices with SpringBoot (with Netflix OSS)', 'https://medium.com/@marcus.eisele/implementing-a-microservice-architecture-with-spring-boot-intro-cdb6ad16806c', 3, 2,NOW(),1);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(4,  'encrypted email using Java / Spring Boot', 'Detailed steps to send encrypted email using Java / Spring Boot', 'https://www.opencodez.com/java/send-encrypted-email-using-java.htm', 2, 32,NOW(),1);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(5,  'Progressive Web App With Spring Boot and React', 'Build a Secure Progressive Web App With Spring Boot and React', 'https://dzone.com/articles/build-a-secure-progressive-web-app-with-spring-boo', 2,  12,NOW(),1);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(6,  'First Spring Boot Web Application', 'Building Your First Spring Boot Web Application - DZone Java', 'https://dzone.com/articles/building-your-first-spring-boot-web-application-ex', 1, 14,NOW(),2);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(7,  'Building Microservices with Spring Boot', 'Building Microservices with Spring Boot Fat (Uber) Jar', 'https://jelastic.com/blog/building-microservices-with-spring-boot-fat-uber-jar/', 0, 21,NOW(),2);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(8,  'Spring Cloud GCP 1.0 Released', '','https://cloud.google.com/blog/products/gcp/calling-java-developers-spring-cloud-gcp-1-0-is-now-generally-available', 0,  11,NOW(),2);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(9,  'Upload and Download Files in Java, Spring Boot','Simplest way to Upload and Download Files in Java with Spring Boot - Code to download from Github', 'https://www.opencodez.com/uncategorized/file-upload-and-download-in-java-spring-boot.htm', 0, -1,NOW(),2);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(10,  'Spring Boot Integration tests', '','https://www.baeldung.com/spring-security-integration-tests', 0, 112,NOW(),2);
-INSERT INTO LINK(link_id,  title, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(11, 'File download using Spring REST', '','https://developer.okta.com/blog/2018/07/24/social-spring-boot', 0, 17,NOW(),3);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', 'spring security', 'building apis',
+			'https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing', 2, 5,NOW(),1);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(2,  'Device in Java Web Application Spring Mobile','mobile development', 'nice tutorial for java mobile development',
+			'https://www.opencodez.com/java/device-detection-using-spring-mobile.htm', 6, 1,NOW(),1);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(3,  'microservices with SpringBoot','microservices stuff', 
+			'Tutorial series about building microservices with SpringBoot (with Netflix OSS)', 'https://medium.com/@marcus.eisele/implementing-a-microservice-architecture-with-spring-boot-intro-cdb6ad16806c', 3, 2,NOW(),1);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(4,  'encrypted email using Java / Spring Boot', 'encryption', 'Detailed steps to send encrypted email using Java / Spring Boot', 'https://www.opencodez.com/java/send-encrypted-email-using-java.htm', 2, 32,NOW(),1);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(5,  'Progressive Web App With Spring Boot and React', '', 
+			'Build a Secure Progressive Web App With Spring Boot and React', 
+			'https://dzone.com/articles/build-a-secure-progressive-web-app-with-spring-boo', 2,  12,NOW(),1);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(6,  'First Spring Boot Web Application', 'for beginners', 
+			'Building Your First Spring Boot Web Application - DZone Java', 
+			'https://dzone.com/articles/building-your-first-spring-boot-web-application-ex', 1, 14,NOW(),2);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(7,  'Building Microservices with Spring Boot', 'learning for beginners', 
+			'Building Microservices with Spring Boot Fat (Uber) Jar', 
+			'https://jelastic.com/blog/building-microservices-with-spring-boot-fat-uber-jar/', 0, 21,NOW(),2);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(8,  'Spring Cloud GCP 1.0 Released','cloud topic', '',
+			'https://cloud.google.com/blog/products/gcp/calling-java-developers-spring-cloud-gcp-1-0-is-now-generally-available', 0,  11,NOW(),2);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(9,  'Upload and Download Files in Java, Spring Boot', 'handle files with spring-boot',
+			 'Simplest way to Upload and Download Files in Java with Spring Boot - Code to download from Github', 
+			 'https://www.opencodez.com/uncategorized/file-upload-and-download-in-java-spring-boot.htm', 0, -1,NOW(),2);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(10,  'Spring Boot Integration tests', 'test tutorial', '','https://www.baeldung.com/spring-security-integration-tests', 0, 112,NOW(),2);
+INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
+VALUES(11, 'File download using Spring REST','how handle files with REST', '','https://developer.okta.com/blog/2018/07/24/social-spring-boot', 0, 17,NOW(),3);
 
 INSERT INTO User_Clicked_Links(link_id, user_id)
 VALUES(2,1);

@@ -50,6 +50,10 @@ public class LinkDTO implements Serializable {
 	@NotEmpty(message = "title is required")
 	@Size(min=5, max = 50, message = "maximal 50 letter allowed")
 	private String title;
+	
+	@NotEmpty(message = "title is required")
+	@Size(min=5, max = 80, message = "maximal 80 letter allowed")
+	private String subtitle;
 
 	@Size(min=0, max = 100, message = "maximal 100 letter allowed")
 	@Column(length = 100, nullable = true)

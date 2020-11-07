@@ -37,12 +37,16 @@ public class Link extends Auditable implements Serializable{
 	@NotEmpty(message = "title is required")
 	@Column(length = 50)
 	private String title;
+	
+	@Column(length = 80)
+	private String subtitle;
 
 	@Column(length = 100, nullable = true)
 	private String description;
 	
 	@Column(nullable = false, unique = true)
 	private String url;
+	
 	
 	@Column(nullable = false)
 	private int commentCount;
