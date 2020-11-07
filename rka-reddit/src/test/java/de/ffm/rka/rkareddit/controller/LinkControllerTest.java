@@ -24,9 +24,11 @@ import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -80,6 +82,7 @@ public class LinkControllerTest {
 	}
 
 	@Test
+	@DisplayName("Beim Aufruf von der Hauptseite werden alle links für den eingelogten User zurückgegeben")
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnAllLinks() throws Exception {
 		UserDTO userDto = UserDTO.builder()
@@ -94,9 +97,12 @@ public class LinkControllerTest {
 					.andReturn();
 		UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");
     	assertEquals(userDto.getFullName(), usr.getFullName());
+    	Page<LinkDTO> links = (Page<LinkDTO>) result.getModelAndView().getModel().get("links");
+    	assertEquals("no comment-object loaded with links", 0, links.getContent().get(0).getComments().size());
 	}
 	
 	@Test
+	@DisplayName("Beim Aufruf von der Hauptseite werden alle links für zurückgegeben")
 	@WithAnonymousUser
 	public void shouldReturnAllLinksForAnonymous() throws Exception {
 
@@ -110,6 +116,7 @@ public class LinkControllerTest {
 	}
 	
 	@Test
+	@DisplayName("Beim Aufruf von der Hauptseite mit CURL werden alle links für zurückgegeben")
 	public void shouldReturnAllLinksForCURL() throws Exception {
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
 		MvcResult result = this.mockMvc.perform(get("/links/"))
@@ -124,6 +131,7 @@ public class LinkControllerTest {
 	 * test for illegal link
 	 */
 	@Test
+	@DisplayName("Beim Aufruf von nicht existierendem Link wird basicError angezeigt")
 	public void illegalArguments() throws Exception {
 		String invalidPage = UUID.randomUUID().toString();
 		this.mockMvc.perform(get("/links/link/".concat(invalidPage)))
@@ -140,6 +148,7 @@ public class LinkControllerTest {
 	 * @throws Exception
 	 */
 	@Test
+	@DisplayName("Anzeigen von einem Link für einen nicht eingelogten User")
 	public void readLinkTestAsUnautheticated() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
@@ -151,6 +160,7 @@ public class LinkControllerTest {
 	}
 	
 	@Test
+	@DisplayName("Anzeigen von einem Link für einen eingelogten User")
 	@WithUserDetails("romakapt@gmx.de")
 	public void readLinkTestAsAutheticated() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
@@ -170,6 +180,7 @@ public class LinkControllerTest {
 	}
 
 	@Test
+	@DisplayName("Speichere einen Link mit Tags")
 	@WithUserDetails("romakapt@gmx.de")
 	public void saveNewLinkTest() throws Exception {
     	MvcResult res = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
@@ -177,6 +188,7 @@ public class LinkControllerTest {
 							.param("tags[0].tagName", "java12")
 							.param("tags[1].tagName", "java13")
 							.param("title", "welt.de")
+							.param("subtitle", "neues subtitle")
 							.param("description", "news")
 							.param("url", "http://welt.de")
 							)
@@ -188,6 +200,7 @@ public class LinkControllerTest {
      	assertEquals("12",signature.substring(13,signature.length()));
      	Link link = linkService.findLinkWithTags(signature);
      	assertEquals("welt.de", link.getTitle());
+     	assertEquals("neues subtitle", link.getSubtitle());
      	assertEquals("news", link.getDescription());
      	assertEquals("http://welt.de", link.getUrl());
 
@@ -205,6 +218,7 @@ public class LinkControllerTest {
     }
 	
 	@Test
+	@DisplayName("Speichere einen Link mit Tags als nicht angemeldeter user")
 	public void saveNewLinkTestUnautheticated() throws Exception {
     	this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
 							.contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -220,6 +234,7 @@ public class LinkControllerTest {
 	
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
+	@DisplayName("Zeige Seite für einen neuen Test")
 	public void createNewLinkTest() throws Exception {
 		Link link = new Link();
 		UserDTO userDto = UserDTO.builder()
@@ -237,6 +252,7 @@ public class LinkControllerTest {
     }
 
 	@Test
+	@DisplayName("Zeige eine neue Seite zum Linkanlegen für einen nicht angemeldeten User")
 	public void createNewLinkTestAsUnautheticated() throws Exception {
     	this.mockMvc.perform(get("/links/link"))
   					.andDo(print())
@@ -248,6 +264,7 @@ public class LinkControllerTest {
 	 * get initial tags
 	 */
 	@Test
+	@DisplayName("Suche nach einem Tag mit dem Ausdruck 'sc' und erwarte TypeScript, JavaScript, Delphi/Object, Pascal")
 	public void getTags() throws Exception {
 		List<String> expList = Arrays.asList("TypeScript","JavaScript","Delphi/Object Pascal");
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/tags")
@@ -268,6 +285,7 @@ public class LinkControllerTest {
 	 */
 	@Test
 	@WithAnonymousUser
+	@DisplayName("Zeige Seite zum Linkanlegen als Anonymous user")
 	public void linkCreateAsAnonymous() throws Exception {
 		
             this.mockMvc.perform(get("/links/link"))

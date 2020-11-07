@@ -13,11 +13,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
@@ -201,10 +203,14 @@ public class AuthControllerTest {
 	@Transactional
 	public void showPrivateProfileAsAutheticated() throws Exception {
 		UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
+		List<CommentDTO> commentDto = romakaptUser.getUserComment()
+													.stream()
+													.map(comment -> CommentDTO.getCommentToCommentDto(comment))
+													.collect(Collectors.toList());
 		this.mockMvc.perform(get("/profile/private")).andDo(print()).andExpect(status().isOk())
 				.andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(romakaptUser)))
 				.andExpect(model().attribute("userDto", userDto))
-				.andExpect(model().attribute("comments", romakaptUser.getUserComment()));
+				.andExpect(model().attribute("comments", commentDto));
 
 	}
 
