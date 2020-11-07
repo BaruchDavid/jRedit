@@ -25,6 +25,16 @@
                         <small th:errors="*{title}" style="color:red;"></small>
                     </div>
                     <div class="form-group">
+                        <label for="title">Subtitle</label>
+                        <input type="text"
+                                class="form-control"
+                                id="title"
+                                placeholder="max. 80 letters"
+
+                                th:field="*{subtitle}">
+                        <small th:errors="*{subtitle}" style="color:red;"></small>
+                    </div>
+                    <div class="form-group">
                         <label for="url">URL</label>
                         <input type="url" class="form-control" id="url" placeholder="URL" required="required" th:field="*{url}">
                         <small th:errors="*{url}" style="color:red;"></small>
