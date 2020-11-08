@@ -1,23 +1,21 @@
 package de.ffm.rka.rkareddit.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+
 import static java.util.Date.from;
 
 @Entity

@@ -1,28 +1,20 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
-import static java.util.Date.from;
-
-import java.io.Serializable;
-import java.time.ZoneId;
-
-import javax.validation.constraints.NotEmpty;
-
+import de.ffm.rka.rkareddit.domain.Comment;
+import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.audit.Auditable;
+import de.ffm.rka.rkareddit.util.BeanUtil;
+import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.ffm.rka.rkareddit.domain.Comment;
-import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
+import java.time.ZoneId;
+
+import static java.util.Date.from;
 
 
 @ToString(exclude = "user")

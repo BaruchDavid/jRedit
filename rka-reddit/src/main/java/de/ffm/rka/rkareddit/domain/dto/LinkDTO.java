@@ -1,10 +1,14 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.ffm.rka.rkareddit.domain.*;
-import de.ffm.rka.rkareddit.exception.ServiceException;
+import de.ffm.rka.rkareddit.domain.Link;
+import de.ffm.rka.rkareddit.domain.Tag;
+import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -12,7 +16,8 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import javax.persistence.*;
+
+import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -24,6 +29,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import static java.util.Date.from;
 
 @Getter @Setter

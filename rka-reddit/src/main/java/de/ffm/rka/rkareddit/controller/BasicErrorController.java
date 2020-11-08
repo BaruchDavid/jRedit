@@ -4,8 +4,6 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
-import de.ffm.rka.rkareddit.service.UserService;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

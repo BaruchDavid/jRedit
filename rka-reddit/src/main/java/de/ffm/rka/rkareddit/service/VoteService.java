@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Link;
-
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.LinkRepository;

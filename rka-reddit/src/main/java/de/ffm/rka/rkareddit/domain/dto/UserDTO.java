@@ -2,7 +2,6 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
@@ -12,13 +11,11 @@ import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.Validatio
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserChangePassword;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserRegistration;
 import lombok.*;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
