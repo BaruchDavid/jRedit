@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,12 +56,12 @@ public class ProfileMetaDataController {
 				.map(UserDetails::getUsername)
 				.orElse("");
 		if(user.equals(requestedUser) && !requestedUser.isEmpty()){
-			Set<Link> userClickedLinks = userService.findUserClickedLinks(requestedUser);		
-			userClickedLinks.forEach(link -> {
-				userClickedLinksDTO.add(LinkDTO.getMapLinkToDto(link));
-			});
+			Set<Link> userClickedLinks = userService.findUserClickedLinks(requestedUser);
+			userClickedLinks.forEach(link -> userClickedLinksDTO.add(LinkDTO.getMapLinkToDto(link)));
 		}
-		LOGGER.info("User {} clicked links history contains {} links", userPrincipal.getUsername(), userClickedLinksDTO.size() );
+		LOGGER.info("User {} clicked links history contains {} links", Optional.ofNullable(userPrincipal)
+																			.orElseThrow(()->new UsernameNotFoundException("no user"))
+																			.getUsername(), userClickedLinksDTO.size() );
 		return userClickedLinksDTO;
 	}
 

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
@@ -70,9 +71,9 @@ public class AllControllersTransactionTest {
 
 	}
 
-	@Ignore
+	//@Ignore
 	@Test
-	//@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnAllLinksWith5JDBCStatmentsAsAutheticated() throws Exception {
 
 		UserDTO userDto = UserDTO.builder()
@@ -86,7 +87,24 @@ public class AllControllersTransactionTest {
 					.andExpect(model().attribute("pageNumbers", pages))
 					.andReturn();
 		LOGGER.info("QUERIES: ", hibernateStatistic.getQueries());
-		assertEquals("SHOULD EXECUTED ONLY FOUR JDBC STATMENTS", 5, hibernateStatistic.getQueryExecutionCount());
+		assertEquals("SHOULD EXECUTED ONLY FOUR JDBC STATMENTS", 2, hibernateStatistic.getQueryExecutionCount());
+	}
+
+	@Test
+	public void shouldReturnAllLinksWith5JDBCStatmentsAsUnAutheticated() throws Exception {
+
+		UserDTO userDto = UserDTO.builder()
+				.firstName("baruc-david")
+				.secondName("rka")
+				.build();
+		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
+		MvcResult result =  this.mockMvc.perform(get("/links/"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("pageNumbers", pages))
+				.andReturn();
+		LOGGER.info("QUERIES: ", hibernateStatistic.getQueries());
+		assertEquals("SHOULD EXECUTED ONLY FOUR JDBC STATMENTS", 2, hibernateStatistic.getQueryExecutionCount());
 	}
 
 

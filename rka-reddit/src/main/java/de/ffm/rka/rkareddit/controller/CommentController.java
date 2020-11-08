@@ -3,7 +3,6 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.CommentService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
@@ -26,17 +24,16 @@ public class CommentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentService.class);
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
-    private final ModelMapper modelMapper;
 
-    public CommentController(CommentService commentService, ModelMapper modelMapper) {
+
+    public CommentController(CommentService commentService) {
         this.commentService = commentService;
-        this.modelMapper = modelMapper;
     }
 
     @PostMapping(value = "/comments/comment")
     public String newComment(CommentDTO comment, BindingResult bindingResult,
                              RedirectAttributes attributes, @AuthenticationPrincipal UserDetails userDetails,
-                             HttpServletRequest req, HttpServletResponse res) throws ServiceException {
+                             HttpServletResponse res) throws ServiceException {
         Optional.ofNullable(userDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("no user"));
         if(bindingResult.hasErrors()) {

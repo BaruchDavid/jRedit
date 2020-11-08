@@ -151,13 +151,14 @@ public class LinkController {
 		return tagService.findSuitableTags(search);
 	}
 
+	/**
+	 * NOT IN USE WITH GUI
+	 * @param signature
+	 * @return
+	 */
 	@GetMapping("/links/link/NOT_IN_USE_FOR_GUI_JUST_NOW/{signature}")
-	public String linkWithTags(Model model, @PathVariable String signature,
-					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
-
-		Link link = linkService.findLinkWithTags(signature);
-		
+	public String linkWithTags(@PathVariable String signature) {
+		linkService.findLinkWithTags(signature);
 		return "link/link_view";
-
 	}
 }

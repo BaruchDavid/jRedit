@@ -8,12 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -25,13 +22,13 @@ public class FbController {
 	FacebookService facebookService;
 
 	@GetMapping("/connect/facebook")
-	public ModelAndView createFacebookAuthorization(Model model) throws MalformedURLException {
+	public ModelAndView createFacebookAuthorization() throws MalformedURLException {
 		URL faceBookUrl = new URL(facebookService.createFacebookAuthorizationURL());		
 		return new ModelAndView("redirect:"+faceBookUrl);
 	}
 
 	@GetMapping("/connect/facebookForm")
-	public String login(HttpServletResponse response) throws IOException {
+	public String login() {
 		return "/connect/facebookConnect";
 	}
 

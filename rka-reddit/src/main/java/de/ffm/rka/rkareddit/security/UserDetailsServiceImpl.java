@@ -22,7 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
+
+	public UserDetailsServiceImpl() {
+	}
+
 
 	@Override
 	public UserDetails loadUserByUsername(String username) {
@@ -35,9 +38,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	public void reloadUserAuthetication(final String newEmail) {
 		Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
-		Authentication newAuth = SecurityContextHolder.createEmptyContext().getAuthentication();
 		User user = userRepository.findByEmailWithRoles(newEmail);
-		newAuth = new UsernamePasswordAuthenticationToken(user, oldAuth.getCredentials(), oldAuth.getAuthorities());
+		Authentication newAuth = new UsernamePasswordAuthenticationToken(user, oldAuth.getCredentials(), oldAuth.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(newAuth);
 	}
 	

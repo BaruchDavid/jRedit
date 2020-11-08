@@ -16,7 +16,7 @@ import java.util.Optional;
 public class TagController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
 	
-	private TagServiceImpl tagService;
+	private final TagServiceImpl tagService;
 
 
 	public TagController(TagServiceImpl tagServiceImpl) {

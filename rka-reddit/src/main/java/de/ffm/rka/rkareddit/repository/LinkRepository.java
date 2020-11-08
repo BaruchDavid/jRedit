@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface LinkRepository extends JpaRepository<Link, Long> {
 	
 	/**
-	 * namedQuery, SpringData introducts count-statement
+	 * namedQuery, SpringData introduces count-statement
 	 */
 	long countByUser(User usr);
 

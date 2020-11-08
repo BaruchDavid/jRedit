@@ -22,7 +22,7 @@ public class RkaRedditApplication {
 	
 	public static void main(String[] args) {
 		LOGGER.info("START JREDITT APPLICATION with ARGS {}", List.of(args));
-		String environment = args[0].substring(args[0].indexOf('=')+1, args[0].length());
+		String environment = args[0].substring(args[0].indexOf('=')+1);
 		if(!PROD.equals(environment) 
 			&& !DEV.equals(environment)
 			&& !TEST.equalsIgnoreCase(environment)) {
