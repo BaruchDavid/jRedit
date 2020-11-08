@@ -47,7 +47,7 @@ public class CommentDTO extends Auditable implements Serializable{
 	private User user;
 
 	/**
-	 * signatur for suitable link
+	 * signature for suitable link
 	 * used for frontend
 	 */
 	private String lSig;

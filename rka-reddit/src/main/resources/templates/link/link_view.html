@@ -45,7 +45,7 @@
                 </p>
                 <p><a th:href="${linkDto.url}" th:text="${linkDto.url}" target="_blank"></a></p>
                 <p>
-                   <a href="#" class="comments" th:text="|${linkDto.getComments().size()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
+                   <a href="#" class="comments" th:text="|${linkDto.commentCount} comments|"><i class="fas fa-comments"></i> 0 comments</a>
 					<a href="#" class="share"><i class="fas fa-share-square"></i> share</a>
                 </p>
             </div>
@@ -54,7 +54,7 @@
         <div id="comments" class="comments">
             <div class="row header">
                 <div class="col-1">&nbsp;</div>
-                <div class="col-11 title" th:text="|all ${linkDto.getComments().size()} comments|">
+                <div class="col-11 title" th:text="|all ${linkDto.getCommentCount()} comments|">
                     all 21 comments
                 </div>
             </div>

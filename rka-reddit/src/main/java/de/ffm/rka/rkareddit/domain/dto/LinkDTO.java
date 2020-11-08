@@ -62,7 +62,6 @@ public class LinkDTO implements Serializable {
 	private String subtitle;
 
 	@Size(min=0, max = 100, message = "maximal 100 letter allowed")
-	@Column(length = 100, nullable = true)
 	private String description;
 
 	@NotEmpty(message = "url is required")
@@ -153,9 +152,9 @@ public class LinkDTO implements Serializable {
 	 * @return creation date as localdatetime
 	 */
 	public static long convertEpochSecToId(final String timeInSeconds) throws IllegalArgumentException {
-		long id = 0l;
+		long id = 0L;
 		try {
-			id = Long.valueOf(timeInSeconds.substring(TIME_LATTERS, timeInSeconds.length()));
+			id = Long.parseLong(timeInSeconds.substring(TIME_LATTERS));
 		} catch(Exception ex){
 			String msg = "NO VALID LINK-SIGNATURE: ".concat(timeInSeconds);
 			LOGGER.error(msg.concat(timeInSeconds), ex);
