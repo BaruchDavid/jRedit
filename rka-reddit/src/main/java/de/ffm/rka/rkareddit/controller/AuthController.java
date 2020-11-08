@@ -42,7 +42,7 @@ public class AuthController {
 	private static final String VALIDATION_ERRORS = "validationErrors";
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
 	private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
-	private static final String NO_USER_FOR_PROFILE_VIEW = "User not found for profile view";
+	private static final String NOT_LOGGED_IN="";
 	private final UserService userService;
 	private final UserDetailsServiceImpl userDetailsService;
 	
@@ -69,27 +69,31 @@ public class AuthController {
 	 */
 	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
-								@PathVariable(required = false) String email, HttpServletRequest httpReq,
+								@PathVariable(required = false) String email,
 								Model model) throws UsernameNotFoundException {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));	
 		UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
-		authenticatedUser.ifPresent(user -> {
-			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(user.getUsername())));
-		});
+		String userName = authenticatedUser.map(UserDetails::getUsername)
+											.orElse(NOT_LOGGED_IN);
+		if(!userName.isEmpty()){
+			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(userName)));
+		} else {
+			model.addAttribute(USER_DTO, new UserDTO());
+		}
 
 		List<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptyList())
 										.stream()
-										.map(link -> LinkDTO.getMapLinkToDto(link))
+										.map(LinkDTO::getMapLinkToDto)
 										.collect(Collectors.toList());
 		List<CommentDTO> userComments = Optional.ofNullable(userService.getUserWithComments(email)
 																	.getUserComment())
 												.orElse(Collections.emptyList())
 												.stream()
-												.map(comment -> CommentDTO.getCommentToCommentDto(comment))
+												.map(CommentDTO::getCommentToCommentDto)
 												.collect(Collectors.toList());
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
