@@ -87,7 +87,7 @@ public class LinkControllerTest {
         UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");
         assertEquals(userDto.getFullName(), usr.getFullName());
         Page<LinkDTO> links = (Page<LinkDTO>) result.getModelAndView().getModel().get("links");
-        assertEquals("no comment-object loaded with links", 0, links.getContent().get(0).getComments().size());
+        assertEquals("no comment-object loaded with links", 0, links.getContent().get(0).getCommentDTOS().size());
     }
 
     @Test
@@ -140,9 +140,9 @@ public class LinkControllerTest {
     @Test
     @DisplayName("Anzeigen von einem Link für einen nicht eingelogten User")
     public void readLinkTestAsUnautheticated() throws Exception {
-        Link currentLink = linkService.findLinkModelBySignature("15921918064981");
+        Link currentLink = linkService.findLinkModelBySignature("15921918064983");
         LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
-        MvcResult mvcResult = this.mockMvc.perform(get("/links/link/15921918064981"))
+        MvcResult mvcResult = this.mockMvc.perform(get("/links/link/15921918064983"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))
@@ -153,6 +153,9 @@ public class LinkControllerTest {
         linkCreator.setEmail("romakapt@gmx.de");
         assertEquals("user anzeigen, der den Link erzeugt hat",
                 linkCreator.getEmail(), linkDTO.getUser().getEmail());
+
+        assertEquals("diser link zeigt zwei kommentare an",
+                2, linkDTO.getCommentDTOS().size());
     }
 
     @Test

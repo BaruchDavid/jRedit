@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
+import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
@@ -7,6 +8,7 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
+import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
 import org.slf4j.Logger;
@@ -46,11 +48,14 @@ public class LinkController {
 	private final TagServiceImpl tagService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
+	private final CommentService commentService;
 
 	public LinkController(LinkService linkService,
-						  TagServiceImpl tagService) {
+						  TagServiceImpl tagService,
+						  CommentService commentService) {
 		this.linkService = linkService;
 		this.tagService = tagService;
+		this.commentService = commentService;
 	}
 
 	/**
@@ -87,6 +92,8 @@ public class LinkController {
 					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
 		Link link = linkService.findLinkModelBySignature(signature);
+
+		link.setComments(commentService.retriveCommentsForLink(link.getLinkId()));
 		Optional.ofNullable(userDetails).ifPresent(logedUser -> {
 			User userModel = (User)userDetails;
 			linkService.saveLinkHistory(link, userModel);
@@ -108,7 +115,8 @@ public class LinkController {
 		return "link/link_view";
 
 	}
-	
+
+
 	@GetMapping("/links/link")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
 		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));		

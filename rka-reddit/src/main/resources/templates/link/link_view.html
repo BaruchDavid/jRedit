@@ -72,7 +72,7 @@
                 </div>
             </div>
             <!-- single comment -->
-            <div class="row comment" th:each="comment : ${linkDto.getComments()}">
+            <div class="row comment" th:each="comment : ${linkDto.getCommentDTOS()}">
                 <div class="col-1">&nbsp;</div>
                 <div class="col-11">
                     <span><a href="#" th:text="${comment.getCreatedBy()}"><i class="far fa-user"></i> therealdanvega</a></span>

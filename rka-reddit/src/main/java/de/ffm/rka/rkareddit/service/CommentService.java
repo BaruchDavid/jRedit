@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * maintance all business logik for link treating
  * creates basically read transaction 
@@ -54,5 +56,10 @@ public class CommentService {
 
 	private Link getSuitableLink(String linkSignatur) throws ServiceException {
 		return linkService.findLinkModelWithUser(linkSignatur);
+	}
+
+
+	public List<Comment> retriveCommentsForLink(Long linkId) {
+		return commentRepository.findAllCommentsWithLinkId(linkId);
 	}
 }

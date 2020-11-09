@@ -11,7 +11,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Entity(name="User")
@@ -119,9 +118,10 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();	
-		roles.stream()
+		/*roles.stream()
 			.map(role -> authorities.add(new SimpleGrantedAuthority(role.getName())))
-			.collect(Collectors.toList());
+			.collect(Collectors.toList());*/
+		roles.forEach(role ->authorities.add(new SimpleGrantedAuthority(role.getName())));
 		return authorities;
 	}
 
