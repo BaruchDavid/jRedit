@@ -53,6 +53,6 @@ public class CommentService {
 	}
 
 	private Link getSuitableLink(String linkSignatur) throws ServiceException {
-		return linkService.findLinkModel(linkSignatur);
+		return linkService.findLinkModelWithUser(linkSignatur);
 	}
 }

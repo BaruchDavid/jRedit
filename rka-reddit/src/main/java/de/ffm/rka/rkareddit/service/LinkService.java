@@ -52,12 +52,12 @@ public class LinkService {
 	 * return all availible links
 	 */
 	public LinkDTO findLinkBySignature(final String signature) throws ServiceException {
-		Link linkModel = findLinkModel(signature);
+		Link linkModel = findLinkModelWithUser(signature);
 		return LinkDTO.getMapLinkToDto(linkModel);
 	}
 
 	public Link findLinkModelBySignature(final String signature) throws ServiceException {
-		return findLinkModel(signature);
+		return findLinkModelWithUser(signature);
 	}
 
 	/**
@@ -67,14 +67,11 @@ public class LinkService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	Link findLinkModel(final String signature) throws  ServiceException{
+	Link findLinkModelWithUser(final String signature) throws  ServiceException{
 		LOGGER.info("FIND LINK WITH SIGNATUR {}", signature);
 		final long id = LinkDTO.convertEpochSecToId(signature);
 		return linkRepository.findLinkWithUserByLinkId(id)
 				.orElseThrow(() ->new ServiceException("not found"));
-	/*	return linkRepository.findLinkById(id)
-				.orElseThrow(() ->new ServiceException("not found"));*/
-
 	}
 	
 	public Link findLinkWithTags(final String signature) {
