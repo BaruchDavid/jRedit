@@ -10,15 +10,19 @@ VALUES(3, 'grom@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwa
 
 INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
 VALUES(1,  'Securing Spring Boot APIs and SPAs with OAuth 2.0', 'spring security', 'building apis',
-			'https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing', 2, 5,NOW(),1);
+			'https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing',
+			5, 5,NOW(),1);
 INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
 VALUES(2,  'Device in Java Web Application Spring Mobile','mobile development', 'nice tutorial for java mobile development',
-			'https://www.opencodez.com/java/device-detection-using-spring-mobile.htm', 6, 1,NOW(),1);
+			'https://www.opencodez.com/java/device-detection-using-spring-mobile.htm', 4, 1,NOW(),1);
 INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
 VALUES(3,  'microservices with SpringBoot','microservices stuff', 
-			'Tutorial series about building microservices with SpringBoot (with Netflix OSS)', 'https://medium.com/@marcus.eisele/implementing-a-microservice-architecture-with-spring-boot-intro-cdb6ad16806c', 3, 2,NOW(),1);
+			'Tutorial series about building microservices with SpringBoot (with Netflix OSS)',
+			'https://medium.com/@marcus.eisele/implementing-a-microservice-architecture-with-spring-boot-intro-cdb6ad16806c', 2, 2,NOW(),1);
 INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
-VALUES(4,  'encrypted email using Java / Spring Boot', 'encryption', 'Detailed steps to send encrypted email using Java / Spring Boot', 'https://www.opencodez.com/java/send-encrypted-email-using-java.htm', 2, 32,NOW(),1);
+VALUES(4,  'encrypted email using Java / Spring Boot', 'encryption',
+            'Detailed steps to send encrypted email using Java / Spring Boot',
+            'https://www.opencodez.com/java/send-encrypted-email-using-java.htm', 2, 32,NOW(),1);
 INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
 VALUES(5,  'Progressive Web App With Spring Boot and React', '', 
 			'Build a Secure Progressive Web App With Spring Boot and React', 
