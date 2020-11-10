@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LinkRepository extends JpaRepository<Link, Long> {
@@ -45,7 +46,7 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 
 	@Query("SELECT l "
 			+ "FROM Link l "
-			+ "INNER JOIN FETCH l.comments "
-			+ "WHERE l.linkId =:linkId ")
-	Link findLinkWithComments(long linkId);
+			+ "LEFT OUTER JOIN FETCH l.comments "
+			+ "WHERE l.linkId IN (:linkIds) ")
+	List<Link> findLinksWithComments(@Param("linkIds") List<Long> linkIds);
 }

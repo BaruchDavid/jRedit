@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * manages login- and register-process
@@ -34,7 +35,7 @@ public class UserService {
 	private final UserDetailsServiceImpl userDetailsService;
 	private final LinkService linkService;
 
-	
+
 	public UserService(MailService mailService, UserRepository userRepository,
 					   RoleService roleService, UserDetailsServiceImpl userDetailsService, LinkService linkService) {
 		this.userDetailsService = userDetailsService;
@@ -43,16 +44,30 @@ public class UserService {
 		this.mailService  = mailService;
 		this.linkService = linkService;
 	}
-	
+
+	/**
+	 * retrieved link has due of lazy-initialization no comments
+	 * here comments will be set
+	 * @param userLinks with no comments
+	 */
+	private List<Link> fillLinkWithSuitableComments(List<Link> userLinks) {
+		List<Long> linkIds = userLinks.stream()
+				.map(Link::getLinkId)
+				.collect(Collectors.toList());
+		return linkService.findLinksWithCommentsByLinkIds(linkIds)
+				.orElseGet(()->Collections.EMPTY_LIST);
+
+	}
+
 	/**
 	 * decodes pw assign role set activation code
 	 * disable user before saving , send activation email reregister user
 	 * @return UserDTO
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
 	@Transactional(readOnly = false)
 	public UserDTO register(UserDTO userDto) throws ServiceException {
-		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));		
+		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 		User newUser = UserDTO.mapUserDtoToUser(userDto);
 		String secret;
 		BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
@@ -60,10 +75,10 @@ public class UserService {
 		newUser.setPassword(secret);
 		newUser.setConfirmPassword(secret);
 		newUser.addRole(roleService.findByName("ROLE_USER"));
-		sendActivatonEmail(userDto);		
+		sendActivatonEmail(userDto);
 		return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
 	}
-	
+
 	@Transactional(readOnly = false)
 	public UserDTO emailChange(UserDTO userDto) throws ServiceException {
 		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
@@ -75,7 +90,7 @@ public class UserService {
 		sendEmailToNewUserEmailAddress(userDto);
 		return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
 	}
-	
+
 	@Transactional(readOnly = false)
 	public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
 		Optional<User> user;
@@ -85,7 +100,7 @@ public class UserService {
 		} else {
 			user = findUserByMailAndActivationCode(email, activationCode);
 		}
-		if(user.isPresent()) {			
+		if(user.isPresent()) {
 			User newUser = user.get();
 			newUser.setEnabled(true);
 			newUser.setConfirmPassword(newUser.getPassword());
@@ -99,12 +114,12 @@ public class UserService {
 		}
 		return userDTO;
 	}
-	
-	
-	
+
+
+
 	private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException {
 		mailService.sendEmailToNewEmailAccount(userDto);
-		
+
 	}
 
 	/**
@@ -113,7 +128,7 @@ public class UserService {
 	 */
 	@Transactional(readOnly = false)
 	public void changeUserDetails(UserDTO userDto) {
-		
+
 		User user = getUser(userDto.getEmail());
 		user.setFirstName(userDto.getFirstName());
 		user.setSecondName(userDto.getSecondName());
@@ -128,13 +143,12 @@ public class UserService {
 										return new  UsernameNotFoundException(userMail);
 										});
 	}
-	
+
 	@Transactional
 	public Optional<byte[]> getUserPic(String userMail) {
 		return Optional.of(getUser(userMail).getProfileFoto());
 	}
-	
-	
+
 	/**
 	 * change user Password
 	 * @param userDto hold changes to be saved
@@ -148,23 +162,24 @@ public class UserService {
 		user.setConfirmPassword(secret);
 		userRepository.saveAndFlush(user);
 	}
+
 	public UserDTO updateUser(UserDTO userDto) {
 		User newUser = UserDTO.mapUserDtoToUser(userDto);
 		userRepository.saveAndFlush(newUser);
 		return userDto;
-		
+
 	}
-	
+
 	/**
 	 * fetch User with retrieved List<Link> with mail
 	 * @param userId is a user email
 	 */
 	public User getUserWithLinks(String userId){
 		User user =  userRepository.fetchUserWithLinks(userId);
-		user.getUserLinks().forEach(this::fillLinkWithSuitableComments);
+		user.setUserLinks(this.fillLinkWithSuitableComments(user.getUserLinks()));
 		return user;
 	}
-		
+
 	/**
 	 * find user for activation
 	 */
@@ -172,22 +187,22 @@ public class UserService {
 		LOGGER.info("FIND USER BY MAIL {} AND ACTIVATION_CODE {}", mail, code);
 		return userRepository.findByEmailAndActivationCode(mail, code);
 	}
-	
+
 	private void sendActivatonEmail(UserDTO user) throws ServiceException {
 		mailService.sendActivationEmail(user);
 	}
-	
+
 	public void sendWelcomeEmail(UserDTO user) throws ServiceException {
 		mailService.sendWelcomeEmail(user);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public User save(User user) {
 		User newUser = userRepository.save(user);
 		LOGGER.info("new User has been saved {}", newUser);
 		return newUser;
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void saveUsers(User...users ) {
 		Arrays.asList(users).forEach(user -> {
@@ -196,7 +211,7 @@ public class UserService {
 								LOGGER.info("USER SAVED WITH ID {} AND USERNAME {} ", userSaved.getUserId(),userSaved.getEmail());
 							});
 	}
-		
+
 	/**
 	 * find somebody by username
 	 * @param username from searched user
@@ -246,15 +261,5 @@ public class UserService {
 						.map(User::getUserClickedLinks)
 						.orElse(Collections.emptySet());
 		return links;
-	}
-
-	/**
-	 * retrieved link has due of lazy-initialization no comments
-	 * here comments will be set
-	 * @param link with no comments
-	 */
-	private void fillLinkWithSuitableComments(Link link) {
-		link.setComments(linkService.findLinkWithCommentsByLinkId(link.getLinkId())
-									.orElseGet(()->new Link()).getComments());
 	}
 }

@@ -101,7 +101,7 @@ public class AuthController {
 		}		
 		model.addAttribute("userContent", contentUser);
 		model.addAttribute("posts", userLinks);
-		model.addAttribute("comments", userComments);
+		model.addAttribute("comments", userComments); //TODO: muss noch bentutzt werden für die GUI-Dastellung
 		model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 														.format(contentUser.getCreationDate()));
 		return "auth/profile"; 

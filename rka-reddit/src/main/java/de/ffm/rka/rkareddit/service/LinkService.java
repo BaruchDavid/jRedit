@@ -80,8 +80,8 @@ public class LinkService {
 		
 	}
 
-	public Optional<Link> findLinkWithCommentsByLinkId(long linkId){
-		return Optional.ofNullable(linkRepository.findLinkWithComments(linkId));
+	public Optional<List<Link>> findLinksWithCommentsByLinkIds(List<Long> linkIds){
+		return Optional.ofNullable(linkRepository.findLinksWithComments(linkIds));
 	}
 
 	/**
