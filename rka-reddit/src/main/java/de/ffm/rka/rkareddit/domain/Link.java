@@ -83,7 +83,6 @@ public class Link extends Auditable implements Serializable{
 	 */
 	@Builder.Default
 	@OneToMany(mappedBy="link", fetch = FetchType.LAZY)
-	//@Fetch(value = FetchMode.SUBSELECT)
 	private List<Comment> comments = new ArrayList<>();
 
 	@Autowired

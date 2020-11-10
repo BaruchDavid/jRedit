@@ -146,9 +146,8 @@ public class LinkDTO implements Serializable {
     }
 
     public static LinkDTO getMapLinkToDto(Link link) {
-        List<Comment> comments = link.getComments();
         LinkDTO temp = modelMapper.map(link, LinkDTO.class);
-        temp.setCommentDTOS(comments.stream()
+        temp.setCommentDTOS(link.getComments().stream()
                 .map(CommentDTO::getCommentToCommentDto)
                 .collect(Collectors.toList()));
         temp.setLinkSignature(convertLDTtoEpochSec(link.getCreationDate())

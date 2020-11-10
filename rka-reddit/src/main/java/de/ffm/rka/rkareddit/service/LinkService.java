@@ -80,6 +80,10 @@ public class LinkService {
 		
 	}
 
+	public Optional<Link> findLinkWithCommentsByLinkId(long linkId){
+		return Optional.ofNullable(linkRepository.findLinkWithComments(linkId));
+	}
+
 	/**
 	 * create write transactional
 	 * @author RKA

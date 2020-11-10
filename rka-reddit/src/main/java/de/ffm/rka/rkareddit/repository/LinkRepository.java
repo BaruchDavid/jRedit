@@ -42,4 +42,10 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 			+ "INNER JOIN FETCH l.user "
 			+ "WHERE l.linkId =:id ")
 	Optional<Link> findLinkWithUserByLinkId(long id);
+
+	@Query("SELECT l "
+			+ "FROM Link l "
+			+ "INNER JOIN FETCH l.comments "
+			+ "WHERE l.linkId =:linkId ")
+	Link findLinkWithComments(long linkId);
 }
