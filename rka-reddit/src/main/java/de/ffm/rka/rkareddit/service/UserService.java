@@ -8,7 +8,6 @@ import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,13 +32,16 @@ public class UserService {
 	private final RoleService roleService;
 	private final MailService mailService;
 	private final UserDetailsServiceImpl userDetailsService;
+	private final LinkService linkService;
+
 	
-	public UserService(MailService mailService, UserRepository userRepository, 
-						RoleService roleService, ModelMapper modelMapper, UserDetailsServiceImpl userDetailsService) {
+	public UserService(MailService mailService, UserRepository userRepository,
+					   RoleService roleService, UserDetailsServiceImpl userDetailsService, LinkService linkService) {
 		this.userDetailsService = userDetailsService;
 		this.userRepository = userRepository;
 		this.roleService= roleService;
 		this.mailService  = mailService;
+		this.linkService = linkService;
 	}
 	
 	/**
@@ -158,7 +160,9 @@ public class UserService {
 	 * @param userId is a user email
 	 */
 	public User getUserWithLinks(String userId){
-		return userRepository.fetchUserWithLinks(userId);
+		User user =  userRepository.fetchUserWithLinks(userId);
+		user.getUserLinks().forEach(this::fillLinkWithSuitableComments);
+		return user;
 	}
 		
 	/**
@@ -242,5 +246,15 @@ public class UserService {
 						.map(User::getUserClickedLinks)
 						.orElse(Collections.emptySet());
 		return links;
+	}
+
+	/**
+	 * retrieved link has due of lazy-initialization no comments
+	 * here comments will be set
+	 * @param link with no comments
+	 */
+	private void fillLinkWithSuitableComments(Link link) {
+		link.setComments(linkService.findLinkWithCommentsByLinkId(link.getLinkId())
+									.orElseGet(()->new Link()).getComments());
 	}
 }
