@@ -17,13 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * maintance all business logik for link treating
- * creates basically read transaction 
+ * creates basically read transaction
  * @author RKA
  *
  */
@@ -47,7 +48,7 @@ public class LinkService {
 		LOGGER.info("Found {} links", links.size());
 		return links;
 	}
-	
+
 	/**
 	 * return all availible links
 	 */
@@ -73,11 +74,11 @@ public class LinkService {
 		return linkRepository.findLinkWithUserByLinkId(id)
 				.orElseThrow(() ->new ServiceException("not found"));
 	}
-	
+
 	public Link findLinkWithTags(final String signature) {
 		final long id = LinkDTO.convertEpochSecToId(signature);
 		return  linkRepository.findTagsForLink(id);
-		
+
 	}
 
 	public Optional<List<Link>> findLinksWithCommentsByLinkIds(List<Long> linkIds){
@@ -97,7 +98,7 @@ public class LinkService {
 		linkDto.getTags().stream()
 					  .filter( tag -> tag.getTagName().isEmpty())
 					  .forEach(tags::add);
-		link.getTags().removeAll(tags);		
+		link.getTags().removeAll(tags);
 		link.getTags().forEach(tag -> tag.getLinks().add(link));
 		LOGGER.debug("TRY TO SAVE LINK {}", link);
 		Link newLink = linkRepository.save(link);
@@ -120,12 +121,22 @@ public class LinkService {
 	 * @return linkDto objects as PageImpl
 	 */
 	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
-		Page<Link> ln = linkRepository.findAll(pageable);		
-		List<LinkDTO> links = ln.stream().map(link -> LinkDTO.getMapLinkToDto(link))
+		Page<Link> ln = linkRepository.findAll(pageable);
+
+		List<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
+											.orElseGet(()-> Collections.EMPTY_LIST);
+		List<LinkDTO> links = linksWithComments.stream()
+								.map(link -> LinkDTO.getMapLinkToDto(link))
 								.collect(Collectors.toList());
 		return new PageImpl<>(links, pageable, ln.getTotalElements());
 	}
-	
+
+	List<Long> getLinkIds(List<Link> links) {
+		return links.stream()
+					.map(Link::getLinkId)
+					.collect(Collectors.toList());
+	}
+
 	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
 		List<Comment> comments = ln.getContent().get(0).getComments();
@@ -141,5 +152,5 @@ public class LinkService {
 		link = linkRepository.saveAndFlush(link);
 		LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
 	}
-	
+
 }

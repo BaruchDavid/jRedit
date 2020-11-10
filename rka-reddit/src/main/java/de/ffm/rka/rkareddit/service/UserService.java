@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * manages login- and register-process
@@ -51,12 +50,9 @@ public class UserService {
 	 * @param userLinks with no comments
 	 */
 	private List<Link> fillLinkWithSuitableComments(List<Link> userLinks) {
-		List<Long> linkIds = userLinks.stream()
-				.map(Link::getLinkId)
-				.collect(Collectors.toList());
+		List<Long> linkIds = linkService.getLinkIds(userLinks);
 		return linkService.findLinksWithCommentsByLinkIds(linkIds)
 				.orElseGet(()->Collections.EMPTY_LIST);
-
 	}
 
 	/**
