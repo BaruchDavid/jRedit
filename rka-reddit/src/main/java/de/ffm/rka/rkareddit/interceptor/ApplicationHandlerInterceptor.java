@@ -4,6 +4,7 @@ import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -36,8 +37,8 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		LOGGER.info("REMOTE ADDRESS {} ACCESS IN PRE HANDLE-INTERCEPTOR TO {} "
-				+ " {} WITH STATUS: {}", request.getRemoteAddr(), 
+		LOGGER.info("REMOTE ADDRESS {} AS USER {} ACCESS IN PRE HANDLE-INTERCEPTOR TO {} "
+				+ " {} WITH STATUS: {}", request.getRemoteAddr(), SecurityContextHolder.getContext().getAuthentication().getPrincipal(),
 					request.getMethod(),  request.getRequestURL(), response.getStatus());
 		
 		if (handler instanceof HandlerMethod) {
