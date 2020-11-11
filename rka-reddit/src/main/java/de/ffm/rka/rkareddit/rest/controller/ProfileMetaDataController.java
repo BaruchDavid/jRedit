@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,26 +49,28 @@ public class ProfileMetaDataController {
 	 */
 	@GetMapping("/information/userClickedLinks")
 	@ResponseBody
-	public List<LinkDTO> userClickedLinksHistory(@RequestParam(name="user") String user, @AuthenticationPrincipal UserDetails userPrincipal) {
+	public List<LinkDTO> userClickedLinksHistory(@RequestParam(name="user") String requestedUser, @AuthenticationPrincipal UserDetails userPrincipal) {
 		List<LinkDTO> userClickedLinksDTO = new ArrayList<>();
-		String requestedUser= Optional.ofNullable(userPrincipal)
+		String authenticatedUser= Optional.ofNullable(userPrincipal)
 				.map(UserDetails::getUsername)
 				.orElse("");
-		if(user.equals(requestedUser) && !requestedUser.isEmpty()){
+		if(requestedUser.equals(authenticatedUser) && !requestedUser.isEmpty()){
 			Set<Link> userClickedLinks = userService.findUserClickedLinks(requestedUser);
 			userClickedLinks.forEach(link -> userClickedLinksDTO.add(LinkDTO.getMapLinkToDto(link)));
 		}
-		LOGGER.info("User {} clicked links history contains {} links", Optional.ofNullable(userPrincipal)
-																			.orElseThrow(()->new UsernameNotFoundException("no user"))
-																			.getUsername(), userClickedLinksDTO.size() );
+
+		LOGGER.info("AuthenticatedUser {} looks at visited user {} links_history contains {} links",
+				authenticatedUser,
+				requestedUser,userClickedLinksDTO.size());
 		return userClickedLinksDTO;
 	}
 
 	@GetMapping(value = "/information/content/user-pic")
 	@ResponseBody
 	public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
-		Optional<UserDetails> usrDetail = Optional.ofNullable(userPrincipal);
-		String requestedUser = usrDetail.isPresent()? usrDetail.get().getUsername():req.getParameter("user");
+		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
+		String requestedUser = authenticatedUser.map(UserDetails::getUsername)
+												.orElse(req.getParameter("user"));
 		HttpHeaders headers = new HttpHeaders();
 		headers.setCacheControl(CacheControl.maxAge(1, java.util.concurrent.TimeUnit.HOURS));
 		byte[] media = new byte[0];

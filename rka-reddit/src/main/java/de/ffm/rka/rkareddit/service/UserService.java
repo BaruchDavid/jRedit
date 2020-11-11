@@ -256,6 +256,7 @@ public class UserService {
 		Set<Link> links = Optional.ofNullable(userRepository.findClickedUserLinks(requestedUser))
 						.map(User::getUserClickedLinks)
 						.orElse(Collections.emptySet());
+		links = new HashSet<>(this.fillLinkWithSuitableComments(new ArrayList<>(links)));
 		return links;
 	}
 }
