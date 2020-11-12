@@ -47,14 +47,14 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
 public class AllControllersTransactionTest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AllControllersTransactionTest.class);
 	private static final int MAX_JDBC_TRANSACTION = 3;
 	private MockMvc mockMvc;
 	
 	@Autowired
 	private WebApplicationContext context;
-	Statistics hibernateStatistic;
-	Session hibernateSession;
+	private Statistics hibernateStatistic;
+	private Session hibernateSession;
 	private EntityManager entityManager;
 	
 	@Before

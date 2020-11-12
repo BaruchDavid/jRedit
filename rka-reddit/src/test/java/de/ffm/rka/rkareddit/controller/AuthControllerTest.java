@@ -185,8 +185,8 @@ public class AuthControllerTest {
 	public void showPublicNoNexistedProfileAsUnautheticated() throws Exception {
 		this.mockMvc.perform(get("/profile/public/grm@gmx.de"))
 					.andDo(print())
-					.andExpect(status().is(401))
-				.andExpect(view().name("error/application"));
+					.andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+				.andExpect(view().name("error/basicError"));
 	}
 
 	@Test

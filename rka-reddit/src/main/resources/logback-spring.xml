@@ -42,11 +42,11 @@
 
 	<springProfile name="test">
 		
-		<logger name="org.hibernate.SQL" level="DEBUG" />
+		<logger name="org.hibernate.SQL" level="INFO" />
     	<logger name="org.hibernate.type" level="INFO" />
     	<logger name="org.springframework.security" level="INFO" />
 		<logger name="Hypersistence Optimizer" level="info"/>
-		<root level="DEBUG">
+		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
 			<appender-ref ref="SAVE-TO-FILE" />
 		</root>

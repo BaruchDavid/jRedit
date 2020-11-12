@@ -8,10 +8,14 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import org.hibernate.Session;
+import org.hibernate.stat.Statistics;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -50,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @Transactional
 public class LinkControllerTest {
-
+    private static final int MAX_JDBC_TRANSACTION = 3;
     private MockMvc mockMvc;
 
     @Autowired
@@ -61,6 +65,9 @@ public class LinkControllerTest {
     @Autowired
     private LinkService linkService;
 
+    private Statistics hibernateStatistic;
+    private Session hibernateSession;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkControllerTest.class);
     @Before
     public void setup() {
 
@@ -68,6 +75,8 @@ public class LinkControllerTest {
                 .apply(springSecurity())
                 .build();
         entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
+        hibernateSession = entityManager.unwrap(Session.class);
+        hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
     }
 
     @Test
@@ -79,6 +88,7 @@ public class LinkControllerTest {
                 .secondName("rka")
                 .build();
         List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
+        hibernateStatistic.clear();
         MvcResult result = this.mockMvc.perform(get("/links/"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -87,7 +97,10 @@ public class LinkControllerTest {
         UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");
         assertEquals(userDto.getFullName(), usr.getFullName());
         Page<LinkDTO> links = (Page<LinkDTO>) result.getModelAndView().getModel().get("links");
-        assertEquals("no comment-object loaded with links", 0, links.getContent().get(0).getCommentDTOS().size());
+        assertEquals("comments will be loaded with links", 1, links.getContent().get(0).getCommentDTOS().size());
+        Arrays.stream(hibernateStatistic.getQueries()).forEach(query -> LOGGER.info("QUERY: {}", query));
+        assertEquals("MAX JDBC STATEMENTS:".concat(String.valueOf(MAX_JDBC_TRANSACTION)),
+                MAX_JDBC_TRANSACTION, hibernateStatistic.getQueryExecutionCount());
     }
 
     @Test
