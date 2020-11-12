@@ -38,8 +38,6 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-//import io.hypersistence.optimizer.HypersistenceOptimizer;
-
 
 @ActiveProfiles("test")
 /** spring-test-support is enabled */

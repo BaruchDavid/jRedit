@@ -16,10 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +78,7 @@ public class LinkService {
 
 	}
 
-	public Optional<List<Link>> findLinksWithCommentsByLinkIds(List<Long> linkIds){
+	public Optional<Set<Link>> findLinksWithCommentsByLinkIds(List<Long> linkIds){
 		return Optional.ofNullable(linkRepository.findLinksWithComments(linkIds));
 	}
 
@@ -125,8 +122,8 @@ public class LinkService {
 	 */
 	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
-		List<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
-											.orElseGet(()-> Collections.EMPTY_LIST);
+		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
+											.orElseGet(()-> Collections.EMPTY_SET);
 		List<LinkDTO> links = linksWithComments.stream()
 								.map(link -> LinkDTO.getMapLinkToDto(link))
 								.collect(Collectors.toList());

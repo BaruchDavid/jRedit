@@ -49,10 +49,10 @@ public class UserService {
 	 * here comments will be set
 	 * @param userLinks with no comments
 	 */
-	private List<Link> fillLinkWithSuitableComments(List<Link> userLinks) {
+	private Set<Link> fillLinkWithSuitableComments(List<Link> userLinks) {
 		List<Long> linkIds = linkService.getLinkIds(userLinks);
 		return linkService.findLinksWithCommentsByLinkIds(linkIds)
-				.orElseGet(()->Collections.EMPTY_LIST);
+				.orElseGet(()->Collections.EMPTY_SET);
 	}
 
 	/**
@@ -172,7 +172,8 @@ public class UserService {
 	 */
 	public User getUserWithLinks(String userId){
 		User user =  userRepository.fetchUserWithLinks(userId);
-		user.setUserLinks(this.fillLinkWithSuitableComments(user.getUserLinks()));
+		List<Link> linksWithComments = new ArrayList<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
+		user.setUserLinks(linksWithComments);
 		return user;
 	}
 

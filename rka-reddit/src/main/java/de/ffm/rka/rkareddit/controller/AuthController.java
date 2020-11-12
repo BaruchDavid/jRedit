@@ -67,6 +67,7 @@ public class AuthController {
 	 * set user info, user links and their comments
 	 * @throws UsernameNotFoundException on non exists user
 	 */
+	//TODO: WARUM GIBT ES HIER ZWEI REQUESTS?
 	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email,
