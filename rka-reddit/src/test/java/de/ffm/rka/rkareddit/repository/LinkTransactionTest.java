@@ -42,7 +42,7 @@ public class LinkTransactionTest {
     private LinkService linkService ;
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkTransactionTest.class);
 	private EntityManager entityManager;
-	private static final int MAX_TRANSACTION_NUMBER = 2;
+	private static final int MAX_TRANSACTION_NUMBER = 3;
 	@Before
 	public void SetUp() {
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
@@ -69,47 +69,47 @@ public class LinkTransactionTest {
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
 		assertEquals("THEY ARE EVELEN LINKS",11L, links.getNumberOfElements());
-		assertEquals(0L, (links.getContent().get(0)).getCommentDTOS().size());
+		assertEquals("LINK ON INDEX 0 SHOULD HAVE FOUR COMMENT",5L, (links.getContent().get(0)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("FIRST LINK SHOULD HAVE NO COMMENT", 0L, (links.getContent().get(1)).getCommentDTOS().size());
+		assertEquals("FIRST LINK SHOULD HAVE FOUR COMMENT", 4L, (links.getContent().get(1)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("SECOND LINK SHOULD HAVE NO COMMENT", 0L, (links.getContent().get(2)).getCommentDTOS().size());
+		assertEquals("SECOND LINK SHOULD HAVE TWO COMMENT", 2L, (links.getContent().get(2)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("THIRD LINK SHOULD HAVE NO COMMENT", 0L, (links.getContent().get(3)).getCommentDTOS().size());
+		assertEquals("THIRD LINK SHOULD HAVE TWO COMMENT", 2L, (links.getContent().get(3)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 
-		assertEquals("FOURTH LINK SHOULD HAVE NO COMMENT", 0L, (links.getContent().get(4)).getCommentDTOS().size());
+		assertEquals("FOURTH LINK SHOULD HAVE TWO COMMENT", 2L, (links.getContent().get(4)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("FIFTH LINK SHOULD HAVE ONE COMMENT",0L, links.getContent().get(5).getCommentDTOS().size());
+		assertEquals("FIFTH LINK SHOULD HAVE ONE COMMENT",1L, links.getContent().get(5).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("SIXTH LINK SHOULD HAVE TWO COMMENTS", 0L, (links.getContent().get(6)).getCommentDTOS().size());
+		assertEquals("SIXTH LINK SHOULD HAVE NO COMMENTS", 0L, (links.getContent().get(6)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("SEVENTH LINK SHOULD HAVE TWO COMMENTS", 0L, (links.getContent().get(7)).getCommentDTOS().size());
+		assertEquals("SEVENTH LINK SHOULD HAVE NO COMMENTS", 0L, (links.getContent().get(7)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("EIGTH LINK SHOULD HAVE THREE COMMENTS", 0L, (links.getContent().get(8)).getCommentDTOS().size());
+		assertEquals("EIGTH LINK SHOULD HAVE NO COMMENTS", 0L, (links.getContent().get(8)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("NINTH LINK SHOULD HAVE SIX COMMENTS", 0L, (links.getContent().get(9)).getCommentDTOS().size());
+		assertEquals("NINTH LINK SHOULD HAVE NO COMMENTS", 0L, (links.getContent().get(9)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
-		assertEquals("TENTH LINK SHOULD HAVE TWO COMMENTS",0L, (links.getContent().get(10)).getCommentDTOS().size());
+		assertEquals("TENTH LINK SHOULD HAVE NO COMMENTS",0L, (links.getContent().get(10)).getCommentDTOS().size());
 		LOGGER.debug("QUERY EXECTUION COUNT {}", hibernateStatistic.getQueryExecutionCount());
 		assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 		
