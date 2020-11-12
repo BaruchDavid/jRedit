@@ -145,6 +145,13 @@ public class LinkDTO implements Serializable {
         return modelMapper.map(linkDto, Link.class);
     }
 
+    /**
+     * LinkController and AuthController maps links to LinkDTO.
+     * AuthController needs already presented comments from link,
+     * otherwise it get Lazy Initialization
+     * @param link
+     * @return
+     */
     public static LinkDTO getMapLinkToDto(Link link) {
         LinkDTO temp = modelMapper.map(link, LinkDTO.class);
         temp.setCommentDTOS(link.getComments().stream()

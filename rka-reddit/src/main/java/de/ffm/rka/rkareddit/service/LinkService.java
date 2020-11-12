@@ -116,13 +116,15 @@ public class LinkService {
 	}
 
 	/**
-	 * retrieve link objects and map to linkDTO
+	 * retrieve links as pageable and then pageable links retrieve
+	 * their comments, otherwise each link retrieves their comments
+	 * or has LazyInitialization during mapping to linkDto
+	 * Query-result rises from two to three
 	 * @param pageable, number for one page
 	 * @return linkDto objects as PageImpl
 	 */
 	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
-
 		List<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
 											.orElseGet(()-> Collections.EMPTY_LIST);
 		List<LinkDTO> links = linksWithComments.stream()
@@ -140,7 +142,6 @@ public class LinkService {
 	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
 		List<Comment> comments = ln.getContent().get(0).getComments();
-		comments.size();
 		return ln.getContent();
 	}
 

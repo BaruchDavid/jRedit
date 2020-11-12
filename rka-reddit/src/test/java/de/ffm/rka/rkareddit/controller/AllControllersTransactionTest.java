@@ -50,6 +50,7 @@ import de.ffm.rka.rkareddit.util.BeanUtil;
 @Transactional
 public class AllControllersTransactionTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
+	private static final int MAX_JDBC_TRANSACTION = 3;
 	private MockMvc mockMvc;
 	
 	@Autowired
@@ -75,7 +76,6 @@ public class AllControllersTransactionTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void shouldReturnAllLinksWith5JDBCStatmentsAsAutheticated() throws Exception {
-
 		UserDTO userDto = UserDTO.builder()
 								.firstName("baruc-david")
 								.secondName("rka")
@@ -87,12 +87,12 @@ public class AllControllersTransactionTest {
 					.andExpect(model().attribute("pageNumbers", pages))
 					.andReturn();
 		LOGGER.info("QUERIES: ", hibernateStatistic.getQueries());
-		assertEquals("SHOULD EXECUTED ONLY FOUR JDBC STATMENTS", 2, hibernateStatistic.getQueryExecutionCount());
+		assertEquals("MAX JDBC STATMENTS:".concat(String.valueOf(MAX_JDBC_TRANSACTION)),
+				MAX_JDBC_TRANSACTION, hibernateStatistic.getQueryExecutionCount());
 	}
 
 	@Test
 	public void shouldReturnAllLinksWith5JDBCStatmentsAsUnAutheticated() throws Exception {
-
 		UserDTO userDto = UserDTO.builder()
 				.firstName("baruc-david")
 				.secondName("rka")
@@ -104,7 +104,8 @@ public class AllControllersTransactionTest {
 				.andExpect(model().attribute("pageNumbers", pages))
 				.andReturn();
 		LOGGER.info("QUERIES: ", hibernateStatistic.getQueries());
-		assertEquals("SHOULD EXECUTED ONLY FOUR JDBC STATMENTS", 2, hibernateStatistic.getQueryExecutionCount());
+		assertEquals("MAX JDBC STATMENTS: ".concat(String.valueOf(MAX_JDBC_TRANSACTION)),
+						MAX_JDBC_TRANSACTION, hibernateStatistic.getQueryExecutionCount());
 	}
 
 
