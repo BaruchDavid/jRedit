@@ -170,7 +170,7 @@ public class AuthController {
 		String returnLink = "auth/activated";
 		if(req.getRequestURI().contains("mailchange")) {
 			isNewEmail = true;
-			returnLink = "redirect:/profile/private";
+			returnLink = REDIRECT_TO_PRIVATE_PROFILE;
 			attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
 			attributes.addFlashAttribute(SUCCESS,true);
 		} 
