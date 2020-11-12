@@ -8,15 +8,15 @@ public class UserAuthenticationLostException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * @param message
+	 * @param message for exception
 	 */
 	public UserAuthenticationLostException(String message) {
 		super(message);
 	}
 	
 	/**
-	 * @param message
-	 * @param rootException
+	 * @param message message for exception
+	 * @param rootException message for exception
 	 */
 	public UserAuthenticationLostException(String message, Throwable rootException) {
 		super(message, rootException);

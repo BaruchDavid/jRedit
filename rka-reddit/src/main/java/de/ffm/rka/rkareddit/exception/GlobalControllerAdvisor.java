@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 /**
- * This controlleradvice works only on @Controller-Classes, not
+ * This controller advice works only on @Controller-Classes, not
  * on @RestController-Classes
  * 
  * @author kaproma
@@ -42,12 +42,12 @@ public class GlobalControllerAdvisor {
 								IllegalArgumentException.class, IllegalAccessException.class,
 								NumberFormatException.class, ServiceException.class, Exception.class})
 	public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
-		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+		Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		UserDTO user = new UserDTO();	
 		String view = USER_ERROR_VIEW;
 		String visitorName="";
-		if(authetication.isPresent()) {
-			visitorName = authetication.get().getName();
+		if(authentication.isPresent()) {
+			visitorName = authentication.get().getName();
 			if(!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName) ) {				
 				user = UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(visitorName));
 			}else { 
@@ -57,7 +57,7 @@ public class GlobalControllerAdvisor {
 			user.setFirstName("guest");
 		}
 		final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-		LOGGER.error("EXCEPTION {} ACCURED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exceptionType, exception.getMessage(), 
+		LOGGER.error("EXCEPTION {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exceptionType, exception.getMessage(),
 																			visitorName, 
 																			req.getMethod(),
 																			req.getRequestURL());
@@ -107,7 +107,7 @@ public class GlobalControllerAdvisor {
 	}
 
 	/**
-	 * determines exceptionname of fullqualified name
+	 * determines exception name of full qualified name
 	 */
 	private String getExceptionName(final String canonicalExcName) {
 		int exceptionIndex=canonicalExcName.split("\\.").length;

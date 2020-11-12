@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * maintance all business logik for link treating
+ * maintenance all business logic for link treating
  * creates basically read transaction 
  * @author RKA
  *
@@ -28,9 +28,9 @@ public class CommentService {
 	private final UserDetailsServiceImpl userDetailsService;
 	private final LinkService linkService;
 
-	public CommentService(CommentRepository commentReptory, UserDetailsServiceImpl userDetailsService,
+	public CommentService(CommentRepository commentRepository, UserDetailsServiceImpl userDetailsService,
 						  LinkService linkService) {
-		this.commentRepository = commentReptory;
+		this.commentRepository = commentRepository;
 		this.userDetailsService = userDetailsService;
 		this.linkService = linkService;
 	}
@@ -38,7 +38,7 @@ public class CommentService {
 	public String getElapsedTimeFromComment(Comment com) {
 		return commentRepository.findById(com.getCommentId())
 								.map(Comment::getElapsedTime)
-								.orElse("No creation time availible");
+								.orElse("No creation time available");
 	}
 
 	/**
@@ -54,12 +54,12 @@ public class CommentService {
 		return comment;
 	}
 
-	private Link getSuitableLink(String linkSignatur) throws ServiceException {
-		return linkService.findLinkModelWithUser(linkSignatur);
+	private Link getSuitableLink(String linkSignature) throws ServiceException {
+		return linkService.findLinkModelWithUser(linkSignature);
 	}
 
 
-	public List<Comment> retriveCommentsForLink(Long linkId) {
+	public List<Comment> retrieveCommentsForLink(Long linkId) {
 		return commentRepository.findAllCommentsWithLinkId(linkId);
 	}
 }

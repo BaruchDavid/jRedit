@@ -27,7 +27,7 @@ public class Role implements Serializable {
 	private String name;
 	
 	@ManyToMany(mappedBy= "roles", fetch = FetchType.LAZY)
-	private Set<User> users = new HashSet<User>();
+	private Set<User> users = new HashSet<>();
 
 	public Role(@NotNull(message = "Rollenname darf nicht null sein") String name) {
 		super();

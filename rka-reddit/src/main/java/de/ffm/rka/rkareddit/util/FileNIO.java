@@ -38,8 +38,8 @@ public class FileNIO {
 		return pic;
 	}
 
-	public String readByteToPic(byte[] profileFoto, String name) throws IOException {
-		ByteArrayInputStream bis = new ByteArrayInputStream(profileFoto);
+	public String readByteToPic(byte[] profilePhoto, String name) throws IOException {
+		ByteArrayInputStream bis = new ByteArrayInputStream(profilePhoto);
 		BufferedImage bImage2 = ImageIO.read(bis);	
 		String webResourcePath = "static/images/".concat(name).concat(".png");
 		URL fileUrl = this.getClass().getProtectionDomain().getCodeSource().getLocation();

@@ -17,10 +17,13 @@ public class DatabaseLoader implements CommandLineRunner{
 	
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private FileNIO fileNIO;
-	
+
+	public DatabaseLoader() {
+	}
+
 	@Override
 	public void run(String... args) throws Exception {
 		

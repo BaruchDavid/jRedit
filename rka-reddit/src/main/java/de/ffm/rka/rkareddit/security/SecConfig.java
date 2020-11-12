@@ -33,12 +33,12 @@ import static de.ffm.rka.rkareddit.security.Role.*;
 public class SecConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
-    public AuthenticationSuccessHandler userSuccessfullAthenticationHandler(){
+    public AuthenticationSuccessHandler userSuccessfulAuthenticationHandler(){
         return new UserSuccessfullAthenticationHandler();
     }
 	
 	@Bean
-    public AuthenticationFailureHandler userFailureAthenticationHandler(){
+    public AuthenticationFailureHandler userFailureAuthenticationHandler(){
         return new UserFailureAuthenticationHandler();
     }
 	
@@ -83,8 +83,8 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.formLogin().loginPage("/login")
 						.usernameParameter("email")
-						.successHandler(userSuccessfullAthenticationHandler())
-						.failureHandler(userFailureAthenticationHandler())
+						.successHandler(userSuccessfulAuthenticationHandler())
+						.failureHandler(userFailureAuthenticationHandler())
 						.failureUrl("/login?error")
 			.and()
 		    .exceptionHandling().accessDeniedPage("/links/")

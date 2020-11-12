@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.service;
 
-import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
@@ -20,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * maintance all business logik for link treating
+ * maintenance all business logic for link treating
  * creates basically read transaction
  * @author RKA
  *
@@ -38,7 +37,7 @@ public class LinkService {
 	}
 
 	/**
-	 * return all availible links
+	 * return all available links
 	 */
 	public List<Link> findAllLinks(){
 		List<Link> links = linkRepository.findAll();
@@ -47,7 +46,7 @@ public class LinkService {
 	}
 
 	/**
-	 * return all availible links
+	 * return all available links
 	 */
 	public LinkDTO findLinkBySignature(final String signature) throws ServiceException {
 		Link linkModel = findLinkModelWithUser(signature);
@@ -61,12 +60,12 @@ public class LinkService {
 	/**
 	 * is package-private
 	 * find link object
-	 * @param signature
-	 * @return
-	 * @throws ServiceException
+	 * @param signature for link
+	 * @return link
+	 * @throws ServiceException for application
 	 */
 	Link findLinkModelWithUser(final String signature) throws  ServiceException{
-		LOGGER.info("FIND LINK WITH SIGNATUR {}", signature);
+		LOGGER.info("FIND LINK WITH SIGNATURE {}", signature);
 		final long id = LinkDTO.convertEpochSecToId(signature);
 		return linkRepository.findLinkWithUserByLinkId(id)
 				.orElseThrow(() ->new ServiceException("not found"));
@@ -103,7 +102,7 @@ public class LinkService {
 		linkDto = LinkDTO.getMapLinkToDto(newLink);
 		return Optional.of(linkDto)
 						.orElse(LinkDTO.builder()
-								.title("not availible")
+								.title("not available")
 								.url("localhost:5550/jReditt/")
 								.build());
 	}
@@ -125,7 +124,7 @@ public class LinkService {
 		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
 											.orElseGet(()-> Collections.EMPTY_SET);
 		List<LinkDTO> links = linksWithComments.stream()
-								.map(link -> LinkDTO.getMapLinkToDto(link))
+								.map(LinkDTO::getMapLinkToDto)
 								.collect(Collectors.toList());
 		return new PageImpl<>(links, pageable, ln.getTotalElements());
 	}
@@ -138,7 +137,6 @@ public class LinkService {
 
 	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
-		List<Comment> comments = ln.getContent().get(0).getComments();
 		return ln.getContent();
 	}
 

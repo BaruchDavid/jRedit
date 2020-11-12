@@ -14,8 +14,8 @@ public interface BCryptPwEncoderManager {
 	 * 1. will be called from register function when authetication is present of registered user
 	 * 2. will be called from register function when trying to register
 	 * 3. all else cases
-	 * @param comparedPw
-	 * @return
+	 * @param comparedPw is a new pw
+	 * @return true for equals pw or false
 	 */
 	default boolean matches(final String comparedPw) {
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());

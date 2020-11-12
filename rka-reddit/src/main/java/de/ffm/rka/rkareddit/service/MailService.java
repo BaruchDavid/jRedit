@@ -41,8 +41,8 @@ public class MailService {
 	}
 	
 	/**
-	 * sends emal ansychron
-	 * @throws ServiceException 
+	 * sends email async
+	 * @throws ServiceException for application
 	 */
 	@Async
 	public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) throws ServiceException {
@@ -58,31 +58,31 @@ public class MailService {
 			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", List.of(mimeMessage.getAllRecipients()));
 		} catch (MailException | MessagingException e) {
 			LOGGER.error(FAIL_TO_SEND , "MailAuthenticationException", e);
-			throw new ServiceException("Registierung fehlgeschlagen, Email konnte nicht versendet werden,"
-					+ "bitte versuchen Sie es später noch mal");
+			throw new ServiceException("Registrierung fehlgeschlagen, Email konnte nicht versendet werden,"
+					+ "bitte versuchen Sie es spaeter noch mal");
 		} 
 	}
 	/**
-	 * creates temaplte for email
-	 * @throws ServiceException 
+	 * creates template for email
+	 * @throws ServiceException for application
 	 */
 	@Async
-	public void sendEmailFromTemplate(UserDTO userDto, String temlateName, String subject) throws ServiceException {		
-		sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, temlateName), false, true);
+	public void sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) throws ServiceException {
+		sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName), false, true);
 	}
 	
-	private String createEmailContext(String baseUrl, UserDTO userDto, String temlateName) {
+	private String createEmailContext(String baseUrl, UserDTO userDto, String templateName) {
 		LOGGER.info("CREATE EMAIL FOR {}", userDto);
 		Locale locale =  Locale.ENGLISH;
 		Context context  = new Context(locale);
 		context.setVariable("user", userDto);
 		context.setVariable("baseURL", baseUrl);
-		return templateEngine.process(temlateName, context);
+		return templateEngine.process(templateName, context);
 	}
 	
 	/**
 	 * activation mail sending
-	 * @throws ServiceException 
+	 * @throws ServiceException for application
 	 */
 	@Async
 	public void sendActivationEmail(UserDTO user) throws ServiceException {
@@ -95,11 +95,11 @@ public class MailService {
 	
 	/**
 	 * welcome mail sending
-	 * @throws ServiceException 
+	 * @throws ServiceException for application
 	 */
 	@Async
 	public void sendWelcomeEmail(UserDTO user) throws ServiceException {
-		sendEmailFromTemplate(user, "mail/welcome",  "Welcom new LinkMe User"); 
+		sendEmailFromTemplate(user, "mail/welcome",  "Welcome new LinkMe User");
 	}
 	
 	

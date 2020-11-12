@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
@@ -83,20 +82,20 @@ public class LinkDTO implements Serializable {
     private LocalDateTime lastModifiedDate;
 
     /**
-     * dont call childElementUser for de/serialize json
+     * don't call childElementUser for de/serialize json
      */
     @JsonIgnore
     private List<CommentDTO> commentDTOS = new ArrayList<>();
 
 
     /**
-     * dont call childElementUser for de/serialize json
+     * don't call childElementUser for de/serialize json
      */
     @JsonIgnore
     private List<Tag> tags = new ArrayList<>();
 
     /**
-     * dont call childElementUser for de/serialize json
+     * don't call childElementUser for de/serialize json
      */
     @JsonIgnore
     private User user;
@@ -134,7 +133,7 @@ public class LinkDTO implements Serializable {
 
     /**
      * @param time creation date
-     * @return creatation date as milli
+     * @return creation date as milli
      */
     public static String convertLDTtoEpochSec(LocalDateTime time) {
         Instant instant = time.atZone(ZoneId.systemDefault()).toInstant();
@@ -149,21 +148,21 @@ public class LinkDTO implements Serializable {
      * LinkController and AuthController maps links to LinkDTO.
      * AuthController needs already presented comments from link,
      * otherwise it get Lazy Initialization
-     * @param link
-     * @return
+     * @param link to be filled with comments and for mapping
+     * @return linkDto from link
      */
     public static LinkDTO getMapLinkToDto(Link link) {
-        LinkDTO temp = modelMapper.map(link, LinkDTO.class);
-        temp.setCommentDTOS(link.getComments().stream()
+        LinkDTO linkDto = modelMapper.map(link, LinkDTO.class);
+        linkDto.setCommentDTOS(link.getComments().stream()
                 .map(CommentDTO::getCommentToCommentDto)
                 .collect(Collectors.toList()));
-        temp.setLinkSignature(convertLDTtoEpochSec(link.getCreationDate())
+        linkDto.setLinkSignature(convertLDTtoEpochSec(link.getCreationDate())
                 .concat(String.valueOf(link.getLinkId())));
-        return temp;
+        return linkDto;
     }
 
     /**
-     * @param timeInSeconds which represend creation date
+     * @param timeInSeconds which represent creation date
      * @return creation date as localdatetime
      */
     public static long convertEpochSecToId(final String timeInSeconds) throws IllegalArgumentException {

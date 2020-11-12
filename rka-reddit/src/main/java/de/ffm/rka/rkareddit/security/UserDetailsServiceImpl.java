@@ -36,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 															});
 	}
 
-	public void reloadUserAuthetication(final String newEmail) {
+	public void reloadUserAuthentication(final String newEmail) {
 		Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userRepository.findByEmailWithRoles(newEmail);
 		Authentication newAuth = new UsernamePasswordAuthenticationToken(user, oldAuth.getCredentials(), oldAuth.getAuthorities());

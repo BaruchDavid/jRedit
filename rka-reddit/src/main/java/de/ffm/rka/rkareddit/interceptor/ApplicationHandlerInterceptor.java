@@ -17,7 +17,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- * purpose of this class is checking of autheticated users by using
+ * purpose of this class is checking of authenticated users by using
  * annotation @AuthenticationPrincipal
  * 
  * @author rka
@@ -28,12 +28,11 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationHandlerInterceptor.class);
 	private static final String IS_404_ERROR ="404";
 	private static final String IS_400_ERROR ="400";
-	public static final String ANONYMOUS = "anonymousUser";
 	public static final String PRIVATE_PROFILE_URL = "private";
 
 	/**
-	 * any method with @AutheticationPrincipal and without @Secured
-	 * @throws Exception 
+	 * any method with @AuthenticationPrincipal and without @Secured
+	 * @throws Exception in pre-handle of request
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -46,9 +45,9 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
             if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
             	&& PRIVATE_PROFILE_URL.contains(request.getRequestURL())) {
             		LOGGER.info("METHODE: {}", method.getName());
-            		LOGGER.warn("autheticated user could not access method with authetication");
+            		LOGGER.warn("authenticated user could not access method with authentication");
             		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
-            		LOGGER.warn("IP-Adresse {}", request.getHeader("True-Client-IP"));
+            		LOGGER.warn("IP-Address {}", request.getHeader("True-Client-IP"));
             		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
             		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
             } else if ((String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
@@ -75,7 +74,7 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 					headerValue = headerValue.concat(",").concat(header.nextElement());
 				}
 				if (headerValue.length() > 0) {
-					headerValue = headerValue.substring(1, headerValue.length());
+					headerValue = headerValue.substring(1);
 				}
 				resultList.add(headerName.concat("=").concat(headerValue));
 			}
@@ -88,7 +87,7 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 			ModelAndView modelAndView) throws Exception {
 		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
 			LOGGER.info("REMOTE ADDRESS {} ACCESS IN POST HANDLE-INTERCEPTOR TO {} "
-						+ "PAGE NOT FOUND  {} {} WITH STATUS: {}", request.getRemoteAddr(), 
+						+ "PAGE NOT FOUND  {} WITH STATUS: {}", request.getRemoteAddr(),
 							request.getMethod(),  request.getRequestURL(), response.getStatus());
 		}
 	}

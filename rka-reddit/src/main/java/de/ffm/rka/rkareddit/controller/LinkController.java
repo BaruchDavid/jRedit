@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.controller;
 
-import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
@@ -81,7 +80,7 @@ public class LinkController {
 
 	/**
 	 *
-	 * @param model
+	 * @param model save data for view
 	 * @param signature for linkDTO
 	 * @param userDetails current user
 	 * @param response set status
@@ -93,7 +92,7 @@ public class LinkController {
 
 		Link link = linkService.findLinkModelBySignature(signature);
 
-		link.setComments(commentService.retriveCommentsForLink(link.getLinkId()));
+		link.setComments(commentService.retrieveCommentsForLink(link.getLinkId()));
 		Optional.ofNullable(userDetails).ifPresent(logedUser -> {
 			User userModel = (User)userDetails;
 			linkService.saveLinkHistory(link, userModel);
@@ -161,8 +160,8 @@ public class LinkController {
 
 	/**
 	 * NOT IN USE WITH GUI
-	 * @param signature
-	 * @return
+	 * @param signature for link
+	 * @return view
 	 */
 	@GetMapping("/links/link/NOT_IN_USE_FOR_GUI_JUST_NOW/{signature}")
 	public String linkWithTags(@PathVariable String signature) {

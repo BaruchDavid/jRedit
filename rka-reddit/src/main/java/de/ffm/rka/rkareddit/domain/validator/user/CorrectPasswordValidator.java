@@ -26,8 +26,8 @@ public class CorrectPasswordValidator implements ConstraintValidator<CorrectPass
 	 */
 	@Override
 	public boolean matches(String comparedPw) {
-		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-		if(!authetication.isEmpty() && "anonymousUser".equals(authetication.get().getPrincipal())) {
+		Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+		if(!authentication.isEmpty() && "anonymousUser".equals(authentication.get().getPrincipal())) {
 			return true;
 		} else {
 			return BCryptPwEncoderManager.super.matches(comparedPw);

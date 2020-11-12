@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * maintance all business logik for link treating
+ * maintenance all business logicW for link treating
  * creates basically read transaction 
  * @author RKA
  *
@@ -29,20 +29,21 @@ public class VoteService {
 
 	/**
 	 *
-	 * @param direction +1 is upvote, -1 is downvote
-	 * @param linkSignatur from link
+	 * @param direction +1 is upvote, -1 is down vote
+	 * @param linkSignature from link
 	 * @param voteCount current voteCount
 	 * @return empty invalid vote or edited voted
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException on trying send illegal vote
 	 * @throws ServiceException will be thrown, when no link could be found and optional-link is empty
 	 */
 	@Transactional(readOnly = false)
-	public int saveVote(short direction, String linkSignatur, int voteCount) throws IllegalArgumentException, ServiceException  {
-		final boolean isValidDirection = direction !=0 && direction < 2 && direction > -2 ? true : false;
-		final long linkId = LinkDTO.convertEpochSecToId(linkSignatur);
+	public int saveVote(short direction, String linkSignature, int voteCount) throws IllegalArgumentException, ServiceException  {
+		LOGGER.info("VOTING FOR Link {} WITH COUNT {}", linkSignature, voteCount);
+		final boolean isValidDirection = direction != 0 && direction < 2 && direction > -2;
+		final long linkId = LinkDTO.convertEpochSecToId(linkSignature);
 		Optional<Link> link = linkRepository.findByLinkId(linkId);
 		int currentCount = link.map(Link::getVoteCount)
-								.orElseThrow(() -> new ServiceException("kein Vote für den Linksignatur: ".concat(linkSignatur)));
+								.orElseThrow(() -> new ServiceException("kein Vote für den Link signature: ".concat(linkSignature)));
 		
 		if(currentCount == voteCount && isValidDirection) {
 			link.get().setVoteCount(currentCount+direction);

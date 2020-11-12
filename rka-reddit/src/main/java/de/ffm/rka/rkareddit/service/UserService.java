@@ -104,7 +104,7 @@ public class UserService {
 			newUser.setNewEmail(StringUtils.EMPTY);
 			newUser.setActivationCode(StringUtils.EMPTY);
 			save(newUser);
-			userDetailsService.reloadUserAuthetication(email);
+			userDetailsService.reloadUserAuthentication(email);
 			userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
 			sendWelcomeEmail(userDTO.get());
 		}

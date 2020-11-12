@@ -18,7 +18,7 @@ public class UserFailureAuthenticationHandler  implements AuthenticationFailureH
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
-		LOGGER.error("Authetication failed {} on request {} and queryString {} and response {}", 
+		LOGGER.error("Authentication failed {} on request {} and queryString {} and response {}",
 				exception.getMessage(), request.getRequestURL(), request.getQueryString(), response.getStatus());		
 	}
 

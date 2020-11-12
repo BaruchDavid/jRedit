@@ -17,7 +17,7 @@ public class UserSuccessfullAthenticationHandler implements AuthenticationSucces
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		LOGGER.info("Successfully autheticated {}", authentication.getName());
+		LOGGER.info("Successfully authenticated {}", authentication.getName());
 		response.sendRedirect(request.getContextPath().concat("/links"));
 	}
 
