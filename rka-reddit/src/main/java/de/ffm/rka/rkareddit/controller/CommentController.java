@@ -21,7 +21,7 @@ import java.util.Optional;
 public class CommentController {
 
     private final CommentService commentService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommentService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
 
