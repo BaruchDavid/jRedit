@@ -63,8 +63,7 @@ public class BasicErrorController implements ErrorController{
 		resp.setStatus(403);
 		return "error/accessDenied";
     }
-	
-	/**TODO: vermeide user aus der DB abzufragen, hole Vornamen, Nachnamen aus der Authetication*/
+
 	private UserDTO getUserDTO(String userName) {
 		User user = (User) userDetailsService.loadUserByUsername(userName);
 		return  UserDTO.mapUserToUserDto(user);
