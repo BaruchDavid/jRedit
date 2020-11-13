@@ -5,10 +5,7 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.URL;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -36,6 +33,7 @@ import static java.util.Date.from;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class LinkDTO implements Serializable {
 
     private static ModelMapper modelMapper;
@@ -112,11 +110,6 @@ public class LinkDTO implements Serializable {
      */
     private Long linkId;
 
-
-    public LinkDTO() {
-
-    }
-
     public String getLinkSignature() {
         return this.linkSignature;
     }
@@ -165,7 +158,7 @@ public class LinkDTO implements Serializable {
      * @param timeInSeconds which represent creation date
      * @return creation date as localdatetime
      */
-    public static long convertEpochSecToId(final String timeInSeconds) throws IllegalArgumentException {
+    public static long convertEpochSecToId(final String timeInSeconds) {
         long id = 0L;
         try {
             id = Long.parseLong(timeInSeconds.substring(TIME_LATTERS));

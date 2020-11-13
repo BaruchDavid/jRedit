@@ -118,9 +118,6 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();	
-		/*roles.stream()
-			.map(role -> authorities.add(new SimpleGrantedAuthority(role.getName())))
-			.collect(Collectors.toList());*/
 		roles.forEach(role ->authorities.add(new SimpleGrantedAuthority(role.getName())));
 		return authorities;
 	}

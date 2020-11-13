@@ -134,9 +134,12 @@ public class Link extends Auditable implements Serializable{
 
 	@Override
     public boolean equals(Object o) {
-		if (this == o) return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+		if (this == o) {
+			return true;
+		};
+        if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
         Link link = (Link) o;
         return Objects.equals(url, link.url);
 	}

@@ -70,7 +70,7 @@ public class AuthController {
 	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email,
-								Model model) throws UsernameNotFoundException {
+								Model model) {
 		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
 		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
