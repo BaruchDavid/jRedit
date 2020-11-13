@@ -23,10 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public UserDetailsServiceImpl() {
-	}
 
-
+	/*TODO: Caching einführen*/
 	@Override
 	public UserDetails loadUserByUsername(String username) {
 		return Optional.ofNullable(userRepository.findByEmailWithRoles(username))
