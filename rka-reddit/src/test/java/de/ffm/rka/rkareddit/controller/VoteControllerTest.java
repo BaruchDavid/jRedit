@@ -2,18 +2,14 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
-import de.ffm.rka.rkareddit.rest.controller.VoteController;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 
-import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -64,6 +59,15 @@ public class VoteControllerTest {
 		this.mockMvc.perform(get("/link/01010/vote/direction/1/votecount/1"))
 					.andDo(print())
 					.andExpect(status().is(400))
+					.andExpect(view().name("error/basicError"));
+	}
+
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void increaseVoteOnNotExistentLink() throws Exception {
+		this.mockMvc.perform(get("/link/987654321911499/vote/direction/1/votecount/1"))
+					.andDo(print())
+					.andExpect(status().is(404))
 					.andExpect(view().name("error/basicError"));
 	}
 

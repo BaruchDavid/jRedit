@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -43,11 +44,15 @@ public class AuthControllerOverridenPropsTest {
 									.build();
 	}
 
-
+	/**
+	 * invalid mail rises no error and threats as successful.
+	 * no new user will be saved
+	 * @throws Exception
+	 */
 	@Test
-	public void registerNewUserSuccess() throws Exception {
+	public void registerNewUserWithNonExistsEmail() throws Exception {
 
-	    	this.mockMvc.perform(post("/registration")
+		MvcResult mvcResult = this.mockMvc.perform(post("/registration")
 								.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 								.param("firstName", "Plau")
 								.param("secondName", "Grbn")
@@ -56,7 +61,8 @@ public class AuthControllerOverridenPropsTest {
 								.param("password", "tatatata")
 								.param("confirmPassword", "tatatata"))
 	    					.andDo(print())
-							.andExpect(status().is(504))
-							.andExpect(view().name("error/basicError"));
+							.andExpect(status().is(302))
+							.andExpect(view().name("redirect:/registration"))
+							.andReturn();
 	}
 }

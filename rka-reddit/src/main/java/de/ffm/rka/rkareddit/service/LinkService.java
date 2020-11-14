@@ -122,7 +122,7 @@ public class LinkService {
 	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
 		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
-											.orElseGet(()-> Collections.EMPTY_SET);
+											.orElseGet(Collections::emptySet);
 		List<LinkDTO> links = linksWithComments.stream()
 								.map(LinkDTO::getMapLinkToDto)
 								.collect(Collectors.toList());

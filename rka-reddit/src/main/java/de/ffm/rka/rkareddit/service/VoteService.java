@@ -46,7 +46,9 @@ public class VoteService {
 								.orElseThrow(() -> new ServiceException("kein Vote für den Link signature: ".concat(linkSignature)));
 		
 		if(currentCount == voteCount && isValidDirection) {
-			link.get().setVoteCount(currentCount+direction);
+			link.orElseThrow(() -> new ServiceException("LINK NOT FOUND with SIGNATURE ".concat(linkSignature)
+														.concat("and ID ".concat(String.valueOf(linkId)))))
+					.setVoteCount(currentCount+direction);
 			linkRepository.save(link.get());
 			return link.get().getVoteCount();
 		}

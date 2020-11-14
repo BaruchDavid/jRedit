@@ -20,87 +20,89 @@ import java.util.Locale;
 
 /**
  * sending several email from template
- * @author RKA
  *
+ * @author RKA
  */
 @Service
 public class MailService {
-	private static final String FAIL_TO_SEND = "FAIL TO SEND EMAIL {}";
-	private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
-	private final JavaMailSender mailSender;
-	private final SpringTemplateEngine templateEngine;
-	
+    private static final String FAIL_TO_SEND = "FAIL TO SEND EMAIL {}";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
+    private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
 
-	@Value("${linkMeEmailService}")
-	private String baseUrl;
-		
-	public MailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
-		super();
-		this.mailSender = mailSender;
-		this.templateEngine = templateEngine;
-	}
-	
-	/**
-	 * sends email async
-	 * @throws ServiceException for application
-	 */
-	@Async
-	public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) throws ServiceException {
-		LOGGER.info("TRY SEND EMAIL TO {} witch Subject {}", to, subject);
-		try {
-			MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-			MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
-			message.setTo(to);
-			message.setFrom("noreplay@jReditt.com");	
-			message.setSubject(subject);
-			message.setText(content,isHtml);
-			mailSender.send(mimeMessage);
-			LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", List.of(mimeMessage.getAllRecipients()));
-		} catch (MailException | MessagingException e) {
-			LOGGER.error(FAIL_TO_SEND , "MailAuthenticationException", e);
-			throw new ServiceException("Registrierung fehlgeschlagen, Email konnte nicht versendet werden,"
-					+ "bitte versuchen Sie es spaeter noch mal");
-		} 
-	}
-	/**
-	 * creates template for email
-	 * @throws ServiceException for application
-	 */
-	@Async
-	public void sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) throws ServiceException {
-		sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName), false, true);
-	}
-	
-	private String createEmailContext(String baseUrl, UserDTO userDto, String templateName) {
-		LOGGER.info("CREATE EMAIL FOR {}", userDto);
-		Locale locale =  Locale.ENGLISH;
-		Context context  = new Context(locale);
-		context.setVariable("user", userDto);
-		context.setVariable("baseURL", baseUrl);
-		return templateEngine.process(templateName, context);
-	}
-	
-	/**
-	 * activation mail sending
-	 * @throws ServiceException for application
-	 */
-	@Async
-	public void sendActivationEmail(UserDTO user) throws ServiceException {
-		sendEmailFromTemplate(user, "mail/activation",  "LinkMe user Activation"); 
-	}
-	@Async
-	public void sendEmailToNewEmailAccount(UserDTO user) throws ServiceException {
-		sendEmailFromTemplate(user, "mail/new_email_activation",  "LinkMe user email change"); 
-	}
-	
-	/**
-	 * welcome mail sending
-	 * @throws ServiceException for application
-	 */
-	@Async
-	public void sendWelcomeEmail(UserDTO user) throws ServiceException {
-		sendEmailFromTemplate(user, "mail/welcome",  "Welcome new LinkMe User");
-	}
-	
-	
+
+    @Value("${linkMeEmailService}")
+    private String baseUrl;
+
+    public MailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
+        super();
+        this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
+    }
+
+    /**
+     * sends email async
+     *
+     * @throws ServiceException for application
+     */
+    @Async
+    public boolean sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
+        LOGGER.info("TRY SEND EMAIL TO {} witch Subject {}", to, subject);
+        try {
+            MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+            message.setTo(to);
+            message.setFrom("noreplay@jReditt.com");
+            message.setSubject(subject);
+            message.setText(content, isHtml);
+            mailSender.send(mimeMessage);
+            LOGGER.info("SEND REGISTRATION MAIL SUCCESSFULLY TO {}", List.of(mimeMessage.getAllRecipients()));
+            return true;
+        } catch (MailException | MessagingException e) {
+            LOGGER.error(FAIL_TO_SEND, "MailAuthenticationException", e);
+            return false;
+        }
+    }
+
+    /**
+     * creates template for email
+     */
+    @Async
+    public boolean sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) {
+        return sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName), false, true);
+    }
+
+    private String createEmailContext(String baseUrl, UserDTO userDto, String templateName) {
+        LOGGER.info("CREATE EMAIL FOR {}", userDto);
+        Locale locale = Locale.ENGLISH;
+        Context context = new Context(locale);
+        context.setVariable("user", userDto);
+        context.setVariable("baseURL", baseUrl);
+        return templateEngine.process(templateName, context);
+    }
+
+    /**
+     * activation mail sending
+     */
+    @Async
+    public boolean sendActivationEmail(UserDTO user) {
+        return sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation");
+    }
+
+    @Async
+    public void sendEmailToNewEmailAccount(UserDTO user) throws ServiceException {
+        sendEmailFromTemplate(user, "mail/new_email_activation", "LinkMe user email change");
+    }
+
+    /**
+     * welcome mail sending
+     *
+     * @throws ServiceException for application
+     */
+    @Async
+    public void sendWelcomeEmail(UserDTO user) throws ServiceException {
+        sendEmailFromTemplate(user, "mail/welcome", "Welcome new LinkMe User");
+    }
+
+
 }

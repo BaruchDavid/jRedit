@@ -82,11 +82,11 @@ public class GlobalControllerAdvisor {
 				break;
 			case "HttpRequestMethodNotSupportedException":
 				view = PAGE_NOT_FOUND;
-				res.setStatus(HttpStatus.SC_NOT_FOUND);
+				res.setStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
 				break;
 			case "ServiceException":
 				view = DEFAULT_APPLICATION_ERROR;
-				res.setStatus(HttpStatus.SC_GATEWAY_TIMEOUT);
+				res.setStatus(HttpStatus.SC_NOT_FOUND);
 				break;
 			default:
 				res.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);

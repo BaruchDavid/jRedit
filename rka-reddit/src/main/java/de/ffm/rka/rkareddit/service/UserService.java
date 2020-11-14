@@ -52,7 +52,7 @@ public class UserService {
 	private Set<Link> fillLinkWithSuitableComments(List<Link> userLinks) {
 		List<Long> linkIds = linkService.getLinkIds(userLinks);
 		return linkService.findLinksWithCommentsByLinkIds(linkIds)
-				.orElseGet(()->Collections.EMPTY_SET);
+				.orElseGet(Collections::emptySet);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class UserService {
 	 * @throws ServiceException
 	 */
 	@Transactional(readOnly = false)
-	public UserDTO register(UserDTO userDto) throws ServiceException {
+	public UserDTO register(UserDTO userDto) {
 		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 		User newUser = UserDTO.mapUserDtoToUser(userDto);
 		String secret;
@@ -71,8 +71,11 @@ public class UserService {
 		newUser.setPassword(secret);
 		newUser.setConfirmPassword(secret);
 		newUser.addRole(roleService.findByName("ROLE_USER"));
-		sendActivatonEmail(userDto);
-		return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
+		if(sendActivatonEmail(userDto)){
+			return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
+		} else{
+			return UserDTO.builder().email("nonValid@empty.com").build();
+		}
 	}
 
 	@Transactional(readOnly = false)
@@ -185,8 +188,8 @@ public class UserService {
 		return userRepository.findByEmailAndActivationCode(mail, code);
 	}
 
-	private void sendActivatonEmail(UserDTO user) throws ServiceException {
-		mailService.sendActivationEmail(user);
+	private boolean sendActivatonEmail(UserDTO user) {
+		return mailService.sendActivationEmail(user);
 	}
 
 	public void sendWelcomeEmail(UserDTO user) throws ServiceException {
@@ -227,17 +230,10 @@ public class UserService {
 	}
 
 	public boolean lockUser(String userName) throws ServiceException {
-		Optional<User> dbUser = Optional.of(getUser(userName));
-		boolean locked = false;
-		if(dbUser.isPresent()) {
-			dbUser.get().setEnabled(false);
-			mailService.sendEmail(userName, "Account is locked", "account is locked", false, false);
-			locked = true;
-		} else {
-			//delete all links with this tag
-			//delete tag
-		}
-		return locked;
+		User dbUser = (User) userDetailsService.loadUserByUsername(userName);
+		dbUser.setEnabled(false);
+		mailService.sendEmail(userName, "Account is locked", "account is locked", false, false);
+		return true;
 	}
 
 	public List<User> findAll() {
