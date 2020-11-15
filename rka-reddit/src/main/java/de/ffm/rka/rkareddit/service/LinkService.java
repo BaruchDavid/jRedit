@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 /**
  * maintenance all business logic for link treating
  * creates basically read transaction
+ * Hibernate does some optimizing for read-only entities:
+ * It saves execution time by not dirty-checking simple properties or single-ended associations.
+ * It saves memory by deleting database snapshots.
  * @author RKA
  *
  */
@@ -55,6 +59,11 @@ public class LinkService {
 
 	public Link findLinkModelBySignature(final String signature) throws ServiceException {
 		return findLinkModelWithUser(signature);
+	}
+
+	@Async
+	public void createClickedUserLinkHistory() throws InterruptedException {
+		LOGGER.info("THREAD ASYNC NAME: " + Thread.currentThread().getName());
 	}
 
 	/**

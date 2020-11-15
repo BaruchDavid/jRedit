@@ -63,6 +63,7 @@ public class CommentService {
 
 
 	public List<Comment> retrieveCommentsForLink(Long linkId) {
+		LOGGER.info("THREAD NAME: " + Thread.currentThread().getName());
 		return commentRepository.findAllCommentsWithLinkId(linkId);
 	}
 }
