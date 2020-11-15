@@ -45,11 +45,14 @@ public class CommentService {
 	 * @param userName who creates comment
 	 * @param comment content
 	 */
+	@Transactional(readOnly = false)
 	public CommentDTO saveNewComment(final String userName, CommentDTO comment) throws ServiceException {
 		comment.setUser((User) userDetailsService.loadUserByUsername(userName));
 		Comment cm = CommentDTO.getMapDtoToComment(comment);
-		cm.setLink(getSuitableLink(comment.getLSig()));
-		comment = CommentDTO.getCommentToCommentDto(commentRepository.saveAndFlush(cm));
+		Link suitableLink = getSuitableLink(comment.getLSig());
+		suitableLink.setCommentCount(suitableLink.getCommentCount()+1);
+		cm.setLink(suitableLink);
+		comment = CommentDTO.getCommentToCommentDto(commentRepository.save(cm));
 		LOGGER.info("{} SAVED COMMENT FOR LINK {}", comment, comment.getLSig());
 		return comment;
 	}
