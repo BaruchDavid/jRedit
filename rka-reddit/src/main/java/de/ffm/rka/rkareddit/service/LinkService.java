@@ -62,8 +62,12 @@ public class LinkService {
 	}
 
 	@Async
-	public void createClickedUserLinkHistory() throws InterruptedException {
-		LOGGER.info("THREAD ASYNC NAME: " + Thread.currentThread().getName());
+	@Transactional(readOnly = false)
+	public void createClickedUserLinkHistory(User user, Link link) {
+		link.setUsersLinksHistory(new HashSet<>(Collections.singletonList(user)));
+		link = linkRepository.save(link);
+		LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
+		LOGGER.info("THREAD ASYNC NAME: {}", Thread.currentThread().getName());
 	}
 
 	/**
@@ -148,14 +152,4 @@ public class LinkService {
 		Page<Link> ln = linkRepository.findAll(pageable);
 		return ln.getContent();
 	}
-
-	/**
-	 * save link which has been click for authenticated user
-	 */
-	@Transactional(readOnly = false)
-	public void saveLinkHistory(Link link, User user) {
-		link = linkRepository.saveAndFlush(link);
-		LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
-	}
-
 }

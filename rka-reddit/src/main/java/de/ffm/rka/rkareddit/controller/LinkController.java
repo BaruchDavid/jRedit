@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -87,17 +88,15 @@ public class LinkController {
 	 */
 	@GetMapping("/links/link/{signature}")
 	public String link(Model model, @PathVariable String signature,
-					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException, InterruptedException {
+					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
 		Link link = linkService.findLinkModelBySignature(signature);
 		link.setComments(commentService.retrieveCommentsForLink(link.getLinkId()));
-		//TODO: saveLinkHistory auslagern, repository-methode überprüfen
-		linkService.createClickedUserLinkHistory();
-		/*Optional.ofNullable(userDetails).ifPresent(logedUser -> {
+		Optional.ofNullable(userDetails).ifPresent(loggedUser -> {
 			User userModel = (User)userDetails;
-			linkService.saveLinkHistory(link, userModel);
+			linkService.createClickedUserLinkHistory(userModel, link);
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
-		});*/
+		});
 		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(link);
 		model.addAttribute("linkDto",linkDTO);
 		CommentDTO comment = CommentDTO.builder()
