@@ -80,9 +80,12 @@ public class Link extends Auditable implements Serializable{
 		
 	/**
 	 * Comment is a owner cause of mappedBy argument
+	 * orphan-removal: When comment will be removed from list,
+	 * suitable comment entity will be removed too.
 	 */
 	@Builder.Default
-	@OneToMany(mappedBy="link", fetch = FetchType.LAZY)
+	@OneToMany(orphanRemoval = true,mappedBy="link",
+				fetch = FetchType.LAZY)
 	private List<Comment> comments = new ArrayList<>();
 
 	@Autowired
