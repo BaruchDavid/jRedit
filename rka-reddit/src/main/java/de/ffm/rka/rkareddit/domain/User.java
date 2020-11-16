@@ -75,7 +75,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@NotEmpty(message = "please confirm your password")
 	private String confirmPassword;
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "users_roles",
 			joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),

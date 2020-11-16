@@ -20,7 +20,6 @@ import static java.util.Date.from;
 
 @Entity
 @Getter @Setter
-//@ToString(exclude = {"user", "comments",  "tags"}) 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -63,7 +62,7 @@ public class Link extends Auditable implements Serializable{
 	private Set<Tag> tags = new HashSet<>();
 
 	@Builder.Default
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "user_clickedLinks",
 			joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
