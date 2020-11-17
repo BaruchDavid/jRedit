@@ -29,6 +29,7 @@ import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Controller
@@ -125,7 +126,7 @@ public class AuthController {
 	@PostMapping(value = {REGISTRATION})
 	public String userRegistration(@Validated(value = {UserValidationgroups.ValidationUserRegistration.class}) UserDTO userDto,
 								BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res, 
-								HttpServletRequest req, Model model) throws ServiceException {
+								HttpServletRequest req, Model model) throws ServiceException, ExecutionException, InterruptedException {
 		LOGGER.info("TRY TO REGISTER {}", userDto);
 		if(bindingResult.hasErrors()) {
 			return manageValidationErrors(userDto, bindingResult, res, req, model);

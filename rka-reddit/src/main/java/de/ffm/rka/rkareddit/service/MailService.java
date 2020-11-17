@@ -9,6 +9,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -17,6 +18,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Future;
 
 /**
  * sending several email from template
@@ -45,10 +47,11 @@ public class MailService {
      *
      * @throws ServiceException for application
      */
-    @Async
+    //@Async
     public boolean sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
         LOGGER.info("TRY SEND EMAIL TO {} witch Subject {}", to, subject);
         try {
+            LOGGER.info("SEND-EMAIL-THREAD-NAME {}", Thread.currentThread().getName());
             MimeMessage mimeMessage = this.mailSender.createMimeMessage();
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
             message.setTo(to);
@@ -67,12 +70,15 @@ public class MailService {
     /**
      * creates template for email
      */
-    @Async
+    //@Async
     public boolean sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) {
+        LOGGER.info("SEND-EMAIL-FROM TEMPLATE METHOD-CALL -THREAD-NAME {}", Thread.currentThread().getName());
         return sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName), false, true);
     }
 
     private String createEmailContext(String baseUrl, UserDTO userDto, String templateName) {
+        System.out.println("CREATE EMAIL CONTEXT-THREAD NAME: " + Thread.currentThread().getName());
+        LOGGER.info("SEND-EMAIL-FROM CONTEXT METHOD-CALL -THREAD-NAME {}", Thread.currentThread().getName());
         LOGGER.info("CREATE EMAIL FOR {}", userDto);
         Locale locale = Locale.ENGLISH;
         Context context = new Context(locale);
@@ -85,8 +91,9 @@ public class MailService {
      * activation mail sending
      */
     @Async
-    public boolean sendActivationEmail(UserDTO user) {
-        return sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation");
+    public Future<Boolean> sendActivationEmail(UserDTO user) {
+        LOGGER.info("SEND-ACTIVATION-EMAIL METHO CALL THREAD NAME {}", Thread.currentThread().getName());
+        return new AsyncResult<Boolean>(sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation"));
     }
 
     @Async

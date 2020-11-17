@@ -126,7 +126,9 @@ public class AuthControllerTest {
 		this.mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.param("firstName", "Plau").param("secondName", "Grbn").param("aliasName", "grünes")
 				.param("email", "Grbein@com.de").param("password", "tatatata").param("confirmPassword", "tatatata"))
-				.andDo(print()).andExpect(status().is3xxRedirection()).andExpect(flash().attribute("success", true));
+				.andDo(print())
+				.andExpect(status().is3xxRedirection())
+				.andExpect(flash().attribute("success", true));
 	}
 
 	@Test

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * manages login- and register-process
@@ -62,7 +64,7 @@ public class UserService {
 	 * @throws ServiceException
 	 */
 	@Transactional(readOnly = false)
-	public UserDTO register(UserDTO userDto) {
+	public UserDTO register(UserDTO userDto) throws ExecutionException, InterruptedException {
 		userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
 		User newUser = UserDTO.mapUserDtoToUser(userDto);
 		String secret;
@@ -71,11 +73,15 @@ public class UserService {
 		newUser.setPassword(secret);
 		newUser.setConfirmPassword(secret);
 		newUser.addRole(roleService.findByName("ROLE_USER"));
-		if(sendActivatonEmail(userDto)){
-			return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
-		} else{
-			return UserDTO.builder().email("nonValid@empty.com").build();
+		Future<Boolean> sendResult = sendActivatonEmail(userDto);
+		if(sendResult.isDone()){
+			if(sendResult.get()){
+				return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
+			} else {
+				LOGGER.info("REGISTRATION FAILED FOR USER {} and EMAIL {}", userDto.getEmail(), userDto.getEmail());
+			}
 		}
+		return userDto;
 	}
 
 	@Transactional(readOnly = false)
@@ -188,7 +194,8 @@ public class UserService {
 		return userRepository.findByEmailAndActivationCode(mail, code);
 	}
 
-	private boolean sendActivatonEmail(UserDTO user) {
+	private Future<Boolean> sendActivatonEmail(UserDTO user) {
+		LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
 		return mailService.sendActivationEmail(user);
 	}
 
