@@ -263,4 +263,11 @@ public class UserService {
 		links = new HashSet<>(this.fillLinkWithSuitableComments(new ArrayList<>(links)));
 		return links;
 	}
+
+	@Transactional(readOnly = false)
+	public void saveNewUserPicture(byte[] pictureBuffer, User user) {
+		user.setProfileFoto(pictureBuffer);
+		userRepository.save(user);
+		LOGGER.info("new picture saved or user {}", user.getEmail());
+	}
 }
