@@ -59,14 +59,6 @@
             <div class="col-3 offset-1">
                 <div class="row">
                     <div class="card col-12">
-                        <!--<img class="card-img-top" id="profilePic" src="" alt="Card image cap">-->
-                        <div id="drop-area">
-                            <form class="my-form">
-                                <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
-                                <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
-                                <label class="button" for="fileElem">Select some files</label>
-                            </form>
-                        </div>
                         <div class="card-body" th:if="${userDto.getEmail() == userContent.getEmail()}">                           
                             <a href="submit.html"><button type="button" class="btn btn-primary btn-lg btn-block">New Post</button></a>
                         </div>
@@ -104,8 +96,6 @@
     </div><!-- // profile -->
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
 	<script th:src="@{/js/user.js}"></script>
-	<script th:src="@{/js/img.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/img_upload.css}">
 </body>
 
 </html>
