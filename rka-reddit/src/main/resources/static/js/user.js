@@ -22,12 +22,8 @@ $(document).ready(function(){
                console.log ("error: " + error);
             });
 
-        /*fetch('/jReditt/profile/information/content/user-pic?user='+user, {method: 'GET'})
-          .then(res=>{return res.blob()})
-          .then(blob=>{
-            const img = URL.createObjectURL(blob);
-            document.getElementById('profilePic').setAttribute('src', img);
-          });*/
+            getPicture();
+
 	}
 });
 

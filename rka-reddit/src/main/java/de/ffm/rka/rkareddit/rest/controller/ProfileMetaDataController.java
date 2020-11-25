@@ -90,27 +90,10 @@ public class ProfileMetaDataController {
         return new ResponseEntity<>(media, headers, HttpStatus.OK);
     }
 
-	/*@PostMapping("/information/content/user-pic")
-	public String newUserPicture(MultipartFile pic, BindingResult bindingResult,
-								 RedirectAttributes atts) {
-		LOGGER.info("Byte-Array als Bild {}", pic);
-		if(bindingResult.hasErrors()) {
-			LOGGER.error("Validation failed of picture: {}");
-			*//*model.addAttribute(NEW_LINK, link);*//*
-			//response.setStatus(HttpStatus.BAD_REQUEST.value());
-			return "SUBMIT_LINK";
-		} else {
-			*//*LinkDTO newLink = linkService.saveLink(user.getUsername(),link);
-			redirectAttributes.addFlashAttribute(SUCCESS, true);*//*
-			return "redirect:/links/link/";
-		}
-	}*/
-
     @PostMapping("/information/content/user-pic")
-    public ResponseEntity<Void> submit(@RequestParam(name = "pic") MultipartFile formDataWithFile, ModelMap modelMap,
+    public boolean submit(@RequestParam(name = "pic") MultipartFile formDataWithFile, ModelMap modelMap,
                                        @AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
         User user = (User) userDetailsService.loadUserByUsername(userPrincipal.getUsername());
-
         InputStream newPictureStream = formDataWithFile.getInputStream();
         byte[] pictureBuffer = new byte[newPictureStream.available()];
         newPictureStream.read(pictureBuffer);
@@ -118,6 +101,6 @@ public class ProfileMetaDataController {
         LOGGER.info("saved new picture {} for user: {}", formDataWithFile.getOriginalFilename(), userPrincipal.getUsername());
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(req.getContextPath()+"/profile/information/content/user-pic"));
-        return new ResponseEntity<Void>(headers, HttpStatus.MOVED_PERMANENTLY);
+        return true;
     }
 }

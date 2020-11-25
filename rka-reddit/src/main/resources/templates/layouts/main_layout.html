@@ -26,7 +26,7 @@
 	<div class="container">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-spring fixed-top"
 			th:fragment="navigation">
-				<a class="navbar-brand" href="/jReditt/links"> <i class="fa fa-leaf" aria-hidden="true"></i> Drops</a>
+				<a class="navbar-brand" href="/jReditt/links"> <i class="fa fa-leaf" aria-hidden="true"></i>SkyLink</a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse"
 					data-target="#navbarResponsive" aria-controls="navbarResponsive"
 					aria-expanded="false" aria-label="Toggle navigation">
@@ -61,16 +61,15 @@
 						</li>
 						<li class="nav-item" sec:authorize="isAuthenticated()">
 							<div class="nav-item" style="color: white"
-								th:text="${userDto.fullName}"></div>
-							<div class="nav-item" style="color: white">test</div>
+								th:text="${userDto.firstName}"></div>
 						</li>
 					</ul>
 				</div>
 		</nav>
 	</div>
 	<div class="jumbotron jumbotron-fluid" th:fragment="jumbotron">
-		<h2 style="text-align: center;" class="display-4">SkyLink</h2>
 		<div th:if="${not #strings.contains(#httpServletRequest.requestURI, 'profile')}">
+			<h2 style="text-align: center;" class="display-4">SkyLink</h2>
 			<div class="fieldwrapper">
 				<input id="field_location" class="field" name="searchTerm" type="text" value="">
 				<input type="submit" id="findbutton" value="Find" />
@@ -82,9 +81,10 @@
 					<input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
 					<label class="button" for="fileElem">Select some files</label>
 				</form>
-				<script th:src="@{/js/img.js}"></script>
+				<!--<script th:src="@{/js/img.js}"></script>-->
 				<link rel="stylesheet" th:href="@{/css/img_upload.css}">
 			</div>
+			<h2 style="text-align: center;" class="display-6" th:text="${userDto.fullName}"></h2>
 		</div>
     </div>
  	<div class="container" th:fragment="content">
