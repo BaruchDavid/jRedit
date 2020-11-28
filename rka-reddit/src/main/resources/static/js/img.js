@@ -51,9 +51,11 @@ function uploadFile(file) {
   fetch(url, {
       method: 'POST',
       body: formData
-    }).then(() => {
-        console.log('saved!!!');
-        getPicture();
+    }).then(response => {
+        if(response.status === 200){
+            console.log('saved!!!');
+            getPicture();
+        }
     }).catch(function (error) {
        console.log ("error: " + error);
     });
