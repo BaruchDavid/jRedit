@@ -10,21 +10,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
 @Entity(name="User")
 @Table(name = "user")
-@Getter @Setter 
+@Getter @Setter
 @ToString(exclude = {"userLinks", "userComment", "roles", "profileFoto", "userClickedLinks"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class User extends Auditable implements UserDetails, Serializable {
-	
+
 	private static final long serialVersionUID = -5987601453095162765L;
-	
-	
+
+
 
 //	GUID globale id selbst generieren
 //	UUID
@@ -35,23 +36,27 @@ public class User extends Auditable implements UserDetails, Serializable {
 
 	@Column(unique = true, nullable=false)
 	private String email;
-	
+
 	@Column(length = 100)
 	private String password;
-	
+
 	@Lob
 	@Basic(fetch=FetchType.LAZY)
 	private byte[] profileFoto;
 
+	@Column
+	private LocalDateTime fotoCreationDate;
+
 	@Column(length = 50)
 	private String firstName;
-	
+
+
 	@Column(length = 50)
 	private String secondName;
-	
+
 	@Column(nullable = false, unique = true)
 	private  String aliasName;
-	
+
 	@Column(nullable = true, unique = false)
 	private  String newEmail;
 
@@ -61,20 +66,20 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Link> userLinks = new ArrayList<>();
-	
+
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Comment> userComment = new ArrayList<>();
-	
-	
+
+
 	@Builder.Default
 	@Column(nullable = false)
 	private boolean enabled=false;
 
-	
+
 	@NotEmpty(message = "please confirm your password")
 	private String confirmPassword;
-	
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "users_roles",
@@ -82,17 +87,17 @@ public class User extends Auditable implements UserDetails, Serializable {
 			inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
 	)
 	private Set<Role> roles = new HashSet<>();
-	
+
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "usersLinksHistory")
 	@JsonIgnore
 	private Set<Link> userClickedLinks = new HashSet<>();
-	
+
 	public void addLink(Link link) {
 		userLinks.add(link);
 		link.setUser(this);
 	}
-	
+
 	public void removeLink(Link link) {
 		userLinks.remove(link);
 		link.setUser(null);
@@ -113,16 +118,16 @@ public class User extends Auditable implements UserDetails, Serializable {
 	public void addRoles(Set<Role> roles) {
 		this.roles.addAll(roles);
 	}
-	
-	
+
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<SimpleGrantedAuthority> authorities = new ArrayList<>();	
+		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 		roles.forEach(role ->authorities.add(new SimpleGrantedAuthority(role.getName())));
 		return authorities;
 	}
 
-	
+
 	@Override
 	public String getUsername() {
 		return email;
@@ -145,12 +150,12 @@ public class User extends Auditable implements UserDetails, Serializable {
 
 		return true;
 	}
-	
+
 	public void addRole(Role roleUser) {
 		this.roles.add(roleUser);
-		
+
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		boolean result;
@@ -163,14 +168,14 @@ public class User extends Auditable implements UserDetails, Serializable {
 			result = Objects.equals(email, other.email);
 		}
 		return result;
-		
+
 	}
-	 
+
     @Override
     public int hashCode() {
     	return Objects.hash(userId);
     }
-	
+
     public void removeRole(Role role) {
     	this.roles.remove(role);
     	role.getUsers().remove(this);

@@ -46,8 +46,8 @@ public class AppConfig implements WebMvcConfigurer{
 	
 	@Bean
 	@Profile("test")
-	public DatabaseLoader databaseLoader() {
-		return new DatabaseLoader();
+	public UserDefaultSetup databaseLoader() {
+		return new UserDefaultSetup();
 	}
 
 	/**
