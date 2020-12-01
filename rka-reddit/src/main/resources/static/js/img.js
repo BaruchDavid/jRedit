@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    getPicture;
+    getPicture('');
 });
 
 
@@ -52,9 +52,9 @@ function uploadFile(file) {
       method: 'POST',
       body: formData
     }).then(response => {
-        if(response.status === 200){
+        if(response.status === 201){
             console.log('saved!!!');
-            getPicture();
+            getPicture('no-cache');
         }
     }).catch(function (error) {
        console.log ("error: " + error);
@@ -62,13 +62,13 @@ function uploadFile(file) {
 
 }
 
-function getPicture(){
+function getPicture(control){
     const user = $('#userName').attr("title");
-    fetch('/jReditt/profile/information/content/user-pic?user='+user, {method: 'GET'})
+    fetch('/jReditt/profile/information/content/user-pic?user='+user,
+    { headers: {'Cache-Control': control}})
               .then(res=>{return res.blob()})
               .then(blob=>{
                 const img = URL.createObjectURL(blob);
-                //document.getElementById('profilePic').setAttribute('src', img);
                 var image = $('<img>');
                     var div = $('#drop-area');
                     image.one('load', function() {
