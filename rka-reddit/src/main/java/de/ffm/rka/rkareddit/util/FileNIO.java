@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.Optional;
 
@@ -42,11 +39,35 @@ public class FileNIO {
 		ByteArrayInputStream bis = new ByteArrayInputStream(profilePhoto);
 		BufferedImage bImage2 = ImageIO.read(bis);	
 		String webResourcePath = "static/images/".concat(name).concat(".png");
-		URL fileUrl = this.getClass().getProtectionDomain().getCodeSource().getLocation();
-		String filePath = fileUrl.getPath();
-		File file = new File(filePath.concat(webResourcePath));
+		File file = new File(getFullQualifiedPathWithFileName(this.getClass()) + webResourcePath);
 		ImageIO.write(bImage2, "png", file);
 		return webResourcePath;
 	}
 
+	/**
+	 *
+	 * @param clazz which represents path for required resource
+	 * @return URL with schema like 'file/C:/folder1'
+	 */
+	public static URL getFullQualifiedPathWithFileName(Class clazz){
+		return clazz.getProtectionDomain().getCodeSource().getLocation();
+	}
+
+	/**
+	 *
+	 * @param inputStream fills pictureBuffer with content
+	 * @return amount of read bytes
+	 * @throws IOException
+	 */
+	public static byte[] readPictureStreamToByte(InputStream inputStream) throws IOException {
+		byte[] pictureBuffer = new byte[inputStream.available()];
+		final int readBytes = inputStream.read(pictureBuffer);
+		if (readBytes > -1 && readBytes == pictureBuffer.length) {
+			LOGGER.info("read {} bytes of inputstream length {}", readBytes,pictureBuffer.length);
+			return pictureBuffer;
+		} else {
+			LOGGER.info("could not read input stream length {} into byte-array {}", inputStream.available());
+			return new byte[0];
+		}
+	}
 }

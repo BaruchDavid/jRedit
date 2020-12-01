@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.rest.controller.ProfileMetaDataController;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import de.ffm.rka.rkareddit.util.FileNIO;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,8 +125,8 @@ public class ProfileMetaDataControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void postValidNewPicture() throws Exception {
-        Path path = Paths.get(URI.create(ProfileMetaDataController.class.getProtectionDomain().getCodeSource().getLocation() +
-                                            "/static/images/profile_small.png"));
+        Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithFileName(ProfileMetaDataController.class)
+                                            + "/static/images/profile_small.png"));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Files.copy(path, byteArrayOutputStream);
         MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
