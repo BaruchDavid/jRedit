@@ -7,6 +7,7 @@ import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import de.ffm.rka.rkareddit.util.FileNIO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -141,7 +145,8 @@ public class UserService {
 		userRepository.saveAndFlush(user);
 	}
 
-	private User getUser(String userMail) {
+	// TODO: 29.11.2020 frage user über userDetailsService
+	public User getUser(String userMail) {
 		return userRepository.findByEmail(userMail)
 							.orElseThrow(() -> {
 										LOGGER.warn("{} Could not be found to be changed", userMail);
@@ -265,9 +270,17 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = false)
-	public void saveNewUserPicture(byte[] pictureBuffer, User user) {
-		user.setProfileFoto(pictureBuffer);
-		userRepository.save(user);
-		LOGGER.info("new picture saved or user {}", user.getEmail());
+	public boolean saveNewUserPicture(InputStream inputStream, User user) throws IOException {
+		byte[] pictureBytes = FileNIO.readPictureStreamToByte(inputStream);
+		if(pictureBytes.length != 0){
+			user.setProfileFoto(pictureBytes);
+			user.setFotoCreationDate(LocalDateTime.now());
+			userRepository.save(user);
+			LOGGER.info("new picture saved or user {}", user.getEmail());
+			return true;
+		} else {
+			LOGGER.info("new picture could not saved or user {}", user.getEmail());
+			return false;
+		}
 	}
 }
