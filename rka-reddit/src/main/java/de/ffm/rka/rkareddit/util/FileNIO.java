@@ -37,10 +37,10 @@ public class FileNIO {
 
 	public String readByteToPic(byte[] profilePhoto, String name) throws IOException {
 		ByteArrayInputStream bis = new ByteArrayInputStream(profilePhoto);
-		BufferedImage bImage2 = ImageIO.read(bis);	
+		BufferedImage bImage2 = ImageIO.read(bis);
 		String webResourcePath = "static/images/".concat(name).concat(".png");
-		File file = new File(getFullQualifiedPathWithFileName(this.getClass()) + webResourcePath);
-		ImageIO.write(bImage2, "png", file);
+		File file1 = new File(getFullQualifiedPathWithAsURL(this.getClass()).getPath() + webResourcePath);
+		ImageIO.write(bImage2, "png", file1);
 		return webResourcePath;
 	}
 
@@ -49,7 +49,7 @@ public class FileNIO {
 	 * @param clazz which represents path for required resource
 	 * @return URL with schema like 'file/C:/folder1'
 	 */
-	public static URL getFullQualifiedPathWithFileName(Class clazz){
+	public static URL getFullQualifiedPathWithAsURL(Class clazz){
 		return clazz.getProtectionDomain().getCodeSource().getLocation();
 	}
 

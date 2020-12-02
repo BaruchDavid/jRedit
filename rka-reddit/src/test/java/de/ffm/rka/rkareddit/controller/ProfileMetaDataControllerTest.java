@@ -32,14 +32,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -125,8 +121,36 @@ public class ProfileMetaDataControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void postValidNewPicture() throws Exception {
-        Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithFileName(ProfileMetaDataController.class)
+        Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
                                             + "/static/images/profile_small.png"));
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Files.copy(path, byteArrayOutputStream);
+        MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/information/content/user-pic")
+                .file(firstFile))
+                .andExpect(status().is(201))
+                .andExpect(content().string("ok"));
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void postInValidNewPictureWithWrongExtention() throws Exception {
+        Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
+                                            + "/static/images/profile_small.exe"));
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Files.copy(path, byteArrayOutputStream);
+        MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/information/content/user-pic")
+                .file(firstFile))
+                .andExpect(status().is(201))
+                .andExpect(content().string("ok"));
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void postToBigValidNewPicture() throws Exception {
+        Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
+                                            + "/static/images/TO_BIT_profile_small.png"));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Files.copy(path, byteArrayOutputStream);
         MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
