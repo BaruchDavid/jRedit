@@ -84,11 +84,9 @@ public class ProfileMetaDataController {
         User user = userService.getUser(requestedUser);
         Optional<byte[]> userPic = userService.getUserPic(requestedUser);
         if (userPic.isPresent()) {
-            String picPath = fileNIO.readByteToPic(userPic.get(), requestedUser);
-            LOGGER.info("GET PICTURE {} FOR USER {}", picPath, requestedUser);
-            InputStream in = applicationContext.getResource("classpath:".concat(picPath)).getInputStream();
-            media = IOUtils.toByteArray(in);
+            media = userPic.get();
             headers = cacheControl(user.getFotoCreationDate());
+            LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", userPic.get().length, requestedUser);
         }
         return new ResponseEntity<>(media, headers, HttpStatus.OK);
     }
