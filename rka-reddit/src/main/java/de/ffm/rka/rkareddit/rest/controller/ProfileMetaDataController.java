@@ -4,28 +4,34 @@ package de.ffm.rka.rkareddit.rest.controller;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
+import de.ffm.rka.rkareddit.domain.validator.PictureValidator;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.FileNIO;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/profile")
@@ -48,6 +54,11 @@ public class ProfileMetaDataController {
         this.fileNIO = fileNIO;
         this.applicationContext = applicationContext;
         this.userDetailsService = userDetailsService;
+    }
+
+    @InitBinder
+    public void initBinder(final DataBinder binder) {
+        binder.setValidator(new PictureValidator());
     }
 
     /**
@@ -91,18 +102,31 @@ public class ProfileMetaDataController {
         return new ResponseEntity<>(media, headers, HttpStatus.OK);
     }
 
-    // TODO: 30.11.2020 MULTIPART NUR FÜR BILDER EINSTELLEN? 
     @PostMapping(value = "/information/content/user-pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> submit(@RequestParam(name = "pic") MultipartFile formDataWithFile,
+    public ResponseEntity<String> submit(@Valid @ModelAttribute("pic") PictureDTO pictureDTO,
+                                         BindingResult result, Model model,
                                          @AuthenticationPrincipal UserDetails userPrincipal) throws IOException {
-        User user = (User) userDetailsService.loadUserByUsername(userPrincipal.getUsername());
-        if (userService.saveNewUserPicture(formDataWithFile.getInputStream(), user)) {
-            LOGGER.info("saved new picture {} for user: {}", formDataWithFile.getOriginalFilename(), userPrincipal.getUsername());
-            HttpHeaders headers = cacheControl(user.getFotoCreationDate());
-            return new ResponseEntity<>("ok", headers, HttpStatus.CREATED);
+        String errors="";
+        if(result.hasErrors()){
+            errors = result.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(";"));
+        }
+        if(errors.isEmpty()){
+            User user = (User) userDetailsService.loadUserByUsername(userPrincipal.getUsername());
+            final String requestedUser = userPrincipal.getUsername();
+            if (userService.saveNewUserPicture(pictureDTO.getFormDataWithFile().getInputStream(), user)) {
+                LOGGER.info("saved new picture {} for user: {}", pictureDTO.getFormDataWithFile().getOriginalFilename(), requestedUser);
+                HttpHeaders headers = cacheControl(user.getFotoCreationDate());
+                return new ResponseEntity<>("ok", headers, HttpStatus.CREATED);
+            } else {
+                LOGGER.warn("error on saving new picture {} for user: {}", pictureDTO.getFormDataWithFile()
+                                                                                    .getOriginalFilename(), requestedUser);
+                return new ResponseEntity<>("fail, please check pic-requirements", new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            }
         } else {
-            LOGGER.info("saved new picture {} for user: {}", formDataWithFile.getOriginalFilename(), userPrincipal.getUsername());
-            return new ResponseEntity<>("fail, please check pic-requirements", new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            LOGGER.warn("NEW PICTURE VALIDATOR-ERRORS {}", errors);
+            return new ResponseEntity<>(errors, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 

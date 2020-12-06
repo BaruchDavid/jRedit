@@ -39,7 +39,7 @@ public class FileNIOTest {
 		byte[] pic = fileNIO.readPictureToByte(path).get();
 		String url = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceFirst("/","");
 		Path picPath = Paths.get(url).getParent().resolve("classes/");	
-		path = fileNIO.readByteToPic(pic, "test@test.com");
+		path = FileNIO.writeByteToJpgPic(pic, "test@test.com");
 		assertEquals(true, Files.isReadable(picPath.resolve(path)));
 		assertEquals(true, Files.deleteIfExists(picPath.resolve(path)));
 		

@@ -35,12 +35,12 @@ public class FileNIO {
 		return pic;
 	}
 
-	public String readByteToPic(byte[] profilePhoto, String name) throws IOException {
+	public static String writeByteToJpgPic(byte[] profilePhoto, String name) throws IOException {
 		ByteArrayInputStream bis = new ByteArrayInputStream(profilePhoto);
 		BufferedImage bImage2 = ImageIO.read(bis);
-		String webResourcePath = "static/images/".concat(name).concat(".png");
-		File file1 = new File(getFullQualifiedPathWithAsURL(this.getClass()).getPath() + webResourcePath);
-		ImageIO.write(bImage2, "png", file1);
+		String webResourcePath = getFullQualifiedPathWithAsURL(FileNIO.class).getPath() + "static/images/".concat(name).concat(".jpg");
+		File file1 = new File(webResourcePath);
+		ImageIO.write(bImage2, "jpg", file1);
 		return webResourcePath;
 	}
 
@@ -69,5 +69,9 @@ public class FileNIO {
 			LOGGER.info("could not read input stream length {} into byte-array {}", inputStream.available());
 			return new byte[0];
 		}
+	}
+
+	public static float sizeInMB(Float size){
+		return Float.valueOf(size / Long.valueOf(1024*1024));
 	}
 }

@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
+import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
 import de.ffm.rka.rkareddit.rest.controller.ProfileMetaDataController;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -36,6 +37,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.spi.FileSystemProvider;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -146,18 +148,24 @@ public class ProfileMetaDataControllerTest {
                 .andExpect(content().string("ok"));
     }
 
+    /**
+     * test jpg-picture 12.760KB
+     * @throws Exception
+     */
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void postToBigValidNewPicture() throws Exception {
-        Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
-                                            + "/static/images/TO_BIT_profile_small.png"));
+        String defaultBaseDir = System.getProperty("java.io.tmpdir");
+        Path path =  Paths.get(defaultBaseDir + "Forrest.jpg");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Files.copy(path, byteArrayOutputStream);
         MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
+        PictureDTO pictureDTO = new PictureDTO();
+        pictureDTO.setFormDataWithFile(firstFile);
         this.mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/information/content/user-pic")
-                .file(firstFile))
-                .andExpect(status().is(201))
-                .andExpect(content().string("ok"));
+                .file("formDataWithFile", byteArrayOutputStream.toByteArray()))
+                .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
+                .andExpect(content().string("Picture size is bigger then 1MB"));
     }
 
 }
