@@ -10,4 +10,5 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class PictureDTO {
     MultipartFile formDataWithFile;
+    String pictureExtension;
 }
