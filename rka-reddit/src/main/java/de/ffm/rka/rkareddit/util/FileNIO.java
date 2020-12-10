@@ -29,7 +29,7 @@ public class FileNIO {
             Path filePath = Paths.get(resourcePath + resourceName);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 Files.copy(filePath, baos);
-                return Optional.ofNullable(baos);
+                return Optional.of(baos);
             }
         }
         return Optional.empty();
@@ -42,8 +42,8 @@ public class FileNIO {
         Optional<byte[]> picByteArray = Optional.empty();
         URL resourceUrl = this.getClass().getClassLoader().getResource(path);
         if (resourceUrl != null) {
-            File fnew = new File(resourceUrl.getFile());
-            BufferedImage originalImage = ImageIO.read(fnew);
+            File tmpFile = new File(resourceUrl.getFile());
+            BufferedImage originalImage = ImageIO.read(tmpFile);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 ImageIO.write(originalImage, "png", baos);
                 picByteArray = Optional.of(baos.toByteArray());
@@ -55,11 +55,11 @@ public class FileNIO {
         return picByteArray;
     }
 
-    public static String writeJpgPic(byte[] profilePhoto, String name) throws IOException {
-        return writeJpgPic(new ByteArrayInputStream(profilePhoto), name);
+    public static String writeImage(byte[] profilePhoto, String name) throws IOException {
+        return writeImage(new ByteArrayInputStream(profilePhoto), name);
     }
 
-    public static String writeJpgPic(InputStream inputStream,  String name) throws IOException {
+    public static String writeImage(InputStream inputStream, String name) throws IOException {
         String webResourcePath="";
         final BufferedImage bufferedImage = ImageIO.read(inputStream);
         if (Optional.ofNullable(bufferedImage).isPresent()) {
@@ -92,16 +92,16 @@ public class FileNIO {
     public static byte[] readPictureStreamToByte(InputStream inputStream) throws IOException {
         byte[] pictureBuffer = new byte[inputStream.available()];
         final int readBytes = inputStream.read(pictureBuffer);
-        if (readBytes > -1 && readBytes == pictureBuffer.length) {
-            LOGGER.info("read {} bytes of inputstream length {}", readBytes, pictureBuffer.length);
+        if (readBytes == pictureBuffer.length) {
+            LOGGER.info("read {} bytes of input stream length {}", readBytes, pictureBuffer.length);
             return pictureBuffer;
         } else {
-            LOGGER.info("could not read input stream length {} into byte-array {}", inputStream.available());
+            LOGGER.info("could not read input stream length {} into byte-array {}",pictureBuffer.length,  inputStream.available());
             return new byte[0];
         }
     }
 
     public static float sizeInMB(Float size) {
-        return  Float.valueOf(size / Long.valueOf(1024 * 1024));
+        return  size / (1024 * 1024);
     }
 }

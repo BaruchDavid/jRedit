@@ -139,11 +139,8 @@ public class ProfileMetaDataControllerTest {
 
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void postInValidNewPictureWithWrongExtention() throws Exception {
+    public void postInValidNewPictureWithWrongExtension() throws Exception {
         final String defaultBaseDir = System.getProperty("java.io.tmpdir");
-        /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Path path = Paths.get(defaultBaseDir + "postgresql-12.2-2-windows-x64.exe");
-        Files.copy(path, byteArrayOutputStream);*/
         final String fileName = "postgresql-12.2-2-windows-x64.exe";
         final Optional<ByteArrayOutputStream> byteArrayOutputStream = FileNIO.readPictureToBytes(fileName, defaultBaseDir);
         if(byteArrayOutputStream.isPresent()){
@@ -151,9 +148,10 @@ public class ProfileMetaDataControllerTest {
             PictureDTO pictureDTO = new PictureDTO();
             pictureDTO.setFormDataWithFile(firstFile);
             this.mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/information/content/user-pic")
-                    .file("formDataWithFile", byteArrayOutputStream.get().toByteArray()))
+                    .file("formDataWithFile", byteArrayOutputStream.get().toByteArray())
+                    .param("pictureExtension", "exe"))
                     .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
-                    .andExpect(content().string("Only jpg or png files are allowed"));
+                    .andExpect(content().string("Only jpg, png or gif picture is allowed;Picture is corrupt"));
         } else {
             fail("FILE "+ fileName + " ON PATH " + defaultBaseDir + " COULD NOT BE READ");
         }
@@ -175,7 +173,8 @@ public class ProfileMetaDataControllerTest {
         PictureDTO pictureDTO = new PictureDTO();
         pictureDTO.setFormDataWithFile(firstFile);
         this.mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/information/content/user-pic")
-                .file("formDataWithFile", byteArrayOutputStream.toByteArray()))
+                .file("formDataWithFile", byteArrayOutputStream.toByteArray())
+                .param("pictureExtension", "jpg"))
                 .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
                 .andExpect(content().string("Picture size is bigger then 1MB"));
     }

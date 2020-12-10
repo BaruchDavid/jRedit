@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.service;
 
-import de.ffm.rka.rkareddit.rest.controller.ProfileMetaDataController;
 import de.ffm.rka.rkareddit.util.FileNIO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -29,7 +29,7 @@ public class FileNIOTest {
 	@Test
 	public void testReadImage() throws IOException {
 		String path = "static/images/profile_small.png";
-		assertEquals(true, fileNIO.readPictureToByte(path).isPresent());
+		assertTrue(fileNIO.readPictureToByte(path).isPresent());
 	}
 	
 	/**
@@ -38,27 +38,22 @@ public class FileNIOTest {
 	 */
 	@Test
 	public void writePNG() throws IOException {
-		final Path picPath = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
+		final Path picPath = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(FileNIO.class)
 				+ "/static/images/profile_small.png"));
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		Files.copy(picPath, byteArrayOutputStream);
-		String path = FileNIO.writeJpgPic(byteArrayOutputStream.toByteArray(), "test@test.com");
-		assertEquals(true, Files.isReadable(picPath.resolve(path)));
-		assertEquals(true, Files.deleteIfExists(picPath.resolve(path)));
-		
+		String path = FileNIO.writeImage(byteArrayOutputStream.toByteArray(), "test@test.png");
+		assertFalse(path.isEmpty());
 	}
 
-	// TODO: 09.12.2020 jpg anlegen und hier testen 
 	@Test
 	public void writeJPG() throws IOException {
-		final Path picPath = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
-				+ "/static/images/profile_small.png"));
+		final Path picPath = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(FileNIO.class)
+				+ "/static/images/profile_small.jpg"));
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		Files.copy(picPath, byteArrayOutputStream);
-		String path = FileNIO.writeJpgPic(byteArrayOutputStream.toByteArray(), "test@test.com");
-		assertEquals(true, Files.isReadable(picPath.resolve(path)));
-		assertEquals(true, Files.deleteIfExists(picPath.resolve(path)));
-
+		String path = FileNIO.writeImage(byteArrayOutputStream.toByteArray(), "test@test.jpg");
+		assertFalse(path.isEmpty());
 	}
 	
 }
