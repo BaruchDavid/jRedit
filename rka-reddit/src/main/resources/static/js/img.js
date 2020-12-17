@@ -46,15 +46,31 @@ function handleFiles(files) {
 function uploadFile(file) {
   let url = '/jReditt/profile/information/content/user-pic'
   let formData = new FormData()
-  formData.append('pic', file)
-
+  formData.append('formDataWithFile', file);
+  formData.append('pictureExtension', file.name.substring(file.name.indexOf('.')+1));
   fetch(url, {
       method: 'POST',
       body: formData
     }).then(response => {
-        if(response.status === 201){
+        if (response.status === 201){
             console.log('saved!!!');
             getPicture('no-cache');
+        } else {
+            response.text().then(function(textBody){
+                //setTimeout(function(){ alert("Hello"); }, 3000);
+
+                let msgArray = textBody.split(';');
+                let ul = $('<ul>');
+                for (i = 0; i < msgArray.length; i++) {
+                  var li = $('<li>', {html:msgArray[i]});
+                 // li.innerHTML = msgArray[i];
+                  li.appendTo(ul);
+                }
+                var div = $('<div>',{class: 'error_msg'})
+                ul.appendTo(div)
+                $('#user-name').before(div);
+
+            });
         }
     }).catch(function (error) {
        console.log ("error: " + error);
@@ -73,8 +89,8 @@ function getPicture(control){
                     var div = $('#drop-area');
                     image.one('load', function() {
                       div.css({
-                        'width': this.width,
-                        'height': this.height,
+                        'width': '15em',
+                        'height': '10em',
                         'background-image': 'url(' + this.src + ')'
                       });
                       $('#container').append(div);

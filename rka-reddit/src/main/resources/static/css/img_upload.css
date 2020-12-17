@@ -38,3 +38,9 @@ p {
 #fileElem {
   display: none;
 }
+
+.error_msg{
+    display:table;
+    margin-right: auto;
+    margin-left: auto;
+}
