@@ -57,10 +57,11 @@ public class GlobalControllerAdvisor {
 			user.setFirstName("guest");
 		}
 		final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-		LOGGER.error("EXCEPTION {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exceptionType, exception.getMessage(),
+		LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exceptionType, exception.getMessage(),
 																			visitorName, 
 																			req.getMethod(),
 																			req.getRequestURL());
+		LOGGER.error("LOCALIZED MESSAGE {} AND STACK TRACE ", exception.getLocalizedMessage(), exception);
 
 		switch (exceptionType) {
 			case "MissingServletRequestParameterException":
