@@ -22,9 +22,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Date.from;
@@ -83,7 +81,7 @@ public class LinkDTO implements Serializable {
      * don't call childElementUser for de/serialize json
      */
     @JsonIgnore
-    private List<CommentDTO> commentDTOS = new ArrayList<>();
+    private Set<CommentDTO> commentDTOS = new HashSet<>();
 
 
     /**
@@ -148,7 +146,7 @@ public class LinkDTO implements Serializable {
         LinkDTO linkDto = modelMapper.map(link, LinkDTO.class);
         linkDto.setCommentDTOS(link.getComments().stream()
                 .map(CommentDTO::getCommentToCommentDto)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
         linkDto.setLinkSignature(convertLDTtoEpochSec(link.getCreationDate())
                 .concat(String.valueOf(link.getLinkId())));
         return linkDto;
@@ -170,9 +168,14 @@ public class LinkDTO implements Serializable {
         return id;
     }
 
-    @Override
+   /* @Override
     public int hashCode() {
         return Objects.hash(this);
+    }*/
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, subtitle, description, url, linkSignature);
     }
 
     @Override
