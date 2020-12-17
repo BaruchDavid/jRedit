@@ -49,5 +49,5 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 			+ "FROM Link l "
 			+ "LEFT OUTER JOIN FETCH l.comments "
 			+ "WHERE l.linkId IN (:linkIds) ")
-	Set<Link> findLinksWithComments(@Param("linkIds") List<Long> linkIds);
+	Set<Link> findLinksWithComments(@Param("linkIds") Set<Long> linkIds);
 }
