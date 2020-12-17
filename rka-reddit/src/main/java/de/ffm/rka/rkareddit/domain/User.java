@@ -65,11 +65,11 @@ public class User extends Auditable implements UserDetails, Serializable {
 	 */
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Link> userLinks = new ArrayList<>();
+	private Set<Link> userLinks = new HashSet<>();
 
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Comment> userComment = new ArrayList<>();
+	private Set<Comment> userComment = new HashSet<>();
 
 
 	@Builder.Default
