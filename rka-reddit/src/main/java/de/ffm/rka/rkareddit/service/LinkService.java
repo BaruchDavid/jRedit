@@ -90,7 +90,7 @@ public class LinkService {
 
 	}
 
-	public Optional<Set<Link>> findLinksWithCommentsByLinkIds(List<Long> linkIds){
+	public Optional<Set<Link>> findLinksWithCommentsByLinkIds(Set<Long> linkIds){
 		return Optional.ofNullable(linkRepository.findLinksWithComments(linkIds));
 	}
 
@@ -134,7 +134,7 @@ public class LinkService {
 	 */
 	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
-		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(ln.getContent()))
+		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(new HashSet<>(ln.getContent())))
 											.orElseGet(Collections::emptySet);
 		List<LinkDTO> links = linksWithComments.stream()
 								.map(LinkDTO::getMapLinkToDto)
@@ -142,10 +142,10 @@ public class LinkService {
 		return new PageImpl<>(links, pageable, ln.getTotalElements());
 	}
 
-	List<Long> getLinkIds(List<Link> links) {
+	Set<Long> getLinkIds(Set<Link> links) {
 		return links.stream()
 					.map(Link::getLinkId)
-					.collect(Collectors.toList());
+					.collect(Collectors.toSet());
 	}
 
 	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){

@@ -55,8 +55,8 @@ public class UserService {
 	 * here comments will be set
 	 * @param userLinks with no comments
 	 */
-	private Set<Link> fillLinkWithSuitableComments(List<Link> userLinks) {
-		List<Long> linkIds = linkService.getLinkIds(userLinks);
+	private Set<Link> fillLinkWithSuitableComments(Set<Link> userLinks) {
+		Set<Long> linkIds = linkService.getLinkIds(userLinks);
 		return linkService.findLinksWithCommentsByLinkIds(linkIds)
 				.orElseGet(Collections::emptySet);
 	}
@@ -185,8 +185,12 @@ public class UserService {
 	 * @param userId is a user email
 	 */
 	public User getUserWithLinks(String userId){
-		User user =  userRepository.fetchUserWithLinks(userId);
-		List<Link> linksWithComments = new ArrayList<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
+//		User user =  userRepository.fetchUserWithLinks(userId);
+		User user =  userRepository.fetchUserWithLinksAndComments(userId);
+/*		List<Link> linksWithComments = new ArrayList<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
+		user.setUserLinks(linksWithComments);*/
+
+		Set<Link> linksWithComments = new HashSet<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
 		user.setUserLinks(linksWithComments);
 		return user;
 	}
@@ -265,7 +269,7 @@ public class UserService {
 		Set<Link> links = Optional.ofNullable(userRepository.findClickedUserLinks(requestedUser))
 						.map(User::getUserClickedLinks)
 						.orElse(Collections.emptySet());
-		links = new HashSet<>(this.fillLinkWithSuitableComments(new ArrayList<>(links)));
+		links = new HashSet<>(this.fillLinkWithSuitableComments(new HashSet<>(links)));
 		return links;
 	}
 

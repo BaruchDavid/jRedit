@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
@@ -29,6 +30,7 @@ import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -85,17 +87,26 @@ public class AuthController {
 			model.addAttribute(USER_DTO, new UserDTO());
 		}
 
-		List<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
-										.orElse(Collections.emptyList())
+		Set<LinkDTO> userLinks = 	Optional.ofNullable(pageContentUser.getUserLinks())
+										.orElse(Collections.emptySet())
 										.stream()
-										.map(LinkDTO::getMapLinkToDto)
-										.collect(Collectors.toList());
-		List<CommentDTO> userComments = Optional.ofNullable(userService.getUserWithComments(email)
+										.map(link -> LinkDTO.getMapLinkToDto(link))
+										.collect(Collectors.toSet());
+
+
+		/*List<CommentDTO> userComments = Optional.ofNullable(userService.getUserWithComments(email)
 																	.getUserComment())
-												.orElse(Collections.emptyList())
+												.orElse(Collections.EMPTY_SET)
 												.stream()
 												.map(CommentDTO::getCommentToCommentDto)
-												.collect(Collectors.toList());
+												.collect(Collectors.toList());*/
+		Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
+												.orElse(Collections.emptySet())
+												.stream()
+												.map(comment -> CommentDTO.getCommentToCommentDto(comment))
+												.collect(Collectors.toSet());
+
+
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
