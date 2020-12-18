@@ -57,19 +57,18 @@ function uploadFile(file) {
             getPicture('no-cache');
         } else {
             response.text().then(function(textBody){
-                //setTimeout(function(){ alert("Hello"); }, 3000);
-
                 let msgArray = textBody.split(';');
                 let ul = $('<ul>');
                 for (i = 0; i < msgArray.length; i++) {
                   var li = $('<li>', {html:msgArray[i]});
-                 // li.innerHTML = msgArray[i];
                   li.appendTo(ul);
                 }
-                var div = $('<div>',{class: 'error_msg'})
+                var div = $('<div>',{class: 'error_msg'});
                 ul.appendTo(div)
                 $('#user-name').before(div);
-
+                setTimeout(function(){
+                    $('.error_msg').css('display','none');
+                }, 3000);
             });
         }
     }).catch(function (error) {
