@@ -36,9 +36,11 @@ public class PictureValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         try {
+            Optional<File> newPicture = Optional.empty();
             final PictureDTO pictureDTO = (PictureDTO) target;
-            checkExtension(errors, pictureDTO.getPictureExtension());
-            Optional<File> newPicture = checkPictureContent(errors, pictureDTO);
+            if(isExtensionValid(errors, pictureDTO.getPictureExtension())){
+                newPicture = checkPictureContent(errors, pictureDTO);
+            };
             newPicture.ifPresent(picture -> checkPictureSize(errors, picture));
             newPicture.ifPresent(File::deleteOnExit);
         } catch (IOException ex) {
@@ -76,9 +78,12 @@ public class PictureValidator implements Validator {
         return newPicture;
     }
 
-    private void checkExtension(Errors errors, String extension) {
+    private boolean isExtensionValid(Errors errors, String extension) {
         if (!PNG.equalsName(extension) && !JPG.equalsName(extension) && !GIF.equalsName(extension)) {
             errors.rejectValue("pictureExtension", "content", WRONG_EXTENSION_ERROR);
+            return false;
+        } else {
+            return true;
         }
     }
 }
