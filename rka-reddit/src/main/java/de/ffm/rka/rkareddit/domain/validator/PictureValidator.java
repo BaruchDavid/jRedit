@@ -18,7 +18,7 @@ import static de.ffm.rka.rkareddit.domain.dto.PictureExtension.*;
 
 public class PictureValidator implements Validator {
     private static final String PICTURE_SIZE_ERROR = "Picture size is bigger then 1MB";
-    private static final String WRONG_EXTENSION_ERROR = "Only jpg, png or gif picture is allowed";
+    private static final String WRONG_EXTENSION_ERROR = "Only jpg/jpeg, png or gif picture is allowed";
     private static final String PICTURE_CONTENT_ERROR = "Picture is corrupt";
     private static final int MAX_MB_SIZE = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(PictureValidator.class);
@@ -32,7 +32,7 @@ public class PictureValidator implements Validator {
         return PictureDTO.class.equals(clazz);
     }
 
-
+    // TODO: 18.12.2020 überprüfe ob JPEG als jpg verarbeitet werden kann
     @Override
     public void validate(Object target, Errors errors) {
         try {
@@ -57,13 +57,13 @@ public class PictureValidator implements Validator {
 
     private Optional<File> checkPictureContent(Errors errors, PictureDTO pictureDTO) throws IOException {
 
-        final String collect = random.ints(A, Z)
+        final String newFileName = random.ints(A, Z)
                 .limit(10)
                 .mapToObj(Integer::toString)
                 .collect(Collectors.joining());
 
         final String picName = String.join("", "newPic",
-                collect,
+                newFileName,
                 ".",
                 pictureDTO.getPictureExtension());
 
@@ -72,14 +72,14 @@ public class PictureValidator implements Validator {
         if (!newPicturePath.isEmpty()) {
             newPicture = Optional.of(new File(newPicturePath));
         } else {
-
             errors.rejectValue("formDataWithFile", "content", PICTURE_CONTENT_ERROR);
         }
         return newPicture;
     }
 
     private boolean isExtensionValid(Errors errors, String extension) {
-        if (!PNG.equalsName(extension) && !JPG.equalsName(extension) && !GIF.equalsName(extension)) {
+        if (!PNG.equalsName(extension) && !JPG.equalsName(extension)
+                && !JPEG.equalsName(extension) && !GIF.equalsName(extension)) {
             errors.rejectValue("pictureExtension", "content", WRONG_EXTENSION_ERROR);
             return false;
         } else {

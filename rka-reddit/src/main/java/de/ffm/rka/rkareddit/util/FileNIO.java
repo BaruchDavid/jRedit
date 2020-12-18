@@ -65,8 +65,7 @@ public class FileNIO {
         if (Optional.ofNullable(bufferedImage).isPresent()) {
             webResourcePath = System.getProperty("java.io.tmpdir")+name;
             File newPic = new File(webResourcePath);
-            String extension = webResourcePath.substring(webResourcePath.length()-3);
-            if(ImageIO.write(bufferedImage, extension, newPic)){
+            if(ImageIO.write(bufferedImage, getExtensionFromFile(webResourcePath), newPic)){
                 return webResourcePath;
             } else {
                 LOGGER.warn("COULD NO WRITE PICTURE {}",  newPic.getAbsolutePath());
@@ -76,6 +75,10 @@ public class FileNIO {
         return webResourcePath;
     }
 
+    public static String getExtensionFromFile(String ressource){
+        final String[] parts = ressource.split("\\.");
+        return parts[parts.length-1];
+    }
     /**
      * @param clazz which represents path for required resource
      * @return URL with schema like 'file/C:/folder1'

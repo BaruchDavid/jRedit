@@ -4,6 +4,7 @@ public enum PictureExtension {
 
     PNG("png"),
     JPG("jpg"),
+    JPEG("jpeg"),
     GIF("gif");
 
     String extension;
