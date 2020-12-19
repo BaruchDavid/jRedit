@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,27 +106,37 @@ public class ProfileMetaDataController {
     public ResponseEntity<String> submit(@Valid @ModelAttribute("pic") PictureDTO pictureDTO,
                                          BindingResult result, Model model,
                                          @AuthenticationPrincipal UserDetails userPrincipal) throws IOException {
-        String errors="";
-        if(result.hasErrors()){
-            errors = result.getAllErrors().stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.joining(";"));
-        }
-        if(errors.isEmpty()){
-            User user = (User) userDetailsService.loadUserByUsername(userPrincipal.getUsername());
-            final String requestedUser = userPrincipal.getUsername();
-            if (userService.saveNewUserPicture(pictureDTO.getFormDataWithFile().getInputStream(), user)) {
-                LOGGER.info("saved new picture {} for user: {}", pictureDTO.getFormDataWithFile().getOriginalFilename(), requestedUser);
-                HttpHeaders headers = cacheControl(user.getFotoCreationDate());
-                return new ResponseEntity<>("ok", headers, HttpStatus.CREATED);
-            } else {
-                LOGGER.warn("error on saving new picture {} for user: {}", pictureDTO.getFormDataWithFile()
-                                                                                    .getOriginalFilename(), requestedUser);
-                return new ResponseEntity<>("fail, please check pic-requirements", new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        String errors = "";
+        try {
+            if (result.hasErrors()) {
+                errors = result.getAllErrors().stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .collect(Collectors.joining(";"));
             }
-        } else {
-            LOGGER.warn("NEW PICTURE VALIDATOR-ERRORS {}", errors);
-            return new ResponseEntity<>(errors, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            if (errors.isEmpty()) {
+                User user = (User) userDetailsService.loadUserByUsername(userPrincipal.getUsername());
+                final String requestedUser = userPrincipal.getUsername();
+                try (final InputStream imageInputStream = userService.resizeUserPic(pictureDTO.getFormDataWithFile()
+                        .getInputStream(), pictureDTO.getPictureExtension())) {
+                    if (userService.saveNewUserPicture(imageInputStream, user)) {
+                        LOGGER.info("saved new picture {} for user: {}", pictureDTO.getFormDataWithFile().getOriginalFilename(),
+                                requestedUser);
+                        HttpHeaders headers = cacheControl(user.getFotoCreationDate());
+                        return new ResponseEntity<>("ok", headers, HttpStatus.CREATED);
+                    } else {
+                        LOGGER.warn("error on saving new picture {} for user: {}", pictureDTO.getFormDataWithFile()
+                                .getOriginalFilename(), requestedUser);
+                        return new ResponseEntity<>("fail, please check pic-requirements", new HttpHeaders(),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+            } else {
+                LOGGER.warn("NEW PICTURE VALIDATOR-ERRORS {}", errors);
+                return new ResponseEntity<>(errors, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception ex) {
+            LOGGER.error("EXCEPTION MESSAGE {}", ex.getMessage(), ex);
+            return new ResponseEntity<>("Error occurred, please try again", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

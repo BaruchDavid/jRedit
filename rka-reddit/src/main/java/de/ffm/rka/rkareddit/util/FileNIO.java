@@ -44,15 +44,18 @@ public class FileNIO {
         if (resourceUrl != null) {
             File tmpFile = new File(resourceUrl.getFile());
             BufferedImage originalImage = ImageIO.read(tmpFile);
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                ImageIO.write(originalImage, "png", baos);
-                picByteArray = Optional.of(baos.toByteArray());
-                LOGGER.debug("message byte-array {}: ", picByteArray);
-            }
+            picByteArray = Optional.of(readPictureToByteArray(originalImage, "png"));
         } else {
             LOGGER.warn("no picture found for converting into byte-array {}: ", picByteArray);
         }
         return picByteArray;
+    }
+
+    public static byte[] readPictureToByteArray(BufferedImage bufferedImage, String extension) throws IOException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(bufferedImage, extension, baos);
+            return baos.toByteArray();
+        }
     }
 
     public static String writeImage(byte[] profilePhoto, String name) throws IOException {
@@ -92,16 +95,8 @@ public class FileNIO {
      * @return amount of read bytes
      * @throws IOException
      */
-    public static byte[] readPictureStreamToByte(InputStream inputStream) throws IOException {
-        byte[] pictureBuffer = new byte[inputStream.available()];
-        final int readBytes = inputStream.read(pictureBuffer);
-        if (readBytes == pictureBuffer.length) {
-            LOGGER.info("read {} bytes of input stream length {}", readBytes, pictureBuffer.length);
-            return pictureBuffer;
-        } else {
-            LOGGER.info("could not read input stream length {} into byte-array {}",pictureBuffer.length,  inputStream.available());
-            return new byte[0];
-        }
+    public static byte[] readStreamToByte(InputStream inputStream) throws IOException {
+        return  inputStream.readAllBytes();
     }
 
     public static float sizeInMB(Float size) {

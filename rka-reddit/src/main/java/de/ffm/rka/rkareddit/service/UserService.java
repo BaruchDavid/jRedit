@@ -8,6 +8,7 @@ import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import de.ffm.rka.rkareddit.util.FileNIO;
+import de.ffm.rka.rkareddit.util.ImageManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -34,6 +37,7 @@ import java.util.concurrent.Future;
 public class UserService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+	private static final int TARGET_WITDH = 300;
 	private final UserRepository userRepository;
 	private final RoleService roleService;
 	private final MailService mailService;
@@ -275,7 +279,7 @@ public class UserService {
 
 	@Transactional(readOnly = false)
 	public boolean saveNewUserPicture(InputStream inputStream, User user) throws IOException {
-		byte[] pictureBytes = FileNIO.readPictureStreamToByte(inputStream);
+		byte[] pictureBytes = FileNIO.readStreamToByte(inputStream);
 		if(pictureBytes.length != 0){
 			user.setProfileFoto(pictureBytes);
 			user.setFotoCreationDate(LocalDateTime.now());
@@ -286,5 +290,10 @@ public class UserService {
 			LOGGER.info("new picture could not saved or user {}", user.getEmail());
 			return false;
 		}
+	}
+
+	public InputStream resizeUserPic(InputStream inputStream, String extension) throws Exception {
+		final BufferedImage bufferedImage = ImageManager.simpleResizeImage(inputStream, TARGET_WITDH);
+		return new ByteArrayInputStream(FileNIO.readPictureToByteArray(bufferedImage, extension));
 	}
 }
