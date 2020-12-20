@@ -88,8 +88,8 @@ function getPicture(control){
                     var div = $('#drop-area');
                     image.one('load', function() {
                       div.css({
-                        'width': '15em',
-                        'height': '10em',
+                        'width': '12em',
+                        'height': '13em',
                         'background-image': 'url(' + this.src + ')'
                       });
                       $('#container').append(div);
