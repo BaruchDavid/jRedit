@@ -13,6 +13,6 @@ public class ImageManager {
 
     public static BufferedImage simpleResizeImage(InputStream inputStream , int targetWidth) throws Exception {
         BufferedImage imBuff = ImageIO.read(inputStream);
-        return Scalr.resize(imBuff, Scalr.Method.BALANCED, targetWidth);
+        return Scalr.resize(imBuff, Scalr.Method.SPEED, targetWidth);
     }
 }
