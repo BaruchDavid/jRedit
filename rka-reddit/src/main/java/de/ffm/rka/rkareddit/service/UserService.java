@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
 public class UserService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
-	private static final int TARGET_WITDH = 300;
+	private static final int TARGET_WIDTH = 320;
 	private final UserRepository userRepository;
 	private final RoleService roleService;
 	private final MailService mailService;
@@ -293,7 +293,7 @@ public class UserService {
 	}
 
 	public InputStream resizeUserPic(InputStream inputStream, String extension) throws Exception {
-		final BufferedImage bufferedImage = ImageManager.simpleResizeImage(inputStream, TARGET_WITDH);
+		final BufferedImage bufferedImage = ImageManager.simpleResizeImage(inputStream, TARGET_WIDTH);
 		return new ByteArrayInputStream(FileNIO.readPictureToByteArray(bufferedImage, extension));
 	}
 }
