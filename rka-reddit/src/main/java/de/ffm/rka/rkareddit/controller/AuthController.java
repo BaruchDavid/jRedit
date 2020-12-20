@@ -93,13 +93,6 @@ public class AuthController {
 										.map(link -> LinkDTO.getMapLinkToDto(link))
 										.collect(Collectors.toSet());
 
-
-		/*List<CommentDTO> userComments = Optional.ofNullable(userService.getUserWithComments(email)
-																	.getUserComment())
-												.orElse(Collections.EMPTY_SET)
-												.stream()
-												.map(CommentDTO::getCommentToCommentDto)
-												.collect(Collectors.toList());*/
 		Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
 												.orElse(Collections.emptySet())
 												.stream()

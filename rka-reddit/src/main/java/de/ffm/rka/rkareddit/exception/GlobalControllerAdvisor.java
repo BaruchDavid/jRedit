@@ -7,12 +7,17 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,6 +100,13 @@ public class GlobalControllerAdvisor {
 		}
 
 		return createErrorView(req.getRequestURL().toString(),user, view);
+	}
+
+	@ExceptionHandler(value = {MaxUploadSizeExceededException.class})
+	public ResponseEntity<String> defaultRestErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception){
+		String responseBody = "File size exceeds limit!";
+		LOGGER.warn("NEW PICTURE VALIDATOR-ERRORS {}", responseBody);
+		return new ResponseEntity<>(responseBody, new HttpHeaders(), org.springframework.http.HttpStatus.BAD_REQUEST);
 	}
 
 	private ModelAndView createErrorView(String req, UserDTO user, String errorView) {
