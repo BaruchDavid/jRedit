@@ -151,7 +151,7 @@ public class ProfileMetaDataControllerTest {
                     .file("formDataWithFile", byteArrayOutputStream.get().toByteArray())
                     .param("pictureExtension", "exe"))
                     .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
-                    .andExpect(content().string("Only jpg, png or gif picture is allowed;Picture is corrupt"));
+                    .andExpect(content().string("Only jpg/jpeg, png or gif picture is allowed"));
         } else {
             fail("FILE "+ fileName + " ON PATH " + defaultBaseDir + " COULD NOT BE READ");
         }
