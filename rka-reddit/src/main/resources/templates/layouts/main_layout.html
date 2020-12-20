@@ -76,13 +76,12 @@
 			</div>
 		</div>
 		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
-			<div id="drop-area">
+			<div id="drop-area" data-toggle="tooltip" title="recommended resolutions: 600x800, 1200x1600">
 				<form id="pic-form" class="my-form">
 					<input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
 					<label class="button" for="fileElem">Select some files</label>
 				</form>
-				<!--<script th:src="@{/js/img.js}"></script>-->
-				<link id="pic-link" rel="stylesheet" th:href="@{/css/img_upload.css}">
+				<link rel="stylesheet" th:href="@{/css/img_upload.css}">
 			</div>
 			<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userDto.fullName}"></h2>
 		</div>

@@ -1,5 +1,6 @@
 $(document).ready(function(){
     getPicture('');
+     $('[data-toggle="tooltip"]').tooltip();
 });
 
 
