@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.controller;
 
-import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -90,13 +88,13 @@ public class AuthController {
 		Set<LinkDTO> userLinks = 	Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptySet())
 										.stream()
-										.map(link -> LinkDTO.getMapLinkToDto(link))
+										.map(LinkDTO::getMapLinkToDto)
 										.collect(Collectors.toSet());
 
 		Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
 												.orElse(Collections.emptySet())
 												.stream()
-												.map(comment -> CommentDTO.getCommentToCommentDto(comment))
+												.map(CommentDTO::getCommentToCommentDto)
 												.collect(Collectors.toSet());
 
 
