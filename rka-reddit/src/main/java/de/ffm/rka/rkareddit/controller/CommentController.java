@@ -34,7 +34,7 @@ public class CommentController {
     public String newComment(CommentDTO comment, BindingResult bindingResult,
                              RedirectAttributes attributes, @AuthenticationPrincipal UserDetails userDetails,
                              HttpServletResponse res) throws ServiceException {
-        Optional.ofNullable(userDetails)
+        userDetails = Optional.ofNullable(userDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("no user"));
         if(bindingResult.hasErrors()) {
             long comId = comment.getCommentId();
