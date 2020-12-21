@@ -168,11 +168,6 @@ public class LinkDTO implements Serializable {
         return id;
     }
 
-   /* @Override
-    public int hashCode() {
-        return Objects.hash(this);
-    }*/
-
     @Override
     public int hashCode() {
         return Objects.hash(title, subtitle, description, url, linkSignature);

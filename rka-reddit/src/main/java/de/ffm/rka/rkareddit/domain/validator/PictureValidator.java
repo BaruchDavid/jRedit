@@ -32,7 +32,6 @@ public class PictureValidator implements Validator {
         return PictureDTO.class.equals(clazz);
     }
 
-    // TODO: 18.12.2020 überprüfe ob JPEG als jpg verarbeitet werden kann
     @Override
     public void validate(Object target, Errors errors) {
         try {
@@ -40,7 +39,7 @@ public class PictureValidator implements Validator {
             final PictureDTO pictureDTO = (PictureDTO) target;
             if(isExtensionValid(errors, pictureDTO.getPictureExtension())){
                 newPicture = checkPictureContent(errors, pictureDTO);
-            };
+            }
             newPicture.ifPresent(picture -> checkPictureSize(errors, picture));
             newPicture.ifPresent(File::deleteOnExit);
         } catch (IOException ex) {

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.ZoneId;
+import java.util.Objects;
 
 import static java.util.Date.from;
 
@@ -88,7 +89,7 @@ public class CommentDTO extends Auditable implements Serializable{
 	 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(commentId, commentText);
     }
 
 }
