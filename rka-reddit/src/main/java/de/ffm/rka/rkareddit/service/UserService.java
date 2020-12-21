@@ -189,11 +189,7 @@ public class UserService {
 	 * @param userId is a user email
 	 */
 	public User getUserWithLinks(String userId){
-//		User user =  userRepository.fetchUserWithLinks(userId);
 		User user =  userRepository.fetchUserWithLinksAndComments(userId);
-/*		List<Link> linksWithComments = new ArrayList<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
-		user.setUserLinks(linksWithComments);*/
-
 		Set<Link> linksWithComments = new HashSet<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
 		user.setUserLinks(linksWithComments);
 		return user;
@@ -249,7 +245,7 @@ public class UserService {
 		return userRepository.fetchUserWithComments(userId);
 	}
 
-	public boolean lockUser(String userName) throws ServiceException {
+	public boolean lockUser(String userName) {
 		User dbUser = (User) userDetailsService.loadUserByUsername(userName);
 		dbUser.setEnabled(false);
 		mailService.sendEmail(userName, "Account is locked", "account is locked", false);
