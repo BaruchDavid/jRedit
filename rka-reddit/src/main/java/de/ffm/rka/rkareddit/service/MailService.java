@@ -48,7 +48,7 @@ public class MailService {
      * @throws ServiceException for application
      */
     //@Async
-    public boolean sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
+    public boolean sendEmail(String to, String subject, String content, boolean isHtml) {
         LOGGER.info("TRY SEND EMAIL TO {} witch Subject {}", to, subject);
         try {
             LOGGER.info("SEND-EMAIL-THREAD-NAME {}", Thread.currentThread().getName());
@@ -73,12 +73,10 @@ public class MailService {
     //@Async
     public boolean sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) {
         LOGGER.info("SEND-EMAIL-FROM TEMPLATE METHOD-CALL -THREAD-NAME {}", Thread.currentThread().getName());
-        return sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName), false, true);
+        return sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName),  true);
     }
 
     private String createEmailContext(String baseUrl, UserDTO userDto, String templateName) {
-        System.out.println("CREATE EMAIL CONTEXT-THREAD NAME: " + Thread.currentThread().getName());
-        LOGGER.info("SEND-EMAIL-FROM CONTEXT METHOD-CALL -THREAD-NAME {}", Thread.currentThread().getName());
         LOGGER.info("CREATE EMAIL FOR {}", userDto);
         Locale locale = Locale.ENGLISH;
         Context context = new Context(locale);
@@ -93,11 +91,11 @@ public class MailService {
     @Async
     public Future<Boolean> sendActivationEmail(UserDTO user) {
         LOGGER.info("SEND-ACTIVATION-EMAIL METHO CALL THREAD NAME {}", Thread.currentThread().getName());
-        return new AsyncResult<Boolean>(sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation"));
+        return new AsyncResult<>(sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation"));
     }
 
     @Async
-    public void sendEmailToNewEmailAccount(UserDTO user) throws ServiceException {
+    public void sendEmailToNewEmailAccount(UserDTO user) {
         sendEmailFromTemplate(user, "mail/new_email_activation", "LinkMe user email change");
     }
 
@@ -107,7 +105,7 @@ public class MailService {
      * @throws ServiceException for application
      */
     @Async
-    public void sendWelcomeEmail(UserDTO user) throws ServiceException {
+    public void sendWelcomeEmail(UserDTO user) {
         sendEmailFromTemplate(user, "mail/welcome", "Welcome new LinkMe User");
     }
 

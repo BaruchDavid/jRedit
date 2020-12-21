@@ -8,10 +8,8 @@ import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
 import de.ffm.rka.rkareddit.domain.validator.PictureValidator;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
-import de.ffm.rka.rkareddit.util.FileNIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,18 +39,11 @@ public class ProfileMetaDataController {
     private static final long MAX_CACHE_DURATION = 25;
     private static final int PAST_MINUTES_OF_CACHE_EXPIRATION = 3;
     private final UserService userService;
-
-    private final FileNIO fileNIO;
-
-    private final ApplicationContext applicationContext;
-
     private final UserDetailsServiceImpl userDetailsService;
 
-    public ProfileMetaDataController(UserService userService, FileNIO fileNIO, ApplicationContext applicationContext,
+    public ProfileMetaDataController(UserService userService,
                                      UserDetailsServiceImpl userDetailsService) {
         this.userService = userService;
-        this.fileNIO = fileNIO;
-        this.applicationContext = applicationContext;
         this.userDetailsService = userDetailsService;
     }
 
@@ -85,7 +76,7 @@ public class ProfileMetaDataController {
 
     @GetMapping(value = "/information/content/user-pic")
     @ResponseBody
-    public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) throws IOException {
+    public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) {
         Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
         String requestedUser = authenticatedUser.map(UserDetails::getUsername)
                 .orElse(req.getParameter("user"));
