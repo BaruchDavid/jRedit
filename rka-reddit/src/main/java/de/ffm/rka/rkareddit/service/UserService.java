@@ -83,7 +83,7 @@ public class UserService {
 		newUser.addRole(roleService.findByName("ROLE_USER"));
 		Future<Boolean> sendResult = sendActivatonEmail(userDto);
 		if(sendResult.isDone()){
-			if(sendResult.get()){
+			if(Boolean.TRUE.equals(sendResult.get())){
 				return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
 			} else {
 				LOGGER.info("REGISTRATION FAILED FOR USER {} and EMAIL {}", userDto.getEmail(), userDto.getEmail());
@@ -252,7 +252,7 @@ public class UserService {
 	public boolean lockUser(String userName) throws ServiceException {
 		User dbUser = (User) userDetailsService.loadUserByUsername(userName);
 		dbUser.setEnabled(false);
-		mailService.sendEmail(userName, "Account is locked", "account is locked", false, false);
+		mailService.sendEmail(userName, "Account is locked", "account is locked", false);
 		return true;
 	}
 
