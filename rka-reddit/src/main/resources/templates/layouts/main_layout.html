@@ -78,7 +78,7 @@
 		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
 			<div id="drop-area" data-toggle="tooltip" title="recommended resolutions: 600x800, 1200x1600">
 				<form id="pic-form" class="my-form">
-					<input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+					<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">
 					<label class="button" for="fileElem">Select some files</label>
 				</form>
 				<link rel="stylesheet" th:href="@{/css/img_upload.css}">
