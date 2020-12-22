@@ -84,7 +84,7 @@ public class Link extends Auditable implements Serializable{
 	 */
 	@Builder.Default
 	@OneToMany(orphanRemoval = true,mappedBy="link",
-				fetch = FetchType.LAZY)
+				fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	private List<Comment> comments = new ArrayList<>();
 
 	@Autowired
@@ -93,12 +93,6 @@ public class Link extends Auditable implements Serializable{
 	@Getter 
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
-	public Link(String title, String url) {
-
-		this.title = title;
-		this.url = url;
-	}
-	
 	public String getElapsedTime() {
 		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
     	return prettyTime.format(from(super.getCreationDate().atZone(ZONE_ID).toInstant()));
