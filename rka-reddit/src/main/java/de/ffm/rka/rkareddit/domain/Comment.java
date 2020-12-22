@@ -12,6 +12,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZoneId;
+import java.util.Objects;
 
 import static java.util.Date.from;
 
@@ -72,6 +73,6 @@ public class Comment extends Auditable implements Serializable{
 	 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(commentId);
     }
 }
