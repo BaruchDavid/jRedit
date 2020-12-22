@@ -37,20 +37,20 @@ public class VoteService {
 	 * @throws ServiceException will be thrown, when no link could be found and optional-link is empty
 	 */
 	@Transactional(readOnly = false)
-	public int saveVote(short direction, String linkSignature, int voteCount) throws IllegalArgumentException, ServiceException  {
+	public int saveVote(short direction, String linkSignature, int voteCount) throws ServiceException  {
 		LOGGER.info("VOTING FOR Link {} WITH COUNT {}", linkSignature, voteCount);
 		final boolean isValidDirection = direction != 0 && direction < 2 && direction > -2;
 		final long linkId = LinkDTO.convertEpochSecToId(linkSignature);
 		Optional<Link> link = linkRepository.findByLinkId(linkId);
 		int currentCount = link.map(Link::getVoteCount)
-								.orElseThrow(() -> new ServiceException("kein Vote für den Link signature: ".concat(linkSignature)));
+								.orElseThrow(() -> new ServiceException("kein Vote für die Link signature: ".concat(linkSignature)));
 		
 		if(currentCount == voteCount && isValidDirection) {
-			link.orElseThrow(() -> new ServiceException("LINK NOT FOUND with SIGNATURE ".concat(linkSignature)
-														.concat("and ID ".concat(String.valueOf(linkId)))))
-					.setVoteCount(currentCount+direction);
-			linkRepository.save(link.get());
-			return link.get().getVoteCount();
+			Link checkedLink = link.orElseThrow(() -> new ServiceException("LINK NOT FOUND with SIGNATURE ".concat(linkSignature)
+					.concat("and ID ".concat(String.valueOf(linkId)))));
+			checkedLink.setVoteCount(currentCount+direction);
+			linkRepository.save(checkedLink);
+			return checkedLink.getVoteCount();
 		}
 
 		return voteCount;
