@@ -19,6 +19,6 @@ public class RoleService {
 
 	public Role findByName(String roleName) {
 		LOGGER.info("TRY TO FIND ROLE {}", roleName);
-		return roleRepository.findByName(roleName);
+		return roleRepository.findByRoleName(roleName);
 	}
 }
