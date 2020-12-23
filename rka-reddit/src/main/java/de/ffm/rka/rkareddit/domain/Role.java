@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 
 @Entity
+@ToString(exclude = "users")
 @Getter @Setter
 @NoArgsConstructor
 public class Role implements Serializable {
@@ -24,34 +26,29 @@ public class Role implements Serializable {
 	private Long roleId;
 	
 	@NotNull(message = "Rollenname darf nicht null sein")
-	private String name;
+	@Column(name = "name")
+	private String roleName;
 	
 	@ManyToMany(mappedBy= "roles", fetch = FetchType.LAZY)
 	private Set<User> users = new HashSet<>();
 
 	public Role(@NotNull(message = "Rollenname darf nicht null sein") String name) {
 		super();
-		this.name = name;
+		this.roleName = name;
 	}
-	
-	@Override
-    public boolean equals(Object o) {
-		boolean result;
-		if (this == o) {
-			result = true;
-		} else if (!(o instanceof Role)) {
-			result = false;
-		} else {
-			Role other = (Role) o;
-			result = roleId != null &&
-					roleId.equals(other.getRoleId());
-		}
 
-		return result;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Role)) {
+			return false;
+		}
+		Role role = (Role) o;
+		return roleName.equals(role.roleName);
 	}
-	 
-    @Override
+
+	@Override
     public int hashCode() {
-        return Objects.hash(roleId);
+        return Objects.hash(roleName);
     }
 }

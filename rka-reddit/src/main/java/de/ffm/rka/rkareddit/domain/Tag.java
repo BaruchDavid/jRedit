@@ -52,10 +52,8 @@ public class Tag extends Auditable implements Serializable {
 			result = false;
 		} else {
 			Tag other = (Tag) o;
-			result = tagId != null &&
-					tagId.equals(other.getTagId());
+			result = tagName.equals(other.getTagName());
 		}
-
 		return result;
 	}
 	 

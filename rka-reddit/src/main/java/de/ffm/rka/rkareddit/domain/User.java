@@ -123,7 +123,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		roles.forEach(role ->authorities.add(new SimpleGrantedAuthority(role.getName())));
+		roles.forEach(role ->authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
 		return authorities;
 	}
 
@@ -160,10 +160,13 @@ public class User extends Auditable implements UserDetails, Serializable {
 	public boolean equals(Object o) {
 		boolean result;
 		if (this == o) {
+			System.out.println("ERSTES IF");
 			result = true;
 		} else if (!(o instanceof User)) {
+			System.out.println("ZWEITES IF");
 			result = false;
 		} else {
+			System.out.println("DRITTES IF");
 			User other = (User) o;
 			result = Objects.equals(email, other.email);
 		}
