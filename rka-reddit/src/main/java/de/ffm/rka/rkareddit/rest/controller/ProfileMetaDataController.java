@@ -12,7 +12,10 @@ import de.ffm.rka.rkareddit.util.CacheController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -24,12 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,8 +38,6 @@ import java.util.stream.Collectors;
 public class ProfileMetaDataController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataController.class);
-    private static final long MAX_CACHE_DURATION = 25;
-    private static final int PAST_MINUTES_OF_CACHE_EXPIRATION = 3;
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
     private CacheController cacheController;
