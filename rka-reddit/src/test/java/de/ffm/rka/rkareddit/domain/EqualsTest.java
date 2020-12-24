@@ -26,6 +26,13 @@ public class EqualsTest {
     }
 
     @Test
+    public void userNotEqualsInstanceOf() {
+        final User user1 = User.builder().userId(1L).email("test@.com").build();
+        Role admin = new Role("admin");
+        assertThat(user1).isNotEqualTo(admin);
+    }
+
+    @Test
     public void userEquals() {
         final User user1 = User.builder().userId(1L).email("test@.com").build();
         final User user2 = User.builder().userId(2L).email("test@.com").build();
