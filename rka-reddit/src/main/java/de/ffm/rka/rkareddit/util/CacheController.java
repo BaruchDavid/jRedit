@@ -12,7 +12,6 @@ public class CacheController {
 
     private static final long MAX_CACHE_DURATION = 25;
     private static final int PAST_MINUTES_OF_CACHE_EXPIRATION = 3;
-    private static final String USER_VISIT_NO_CACHE_CONTROL = "cache";
 
 
     public String setCacheHeader(String username) {
