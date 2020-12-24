@@ -27,13 +27,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -166,13 +166,16 @@ public class AuthControllerTest {
 
     /**
      * show public profile from grom as unautheticated user
+     * cach-flag: no-cache is set, cause for content-user you will see
+     * everytime actual saved picture and not cached picture
      */
     @Test
     public void showPublicProfileAsUnautheticated() throws Exception {
         User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
         this.mockMvc.perform(get("/profile/public/grom@gmx.de")).andDo(print()).andExpect(view().name("auth/profile"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(grom)));
+                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(grom)))
+                .andExpect(model().attribute("cacheControl", "no-cache"));
     }
 
     /**
@@ -207,12 +210,15 @@ public class AuthControllerTest {
         this.mockMvc.perform(get("/profile/private")).andDo(print()).andExpect(status().isOk())
                 .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(romakaptUser)))
                 .andExpect(model().attribute("userDto", userDto))
-                .andExpect(model().attribute("comments", commentDto));
+                .andExpect(model().attribute("comments", commentDto))
+                .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
 
     }
 
     /**
      * show profile public site of some user as authenticated user
+     * cach-flag: no-cache is set, cause for content-user you will see
+     * everytime actual saved picture and not cached picture
      */
     @Test
     @WithUserDetails("romakapt@gmx.de")
@@ -221,7 +227,8 @@ public class AuthControllerTest {
         if (userContent.isPresent()) {
             this.mockMvc.perform(get("/profile/public/grom@gmx.de")).andDo(print()).andExpect(status().isOk())
                     .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(userContent.get())))
-                    .andExpect(model().attribute("userDto", UserDTO.mapUserToUserDto(romakaptUser)));
+                    .andExpect(model().attribute("userDto", UserDTO.mapUserToUserDto(romakaptUser)))
+                    .andExpect(model().attribute("cacheControl", "no-cache"));
         } else {
             fail("user for test-request not found");
         }
@@ -230,7 +237,6 @@ public class AuthControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showEditProfilePage() throws Exception {
-
         UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
         this.mockMvc.perform(get("/profile/private/me")).andDo(print()).andExpect(status().isOk())
                 .andExpect(model().attribute("userDto", userDto));
@@ -325,7 +331,7 @@ public class AuthControllerTest {
 
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void changeUserEmailtoSmall() throws Exception {
+    public void changeUserEmailToSmall() throws Exception {
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
@@ -345,7 +351,7 @@ public class AuthControllerTest {
      */
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void changeUserEmailnoEmail() throws Exception {
+    public void changeUserEmailNoEmail() throws Exception {
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
@@ -362,7 +368,7 @@ public class AuthControllerTest {
 
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void changeUserEmailtoBig() throws Exception {
+    public void changeUserEmailToBig() throws Exception {
         this.mockMvc
                 .perform(MockMvcRequestBuilders.patch("/profile/private/me/update/email")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED).param("email", "romakapt@gmx.de")
@@ -446,7 +452,7 @@ public class AuthControllerTest {
      */
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void registerAsAutheticated() throws Exception {
+    public void registerAsAuthenticated() throws Exception {
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -497,7 +503,7 @@ public class AuthControllerTest {
      */
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void changePasswordNewAndOldShouldNotBeQual() throws Exception {
+    public void changePasswordNewAndOldShouldNotBeEqual() throws Exception {
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.put("/profile/private/me/password")
@@ -513,7 +519,7 @@ public class AuthControllerTest {
      */
     @Test
     @WithUserDetails("dascha@gmx.de")
-    public void linksPageForAutheticatedUserOnLogin() throws Exception {
+    public void linksPageForAuthenticatedUserOnLogin() throws Exception {
         this.mockMvc.perform(get("/login**")).andDo(print()).andExpect(status().is(302))
                 .andExpect(redirectedUrl("/links"));
     }
@@ -525,7 +531,7 @@ public class AuthControllerTest {
      */
     @Test
     @WithUserDetails("dascha@gmx.de")
-    public void linksPageForAutheticatedUserOnRegistration() throws Exception {
+    public void linksPageForAuthenticatedUserOnRegistration() throws Exception {
         this.mockMvc.perform(get("/registration")).andDo(print()).andExpect(status().is(302))
                 .andExpect(redirectedUrl("/links"));
     }

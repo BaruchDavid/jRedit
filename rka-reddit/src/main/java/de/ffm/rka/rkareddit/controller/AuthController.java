@@ -8,6 +8,7 @@ import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
+import de.ffm.rka.rkareddit.util.CacheController;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +45,15 @@ public class AuthController {
 	private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
 	private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
 	private static final String NOT_LOGGED_IN="";
+	private static final String USER_VISIT_NO_CACHE_CONTROL = "cacheControl";
 	private final UserService userService;
 	private final UserDetailsServiceImpl userDetailsService;
-	
-	public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService) {
+	private CacheController cacheController;
+
+	public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService, CacheController cacheController) {
 		this.userService = userService;
 		this.userDetailsService = userDetailsService;
+		this.cacheController = cacheController;
 	}
 
 	/**
@@ -77,15 +81,23 @@ public class AuthController {
 		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
 												.orElseThrow(()-> new UsernameNotFoundException("user not found"));	
 		UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
-		String userName = authenticatedUser.map(UserDetails::getUsername)
+		String authenticatedUserName = authenticatedUser.map(UserDetails::getUsername)
 											.orElse(NOT_LOGGED_IN);
-		if(!userName.isEmpty()){
-			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(userName)));
+		final boolean useCacheForAuthenticatedUser = authenticatedUserName.equals(pageContentUser.getUsername());
+		if(!NOT_LOGGED_IN.equals(authenticatedUserName) && useCacheForAuthenticatedUser) {
+			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(authenticatedUserName));
+		} else if(!NOT_LOGGED_IN.equals(authenticatedUserName) && !useCacheForAuthenticatedUser){
+			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(StringUtils.EMPTY));
+		} else if(NOT_LOGGED_IN.equals(authenticatedUserName)){
+			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(StringUtils.EMPTY));
+		}
+		if(!authenticatedUserName.isEmpty()){
+			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(authenticatedUserName)));
 		} else {
 			model.addAttribute(USER_DTO, new UserDTO());
 		}
 
-		Set<LinkDTO> userLinks = 	Optional.ofNullable(pageContentUser.getUserLinks())
+		Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptySet())
 										.stream()
 										.map(LinkDTO::getMapLinkToDto)

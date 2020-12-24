@@ -8,6 +8,7 @@ import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
 import de.ffm.rka.rkareddit.domain.validator.PictureValidator;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
+import de.ffm.rka.rkareddit.util.CacheController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -40,11 +41,14 @@ public class ProfileMetaDataController {
     private static final int PAST_MINUTES_OF_CACHE_EXPIRATION = 3;
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
+    private CacheController cacheController;
 
     public ProfileMetaDataController(UserService userService,
-                                     UserDetailsServiceImpl userDetailsService) {
+                                     UserDetailsServiceImpl userDetailsService,
+                                     CacheController cacheController) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
+        this.cacheController = cacheController;
     }
 
     @InitBinder
@@ -58,7 +62,8 @@ public class ProfileMetaDataController {
      */
     @GetMapping("/information/userClickedLinks")
     @ResponseBody
-    public List<LinkDTO> userClickedLinksHistory(@RequestParam(name = "user") String requestedUser, @AuthenticationPrincipal UserDetails userPrincipal) {
+    public List<LinkDTO> userClickedLinksHistory(@RequestParam(name = "user") String requestedUser,
+                                                 @AuthenticationPrincipal UserDetails userPrincipal) {
         List<LinkDTO> userClickedLinksDTO = new ArrayList<>();
         String authenticatedUser = Optional.ofNullable(userPrincipal)
                 .map(UserDetails::getUsername)
@@ -87,7 +92,7 @@ public class ProfileMetaDataController {
         Optional<byte[]> userPic = userService.getUserPic(requestedUser);
         if (userPic.isPresent()) {
             media = userPic.get();
-            headers = cacheControl(user.getFotoCreationDate());
+            headers = cacheController.setCacheHeader(user.getFotoCreationDate());
             LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", userPic.get().length, requestedUser);
         }
         return new ResponseEntity<>(media, headers, HttpStatus.OK);
@@ -112,7 +117,7 @@ public class ProfileMetaDataController {
                     if (userService.saveNewUserPicture(imageInputStream, user)) {
                         LOGGER.info("saved new picture {} for user: {}", pictureDTO.getFormDataWithFile().getOriginalFilename(),
                                 requestedUser);
-                        HttpHeaders headers = cacheControl(user.getFotoCreationDate());
+                        HttpHeaders headers = cacheController.setCacheHeader(user.getFotoCreationDate());
                         return new ResponseEntity<>("ok", headers, HttpStatus.CREATED);
                     } else {
                         LOGGER.warn("error on saving new picture {} for user: {}", pictureDTO.getFormDataWithFile()
