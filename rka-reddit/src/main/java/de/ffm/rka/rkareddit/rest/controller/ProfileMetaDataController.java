@@ -135,24 +135,4 @@ public class ProfileMetaDataController {
             return new ResponseEntity<>("Error occurred, please try again", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private HttpHeaders cacheControl(LocalDateTime date) {
-        HttpHeaders headers = new HttpHeaders();
-        if (checkForExpiredModification(date)) {
-            headers.setCacheControl(CacheControl.maxAge(MAX_CACHE_DURATION, TimeUnit.DAYS));
-        } else {
-            headers.setCacheControl(CacheControl.noCache());
-        }
-        return headers;
-    }
-
-    /**
-     * modification date is expired, when it is wished timed ago
-     *
-     * @param modificationDate of resource
-     * @return true when modificationDate is wished time ago
-     */
-    private boolean checkForExpiredModification(LocalDateTime modificationDate) {
-        return LocalDateTime.now().minusMinutes(PAST_MINUTES_OF_CACHE_EXPIRATION).isAfter(modificationDate);
-    }
 }
