@@ -17,9 +17,7 @@ import java.util.Optional;
 public class FileNIO {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileNIO.class);
-    private FileNIO(){
-        throw new IllegalStateException("Utility class can not be instantiated outside");
-    }
+    private FileNIO(){ }
     public static Optional<ByteArrayOutputStream> readPictureToBytes(String resourceName, String resourcePath)
             throws IOException {
         if (Optional.ofNullable(resourceName)

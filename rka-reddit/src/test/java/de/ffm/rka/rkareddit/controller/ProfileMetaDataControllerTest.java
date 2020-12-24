@@ -51,7 +51,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = SpringSecurityTestConfig.class
 )
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @Transactional
 public class ProfileMetaDataControllerTest {
 
@@ -111,7 +110,7 @@ public class ProfileMetaDataControllerTest {
                 .andExpect(status().is(200))
                 .andReturn();
         final String stringRes = result.getResponse().getContentAsString();
-        assertEquals(stringRes, "[]");
+        assertEquals("[]",stringRes);
     }
 
     @Test

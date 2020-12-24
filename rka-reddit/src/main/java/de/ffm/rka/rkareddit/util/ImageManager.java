@@ -11,9 +11,7 @@ import java.io.InputStream;
 public class ImageManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageManager.class);
-    private ImageManager(){
-        throw new IllegalStateException("Utility class can not be instantiated outside");
-    }
+    private ImageManager(){}
 
     public static BufferedImage simpleResizeImage(InputStream inputStream , int targetWidth) throws Exception {
         LOGGER.info("TRY TO RESIZE IMAGE");
