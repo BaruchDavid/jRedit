@@ -17,6 +17,9 @@ import java.util.Optional;
 public class FileNIO {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileNIO.class);
+    private FileNIO(){
+        throw new IllegalStateException("Utility class can not be instantiated outside");
+    }
     public static Optional<ByteArrayOutputStream> readPictureToBytes(String resourceName, String resourcePath)
             throws IOException {
         if (Optional.ofNullable(resourceName)
@@ -38,9 +41,9 @@ public class FileNIO {
     /**
      * converts pictures into byte-array as png
      */
-    public Optional<byte[]> readPictureToByte(String path) throws IOException {
+    public static Optional<byte[]> readPictureToByte(String path) throws IOException {
         Optional<byte[]> picByteArray = Optional.empty();
-        URL resourceUrl = this.getClass().getClassLoader().getResource(path);
+        URL resourceUrl = FileNIO.class.getClassLoader().getResource(path);
         if (resourceUrl != null) {
             File tmpFile = new File(resourceUrl.getFile());
             BufferedImage originalImage = ImageIO.read(tmpFile);
@@ -78,8 +81,8 @@ public class FileNIO {
         return webResourcePath;
     }
 
-    public static String getExtensionFromFile(String ressource){
-        final String[] parts = ressource.split("\\.");
+    public static String getExtensionFromFile(String resource){
+        final String[] parts = resource.split("\\.");
         return parts[parts.length-1];
     }
     /**
@@ -93,7 +96,7 @@ public class FileNIO {
     /**
      * @param inputStream fills pictureBuffer with content
      * @return amount of read bytes
-     * @throws IOException
+     * @throws IOException for missed file
      */
     public static byte[] readStreamToByte(InputStream inputStream) throws IOException {
         return  inputStream.readAllBytes();

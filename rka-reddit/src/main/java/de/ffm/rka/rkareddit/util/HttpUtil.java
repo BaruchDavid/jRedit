@@ -14,7 +14,9 @@ public class HttpUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
 	
-	private HttpUtil() {}
+	private HttpUtil() {
+		throw new IllegalStateException("Utility class can not be instantiated outside");
+	}
 	
 	public static void listSessionAttributesFromRequest(HttpServletRequest request) {
 		Enumeration<String> sessionAttributeNames = request.getSession().getAttributeNames();
