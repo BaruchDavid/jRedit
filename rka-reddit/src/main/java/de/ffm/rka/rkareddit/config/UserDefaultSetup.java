@@ -20,9 +20,6 @@ public class UserDefaultSetup implements CommandLineRunner{
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private FileNIO fileNIO;
-
 	@Override
 	public void run(String... args) throws Exception {
 		
@@ -35,7 +32,7 @@ public class UserDefaultSetup implements CommandLineRunner{
 	 */
 	private void configureUser() throws IOException {
 		List<User> users = userService.findAll();
-		Optional<byte[]> pic = fileNIO.readPictureToByte("static/images/profile_small.png");
+		Optional<byte[]> pic = FileNIO.readPictureToByte("static/images/profile_small.png");
 		users.forEach(user ->
 		{
 			pic.ifPresent(picture -> {user.setProfileFoto(pic.get());
