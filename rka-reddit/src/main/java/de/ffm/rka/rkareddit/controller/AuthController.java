@@ -83,14 +83,13 @@ public class AuthController {
 		UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
 		String authenticatedUserName = authenticatedUser.map(UserDetails::getUsername)
 											.orElse(NOT_LOGGED_IN);
-		final boolean useCacheForAuthenticatedUser = authenticatedUserName.equals(pageContentUser.getUsername());
-		if(!NOT_LOGGED_IN.equals(authenticatedUserName) && useCacheForAuthenticatedUser) {
+
+		if(pageContentUser.getUsername().equals(authenticatedUserName)) {
 			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(authenticatedUserName));
-		} else if(!NOT_LOGGED_IN.equals(authenticatedUserName) && !useCacheForAuthenticatedUser){
-			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(StringUtils.EMPTY));
-		} else if(NOT_LOGGED_IN.equals(authenticatedUserName)){
+		} else {
 			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(StringUtils.EMPTY));
 		}
+
 		if(!authenticatedUserName.isEmpty()){
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(authenticatedUserName)));
 		} else {
