@@ -39,8 +39,8 @@
                 </p>
                 <p class="tagline ">submitted
                     <time th:title="${linkDto.getCreationDate()}" th:datetime="${linkDto.getCreationDate()}" class="live-timestamp"
-                          th:text="${linkDto.getPrettyTime()}">1 hour(s)</time> by
-                    <a th:href="@{'/u/' + ${linkDto.getUser().getAliasName()}}" class="author" th:text="${linkDto.getUser().getAliasName()}">rka</a>
+                          th:text="${linkDto.getElapsedTime()}">1 hour(s)</time> by
+                    <a th:href="@{'/profile/public/' + ${linkDto.getUser().getEmail()}}" class="author" th:text="${linkDto.getUser().getAliasName()}">rka</a>
                     <span class="userattrs"></span>
                 </p>
                 <p><a th:href="${linkDto.url}" th:text="${linkDto.url}" target="_blank"></a></p>
