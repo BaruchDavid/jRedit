@@ -59,13 +59,10 @@ public class Comment extends Auditable implements Serializable{
     public boolean equals(Object o) {
 		boolean result;
 		if (this == o) {
-			System.out.println("INS ERSTE IF REINGEGANGEN");
 			result = true;
 		} else if (!(o instanceof Comment)) {
-			System.out.println("INS ZWEITE IF REINGEGANGEN");
 			result = false;
 		} else {
-			System.out.println("INS DRITTE IF REINGEGANGEN");
 			Comment other = (Comment) o;
 			result = commentText.equals(other.getCommentText());
 		}

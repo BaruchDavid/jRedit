@@ -160,13 +160,10 @@ public class User extends Auditable implements UserDetails, Serializable {
 	public boolean equals(Object o) {
 		boolean result;
 		if (this == o) {
-			System.out.println("ERSTES IF");
 			result = true;
 		} else if (!(o instanceof User)) {
-			System.out.println("ZWEITES IF");
 			result = false;
 		} else {
-			System.out.println("DRITTES IF");
 			User other = (User) o;
 			result = Objects.equals(email, other.email);
 		}
