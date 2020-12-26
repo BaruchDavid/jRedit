@@ -74,7 +74,7 @@ public class ProfileMetaDataControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     public void shouldReturnUserPicture() throws Exception {
         MvcResult result = this.mockMvc.perform(get("/profile/information/content/user-pic")
-                .sessionAttr("user", testConfig.getUsers().iterator().next())
+                .param("user", "romakapt@gmx.de")
                 .contentType(MediaType.IMAGE_PNG_VALUE)
                 .content("romakapt@gmx.de"))
                 .andExpect(status().isOk())

@@ -9,6 +9,7 @@ import de.ffm.rka.rkareddit.domain.validator.PictureValidator;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -81,20 +82,28 @@ public class ProfileMetaDataController {
     @GetMapping(value = "/information/content/user-pic")
     @ResponseBody
     public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) {
-        Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
-        String requestedUser = authenticatedUser.map(UserDetails::getUsername)
-                .orElse(req.getParameter("user"));
-
         HttpHeaders headers = new HttpHeaders();
         byte[] media = new byte[0];
-        User user = userService.getUser(requestedUser);
-        Optional<byte[]> userPic = userService.getUserPic(requestedUser);
-        if (userPic.isPresent()) {
-            media = userPic.get();
+        final HttpStatus responseStatus;
+        Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
+        String requestedUser = Optional.ofNullable(req.getParameter("user"))
+                .orElse(StringUtils.EMPTY);
+        if (!authenticatedUser.isEmpty()) {
+            User user = userService.getUser(requestedUser);
+            media = userService.getUserPic(requestedUser)
+                                .orElse(new byte[0]);;
+            LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", media.length, requestedUser);
             headers = cacheController.setCacheHeader(user.getFotoCreationDate());
-            LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", userPic.get().length, requestedUser);
+            responseStatus = HttpStatus.OK;
+           /* if (userPic.isPresent()) {
+                media = userPic.get();
+                headers = cacheController.setCacheHeader(user.getFotoCreationDate());
+                LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", userPic.get().length, requestedUser);
+            }*/
+        } else {
+            responseStatus = HttpStatus.UNAUTHORIZED;
         }
-        return new ResponseEntity<>(media, headers, HttpStatus.OK);
+        return new ResponseEntity<>(media, headers, responseStatus);
     }
 
     @PostMapping(value = "/information/content/user-pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
