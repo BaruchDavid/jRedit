@@ -79,6 +79,9 @@ public class ProfileMetaDataController {
         return userClickedLinksDTO;
     }
 
+    // TODO: 26.12.2020 WENN MAN EIN PROFIL EINES ANDEREN BESUCHT; DANN MUSS SICH ALLES VON IHM ANGEZEIGT WERDEN 
+    // TODO: 26.12.2020 UND NICHT NUR SEIN BILD 
+    // TODO: 26.12.2020 WENN MAN VERSUCHT AUF FREMDEN PROFIL DAS BILD ZU DRAG-DROPPEN; SOLL NIX PASSIEREN 
     @GetMapping(value = "/information/content/user-pic")
     @ResponseBody
     public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) {

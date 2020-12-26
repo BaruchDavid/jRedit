@@ -63,7 +63,7 @@
                             <a href="submit.html"><button type="button" class="btn btn-primary btn-lg btn-block">New Post</button></a>
                         </div>
                         <div class="card-body" th:if="${userDto.getEmail() != userContent.getEmail()}">                           
-                            <a href="submit.html"><button type="button" class="btn btn-primary btn-lg btn-block">Message an this user</button></a>
+                            <a href="submit.html"><button type="button" class="btn btn-primary btn-lg btn-block">Message at this user</button></a>
                         </div>
                     </div>
                 </div>
@@ -97,7 +97,6 @@
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
     <script th:src="@{/js/img.js}"></script>
     <div th:if="${#strings.equals(userDto.email, userContent.getEmail())}">
-        <p >script wurde geladen im eigenem profil: </p>
         <script th:src="@{/js/img_upload.js}"></script>
     </div>
     <link rel="stylesheet" th:href="@{/css/img_upload.css}">

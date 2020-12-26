@@ -83,7 +83,7 @@
 					<label class="button" for="fileElem">Select some files</label>
 				</form>
 			</div>
-			<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userDto.fullName}"></h2>
+			<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userContent.getFullName()}"></h2>
 		</div>
     </div>
  	<div class="container" th:fragment="content">
