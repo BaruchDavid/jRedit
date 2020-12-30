@@ -77,7 +77,7 @@
 		</div>
 		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
 			<input type="hidden" id="cache" th:value="${cacheControl}">
-			<div id="drop-area" data-toggle="tooltip" title="recommended resolutions: 600x800, 1200x1600">
+			<div id="drop-area">
 				<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
 					<form id="pic-form" class="my-form">
 						<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">

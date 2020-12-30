@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    $('#drop-area').attr('data-toggle', 'tooltip');
+    $('#drop-area').attr('title', 'recommended resolutions: 600x800, 1200x1600');
     $('[data-toggle="tooltip"]').tooltip();
 });
 
