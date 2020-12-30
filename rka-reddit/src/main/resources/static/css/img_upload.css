@@ -31,12 +31,9 @@ p {
   padding: 0px;
   color: black;
   cursor: pointer;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  border:none;
 }
-.button:hover {
-  background: #fff;
-}
+
 #fileElem {
   display: none;
 }
