@@ -80,7 +80,7 @@
 			<div id="drop-area" data-toggle="tooltip" title="recommended resolutions: 600x800, 1200x1600">
 				<form id="pic-form" class="my-form">
 					<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">
-					<label class="button" for="fileElem">Select some files</label>
+					<label class="button" for="fileElem">drop picture or click here</label>
 				</form>
 			</div>
 			<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'me')}">
