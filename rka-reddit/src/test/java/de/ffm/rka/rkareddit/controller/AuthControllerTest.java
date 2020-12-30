@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -180,6 +179,7 @@ public class AuthControllerTest {
     /**
      * show public non existing profile from grm as unauthenticated user
      */
+    // TODO: 27.12.2020 BEI EINEM FEHLER 
     @Test
     public void showPublicNoNexistedProfileAsUnautheticated() throws Exception {
         this.mockMvc.perform(get("/profile/public/grm@gmx.de"))
@@ -274,7 +274,8 @@ public class AuthControllerTest {
 
         UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
         this.mockMvc.perform(get("/profile/private/me/password")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", userDto)).andExpect(view().name("auth/passwordChange"));
+                .andExpect(model().attribute("userDto", userDto))
+                .andExpect(view().name("auth/passwordChange"));
     }
 
     @Test

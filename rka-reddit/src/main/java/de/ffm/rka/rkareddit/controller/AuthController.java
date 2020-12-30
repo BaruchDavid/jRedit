@@ -36,7 +36,9 @@ import java.util.stream.Collectors;
 @Controller
 public class AuthController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
-	private static final String USER_DTO = "userDto";
+	private static final String LOGGED_IN_USER ="userDto";
+	private static final String CONTENT_USER = "userContent";
+
 	private static final String SUCCESS = "success";
 	private static final String REGISTRATION = "/registration";
 	private static final String REDIRECT_MESSAGE = "redirectMessage";
@@ -91,9 +93,9 @@ public class AuthController {
 		}
 
 		if(!authenticatedUserName.isEmpty()){
-			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(authenticatedUserName)));
+			model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(authenticatedUserName)));
 		} else {
-			model.addAttribute(USER_DTO, new UserDTO());
+			model.addAttribute(LOGGED_IN_USER, new UserDTO());
 		}
 
 		Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
@@ -113,7 +115,7 @@ public class AuthController {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
 		}		
-		model.addAttribute("userContent", contentUser);
+		model.addAttribute(CONTENT_USER, contentUser);
 		model.addAttribute("posts", userLinks);
 		model.addAttribute("comments", userComments); //TODO: muss noch bentutzt werden für die GUI-Dastellung
 		model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
@@ -127,7 +129,7 @@ public class AuthController {
 	 */
 	@GetMapping(value = {REGISTRATION, REGISTRATION+"/"})
 	public String registration(Model model) {	
-		model.addAttribute(USER_DTO, UserDTO.builder().build());
+		model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
 		return "auth/register"; 
 	}
 	
@@ -145,7 +147,7 @@ public class AuthController {
 			return manageValidationErrors(userDto, bindingResult, res, req, model);
 		} else {
 			userDto = userService.register(userDto);
-			model.addAttribute(USER_DTO, userDto);
+			model.addAttribute(LOGGED_IN_USER, userDto);
 			attributes.addFlashAttribute(SUCCESS, true);
 			LOGGER.info("REGISTER SUCCESSFULLY {}", userDto);
 			return  "redirect:".concat(REGISTRATION);
@@ -190,7 +192,7 @@ public class AuthController {
 		Optional<UserDTO> userDTO = userService.emailActivation(email, activationCode, isNewEmail);
 		
 		if(userDTO.isPresent()) {
-			model.addAttribute(USER_DTO, userDTO.get());
+			model.addAttribute(LOGGED_IN_USER, userDTO.get());
 			LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
 			return returnLink; 
 		}else {
@@ -254,7 +256,8 @@ public class AuthController {
 								  .map(UserDetails::getUsername)
 								  .orElse("");
 		User requestedUser = (User) userDetailsService.loadUserByUsername(userName);
-		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(requestedUser));
+		model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto(requestedUser));
+
 	}
 	
 
@@ -262,7 +265,7 @@ public class AuthController {
 	public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
 		UserDTO userDto = UserDTO.mapUserToUserDto((User)user);
 		userDto.setNewEmail(StringUtils.EMPTY);
-		model.addAttribute(USER_DTO, userDto);
+		model.addAttribute(LOGGED_IN_USER, userDto);
 		return "auth/emailChange";
 	}
 	
@@ -280,7 +283,7 @@ public class AuthController {
 		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( "Register validation Error: {} during registration: {}",
 				error.getCodes(), error.getDefaultMessage()));
 		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-		model.addAttribute(USER_DTO, userDto);
+		model.addAttribute(LOGGED_IN_USER, userDto);
 		res.setStatus(HttpStatus.BAD_REQUEST.value());
 		return req.getRequestURI().contains("registration")? "auth/register": "auth/emailChange";
 	}
@@ -299,7 +302,7 @@ public class AuthController {
 		bindingResult.getAllErrors().forEach(error -> LOGGER.warn( ERROR_MESSAGE,
 											error.getCodes(), error.getDefaultMessage()));
 		model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
-		model.addAttribute(USER_DTO, userDto);
+		model.addAttribute(LOGGED_IN_USER, userDto);
 		attributes.addFlashAttribute(BINDING_ERROR,true);
 		res.setStatus(HttpStatus.BAD_REQUEST.value());
 	}
