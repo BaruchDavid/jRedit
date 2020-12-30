@@ -111,7 +111,7 @@ public class GlobalControllerAdvisor {
 		
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("userDto", user);
-		mav.addObject("user", user);
+		mav.addObject("userContent", user);
 		mav.addObject("url", req);
 		mav.setViewName(errorView);
 		return mav;
