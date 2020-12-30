@@ -78,10 +78,12 @@
 		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
 			<input type="hidden" id="cache" th:value="${cacheControl}">
 			<div id="drop-area" data-toggle="tooltip" title="recommended resolutions: 600x800, 1200x1600">
-				<form id="pic-form" class="my-form">
-					<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">
-					<label class="button" for="fileElem">drop picture or click here</label>
-				</form>
+				<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
+					<form id="pic-form" class="my-form">
+						<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">
+						<label class="button" for="fileElem">drop picture or click here</label>
+					</form>
+				</div>
 			</div>
 			<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'me')}">
 				<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userDto.getFullName()}"></h2>

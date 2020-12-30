@@ -1,10 +1,7 @@
-/*
 $(document).ready(function(){
-    const control = $('#cache').attr('value');
-    getPicture(control);
     $('[data-toggle="tooltip"]').tooltip();
 });
-*/
+
 
 let dropArea = document.getElementById('drop-area');
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

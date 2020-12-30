@@ -1,7 +1,6 @@
 $(document).ready(function(){
     const control = $('#cache').attr('value');
     getPicture(control);
-    $('[data-toggle="tooltip"]').tooltip();
 });
 
 function getPicture(control){
