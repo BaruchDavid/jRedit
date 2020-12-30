@@ -173,7 +173,7 @@ public class User extends Auditable implements UserDetails, Serializable {
 
     @Override
     public int hashCode() {
-    	return Objects.hash(userId);
+    	return Objects.hash(email);
     }
 
     public void removeRole(Role role) {

@@ -123,8 +123,7 @@ public class Link extends Auditable implements Serializable {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        } else if (!(o instanceof Link)) {
             return false;
         }
         Link link = (Link) o;
@@ -133,7 +132,7 @@ public class Link extends Auditable implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(linkId);
+        return Objects.hash(url);
     }
 
     public void addUserToLinkHistory(User userModel) {

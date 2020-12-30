@@ -71,6 +71,6 @@ public class Comment extends Auditable implements Serializable{
 	 
     @Override
     public int hashCode() {
-        return Objects.hash(commentId);
+        return Objects.hash(commentText);
     }
 }

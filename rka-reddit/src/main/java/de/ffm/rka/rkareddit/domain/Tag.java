@@ -59,6 +59,6 @@ public class Tag extends Auditable implements Serializable {
 	 
     @Override
     public int hashCode() {
-        return Objects.hash(tagId);
+        return Objects.hash(tagName);
     }
 }
