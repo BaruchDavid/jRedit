@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ public class ProfileMetaDataController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileMetaDataController.class);
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
-    private CacheController cacheController;
+    private final CacheController cacheController;
 
     public ProfileMetaDataController(UserService userService,
                                      UserDetailsServiceImpl userDetailsService,
@@ -94,15 +93,10 @@ public class ProfileMetaDataController {
         if (!authenticatedUser.isEmpty()) {
             User user = userService.getUser(requestedUser);
             media = userService.getUserPic(requestedUser)
-                                .orElse(new byte[0]);;
+                                .orElse(new byte[0]);
             LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", media.length, requestedUser);
             headers = cacheController.setCacheHeader(user.getFotoCreationDate());
             responseStatus = HttpStatus.OK;
-           /* if (userPic.isPresent()) {
-                media = userPic.get();
-                headers = cacheController.setCacheHeader(user.getFotoCreationDate());
-                LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", userPic.get().length, requestedUser);
-            }*/
         } else {
             responseStatus = HttpStatus.UNAUTHORIZED;
         }
@@ -112,7 +106,7 @@ public class ProfileMetaDataController {
     @PostMapping(value = "/information/content/user-pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> submit(@Valid @ModelAttribute("pic") PictureDTO pictureDTO,
                                          BindingResult result, Model model,
-                                         @AuthenticationPrincipal UserDetails userPrincipal) throws IOException {
+                                         @AuthenticationPrincipal UserDetails userPrincipal) {
         String errors = "";
         try {
             if (result.hasErrors()) {
