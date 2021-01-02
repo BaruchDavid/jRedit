@@ -86,7 +86,7 @@
 				</div>
 			</div>
 			<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'me')}">
-				<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userDto.getFullName()}"></h2>
+				<h2 id="userName" th:name="${userDto.getEmail()}" style="text-align: center;" class="display-6" th:text="${userDto.getFullName()}"></h2>
 			</div>
 			<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'me')}">
 				<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userContent.getFullName()}"></h2>
@@ -103,5 +103,14 @@
 		<script th:src="@{/libs/bootstrap/js/popper.min.js}"></script>
 		<script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
  	</div>
+	<div id="img_upload">
+		<script th:src="@{/js/img.js}"></script>
+		<!--<div th:if="${#strings.equals(userDto.email, userContent.getEmail())}">-->
+		<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
+			<script th:src="@{/js/img_upload.js}"></script>
+		</div>
+		<link rel="stylesheet" th:href="@{/css/img_upload.css}">
+	</div>
+
 	</body>
 </html>

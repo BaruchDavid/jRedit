@@ -4,7 +4,7 @@ $(document).ready(function(){
 });
 
 function getPicture(control){
-    const user = $('#userName').attr("title");
+    const user = $('#userName').attr("name");
     fetch('/jReditt/profile/information/content/user-pic?user='+user,
     { headers: {'Cache-Control': control}})
               .then(res=>{return res.blob()})
