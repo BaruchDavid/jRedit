@@ -105,7 +105,6 @@
  	</div>
 	<div id="img_upload">
 		<script th:src="@{/js/img.js}"></script>
-		<!--<div th:if="${#strings.equals(userDto.email, userContent.getEmail())}">-->
 		<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
 			<script th:src="@{/js/img_upload.js}"></script>
 		</div>

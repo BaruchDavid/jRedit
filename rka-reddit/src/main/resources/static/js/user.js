@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	const user = $('#userName').attr("title");
+	const user = $('#userName').attr("name");
 	if(user !== undefined){
         fetch ('/jReditt/profile/information/userClickedLinks?user='+user, {method: 'GET'})
             .then(function (response) {
