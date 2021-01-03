@@ -58,14 +58,16 @@ public class AuthControllerTest {
     @Before
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        romakaptUser = userService.findUserById("romakapt@gmx.de").get();
+        if(romakaptUser==null){
+            romakaptUser = userService.findUserById("romakapt@gmx.de").get();
+        }
 
     }
 
     @SuppressWarnings("unchecked")
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void showProfileOfUserAsAutheticated() throws Exception {
+    public void showProfileOfUserAsAuthenticated() throws Exception {
 
         ResultActions resultActions = this.mockMvc.perform(get("/profile/private")).andDo(print());
         MvcResult result = resultActions.andReturn();
@@ -181,7 +183,7 @@ public class AuthControllerTest {
      */
     // TODO: 27.12.2020 BEI EINEM FEHLER 
     @Test
-    public void showPublicNoNexistedProfileAsUnautheticated() throws Exception {
+    public void showPublicNoExistedProfileAsUnauthenticated() throws Exception {
         this.mockMvc.perform(get("/profile/public/grm@gmx.de"))
                 .andDo(print())
                 .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -200,7 +202,7 @@ public class AuthControllerTest {
     @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
     @WithUserDetails("romakapt@gmx.de")
     @Transactional
-    public void showPrivateProfileAsAutheticated() throws Exception {
+    public void showPrivateProfileAsAuthenticated() throws Exception {
         UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
         Set<CommentDTO> commentDto = romakaptUser.getUserComment()
                 .stream()
@@ -221,7 +223,7 @@ public class AuthControllerTest {
      */
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void showPublicProfileAsAutheticated() throws Exception {
+    public void showPublicProfileAsAuthenticated() throws Exception {
         Optional<User> userContent = userService.findUserById("grom@gmx.de");
         if (userContent.isPresent()) {
             this.mockMvc.perform(get("/profile/public/grom@gmx.de")).andDo(print()).andExpect(status().isOk())
