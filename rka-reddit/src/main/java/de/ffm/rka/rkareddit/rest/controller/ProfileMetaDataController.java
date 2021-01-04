@@ -90,7 +90,7 @@ public class ProfileMetaDataController {
         Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
         String requestedUser = Optional.ofNullable(req.getParameter("user"))
                 .orElse(StringUtils.EMPTY);
-        if (!authenticatedUser.isEmpty()) {
+        if (!requestedUser.isEmpty()) {
             User user = userService.getUser(requestedUser);
             media = userService.getUserPic(requestedUser)
                                 .orElse(new byte[0]);
@@ -98,7 +98,7 @@ public class ProfileMetaDataController {
             headers = cacheController.setCacheHeader(user.getFotoCreationDate());
             responseStatus = HttpStatus.OK;
         } else {
-            responseStatus = HttpStatus.UNAUTHORIZED;
+            responseStatus = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(media, headers, responseStatus);
     }
