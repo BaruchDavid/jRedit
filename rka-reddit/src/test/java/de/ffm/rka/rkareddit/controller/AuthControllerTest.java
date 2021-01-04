@@ -132,10 +132,12 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void showRegisterViewAsUnautheticatedTest() throws Exception {
+    public void showRegisterViewAsUnauthenticatedTest() throws Exception {
         UserDTO user = UserDTO.builder().build();
-        this.mockMvc.perform(get("/registration")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", user)).andExpect(view().name("auth/register"));
+        this.mockMvc.perform(get("/registration"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(model().attribute("userDto", user))
+                .andExpect(view().name("auth/register"));
     }
 
     @Test
@@ -170,7 +172,7 @@ public class AuthControllerTest {
      * everytime actual saved picture and not cached picture
      */
     @Test
-    public void showPublicProfileAsUnautheticated() throws Exception {
+    public void showPublicProfileAsUnauthenticated() throws Exception {
         User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
         this.mockMvc.perform(get("/profile/public/grom@gmx.de")).andDo(print()).andExpect(view().name("auth/profile"))
                 .andExpect(status().isOk())
@@ -191,8 +193,9 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void showPrivateProfileAsUnautheticated() throws Exception {
-        this.mockMvc.perform(get("/profile/private/romakapt@gmx.de")).andDo(print()).andExpect(status().isNotFound());
+    public void showPrivateProfileAsUnauthenticated() throws Exception {
+        this.mockMvc.perform(get("/profile/private/romakapt@gmx.de"))
+                .andDo(print()).andExpect(status().isNotFound());
     }
 
     /**
@@ -244,7 +247,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void showEditProfilePageForUnknownUser() throws Exception {
+    public void showEditProfilePageForUnknownUserAsUnauthenticated() throws Exception {
         this.mockMvc.perform(get("/profile/private/me")).andDo(print())
                 .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()))
                 .andExpect(view().name("error/application"));
