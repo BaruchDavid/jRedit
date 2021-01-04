@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "FROM User usr "
 			+ "JOIN FETCH usr.roles "
 			+ "WHERE usr.email =:email")
-	User findByEmailWithRoles(@Param("email") String email);
+	Optional<User> findByEmailWithRoles(@Param("email") String email);
 	
 	/**
 	 * email is unique value like id for fetching Links
@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "FROM User usr "
 			+ "LEFT OUTER JOIN FETCH usr.userLinks "
 			+ "WHERE usr.email =:email")
-	User fetchUserWithLinks(@Param("email") String userId);
+	Optional<User> fetchUserWithLinks(@Param("email") String userId);
 	
 	/**
 	 * email is unique value like id for fetching comments
@@ -43,18 +43,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+"FROM User usr "
 			+ "LEFT OUTER JOIN FETCH usr.userComment "
 			+ "WHERE usr.email =:email")
-	User fetchUserWithComments(@Param("email") String userId);
+	Optional<User> fetchUserWithComments(@Param("email") String userId);
 
 	@Query("SELECT usr "
 			+ "FROM User usr "
 			+ "LEFT OUTER JOIN FETCH usr.userLinks ln "
 			+ "LEFT OUTER JOIN FETCH usr.userComment cm "
 			+ "WHERE usr.email =:email")
-	User fetchUserWithLinksAndComments(@Param("email") String userId);
+	Optional<User> fetchUserWithLinksAndComments(@Param("email") String userId);
 	
 	@Query("SELECT usr "
 			+ "FROM User usr "
 			+ "LEFT OUTER JOIN FETCH usr.userClickedLinks "
 			+ "WHERE usr.email =:email")
-    User findClickedUserLinks(@Param("email") String requestedUser);
+    Optional<User> findClickedUserLinks(@Param("email") String requestedUser);
 }

@@ -67,7 +67,7 @@ public class UserService {
 
 	/**
 	 * decodes pw assign role set activation code
-	 * disable user before saving , send activation email reregister user
+	 * disable user before saving , send activation email register user
 	 * @return UserDTO
 	 * @throws ServiceException
 	 */
@@ -149,13 +149,8 @@ public class UserService {
 		userRepository.saveAndFlush(user);
 	}
 
-	// TODO: 29.11.2020 frage user über userDetailsService
 	public User getUser(String userMail) {
-		return userRepository.findByEmail(userMail)
-							.orElseThrow(() -> {
-										LOGGER.warn("{} Could not be found to be changed", userMail);
-										return new  UsernameNotFoundException(userMail);
-										});
+		return (User) userDetailsService.loadUserByUsername(userMail);
 	}
 
 	@Transactional
@@ -189,7 +184,8 @@ public class UserService {
 	 * @param userId is a user email
 	 */
 	public User getUserWithLinks(String userId){
-		User user =  userRepository.fetchUserWithLinksAndComments(userId);
+		User user =  userRepository.fetchUserWithLinksAndComments(userId)
+									.orElseThrow(() -> UserDetailsServiceImpl.throwUserNameNotFoundException(userId));
 		Set<Link> linksWithComments = new HashSet<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
 		user.setUserLinks(linksWithComments);
 		return user;
@@ -242,7 +238,8 @@ public class UserService {
 	 * @param userId is user email
 	 */
 	public User getUserWithComments(String userId) {
-		return userRepository.fetchUserWithComments(userId);
+		return userRepository.fetchUserWithComments(userId)
+							.orElseThrow(() -> UserDetailsServiceImpl.throwUserNameNotFoundException(userId));
 	}
 
 	public boolean lockUser(String userName) {
@@ -267,8 +264,9 @@ public class UserService {
 	 */
 	public Set<Link> findUserClickedLinks(final String requestedUser){
 		Set<Link> links = Optional.ofNullable(userRepository.findClickedUserLinks(requestedUser))
-						.map(User::getUserClickedLinks)
-						.orElse(Collections.emptySet());
+									.orElseThrow(() -> UserDetailsServiceImpl.throwUserNameNotFoundException(requestedUser))
+									.map(User::getUserClickedLinks)
+									.orElse(Collections.emptySet());
 		links = new HashSet<>(this.fillLinkWithSuitableComments(new HashSet<>(links)));
 		return links;
 	}

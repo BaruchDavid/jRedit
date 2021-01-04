@@ -21,6 +21,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -254,7 +257,17 @@ public class AuthController {
 	private void getUserForView(UserDetails user, Model model) {
 		String userName = Optional.ofNullable(user)
 								  .map(UserDetails::getUsername)
-								  .orElse("");
+								  .orElseThrow(() -> {
+									  RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+									  HttpServletRequest request = null;
+									  if (requestAttributes instanceof ServletRequestAttributes) {
+										  request = Optional.ofNullable(((ServletRequestAttributes)requestAttributes).getRequest())
+										  					.orElse(null);
+									  }
+									  String requestURI = Optional.ofNullable(request)
+											  						.orElseThrow().getRequestURI();
+								  	return UserDetailsServiceImpl.throwUnauthenticatedUserException(requestURI);
+								  });
 		User requestedUser = (User) userDetailsService.loadUserByUsername(userName);
 		model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto(requestedUser));
 
