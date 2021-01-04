@@ -145,7 +145,7 @@ public class CommentControllerTest {
 	}
 	
 	@Test
-	public void rejectCommentWithoutSuitableLinkIdAsUnautheticated() throws Exception {
+	public void rejectCommentWithoutSuitableLinkIdAsUnauthenticated() throws Exception {
 
 	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)

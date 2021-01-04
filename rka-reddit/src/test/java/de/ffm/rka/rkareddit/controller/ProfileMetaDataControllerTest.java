@@ -1,7 +1,9 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
+import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.rest.controller.ProfileMetaDataController;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import de.ffm.rka.rkareddit.util.FileNIO;
@@ -59,10 +61,16 @@ public class ProfileMetaDataControllerTest {
     @Autowired
     private ProfileMetaDataController profileMetaDataController;
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(profileMetaDataController).setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(profileMetaDataController)
+                .setControllerAdvice(new GlobalControllerAdvisor(userDetailsService))
+                .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
+                .build();
         testConfig = BeanUtil.getBeanFromContext(SpringSecurityTestConfig.class);
 
     }
@@ -71,6 +79,40 @@ public class ProfileMetaDataControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void shouldReturnUserPicture() throws Exception {
+        MvcResult result = this.mockMvc.perform(get("/profile/information/content/user-pic")
+                .param("user", "romakapt@gmx.de")
+                .contentType(MediaType.IMAGE_PNG_VALUE)
+                .content("romakapt@gmx.de"))
+                .andExpect(status().isOk())
+                .andReturn();
+        byte[] data = result.getResponse().getContentAsByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        BufferedImage bImage2 = ImageIO.read(bis);
+        File receivedUserPic = new File("receivedUserPic.png");
+        ImageIO.write(bImage2, "png", receivedUserPic);
+        LOGGER.info("RECEIVED IMAGE READABLE: {}", receivedUserPic.canRead());
+        LOGGER.info("RECEIVED IMAGE HAS BEEN DELETED: {}", receivedUserPic.delete());
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void shouldReturnUserPicForNotExistUser() throws Exception {
+        this.mockMvc.perform(get("/profile/information/content/user-pic")
+                .param("user", "xxx@gmx.de")
+                .contentType(MediaType.IMAGE_PNG_VALUE))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnUserPicForEmptyUserAsUnauthenticated() throws Exception {
+        this.mockMvc.perform(get("/profile/information/content/user-pic")
+                .contentType(MediaType.IMAGE_PNG_VALUE)
+                .content("romakapt@gmx.de"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnUserPictureAsUnauthenticated() throws Exception {
         MvcResult result = this.mockMvc.perform(get("/profile/information/content/user-pic")
                 .param("user", "romakapt@gmx.de")
                 .contentType(MediaType.IMAGE_PNG_VALUE)

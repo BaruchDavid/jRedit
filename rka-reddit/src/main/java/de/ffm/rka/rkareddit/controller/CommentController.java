@@ -2,18 +2,19 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
+import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
@@ -33,9 +34,11 @@ public class CommentController {
     @PostMapping(value = "/comments/comment")
     public String newComment(CommentDTO comment, BindingResult bindingResult,
                              RedirectAttributes attributes, @AuthenticationPrincipal UserDetails userDetails,
-                             HttpServletResponse res) throws ServiceException {
+                             HttpServletRequest req, HttpServletResponse res) throws ServiceException {
         userDetails = Optional.ofNullable(userDetails)
-                .orElseThrow(() -> new UsernameNotFoundException("no user"));
+                .orElseThrow(() ->
+                     UserDetailsServiceImpl.throwUnauthenticatedUserException(req.getRemoteHost() +
+                                                                            req.getRemotePort() + req.getRequestURI()));
         if(bindingResult.hasErrors()) {
             long comId = comment.getCommentId();
             bindingResult.getAllErrors().forEach(error -> LOGGER.error("VALIDATION ON COMMENT {} : CODES {} MESSAGE: {}",

@@ -264,9 +264,10 @@ public class AuthController {
 										  request = Optional.ofNullable(((ServletRequestAttributes)requestAttributes).getRequest())
 										  					.orElse(null);
 									  }
-									  String requestURI = Optional.ofNullable(request)
-											  						.orElseThrow().getRequestURI();
-								  	return UserDetailsServiceImpl.throwUnauthenticatedUserException(requestURI);
+									  request = Optional.ofNullable(request)
+											  			.orElseThrow();
+								  	return UserDetailsServiceImpl.throwUnauthenticatedUserException(request.getRemoteHost()+
+																									request.getRequestURI());
 								  });
 		User requestedUser = (User) userDetailsService.loadUserByUsername(userName);
 		model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto(requestedUser));

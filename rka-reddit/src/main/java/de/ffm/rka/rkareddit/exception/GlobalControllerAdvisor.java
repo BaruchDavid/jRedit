@@ -6,7 +6,6 @@ import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -39,8 +38,11 @@ public class GlobalControllerAdvisor {
     public static final String ANONYMOUS_USER = "anonymousUser";
     public static final String ANONYMOUS = "anonymous";
 
-    @Autowired
     UserDetailsServiceImpl userDetailsService;
+
+    public GlobalControllerAdvisor(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, UserAuthenticationLostException.class,
             NullPointerException.class,
