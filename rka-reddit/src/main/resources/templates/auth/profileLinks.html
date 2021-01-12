@@ -16,10 +16,10 @@
         <div class="row">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Posts</a>
+                    <a class="nav-link" th:href="@{/profile/private/links}">Posts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Comments</a>
+                    <a class="nav-link" th:href="@{/profile/private/comments}">Comments</a>
                 </li>             
  				<li class="nav-item dropdown" sec:authorize="isAuthenticated()" th:if="${userDto.getEmail() == userContent.getEmail()}"> 
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -77,10 +77,10 @@
                                 <h5 class="card-title" th:text="${userContent.getFirstName()} + '´s information'"></h5>
                             </div>
                            <p class="card-text">
-								<p id="userName" th:name="${userContent.getEmail()}" th:text="${userContent.getFullName()}">Username: </p>
+								<p id="userName" th:name="${userContent.getEmail()}" th:text="${'Alias:' + userContent.getAliasName()}"> </p>
 								<p id="userSince" th:text="${'User since: ' + userSince}">User Since: </p>
 								<p id="linkSize" th:text="${'Links: ' + #lists.size(posts)}">Links: </p>
-								<p id="commentSize" th:text="${'Comments: ' + #lists.size(comments)}">Comments: </p>         	
+								<p id="commentSize" th:text="${'Comments: ' + #lists.size(commentCount)}">Comments: </p>
 							</p>
                         </div>
                     </div>
