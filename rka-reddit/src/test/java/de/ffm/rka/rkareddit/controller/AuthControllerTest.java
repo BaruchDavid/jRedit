@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,22 +48,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class AuthControllerTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
-    private  MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Autowired
-    private  UserService userService;
+    private UserService userService;
 
     @Autowired
-    private  WebApplicationContext context;
+    private WebApplicationContext context;
 
-    private  User loggedInUser;
-    private  UserDTO loggedInUserDto;
+    private User loggedInUser;
+    private UserDTO loggedInUserDto;
 
     @Before
     public void setup() {
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        if(loggedInUser == null){
+        if (loggedInUser == null) {
             loggedInUser = userService.findUserById("romakapt@gmx.de").get();
             loggedInUserDto = UserDTO.mapUserToUserDto(loggedInUser);
         }
@@ -83,13 +81,15 @@ public class AuthControllerTest {
                 .map(LinkDTO::mapFullyLinkToDto)
                 .collect(Collectors.toSet());
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                                            .format(loggedInUserDto.getCreationDate());
-        ResultActions resultActions = this.mockMvc.perform(get("/profile/private")).andDo(print());
+                .format(loggedInUserDto.getCreationDate());
+        ResultActions resultActions = this.mockMvc.perform(get("/profile/private"))
+                .andDo(print());
         resultActions.andExpect(status().isOk())
-                    .andExpect(view().name("auth/profileLinks"))
-                    .andExpect(model().attribute("posts", loggedUserLinks))
-                    .andExpect(model().attribute("userSince", userSince))
-                    .andExpect(model().attribute("commentCount", 2));
+                .andExpect(view().name("auth/profileLinks"))
+                .andExpect(model().attribute("posts", loggedUserLinks))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("commentCount", 2))
+                .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
     }
 
     @Test
@@ -116,9 +116,9 @@ public class AuthControllerTest {
     public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
         final User pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
-                                                                .stream()
-                                                                .map(CommentDTO::getCommentToCommentDto)
-                                                                .collect(Collectors.toSet());
+                .stream()
+                .map(CommentDTO::getCommentToCommentDto)
+                .collect(Collectors.toSet());
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
@@ -138,8 +138,8 @@ public class AuthControllerTest {
     public void registerNewInvalidUser() throws Exception {
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("firstName", "Paul").param("secondName", "Grom").param("aliasName", "grünes")
-                        .param("password", "tata").param("confirmPassword", "tata"))
+                .param("firstName", "Paul").param("secondName", "Grom").param("aliasName", "grünes")
+                .param("password", "tata").param("confirmPassword", "tata"))
                 .andDo(print()).andExpect(status().is(400))
                 .andExpect(view().name("auth/register"));
     }
@@ -253,26 +253,6 @@ public class AuthControllerTest {
     public void showPrivateProfileAsUnauthenticated() throws Exception {
         this.mockMvc.perform(get("/profile/private/romakapt@gmx.de"))
                 .andDo(print()).andExpect(status().isNotFound());
-    }
-
-    /**
-     * show profile site of login user
-     */
-    @Test
-    @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
-    @WithUserDetails("romakapt@gmx.de")
-    @Transactional
-    public void showPrivateProfileAsAuthenticated() throws Exception {
-        Set<CommentDTO> commentDto = loggedInUser.getUserComment()
-                .stream()
-                .map(comment -> CommentDTO.getCommentToCommentDto(comment))
-                .collect(Collectors.toSet());
-        this.mockMvc.perform(get("/profile/private")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(loggedInUser)))
-                .andExpect(model().attribute("userDto", loggedInUserDto))
-                .andExpect(model().attribute("comments", commentDto))
-                .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
-
     }
 
     /**
