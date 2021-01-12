@@ -138,7 +138,7 @@ public class LinkController {
 	@PostMapping("/links/link")
 	public String newLink(@Validated LinkDTO link, @AuthenticationPrincipal UserDetails user,
 						  Model model, HttpServletResponse response, BindingResult bindingResult,
-						  RedirectAttributes redirectAttributes) {
+						  RedirectAttributes redirectAttributes) throws ServiceException {
 		if(bindingResult.hasErrors()) {
 			LOGGER.error("Validation failed of link: {}", link);
 			model.addAttribute(NEW_LINK, link);

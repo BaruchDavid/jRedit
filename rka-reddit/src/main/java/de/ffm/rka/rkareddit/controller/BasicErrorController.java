@@ -42,7 +42,7 @@ public class BasicErrorController implements ErrorController{
 		if(!ANONYMOUS.equals(authentication.getName())){			
 			userDto =  getUserDTO(authentication.getName());
 		}
-		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", request.getRequestURL(), ex.getMessage(), resp.getStatus());
+		LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", ex, request.getRequestURL(), resp.getStatus());
 		model.addAttribute("userDto", userDto);
 		resp.setStatus(404);
         return "error/pageNotFound";

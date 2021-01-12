@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
@@ -108,8 +109,10 @@ public class LinkDTO implements Serializable {
      */
     private Long linkId;
 
-    public String getLinkSignature() {
-        return this.linkSignature;
+    public String getLinkSignature() throws ServiceException {
+        return Optional.ofNullable(this.linkSignature)
+                .orElseThrow(() -> new ServiceException("NO Link-Signature for this Link: "
+                        + this.toString()));
     }
 
     public String getElapsedTime() {
@@ -123,12 +126,12 @@ public class LinkDTO implements Serializable {
     }
 
     /**
-     * @param time creation date
+     * @param link creation date
      * @return creation date as milli
      */
-    public static String convertLDTtoEpochSec(LocalDateTime time) {
-        Instant instant = time.atZone(ZoneId.systemDefault()).toInstant();
-        return String.valueOf(instant.toEpochMilli());
+    public static String createLinkSignature(Link link) {
+        Instant instant = link.getCreationDate().atZone(ZoneId.systemDefault()).toInstant();
+        return String.valueOf(instant.toEpochMilli()) + link.getLinkId();
     }
 
     public static Link getMapDtoToLink(LinkDTO linkDto) {
@@ -139,6 +142,7 @@ public class LinkDTO implements Serializable {
      * LinkController and AuthController maps links to LinkDTO.
      * AuthController needs already presented comments from link,
      * otherwise it get Lazy Initialization
+     *
      * @param link to be filled with comments and for mapping
      * @return linkDto from link
      */
@@ -147,15 +151,15 @@ public class LinkDTO implements Serializable {
         linkDto.setCommentDTOS(link.getComments().stream()
                 .map(CommentDTO::getCommentToCommentDto)
                 .collect(Collectors.toSet()));
-        linkDto.setLinkSignature(convertLDTtoEpochSec(link.getCreationDate())
-                .concat(String.valueOf(link.getLinkId())));
+        linkDto.setLinkSignature(createLinkSignature(link));
         return linkDto;
     }
 
-    public static LinkDTO mapLinkToDto(Link link){
-        return modelMapper.map(link, LinkDTO.class);
+    public static LinkDTO mapLinkToDto(Link link) {
+        final LinkDTO linkDTO = modelMapper.map(link, LinkDTO.class);
+        linkDTO.setLinkSignature(LinkDTO.createLinkSignature(link));
+        return linkDTO;
     }
-
 
 
     /**
