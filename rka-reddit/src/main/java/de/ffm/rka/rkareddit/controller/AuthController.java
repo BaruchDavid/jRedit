@@ -77,7 +77,9 @@ public class AuthController {
 	 * set user info, user links and their comments
 	 * @throws UsernameNotFoundException on non exists user
 	 */
-	@GetMapping(value={"/profile/private", "/profile/public/{email:.+}"})
+	@GetMapping(value={"/profile/private",
+						"/profile/private/links",
+						"/profile/public/{email:.+}"})
 	public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
 								@PathVariable(required = false) String email,
 								Model model) {
@@ -107,6 +109,7 @@ public class AuthController {
 										.map(LinkDTO::getMapLinkToDto)
 										.collect(Collectors.toSet());
 
+		// TODO: 11.01.2021 für die profile_comments view muss man user-comments im anderen handler befüllen
 		Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
 												.orElse(Collections.emptySet())
 												.stream()
@@ -118,13 +121,68 @@ public class AuthController {
 			model.addAttribute(SUCCESS, true);
 			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
 		}		
+
+		model.addAttribute(CONTENT_USER, contentUser);
+		model.addAttribute("posts", userLinks);
+		model.addAttribute("commentCount", userComments.size());
+		model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+														.format(contentUser.getCreationDate()));
+		return "auth/profileLinks";
+	}
+
+	@GetMapping(value={"/profile/private/comments"})
+	public String profileWithComponents(@AuthenticationPrincipal UserDetails userPrincipal,
+								@PathVariable(required = false) String email,
+								Model model) {
+		Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
+		email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
+		User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
+												.orElseThrow(()-> new UsernameNotFoundException("user not found"));
+		UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
+		String authenticatedUserName = authenticatedUser.map(UserDetails::getUsername)
+											.orElse(NOT_LOGGED_IN);
+
+		if(pageContentUser.getUsername().equals(authenticatedUserName)) {
+			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(authenticatedUserName));
+		} else {
+			model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(StringUtils.EMPTY));
+		}
+
+		if(!authenticatedUserName.isEmpty()){
+			model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(authenticatedUserName)));
+		} else {
+			model.addAttribute(LOGGED_IN_USER, new UserDTO());
+		}
+
+		Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
+										.orElse(Collections.emptySet())
+										.stream()
+										.map(LinkDTO::getMapLinkToDto)
+										.collect(Collectors.toSet());
+
+		// TODO: 11.01.2021 für die profile_comments view muss man user-comments im anderen handler befüllen
+		Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
+												.orElse(Collections.emptySet())
+												.stream()
+												.map(CommentDTO::getCommentToCommentDto)
+												.collect(Collectors.toSet());
+
+
+		if (model.containsAttribute(SUCCESS)) {
+			model.addAttribute(SUCCESS, true);
+			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
+		}
+
 		model.addAttribute(CONTENT_USER, contentUser);
 		model.addAttribute("posts", userLinks);
 		model.addAttribute("comments", userComments); //TODO: muss noch bentutzt werden für die GUI-Dastellung
 		model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 														.format(contentUser.getCreationDate()));
-		return "auth/profile"; 
+		return "auth/profileComments";
 	}
+
+
+
 	
 	/**
 	 * @param model to save userDto object

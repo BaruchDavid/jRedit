@@ -7,9 +7,13 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -27,12 +31,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -46,40 +54,66 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
 @Transactional
 public class AuthControllerTest {
-
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserService userService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
+    private  MockMvc mockMvc;
 
     @Autowired
-    private WebApplicationContext context;
+    private  UserService userService;
 
-    private User romakaptUser;
-    private UserDTO loggedInUser;
+    @Autowired
+    private  WebApplicationContext context;
+
+    private  User loggedInUser;
+    private  UserDTO loggedInUserDto;
+
     @Before
     public void setup() {
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        if(romakaptUser==null){
-            romakaptUser = userService.findUserById("romakapt@gmx.de").get();
-            loggedInUser = UserDTO.mapUserToUserDto(romakaptUser);
+        if(loggedInUser == null){
+            loggedInUser = userService.findUserById("romakapt@gmx.de").get();
+            loggedInUserDto = UserDTO.mapUserToUserDto(loggedInUser);
         }
 
     }
+
 
     @SuppressWarnings("unchecked")
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showProfileOfUserAsAuthenticated() throws Exception {
-        List<LinkDTO> loggedUserLinks = null;
-        String userSince = "";
+        final User pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
+        final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
+                .stream()
+                .map(LinkDTO::getMapLinkToDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                                            .format(loggedInUserDto.getCreationDate());
         ResultActions resultActions = this.mockMvc.perform(get("/profile/private")).andDo(print());
-        MvcResult result = resultActions
-                            .andExpect(status().isOk())
-                            .andExpect(model().attribute("posts", loggedUserLinks))
-                            .andExpect(model().attribute("userSince", loggedUserLinks))
-                            .andReturn();
-        assertNotNull(result);
+        resultActions.andExpect(status().isOk())
+                    .andExpect(view().name("auth/profileLinks"))
+                    .andExpect(model().attribute("posts", loggedUserLinks))
+                    .andExpect(model().attribute("userSince", userSince))
+                    .andExpect(model().attribute("commentCount", 2));
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void showProfileWithLinksOfUserAsAuthenticated() throws Exception {
+        final User pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
+        final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
+                .stream()
+                .map(LinkDTO::getMapLinkToDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(loggedInUserDto.getCreationDate());
+        ResultActions resultActions = this.mockMvc.perform(get("/profile/private/links")).andDo(print());
+        resultActions.andExpect(status().isOk())
+                .andExpect(view().name("auth/profileLinks"))
+                .andExpect(model().attribute("posts", loggedUserLinks))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("commentCount", 2));
+
     }
 
     /**
@@ -88,11 +122,11 @@ public class AuthControllerTest {
     @Test
     public void registerNewInvalidUser() throws Exception {
 
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("firstName", "Paul").param("secondName", "Grom").param("aliasName", "grünes")
                         .param("password", "tata").param("confirmPassword", "tata"))
-                .andDo(print()).andExpect(status().is(400)).andExpect(view().name("auth/register"));
+                .andDo(print()).andExpect(status().is(400))
+                .andExpect(view().name("auth/register"));
     }
 
     /**
@@ -180,7 +214,9 @@ public class AuthControllerTest {
     @Test
     public void showPublicProfileAsUnauthenticated() throws Exception {
         User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
-        this.mockMvc.perform(get("/profile/public/grom@gmx.de")).andDo(print()).andExpect(view().name("auth/profile"))
+        this.mockMvc.perform(get("/profile/public/grom@gmx.de"))
+                .andDo(print())
+                .andExpect(view().name("auth/profileLinks"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(grom)))
                 .andExpect(model().attribute("cacheControl", "no-cache"));
@@ -212,13 +248,13 @@ public class AuthControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     @Transactional
     public void showPrivateProfileAsAuthenticated() throws Exception {
-        Set<CommentDTO> commentDto = romakaptUser.getUserComment()
+        Set<CommentDTO> commentDto = loggedInUser.getUserComment()
                 .stream()
                 .map(comment -> CommentDTO.getCommentToCommentDto(comment))
                 .collect(Collectors.toSet());
         this.mockMvc.perform(get("/profile/private")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(romakaptUser)))
-                .andExpect(model().attribute("userDto", loggedInUser))
+                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(loggedInUser)))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
                 .andExpect(model().attribute("comments", commentDto))
                 .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
 
@@ -236,7 +272,7 @@ public class AuthControllerTest {
         if (userContent.isPresent()) {
             this.mockMvc.perform(get("/profile/public/grom@gmx.de")).andDo(print()).andExpect(status().isOk())
                     .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(userContent.get())))
-                    .andExpect(model().attribute("userDto", UserDTO.mapUserToUserDto(romakaptUser)))
+                    .andExpect(model().attribute("userDto", UserDTO.mapUserToUserDto(loggedInUser)))
                     .andExpect(model().attribute("cacheControl", "no-cache"));
         } else {
             fail("user for test-request not found");
@@ -247,7 +283,7 @@ public class AuthControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     public void showEditProfilePage() throws Exception {
         this.mockMvc.perform(get("/profile/private/me")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", loggedInUser));
+                .andExpect(model().attribute("userDto", loggedInUserDto));
     }
 
     @Test
@@ -281,7 +317,7 @@ public class AuthControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     public void showChangePasswordPage() throws Exception {
         this.mockMvc.perform(get("/profile/private/me/password")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", loggedInUser))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
                 .andExpect(view().name("auth/passwordChange"));
     }
 
