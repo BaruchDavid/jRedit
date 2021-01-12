@@ -19,9 +19,9 @@
                     <a class="nav-link" th:href="@{/profile/private/links}">Posts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/profile/private/comments}">Comments</a>
-                </li>             
- 				<li class="nav-item dropdown" sec:authorize="isAuthenticated()" th:if="${userDto.getEmail() == userContent.getEmail()}"> 
+                    <a class="nav-link" href="/profile/private/comments">Comments</a>
+                </li>
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()" th:if="${userDto.getEmail() == userContent.getEmail()}">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Preferences
 					</a>
@@ -39,17 +39,17 @@
         
         <div class="row">
             <div class="col-8">
-                <div class="row" th:each="link : ${posts}">
+                <div class="row" th:each="comment : ${comments}">
                     <div class="card col-12" style="width: 18rem;">
                         <div class="card-body">
-                            <h5 class="card-title" th:text="${link.getTitle()}">What's new in Spring Boot 2</h5>
-                            <h6 class="card-subtitle mb-2 text-muted" th:text="${link.getSubtitle()}"></h6>
-                            <p class="card-text" th:text="${link.getDescription()}">
+                            <h5 class="card-title" th:text="${comment.getLinkDTO().getTitle()}">What's new in Spring Boot 2</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">6 further comments from you fro thins link</h6>
+                            <p class="card-text" th:text="${comment.getCommentText()}">
                             	description of link
                             </p>
-                            <a th:href="@{'/links/link/' + ${link.getLinkSignature()} + '#comments'}" 
+                            <a th:href="@{'/links/link/' + ${comment.getLinkDTO().getLinkSignature()}}"
                             	class="card-link" 
-                            	th:text="|${link.getCommentCount()} comments|">8 Comments</a>
+                            	th:text="${comment.getLinkDTO().getTitle()}">8 Comments</a>
                             <a href="/jReditt/connect/facebook" class="card-link">Share</a>
                         </div>
                     </div>
@@ -79,8 +79,8 @@
                            <p class="card-text">
 								<p id="userName" th:name="${userContent.getEmail()}" th:text="${'Alias:' + userContent.getAliasName()}"> </p>
 								<p id="userSince" th:text="${'User since: ' + userSince}">User Since: </p>
-								<p id="linkSize" th:text="${'Links: ' + #lists.size(posts)}">Links: </p>
-								<p id="commentSize" th:text="${'Comments: ' + commentCount}">Comments: </p>
+								<p id="linkSize" th:text="${'Links: ' + postsCount}">Links: </p>
+								<p id="commentSize" th:text="${'Comments: ' + #lists.size(comments)}">Comments: </p>         	
 							</p>
                         </div>
                     </div>

@@ -142,8 +142,8 @@ public class LinkDTO implements Serializable {
      * @param link to be filled with comments and for mapping
      * @return linkDto from link
      */
-    public static LinkDTO getMapLinkToDto(Link link) {
-        LinkDTO linkDto = modelMapper.map(link, LinkDTO.class);
+    public static LinkDTO mapFullyLinkToDto(Link link) {
+        LinkDTO linkDto = mapLinkToDto(link);
         linkDto.setCommentDTOS(link.getComments().stream()
                 .map(CommentDTO::getCommentToCommentDto)
                 .collect(Collectors.toSet()));
@@ -151,6 +151,12 @@ public class LinkDTO implements Serializable {
                 .concat(String.valueOf(link.getLinkId())));
         return linkDto;
     }
+
+    public static LinkDTO mapLinkToDto(Link link){
+        return modelMapper.map(link, LinkDTO.class);
+    }
+
+
 
     /**
      * @param timeInSeconds which represent creation date

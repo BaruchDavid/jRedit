@@ -54,7 +54,7 @@ public class LinkService {
 	 */
 	public LinkDTO findLinkBySignature(final String signature) throws ServiceException {
 		Link linkModel = findLinkModelWithUser(signature);
-		return LinkDTO.getMapLinkToDto(linkModel);
+		return LinkDTO.mapFullyLinkToDto(linkModel);
 	}
 
 	public Link findLinkModelBySignature(final String signature) throws ServiceException {
@@ -112,7 +112,7 @@ public class LinkService {
 		LOGGER.debug("TRY TO SAVE LINK {}", link);
 		Link newLink = linkRepository.save(link);
 		LOGGER.info("LINK SAVED {}", newLink);
-		linkDto = LinkDTO.getMapLinkToDto(newLink);
+		linkDto = LinkDTO.mapFullyLinkToDto(newLink);
 		return Optional.of(linkDto)
 						.orElse(LinkDTO.builder()
 								.title("not available")
@@ -137,7 +137,7 @@ public class LinkService {
 		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(new HashSet<>(ln.getContent())))
 											.orElseGet(Collections::emptySet);
 		List<LinkDTO> links = linksWithComments.stream()
-								.map(LinkDTO::getMapLinkToDto)
+								.map(LinkDTO::mapFullyLinkToDto)
 								.collect(Collectors.toList());
 		return new PageImpl<>(links, pageable, ln.getTotalElements());
 	}

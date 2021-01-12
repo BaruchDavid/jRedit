@@ -7,9 +7,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
 import org.apache.commons.lang.StringUtils;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,7 +22,6 @@ import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,8 +30,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,7 +80,7 @@ public class AuthControllerTest {
         final User pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
                 .stream()
-                .map(LinkDTO::getMapLinkToDto)
+                .map(LinkDTO::mapFullyLinkToDto)
                 .collect(Collectors.toSet());
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                                             .format(loggedInUserDto.getCreationDate());
@@ -103,7 +98,7 @@ public class AuthControllerTest {
         final User pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
                 .stream()
-                .map(LinkDTO::getMapLinkToDto)
+                .map(LinkDTO::mapFullyLinkToDto)
                 .collect(Collectors.toSet());
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
@@ -113,6 +108,26 @@ public class AuthControllerTest {
                 .andExpect(model().attribute("posts", loggedUserLinks))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 2));
+
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
+        final User pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
+        final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
+                                                                .stream()
+                                                                .map(CommentDTO::getCommentToCommentDto)
+                                                                .collect(Collectors.toSet());
+
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(loggedInUserDto.getCreationDate());
+        ResultActions resultActions = this.mockMvc.perform(get("/profile/private/comments")).andDo(print());
+        resultActions.andExpect(status().isOk())
+                .andExpect(view().name("auth/profileComments"))
+                .andExpect(model().attribute("postsCount", 5))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("comments", loggedUserComments));
 
     }
 

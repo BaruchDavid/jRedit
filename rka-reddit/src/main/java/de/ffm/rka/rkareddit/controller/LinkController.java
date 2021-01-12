@@ -97,7 +97,7 @@ public class LinkController {
 			linkService.createClickedUserLinkHistory(userModel, link);
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
 		});
-		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(link);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(link);
 		model.addAttribute("linkDto",linkDTO);
 		CommentDTO comment = CommentDTO.builder()
 										.lSig(linkDTO.getLinkSignature())

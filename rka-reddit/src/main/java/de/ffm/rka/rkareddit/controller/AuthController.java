@@ -106,7 +106,7 @@ public class AuthController {
 		Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptySet())
 										.stream()
-										.map(LinkDTO::getMapLinkToDto)
+										.map(LinkDTO::mapFullyLinkToDto)
 										.collect(Collectors.toSet());
 
 		// TODO: 11.01.2021 für die profile_comments view muss man user-comments im anderen handler befüllen
@@ -157,7 +157,7 @@ public class AuthController {
 		Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
 										.orElse(Collections.emptySet())
 										.stream()
-										.map(LinkDTO::getMapLinkToDto)
+										.map(LinkDTO::mapFullyLinkToDto)
 										.collect(Collectors.toSet());
 
 		// TODO: 11.01.2021 für die profile_comments view muss man user-comments im anderen handler befüllen
@@ -174,7 +174,7 @@ public class AuthController {
 		}
 
 		model.addAttribute(CONTENT_USER, contentUser);
-		model.addAttribute("posts", userLinks);
+		model.addAttribute("postsCount", userLinks.size());
 		model.addAttribute("comments", userComments); //TODO: muss noch bentutzt werden für die GUI-Dastellung
 		model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 														.format(contentUser.getCreationDate()));

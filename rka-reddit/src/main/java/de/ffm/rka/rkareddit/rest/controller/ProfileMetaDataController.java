@@ -69,7 +69,7 @@ public class ProfileMetaDataController {
                 .orElse("");
         if (requestedUser.equals(authenticatedUser) && !requestedUser.isEmpty()) {
             Set<Link> userClickedLinks = userService.findUserClickedLinks(requestedUser);
-            userClickedLinks.forEach(link -> userClickedLinksDTO.add(LinkDTO.getMapLinkToDto(link)));
+            userClickedLinks.forEach(link -> userClickedLinksDTO.add(LinkDTO.mapFullyLinkToDto(link)));
         }
 
         LOGGER.info("AuthenticatedUser {} looks at visited user {} links_history contains {} links",

@@ -69,7 +69,9 @@ public class CommentDTO extends Auditable implements Serializable{
 	}
 	
 	public static CommentDTO getCommentToCommentDto(Comment comment) {
-		return modelMapper.map(comment, CommentDTO.class);
+		final CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
+		commentDTO.setLinkDTO(LinkDTO.mapLinkToDto(comment.getLink()));
+		return commentDTO;
 	}
 	
 	@Override

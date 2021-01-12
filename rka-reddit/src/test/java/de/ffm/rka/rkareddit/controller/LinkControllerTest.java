@@ -153,7 +153,7 @@ public class LinkControllerTest {
     //@DisplayName"Anzeigen von einem Link für einen nicht eingelogten User")
     public void readLinkTestAsUnautheticated() throws Exception {
         Link currentLink = linkService.findLinkModelBySignature("15921918064983");
-        LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+        LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
         MvcResult mvcResult = this.mockMvc.perform(get("/links/link/15921918064983"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -175,7 +175,7 @@ public class LinkControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     public void readLinkTestAsAutheticated() throws Exception {
         Link currentLink = entityManager.find(Link.class, 1L);
-        LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+        LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
         UserDTO userDto = UserDTO.builder()
                 .firstName("baruc-david")
                 .secondName("rka")

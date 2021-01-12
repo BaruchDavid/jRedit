@@ -75,7 +75,7 @@ public class VoteControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteWithIllegleCount() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
-		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/1/votecount/10"))
 				.andDo(print())
 				.andExpect(status().is(400))
@@ -87,7 +87,7 @@ public class VoteControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteWithIllegleDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
-		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/10/votecount/1"))
 							.andDo(print())
 							.andExpect(status().is(400))
@@ -100,7 +100,7 @@ public class VoteControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteWithIllegleNegativeDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
-		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/-2/votecount/1"))
 				.andDo(print())
 				.andExpect(status().is(400))
@@ -113,7 +113,7 @@ public class VoteControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteWithIllegleDirectionAndIllegleDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
-		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/10/votecount/3"))
 				.andDo(print())
 				.andExpect(status().is(400))
@@ -129,7 +129,7 @@ public class VoteControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVote() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
-		LinkDTO linkDTO = LinkDTO.getMapLinkToDto(currentLink);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 		MvcResult mvcResult = this.mockMvc.perform(get("/link/"+
 													linkDTO.getLinkSignature()+"/vote/direction/1/votecount/"
 													+linkDTO.getVoteCount()))
