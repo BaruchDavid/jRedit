@@ -326,7 +326,7 @@ Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'li
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:374)
 	... 70 common frames omitted
 20-05-2020 23:32:05.612 [main] ERROR
-				o.s.test.context.TestContextManager.prepareTestInstance - Caught exception while allowing TestExecutionListener [org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@59b38691] to prepare test instance [de.ffm.rka.rkareddit.controller.AuthControllerOverridenPropsTest@758705fa]
+				o.s.test.context.TestContextManager.prepareTestInstance - Caught exception while allowing TestExecutionListener [org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@59b38691] to prepare test instance [de.ffm.rka.rkareddit.controller.user.AuthControllerOverridenPropsTest@758705fa]
 java.lang.IllegalStateException: Failed to load ApplicationContext
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:125)
 	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:108)

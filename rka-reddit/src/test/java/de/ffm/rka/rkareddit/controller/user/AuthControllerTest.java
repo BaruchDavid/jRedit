@@ -1,5 +1,6 @@
-package de.ffm.rka.rkareddit.controller;
+package de.ffm.rka.rkareddit.controller.user;
 
+import de.ffm.rka.rkareddit.controller.AuthController;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
@@ -129,96 +130,6 @@ public class AuthControllerTest {
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("comments", loggedUserComments));
 
-    }
-
-    /**
-     * @author RKA
-     */
-    @Test
-    public void registerNewInvalidUser() throws Exception {
-
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("firstName", "Paul").param("secondName", "Grom").param("aliasName", "grünes")
-                .param("password", "tata").param("confirmPassword", "tata"))
-                .andDo(print()).andExpect(status().is(400))
-                .andExpect(view().name("auth/register"));
-    }
-
-    /**
-     * @author RKA
-     */
-    @Test
-    public void registerFailPwToShortNewUser() throws Exception {
-
-        this.mockMvc
-                .perform(post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("firstName", "Plau").param("secondName", "Grbn").param("aliasName", "grünes")
-                        .param("email", "Grbein@com.de").param("password", "tata").param("confirmPassword", "tata"))
-                .andDo(print()).andExpect(status().is(400))
-                .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "Size"))
-                .andExpect(view().name("auth/register"));
-    }
-
-    /**
-     * @author RKA
-     */
-    @Test
-    public void registerFailFirstPwSecondPwAreNotMatched() throws Exception {
-
-        this.mockMvc
-                .perform(post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("firstName", "Plau").param("secondName", "Grbn").param("aliasName", "grünes")
-                        .param("email", "Grbein@com.de").param("password", "tatata").param("confirmPassword", "tutata"))
-                .andDo(print())
-                .andExpect(
-                        globalErrors().hasOneGlobalError("userDTO", "Password and password confirmation do not match"))
-                .andExpect(view().name("auth/register"));
-    }
-
-    @Test
-    public void registerNewUserSuccess() throws Exception {
-
-        this.mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("firstName", "Plau").param("secondName", "Grbn").param("aliasName", "grünes")
-                .param("email", "Grbein@com.de").param("password", "tatatata").param("confirmPassword", "tatatata"))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("success", true));
-    }
-
-    @Test
-    public void showRegisterViewAsUnauthenticatedTest() throws Exception {
-        UserDTO user = UserDTO.builder().build();
-        this.mockMvc.perform(get("/registration"))
-                .andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", user))
-                .andExpect(view().name("auth/register"));
-    }
-
-    @Test
-    @WithUserDetails("romakapt@gmx.de")
-    public void showRegisterViewAsAutheticatedTest() throws Exception {
-        this.mockMvc.perform(get("/registration")).andDo(print()).andExpect(status().is(302))
-                .andExpect(redirectedUrl("/links"));
-    }
-
-    @Test
-    public void activateAccountTest() throws Exception {
-        this.mockMvc.perform(get("/activation/romakapt@gmx.de/activation")).andDo(print())
-                .andExpect(view().name("auth/activated"));
-    }
-
-    @Test
-    public void changeEmailFromLinkTest() throws Exception {
-        this.mockMvc.perform(get("/mailchange/kaproma@yahoo.de/activation")).andDo(print()).andExpect(status().is(302))
-                .andExpect(flash().attribute("redirectMessage", "your new email has been activated"))
-                .andExpect(redirectedUrl("/profile/private"));
-    }
-
-    @Test
-    public void activateInvalidAccountTest() throws Exception {
-        this.mockMvc.perform(get("/activation/romakapt@gmx.de/actiion")).andDo(print())
-                .andExpect(redirectedUrl("/error/registrationError"));
     }
 
     /**
@@ -486,20 +397,6 @@ public class AuthControllerTest {
     }
 
     /**
-     * @author RKA send register request as autheticated user
-     */
-    @Test
-    @WithUserDetails("romakapt@gmx.de")
-    public void registerAsAuthenticated() throws Exception {
-
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("firstName", "Paul").param("secondName", "Grom").param("aliasName", "grünes")
-                        .param("password", "tata").param("confirmPassword", "tata"))
-                .andDo(print()).andExpect(status().is(302)).andExpect(redirectedUrl("/links"));
-    }
-
-    /**
      * @author RKA passwordchange with wrong old password
      */
     @Test
@@ -550,27 +447,4 @@ public class AuthControllerTest {
                 .andDo(print()).andExpect(status().is(400)).andExpect(view().name("auth/passwordChange"));
     }
 
-    /**
-     * 302 -> redirects from access-denied handler to error-page
-     *
-     * @throws Exception
-     */
-    @Test
-    @WithUserDetails("dascha@gmx.de")
-    public void linksPageForAuthenticatedUserOnLogin() throws Exception {
-        this.mockMvc.perform(get("/login**")).andDo(print()).andExpect(status().is(302))
-                .andExpect(redirectedUrl("/links"));
-    }
-
-    /**
-     * 302 -> redirects from access-denied handler to error-page
-     *
-     * @throws Exception
-     */
-    @Test
-    @WithUserDetails("dascha@gmx.de")
-    public void linksPageForAuthenticatedUserOnRegistration() throws Exception {
-        this.mockMvc.perform(get("/registration")).andDo(print()).andExpect(status().is(302))
-                .andExpect(redirectedUrl("/links"));
-    }
 }

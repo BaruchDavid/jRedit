@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.controller;
+package de.ffm.rka.rkareddit.controller.user;
 
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import org.junit.Before;
