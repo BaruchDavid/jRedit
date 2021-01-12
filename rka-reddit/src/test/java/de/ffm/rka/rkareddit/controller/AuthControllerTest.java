@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
+import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.UserService;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,12 +56,13 @@ public class AuthControllerTest {
     private WebApplicationContext context;
 
     private User romakaptUser;
-
+    private UserDTO loggedInUser;
     @Before
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         if(romakaptUser==null){
             romakaptUser = userService.findUserById("romakapt@gmx.de").get();
+            loggedInUser = UserDTO.mapUserToUserDto(romakaptUser);
         }
 
     }
@@ -68,11 +71,14 @@ public class AuthControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showProfileOfUserAsAuthenticated() throws Exception {
-
+        List<LinkDTO> loggedUserLinks = null;
+        String userSince = "";
         ResultActions resultActions = this.mockMvc.perform(get("/profile/private")).andDo(print());
-        MvcResult result = resultActions.andReturn();
-//	    assertTrue(2, result.getModelAndView().getModel().get("comments").size()); //es müssen zwei kommentare sein, auf jdbc transaktionen achten
-//	    assertTrue(5, result.getModelAndView().getModel().get("posts").size()); //es muss x posts sein, auf jdbc transaktionen achten
+        MvcResult result = resultActions
+                            .andExpect(status().isOk())
+                            .andExpect(model().attribute("posts", loggedUserLinks))
+                            .andExpect(model().attribute("userSince", loggedUserLinks))
+                            .andReturn();
         assertNotNull(result);
     }
 
@@ -206,14 +212,13 @@ public class AuthControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     @Transactional
     public void showPrivateProfileAsAuthenticated() throws Exception {
-        UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
         Set<CommentDTO> commentDto = romakaptUser.getUserComment()
                 .stream()
                 .map(comment -> CommentDTO.getCommentToCommentDto(comment))
                 .collect(Collectors.toSet());
         this.mockMvc.perform(get("/profile/private")).andDo(print()).andExpect(status().isOk())
                 .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(romakaptUser)))
-                .andExpect(model().attribute("userDto", userDto))
+                .andExpect(model().attribute("userDto", loggedInUser))
                 .andExpect(model().attribute("comments", commentDto))
                 .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
 
@@ -241,9 +246,8 @@ public class AuthControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showEditProfilePage() throws Exception {
-        UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
         this.mockMvc.perform(get("/profile/private/me")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", userDto));
+                .andExpect(model().attribute("userDto", loggedInUser));
     }
 
     @Test
@@ -276,10 +280,8 @@ public class AuthControllerTest {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showChangePasswordPage() throws Exception {
-
-        UserDTO userDto = UserDTO.mapUserToUserDto(romakaptUser);
         this.mockMvc.perform(get("/profile/private/me/password")).andDo(print()).andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", userDto))
+                .andExpect(model().attribute("userDto", loggedInUser))
                 .andExpect(view().name("auth/passwordChange"));
     }
 
