@@ -205,7 +205,7 @@ public class ProfileMetaDataControllerTest {
     @WithUserDetails("romakapt@gmx.de")
     public void postToBigValidNewPicture() throws Exception {
         String defaultBaseDir = System.getProperty("java.io.tmpdir");
-        Path path = Paths.get(defaultBaseDir + "Forrest.jpg");
+        Path path = Paths.get(defaultBaseDir + "1mb-TestBild.jpg");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Files.copy(path, byteArrayOutputStream);
         MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
