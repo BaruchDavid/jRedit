@@ -43,10 +43,10 @@ public class LinkService {
 	/**
 	 * return all available links
 	 */
-	public List<Link> findAllLinks(){
+	public Optional<List<Link>> findAllLinks(){
 		List<Link> links = linkRepository.findAll();
 		LOGGER.info("Found {} links", links.size());
-		return links;
+		return Optional.ofNullable(links);
 	}
 
 	/**
@@ -151,5 +151,9 @@ public class LinkService {
 	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){
 		Page<Link> ln = linkRepository.findAll(pageable);
 		return ln.getContent();
+	}
+
+	public Set<Link> findLinksWithOnlyOneUser(String username) {
+		return linkRepository.findLinkWithUserComments(username);
 	}
 }

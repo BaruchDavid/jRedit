@@ -1,5 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
+import de.ffm.rka.rkareddit.domain.Comment;
+import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
@@ -7,6 +9,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
 import org.apache.commons.lang.StringUtils;
@@ -31,10 +34,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 public class AuthController {
@@ -53,11 +59,14 @@ public class AuthController {
     private static final String USER_VISIT_NO_CACHE_CONTROL = "cacheControl";
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final LinkService linkService;
     private CacheController cacheController;
 
-    public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService, CacheController cacheController) {
+    public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService,
+                          LinkService linkService, CacheController cacheController) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
+        this.linkService = linkService;
         this.cacheController = cacheController;
     }
 
@@ -144,7 +153,16 @@ public class AuthController {
                                         Model model) {
 
         final User pageContentUser = createContentUser(model, email, userPrincipal);
-        Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
+
+
+       /* final List<Comment> collect = linkService.findAllLinks()
+                .orElse(Collections.emptyList())
+                .stream()
+                .flatMap(link -> link.getComments().stream())
+                .filter(comment -> comment.getUser().getEmail().equals(userPrincipal.getUsername()))
+                .collect(Collectors.toList());*/
+        final Set<Link> linksWithOnlyOneUser = linkService.findLinksWithOnlyOneUser(userPrincipal.getUsername());
+        /*Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
                 .orElse(Collections.emptySet())
                 .stream()
                 .map(LinkDTO::mapFullyLinkToDto)
@@ -154,7 +172,7 @@ public class AuthController {
                 .orElse(Collections.emptySet())
                 .stream()
                 .map(CommentDTO::getCommentToCommentDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet());*/
 
 
         if (model.containsAttribute(SUCCESS)) {
@@ -163,8 +181,8 @@ public class AuthController {
         }
         UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
         model.addAttribute(CONTENT_USER, contentUser);
-        model.addAttribute("postsCount", userLinks.size());
-        model.addAttribute("comments", userComments);
+       /* model.addAttribute("postsCount", userLinks.size());
+        model.addAttribute("comments", userComments);*/
         model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(contentUser.getCreationDate()));
         return "auth/profileComments";

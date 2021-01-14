@@ -49,4 +49,11 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 			+ "LEFT OUTER JOIN FETCH l.comments "
 			+ "WHERE l.linkId IN (:linkIds) ")
 	Set<Link> findLinksWithComments(@Param("linkIds") Set<Long> linkIds);
+
+	@Query("SELECT l "
+			+ "FROM Link l "
+			+ "LEFT OUTER JOIN FETCH l.comments com "
+			+ "JOIN FETCH com.user usr "
+			+ "WHERE usr.email =:email ")
+    Set<Link> findLinkWithUserComments(@Param("email") String username);
 }
