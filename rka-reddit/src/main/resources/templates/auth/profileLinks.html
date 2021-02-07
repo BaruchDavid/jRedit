@@ -42,7 +42,8 @@
                 <div class="row" th:each="link : ${posts}">
                     <div class="card col-12" style="width: 18rem;">
                         <div class="card-body">
-                            <h5 class="card-title" th:text="${link.getTitle()}">What's new in Spring Boot 2</h5>
+                            <a th:href="@{'/links/link/' + ${link.getLinkSignature()}}"
+                               class="card-title" th:text="${link.getTitle()}">8 Comments</a>
                             <h6 class="card-subtitle mb-2 text-muted" th:text="${link.getSubtitle()}"></h6>
                             <p class="card-text" th:text="${link.getDescription()}">
                             	description of link
@@ -96,8 +97,6 @@
             </div>
 
         </div> <!-- // row -->
-        <p  th:text="${userContent.getEmail()}">Username email: </p>
-        <p  th:text="${userDto.email}">UserDto email: </p>
     </div><!-- // profile -->
     <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
     <div th:replace="~{layouts/main_layout :: div#img_upload}"></div>
