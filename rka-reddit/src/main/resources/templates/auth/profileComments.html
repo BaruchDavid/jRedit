@@ -19,7 +19,7 @@
                     <a class="nav-link" th:href="@{/profile/private/links}">Posts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="/profile/private/comments">Comments</a>
+                    <a class="nav-link" th:href="@{/profile/private/comments}">Comments</a>
                 </li>
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()" th:if="${userDto.getEmail() == userContent.getEmail()}">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

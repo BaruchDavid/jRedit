@@ -123,7 +123,6 @@ public class AuthControllerTest {
         ResultActions resultActions = this.mockMvc.perform(get("/profile/private/comments")).andDo(print());
         resultActions.andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
-                .andExpect(model().attribute("postsCount", 5))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("comments", loggedUserComments));
 
