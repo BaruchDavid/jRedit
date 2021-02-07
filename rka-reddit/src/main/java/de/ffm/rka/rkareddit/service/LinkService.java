@@ -153,7 +153,7 @@ public class LinkService {
 		return ln.getContent();
 	}
 
-	public Set<Link> findLinksWithOnlyOneUser(String username) {
+	public Set<Link> findLinksWithOwnComments(String username) {
 		return linkRepository.findLinkWithUserComments(username);
 	}
 }
