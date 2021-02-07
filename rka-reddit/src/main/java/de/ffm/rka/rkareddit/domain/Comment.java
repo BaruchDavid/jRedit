@@ -30,8 +30,8 @@ public class Comment extends Auditable implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long commentId;
-	
-	@NotEmpty(message = "comment text must be present")
+
+	@Column(length = 600)
 	private String commentText;
 
 	@JsonIgnore
