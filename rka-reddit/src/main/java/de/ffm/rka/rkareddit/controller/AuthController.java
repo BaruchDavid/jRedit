@@ -1,7 +1,5 @@
 package de.ffm.rka.rkareddit.controller;
 
-import de.ffm.rka.rkareddit.domain.Comment;
-import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
@@ -9,6 +7,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
@@ -34,13 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Controller
 public class AuthController {
@@ -60,13 +56,15 @@ public class AuthController {
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
     private final LinkService linkService;
+    private final CommentService commentService;
     private CacheController cacheController;
 
     public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService,
-                          LinkService linkService, CacheController cacheController) {
+                          LinkService linkService, CommentService commentService, CacheController cacheController) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
         this.linkService = linkService;
+        this.commentService = commentService;
         this.cacheController = cacheController;
     }
 
@@ -153,36 +151,12 @@ public class AuthController {
                                         Model model) {
 
         final User pageContentUser = createContentUser(model, email, userPrincipal);
-
-
-       /* final List<Comment> collect = linkService.findAllLinks()
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(link -> link.getComments().stream())
-                .filter(comment -> comment.getUser().getEmail().equals(userPrincipal.getUsername()))
-                .collect(Collectors.toList());*/
-        final Set<Link> linksWithOnlyOneUser = linkService.findLinksWithOnlyOneUser(userPrincipal.getUsername());
-        /*Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
-                .orElse(Collections.emptySet())
-                .stream()
-                .map(LinkDTO::mapFullyLinkToDto)
-                .collect(Collectors.toSet());
-
-        Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
-                .orElse(Collections.emptySet())
-                .stream()
-                .map(CommentDTO::getCommentToCommentDto)
-                .collect(Collectors.toSet());*/
-
-
-        if (model.containsAttribute(SUCCESS)) {
-            model.addAttribute(SUCCESS, true);
-            model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
-        }
+        final Set<CommentDTO> comments = commentService.retrieveUserComments(userPrincipal.getUsername());
         UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
         model.addAttribute(CONTENT_USER, contentUser);
-       /* model.addAttribute("postsCount", userLinks.size());
-        model.addAttribute("comments", userComments);*/
+        // TODO: 07.02.2021 die Daten auf der rechten Seite in einen ajax-rest-request auslagern
+        // TODO: 07.02.2021 da es für links und comments-seite notwendig ist
+        model.addAttribute("comments", comments);
         model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(contentUser.getCreationDate()));
         return "auth/profileComments";

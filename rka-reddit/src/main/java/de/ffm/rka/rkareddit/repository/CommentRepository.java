@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -14,4 +15,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "INNER JOIN FETCH comment.link " +
             "WHERE comment.link.linkId =:linkId")
     List<Comment> findAllCommentsWithLinkId(@Param("linkId") Long linkId);
+
+    @Query(value = "SELECT comment " +
+            "FROM Comment comment " +
+            "JOIN FETCH comment.link " +
+            "WHERE comment.user.email =:mail")
+    Set<Comment> getUserComments(@Param("mail") String username);
 }

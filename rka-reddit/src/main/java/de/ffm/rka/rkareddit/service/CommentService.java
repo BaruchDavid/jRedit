@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * maintenance all business logic for link treating
@@ -65,5 +67,12 @@ public class CommentService {
 	public List<Comment> retrieveCommentsForLink(Long linkId) {
 		LOGGER.info("THREAD NAME: {}", Thread.currentThread().getName());
 		return commentRepository.findAllCommentsWithLinkId(linkId);
+	}
+
+    public Set<CommentDTO> retrieveUserComments(String username) {
+		final Set<Comment> userCommentsWithLink = commentRepository.getUserComments(username);
+		return userCommentsWithLink.stream()
+							.map(CommentDTO::getCommentToCommentDto)
+							.collect(Collectors.toSet());
 	}
 }
