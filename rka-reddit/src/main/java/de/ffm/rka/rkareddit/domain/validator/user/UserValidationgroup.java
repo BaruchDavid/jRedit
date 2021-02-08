@@ -1,6 +1,6 @@
 package de.ffm.rka.rkareddit.domain.validator.user;
 
-public interface UserValidationgroups {
+public interface UserValidationgroup {
 
     /**
      * marker interface for user changes
