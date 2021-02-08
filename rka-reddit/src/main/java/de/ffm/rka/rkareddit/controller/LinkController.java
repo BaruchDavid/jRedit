@@ -42,7 +42,7 @@ public class LinkController {
 	private static final String NEW_LINK = "newLink";
 	private static final String SUBMIT_LINK = "link/submit";
 	private static final String SUCCESS = "success";
-	private static final String ERROR = "error";
+	private static final String ERROR_MESSAGE = "error_message";
 	private static final String USER_DTO = "userDto";
 	private final TagServiceImpl tagService;
 	
@@ -106,9 +106,9 @@ public class LinkController {
 
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, model.containsAttribute(SUCCESS));
-		} else if(model.containsAttribute(ERROR)) {
+		} else if(model.containsAttribute(ERROR_MESSAGE)) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			model.addAttribute(ERROR, model.containsAttribute(ERROR));
+			model.addAttribute(ERROR_MESSAGE, model.asMap().get(ERROR_MESSAGE));
 		}
 		return "link/link_view";
 
