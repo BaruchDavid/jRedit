@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.domain.dto;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
+import de.ffm.rka.rkareddit.domain.validator.comment.CommentValidationgroup;
+import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
 import org.modelmapper.ModelMapper;
@@ -11,6 +13,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Objects;
@@ -42,7 +45,9 @@ public class CommentDTO extends Auditable implements Serializable{
 	}
 	
 	
-	@NotEmpty(message = "comment text must be present")
+	@NotEmpty(message = "comment text must be present",
+			groups = CommentValidationgroup.ValidationCommentSize.class)
+	@Size(message = "maximal 600 letters are allowed", max=600, groups = CommentValidationgroup.ValidationCommentSize.class)
 	private String commentText;
 
 	private User user;
@@ -51,6 +56,7 @@ public class CommentDTO extends Auditable implements Serializable{
 	 * signature for suitable link
 	 * used for frontend
 	 */
+	@NotEmpty(message = "not valid comment", groups = LinkValidationGroup.signaturSize.class)
 	private String lSig;
 
 	private LinkDTO linkDTO;

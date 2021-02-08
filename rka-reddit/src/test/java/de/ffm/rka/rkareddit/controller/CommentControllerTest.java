@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import de.ffm.rka.rkareddit.util.StringUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -123,6 +126,22 @@ public class CommentControllerTest {
 							.andExpect(redirectedUrlPattern("/links/link/*1"))
 							.andExpect(flash().attributeExists("success"));
 	}
+
+	@Test
+	@WithUserDetails("romakapt@gmx.de")
+	public void rejectToBigComment() throws Exception {
+		SecureRandom secureRandom = new SecureRandom();
+		final String randomComment = StringUtil.generateRandomString(601);
+		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
+		this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
+													.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+													.param("lSig", linkDTO.getLinkSignature())
+													.param("commentText", randomComment))
+	    					.andDo(print())
+							.andExpect(status().is3xxRedirection())
+							.andExpect(redirectedUrlPattern("/links/link/*1"))
+							.andExpect(flash().attributeExists("error_message"));
+	}
 	/**
 	 * @author RKA
 	 * testing new comment with invalid link as Autheticated user
@@ -136,7 +155,7 @@ public class CommentControllerTest {
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 														.param("commentText", "hallo kommentar"))
 	    					.andDo(print())
-							.andExpect(status().is4xxClientError())
+							.andExpect(status().isBadRequest())
 							.andExpect(view().name("error/basicError"));
 	}
 	
