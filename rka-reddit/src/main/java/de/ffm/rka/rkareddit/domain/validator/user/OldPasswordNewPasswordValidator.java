@@ -11,7 +11,8 @@ import javax.validation.ConstraintValidatorContext;
  * @author roman.kaptsan
  *
  */
-public class OldPasswordNewPasswordValidator implements ConstraintValidator<OldPasswordNewPasswordNotMatcher, String>, BCryptPwEncoderManager {
+public class OldPasswordNewPasswordValidator implements ConstraintValidator<OldPasswordNewPasswordNotMatcher, String>,
+														BCryptPwEncoderManager {
 
 	@Override
 	public boolean isValid(String newPw, ConstraintValidatorContext context) {

@@ -6,10 +6,10 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.validator.user.*;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationChangeUserProperties;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserChangeEmail;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserChangePassword;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroups.ValidationUserRegistration;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationChangeUserProperties;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangeEmail;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangePassword;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserRegistration;
 import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -65,10 +65,12 @@ public class UserDTO {
 	private String confirmPassword;
 	
 	@OldPasswordNewPasswordNotMatcher(groups = {ValidationUserChangePassword.class})
-	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+	@Size(message = "password must be between 5 and 20 signs",
+			min = 5, max = 20, groups = {ValidationUserChangePassword.class})
 	private String newPassword;
 	
-	@Size(message = "password must be between  5 and 20 signs",min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+	@Size(message = "password must be between 5 and 20 signs",
+			min = 5, max = 20, groups = {ValidationUserChangePassword.class})
 	private String confirmNewPassword;
 	
 	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserProperties.class,
