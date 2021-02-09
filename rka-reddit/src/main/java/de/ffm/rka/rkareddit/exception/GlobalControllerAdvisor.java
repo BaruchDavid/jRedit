@@ -51,6 +51,7 @@ public class GlobalControllerAdvisor {
             Exception.class, PreAuthenticatedCredentialsNotFoundException.class})
     public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
         Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+        res.setHeader("location","/error");
         UserDTO user = new UserDTO();
         String view = USER_ERROR_VIEW;
         String visitorName = "";
@@ -117,10 +118,11 @@ public class GlobalControllerAdvisor {
     private ModelAndView createErrorView(String req, UserDTO user, String errorView) {
 
         ModelAndView mav = new ModelAndView();
+
         mav.addObject("userDto", user);
         mav.addObject("userContent", user);
         mav.addObject("url", req);
-        mav.setViewName(errorView);
+        mav.setViewName("redirect:/error");
         return mav;
     }
 

@@ -46,6 +46,7 @@ public class CommentController {
                      UserDetailsServiceImpl.throwUnauthenticatedUserException(req.getRemoteHost() +
                                                                             req.getRemotePort() + req.getRequestURI()));
         boolean isBadRequest = false;
+        comment.setLSig(null);
         if(bindingResult.hasErrors()) {
             final String currentErrors = bindingResult.getAllErrors().stream()
                     .map(error -> {

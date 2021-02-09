@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,10 +163,20 @@ public class CommentControllerTest {
 	@Test
 	public void rejectCommentWithoutSuitableLinkIdAsUnauthenticated() throws Exception {
 
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("commentText", "hallo kommentar"))
-	    					.andDo(print())
-							.andExpect(status().is(401));
+		final MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("commentText", "hallo kommentar"))
+				.andDo(print())
+				.andExpect(status().is(302))
+				.andReturn();
+
+		String errorRedirection = mvcResult.getResponse().getHeader("location");
+		errorRedirection = errorRedirection.substring(0,errorRedirection.indexOf("?"));
+		this.mockMvc.perform(get(errorRedirection))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(view().name("error/pageNotFound"));
+
+
 	}
 }
