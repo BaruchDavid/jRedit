@@ -64,7 +64,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 							.antMatchers("/login*").hasRole(ANONYMOUS.name())
 							.antMatchers("/profile/public").permitAll()
 							.antMatchers("/registration").hasRole(ANONYMOUS.name())
-							.antMatchers(HttpMethod.GET, "/profile/private/**").hasRole(USER.name())
+							.antMatchers(HttpMethod.GET, "/profile/private").hasRole(USER.name())
 							.antMatchers(HttpMethod.GET, "/profile/private/me/{email:.+}").hasRole(USER.name())
 							.antMatchers(HttpMethod.GET, "/profile/private/me/{email:.+}/password").hasRole(USER.name())
 							.antMatchers(HttpMethod.GET, "/profile/private/me/update/email/{email:.+}").hasRole(USER.name())
