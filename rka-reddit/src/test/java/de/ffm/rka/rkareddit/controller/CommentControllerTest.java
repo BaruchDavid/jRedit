@@ -15,41 +15,36 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
-import java.security.SecureRandom;
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ActiveProfiles("test")
 /** spring-test-support is enabled */
-@RunWith(SpringRunner.class) 
+@RunWith(SpringRunner.class)
 /** enable of application-context */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @Transactional
-public class CommentControllerTest {
+public class CommentControllerTest extends MvcRequestSender{
 
-	private MockMvc mockMvc;
+	public MockMvc mockMvc;
 
 	@Autowired
 	private LinkRepository linkRepository;
@@ -58,7 +53,7 @@ public class CommentControllerTest {
 	private WebApplicationContext context;
 	
 	private EntityManager entityManager;
-	
+
 	@Before
 	public void setup() {
 
@@ -76,11 +71,10 @@ public class CommentControllerTest {
 								.secondName("rka")
 								.build();
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
-		MvcResult result =  this.mockMvc.perform(get("/links/"))
-					.andDo(print())
-					.andExpect(status().isOk())
-					.andExpect(model().attribute("pageNumbers", pages))
-					.andReturn();
+		MvcResult result = super.performGetRequest("/links/")
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("pageNumbers", pages))
+				.andReturn();
 		UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");
     	assertEquals(userDto.getFullName(), usr.getFullName());
 	}
@@ -90,22 +84,20 @@ public class CommentControllerTest {
 	public void shouldReturnAllLinksForAnonymous() throws Exception {
 
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
-		MvcResult result = this.mockMvc.perform(get("/links/"))
-					.andDo(print())
-					.andExpect(status().isOk())
-					.andExpect(model().attribute("pageNumbers", pages))
-					.andReturn();
+		MvcResult result = super.performGetRequest("/links/")
+								.andExpect(status().isOk())
+								.andExpect(model().attribute("pageNumbers", pages))
+								.andReturn();
 		assertTrue(!result.getResponse().getContentAsString().contains("Submit Link"));
 	}
 	
 	@Test
 	public void shouldReturnAllLinksForCURL() throws Exception {
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
-		MvcResult result = this.mockMvc.perform(get("/links/"))
-					.andDo(print())
-					.andExpect(status().isOk())
-					.andExpect(model().attribute("pageNumbers", pages))
-					.andReturn();
+		MvcResult result = super.performGetRequest("/links/")
+										.andExpect(status().isOk())
+										.andExpect(model().attribute("pageNumbers", pages))
+										.andReturn();
 		assertTrue(!result.getResponse().getContentAsString().contains("Submit Link"));
 	}
 
@@ -116,7 +108,7 @@ public class CommentControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
-		//LinkDTO linkDTO =
+
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
 	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
 														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -131,7 +123,6 @@ public class CommentControllerTest {
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void rejectToBigComment() throws Exception {
-		SecureRandom secureRandom = new SecureRandom();
 		final String randomComment = StringUtil.generateRandomString(601);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
 		this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
@@ -152,12 +143,13 @@ public class CommentControllerTest {
 	@WithUserDetails("romakapt@gmx.de")
 	public void rejectCommentWithoutSuitableLinkId() throws Exception {
 
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("commentText", "hallo kommentar"))
-	    					.andDo(print())
-							.andExpect(status().isBadRequest())
-							.andExpect(view().name("error/basicError"));
+		final MvcResult mvcResult = super.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
+												.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+												.param("commentText", "hallo kommentar"))
+												.andDo(print())
+												.andExpect(status().is(302))
+												.andReturn();
+		sendRedirect( mvcResult.getResponse().getHeader("location"));
 	}
 	
 	@Test
@@ -169,14 +161,13 @@ public class CommentControllerTest {
 				.andDo(print())
 				.andExpect(status().is(302))
 				.andReturn();
+		sendRedirect(mvcResult.getResponse().getHeader("location"));
+	}
 
-		String errorRedirection = mvcResult.getResponse().getHeader("location");
-		errorRedirection = errorRedirection.substring(0,errorRedirection.indexOf("?"));
-		this.mockMvc.perform(get(errorRedirection))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(view().name("error/pageNotFound"));
-
-
+	private void sendRedirect(String redirectionSource) throws Exception {
+		redirectionSource = redirectionSource.substring(0,redirectionSource.indexOf("?"));
+		super.performGetRequest(redirectionSource)
+							.andExpect(status().isNotFound())
+							.andExpect(view().name("error/pageNotFound"));
 	}
 }
