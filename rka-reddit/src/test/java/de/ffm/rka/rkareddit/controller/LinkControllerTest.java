@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @Transactional
-public class LinkControllerTest {
+public class LinkControllerTest extends MvcRequestSender {
     private static final int MAX_JDBC_TRANSACTION = 3;
     private MockMvc mockMvc;
 
@@ -63,6 +63,11 @@ public class LinkControllerTest {
 
     @Autowired
     private LinkService linkService;
+
+    UserDTO userDto = UserDTO.builder()
+                            .firstName("baruc-david")
+                            .secondName("rka")
+                            .build();
 
     private Statistics hibernateStatistic;
     private Session hibernateSession;
@@ -82,10 +87,7 @@ public class LinkControllerTest {
     //@DisplayName"Beim Aufruf von der Hauptseite werden alle links für den eingelogten User zurückgegeben")
     @WithUserDetails("romakapt@gmx.de")
     public void shouldReturnAllLinks() throws Exception {
-        UserDTO userDto = UserDTO.builder()
-                .firstName("baruc-david")
-                .secondName("rka")
-                .build();
+
         List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
         hibernateStatistic.clear();
         MvcResult result = this.mockMvc.perform(get("/links/"))
@@ -135,10 +137,10 @@ public class LinkControllerTest {
     //@DisplayName"Beim Aufruf von nicht existierendem Link wird basicError angezeigt")
     public void illegalArguments() throws Exception {
         String invalidPage = UUID.randomUUID().toString();
-        this.mockMvc.perform(get("/links/link/".concat(invalidPage)))
-                .andDo(print())
-                .andExpect(status().is4xxClientError())
-                .andExpect(view().name("error/basicError"));
+        final MvcResult mvcResult = this.mockMvc.perform(get("/links/link/".concat(invalidPage)))
+                                                .andDo(print())
+                                                .andExpect(status().is(302))
+                                                .andReturn();
 
     }
 
@@ -176,10 +178,7 @@ public class LinkControllerTest {
     public void readLinkTestAsAutheticated() throws Exception {
         Link currentLink = entityManager.find(Link.class, 1L);
         LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
-        UserDTO userDto = UserDTO.builder()
-                .firstName("baruc-david")
-                .secondName("rka")
-                .build();
+
         MvcResult result = this.mockMvc.perform(get("/links/link/15921918064981"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -249,10 +248,6 @@ public class LinkControllerTest {
     //@DisplayName"Zeige Seite für einen neuen Test")
     public void createNewLinkTest() throws Exception {
         Link link = new Link();
-        UserDTO userDto = UserDTO.builder()
-                .firstName("baruc-david")
-                .secondName("rka")
-                .build();
         MvcResult result = this.mockMvc.perform(get("/links/link"))
                 .andDo(print())
                 .andExpect(status().isOk())
