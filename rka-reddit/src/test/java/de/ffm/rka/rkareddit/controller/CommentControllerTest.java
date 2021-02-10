@@ -3,64 +3,32 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
-import de.ffm.rka.rkareddit.util.BeanUtil;
 import de.ffm.rka.rkareddit.util.StringUtil;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@ActiveProfiles("test")
-/** spring-test-support is enabled */
-@RunWith(SpringRunner.class)
-/** enable of application-context */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-@Transactional
 public class CommentControllerTest extends MvcRequestSender{
 
-	public MockMvc mockMvc;
 
 	@Autowired
 	private LinkRepository linkRepository;
 
-	@Autowired
-	private WebApplicationContext context;
-	
-	private EntityManager entityManager;
+	LinkDTO linkDTO;
 
 	@Before
 	public void setup() {
-
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-										.apply(springSecurity())
-										.build();
-		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
+		linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
 	}
 
 	@Test
@@ -109,30 +77,22 @@ public class CommentControllerTest extends MvcRequestSender{
 	@WithUserDetails("romakapt@gmx.de")
 	public void postNewComment() throws Exception {
 
-		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
-	    	this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
-														.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-														.param("lSig", linkDTO.getLinkSignature())
-														.param("commentText", "hallo kommentar"))
-	    					.andDo(print())
-							.andExpect(status().is3xxRedirection())
-							.andExpect(redirectedUrlPattern("/links/link/*1"))
-							.andExpect(flash().attributeExists("success"));
+		String body = "lSig="+linkDTO.getLinkSignature()+"&commentText="+StringUtil.generateRandomString(600);
+		super.performPostRequest("/comments/comment", body)
+									.andExpect(status().is3xxRedirection())
+									.andExpect(redirectedUrlPattern("/links/link/*1"))
+									.andExpect(flash().attributeExists("success"));
 	}
 
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void rejectToBigComment() throws Exception {
-		final String randomComment = StringUtil.generateRandomString(601);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
-		this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
-													.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-													.param("lSig", linkDTO.getLinkSignature())
-													.param("commentText", randomComment))
-	    					.andDo(print())
-							.andExpect(status().is3xxRedirection())
-							.andExpect(redirectedUrlPattern("/links/link/*1"))
-							.andExpect(flash().attributeExists("error_message"));
+		String body = "lSig="+linkDTO.getLinkSignature()+"&commentText="+StringUtil.generateRandomString(601);
+		super.performPostRequest("/comments/comment", body)
+					.andExpect(status().is3xxRedirection())
+					.andExpect(redirectedUrlPattern("/links/link/*1"))
+					.andExpect(flash().attributeExists("error_message"));
 	}
 	/**
 	 * @author RKA
@@ -142,11 +102,8 @@ public class CommentControllerTest extends MvcRequestSender{
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void rejectCommentWithoutSuitableLinkId() throws Exception {
-
-		final MvcResult mvcResult = super.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
-												.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-												.param("commentText", "hallo kommentar"))
-												.andDo(print())
+		String body = "lSig="+null+"&commentText=hallo Kommentar";
+		final MvcResult mvcResult = super.performPostRequest("/comments/comment", body)
 												.andExpect(status().is(302))
 												.andReturn();
 		sendRedirect( mvcResult.getResponse().getHeader("location"));
@@ -154,13 +111,10 @@ public class CommentControllerTest extends MvcRequestSender{
 	
 	@Test
 	public void rejectCommentWithoutSuitableLinkIdAsUnauthenticated() throws Exception {
-
-		final MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/comments/comment")
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-				.param("commentText", "hallo kommentar"))
-				.andDo(print())
-				.andExpect(status().is(302))
-				.andReturn();
+		String body = "lSig="+null+"&commentText=hallo Kommentar";
+		final MvcResult mvcResult = super.performPostRequest("/comments/comment", body)
+										.andExpect(status().is(302))
+										.andReturn();
 		sendRedirect(mvcResult.getResponse().getHeader("location"));
 	}
 
