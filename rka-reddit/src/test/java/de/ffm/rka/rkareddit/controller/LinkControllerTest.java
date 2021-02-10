@@ -156,8 +156,7 @@ public class LinkControllerTest extends MvcRequestSender {
     public void readLinkTestAsUnautheticated() throws Exception {
         Link currentLink = linkService.findLinkModelBySignature("15921918064983");
         LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
-        MvcResult mvcResult = this.mockMvc.perform(get("/links/link/15921918064983"))
-                .andDo(print())
+        MvcResult mvcResult = super.performGetRequest("/links/link/15921918064983")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))
                 .andExpect(view().name("link/link_view"))
@@ -179,7 +178,7 @@ public class LinkControllerTest extends MvcRequestSender {
         Link currentLink = entityManager.find(Link.class, 1L);
         LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 
-        MvcResult result = this.mockMvc.perform(get("/links/link/15921918064981"))
+        MvcResult result = super.performGetRequest("/links/link/15921918064981")
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))
@@ -248,8 +247,7 @@ public class LinkControllerTest extends MvcRequestSender {
     //@DisplayName"Zeige Seite für einen neuen Test")
     public void createNewLinkTest() throws Exception {
         Link link = new Link();
-        MvcResult result = this.mockMvc.perform(get("/links/link"))
-                .andDo(print())
+        MvcResult result = super.performGetRequest("/links/link")
                 .andExpect(status().isOk())
                 .andExpect(view().name("link/submit"))
                 .andReturn();
@@ -261,8 +259,7 @@ public class LinkControllerTest extends MvcRequestSender {
     @Test
     //@DisplayName"Zeige eine neue Seite zum Linkanlegen für einen nicht angemeldeten User")
     public void createNewLinkTestAsUnautheticated() throws Exception {
-        this.mockMvc.perform(get("/links/link"))
-                .andDo(print())
+        super.performGetRequest("/links/link")
                 .andExpect(status().is(302))
                 .andExpect(redirectedUrlPattern("**/login"));
     }
@@ -295,8 +292,7 @@ public class LinkControllerTest extends MvcRequestSender {
     //@DisplayName"Zeige Seite zum Linkanlegen als Anonymous user")
     public void linkCreateAsAnonymous() throws Exception {
 
-        this.mockMvc.perform(get("/links/link"))
-                .andDo(print())
+        super.performGetRequest("/links/link")
                 .andExpect(status().is(302))
                 .andExpect(redirectedUrlPattern("**/login*"));
     }
