@@ -22,6 +22,8 @@ import javax.persistence.EntityManager;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ActiveProfiles("test")
 /** spring-test-support is enabled */
@@ -67,5 +69,12 @@ public abstract class MvcRequestSender {
                                                         .content(body))
                                                         .andDo(print());
         return resultActions;
+    }
+
+    public void sendRedirect(String redirectionSource) throws Exception {
+        redirectionSource = redirectionSource.substring(0,redirectionSource.indexOf("?"));
+        performGetRequest(redirectionSource)
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error/pageNotFound"));
     }
 }

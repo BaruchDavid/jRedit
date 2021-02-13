@@ -116,12 +116,8 @@ public class CommentControllerTest extends MvcRequestSender{
 										.andExpect(status().is(302))
 										.andReturn();
 		sendRedirect(mvcResult.getResponse().getHeader("location"));
+
 	}
 
-	private void sendRedirect(String redirectionSource) throws Exception {
-		redirectionSource = redirectionSource.substring(0,redirectionSource.indexOf("?"));
-		super.performGetRequest(redirectionSource)
-							.andExpect(status().isNotFound())
-							.andExpect(view().name("error/pageNotFound"));
-	}
+
 }
