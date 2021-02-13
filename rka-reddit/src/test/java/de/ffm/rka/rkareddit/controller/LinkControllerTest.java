@@ -5,61 +5,31 @@ import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.service.LinkService;
-import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@ActiveProfiles("test")
-/** spring-test-support is enabled */
-@RunWith(SpringRunner.class)
-/** enable of application-context */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-@Transactional
 public class LinkControllerTest extends MvcRequestSender {
     private static final int MAX_JDBC_TRANSACTION = 3;
-    private MockMvc mockMvc;
-
-    @Autowired
-    private WebApplicationContext context;
-
-    private EntityManager entityManager;
 
     @Autowired
     private LinkService linkService;
@@ -69,17 +39,24 @@ public class LinkControllerTest extends MvcRequestSender {
                             .secondName("rka")
                             .build();
 
+    String linksWithTagsBody = "tags[0].tagName=java12&" +
+            "tags[1].tagName=java13&" +
+            "title=welt.de&" +
+            "subtitle=neues subtitle&" +
+            "description=news&"+
+            "url=http://welt.de";
+
     private Statistics hibernateStatistic;
     private Session hibernateSession;
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkControllerTest.class);
     @Before
     public void setup() {
-
+/*
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-        entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
-        hibernateSession = entityManager.unwrap(Session.class);
+        entityManager = BeanUtil.getBeanFromContext(EntityManager.class);*/
+        hibernateSession = super.getEntityManager().unwrap(Session.class);
         hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
     }
 
@@ -90,8 +67,7 @@ public class LinkControllerTest extends MvcRequestSender {
 
         List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
         hibernateStatistic.clear();
-        MvcResult result = this.mockMvc.perform(get("/links/"))
-                .andDo(print())
+        MvcResult result = super.performGetRequest("/links/")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("pageNumbers", pages))
                 .andReturn();
@@ -110,8 +86,7 @@ public class LinkControllerTest extends MvcRequestSender {
     public void shouldReturnAllLinksForAnonymous() throws Exception {
 
         List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
-        MvcResult result = this.mockMvc.perform(get("/links/"))
-                .andDo(print())
+        MvcResult result = super.performGetRequest("/links/")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("pageNumbers", pages))
                 .andReturn();
@@ -122,8 +97,7 @@ public class LinkControllerTest extends MvcRequestSender {
     //@DisplayName"Beim Aufruf von der Hauptseite mit CURL werden alle links für zurückgegeben")
     public void shouldReturnAllLinksForCURL() throws Exception {
         List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
-        MvcResult result = this.mockMvc.perform(get("/links/"))
-                .andDo(print())
+        MvcResult result = super.performGetRequest("/links/")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("pageNumbers", pages))
                 .andReturn();
@@ -137,10 +111,8 @@ public class LinkControllerTest extends MvcRequestSender {
     //@DisplayName"Beim Aufruf von nicht existierendem Link wird basicError angezeigt")
     public void illegalArguments() throws Exception {
         String invalidPage = UUID.randomUUID().toString();
-        final MvcResult mvcResult = this.mockMvc.perform(get("/links/link/".concat(invalidPage)))
-                                                .andDo(print())
-                                                .andExpect(status().is(302))
-                                                .andReturn();
+        super.performGetRequest("/links/link/".concat(invalidPage))
+                                                .andExpect(status().is(302));
 
     }
 
@@ -175,7 +147,7 @@ public class LinkControllerTest extends MvcRequestSender {
     //@DisplayName"Anzeigen von einem Link für einen eingelogten User")
     @WithUserDetails("romakapt@gmx.de")
     public void readLinkTestAsAutheticated() throws Exception {
-        Link currentLink = entityManager.find(Link.class, 1L);
+        Link currentLink = super.getEntityManager().find(Link.class, 1L);
         LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 
         MvcResult result = super.performGetRequest("/links/link/15921918064981")
@@ -189,19 +161,10 @@ public class LinkControllerTest extends MvcRequestSender {
     }
 
     @Test
-    //@DisplayName"Speichere einen Link mit Tags")
     @WithUserDetails("romakapt@gmx.de")
     public void saveNewLinkTest() throws Exception {
-        MvcResult res = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("tags[0].tagName", "java12")
-                .param("tags[1].tagName", "java13")
-                .param("title", "welt.de")
-                .param("subtitle", "neues subtitle")
-                .param("description", "news")
-                .param("url", "http://welt.de")
-        )
-                .andDo(print())
+
+        MvcResult res = super.performPostRequest("/links/link", linksWithTagsBody)
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("success", true))
                 .andReturn();
@@ -215,7 +178,6 @@ public class LinkControllerTest extends MvcRequestSender {
 
         assertTrue(link.getTags().stream()
                 .map(Tag::getTagName)
-                //.anyMatch(tagName -> "java12".equals(tagName)));
                 .anyMatch("java12"::equals));
 
         assertTrue(link.getTags().stream()
@@ -228,16 +190,8 @@ public class LinkControllerTest extends MvcRequestSender {
     }
 
     @Test
-    //@DisplayName"Speichere einen Link mit Tags als nicht angemeldeter user")
     public void saveNewLinkTestUnautheticated() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("tags[0].tagName", "java12")
-                .param("tags[1].tagName", "java13")
-                .param("title", "welt.de")
-                .param("url", "http://welt.de")
-        )
-                .andDo(print())
+        super.performPostRequest("/links/link", linksWithTagsBody)
                 .andExpect(status().is(302))
                 .andExpect(redirectedUrlPattern("**/login"));
     }
@@ -270,13 +224,11 @@ public class LinkControllerTest extends MvcRequestSender {
     @Test
     //@DisplayName"Suche nach einem Tag mit dem Ausdruck 'sc' und erwarte TypeScript, JavaScript, Delphi/Object, Pascal")
     public void getTags() throws Exception {
+        String body = "search=sc";
         List<String> expList = Arrays.asList("TypeScript", "JavaScript", "Delphi/Object Pascal");
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/links/link/tags")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("search", "sc"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
+        MvcResult result = super.performPostRequest("/links/link/tags", body)
+                                .andExpect(status().isOk())
+                                .andReturn();
         String[] resultArray = result.getResponse().getContentAsString().replace("[", "").replace("]", "").replace('"', ' ').split(",");
         assertEquals(true, Stream.of(resultArray)
                 .peek(tag -> System.out.println("CURRENT TAG: " + tag))

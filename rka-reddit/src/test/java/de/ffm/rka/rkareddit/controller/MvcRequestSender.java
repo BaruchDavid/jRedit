@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public abstract class MvcRequestSender {
 
     @Before
     public void setUp(){
+        entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
@@ -47,6 +49,10 @@ public abstract class MvcRequestSender {
 
     public MvcRequestSender(){
 
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 
     public ResultActions performGetRequest(String ressource) throws Exception {
