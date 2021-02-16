@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
+import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -37,6 +38,9 @@ public abstract class MvcRequestSender {
     public MockMvc mockMvc;
 
     @Autowired
+    protected  UserService userService;
+
+    @Autowired
     private WebApplicationContext context;
 
     private EntityManager entityManager;
@@ -65,6 +69,22 @@ public abstract class MvcRequestSender {
 
     public ResultActions performPostRequest(String ressource, String body) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post(ressource)
+                                                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                                        .content(body))
+                                                        .andDo(print());
+        return resultActions;
+    }
+
+    public ResultActions performPutRequest(String ressource, String body) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.put(ressource)
+                                                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                                        .content(body))
+                                                        .andDo(print());
+        return resultActions;
+    }
+
+    public ResultActions performPatchRequest(String ressource, String body) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.patch(ressource)
                                                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                                         .content(body))
                                                         .andDo(print());
