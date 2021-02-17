@@ -43,7 +43,7 @@ public abstract class MvcRequestSender {
     @Autowired
     private WebApplicationContext context;
 
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
 
     @Before
     public void setUp(){
