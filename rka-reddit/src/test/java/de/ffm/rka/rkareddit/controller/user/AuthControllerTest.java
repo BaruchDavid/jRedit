@@ -28,10 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class AuthControllerTest extends MvcRequestSender {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
-
-    @Autowired
-    private WebApplicationContext context;
 
     private User pageContentUser;
     private User loggedInUser;

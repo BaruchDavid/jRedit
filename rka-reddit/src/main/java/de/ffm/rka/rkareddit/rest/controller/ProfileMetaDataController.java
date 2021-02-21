@@ -78,6 +78,7 @@ public class ProfileMetaDataController {
         return userClickedLinksDTO;
     }
 
+    // TODO: 21.02.2021 MediaType festlegen
     @GetMapping(value = "/information/content/user-pic")
     @ResponseBody
     public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) {

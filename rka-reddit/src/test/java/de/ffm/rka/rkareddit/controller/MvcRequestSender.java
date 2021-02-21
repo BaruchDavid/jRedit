@@ -75,6 +75,14 @@ public abstract class MvcRequestSender {
         return resultActions;
     }
 
+    public ResultActions performPostByteArray(String url, String fileName, byte[] byteContent, String[] content) throws Exception {
+                 return this.mockMvc.perform(MockMvcRequestBuilders.multipart(url)
+                            .file(fileName,byteContent)
+                            .param(content[0], content[1]))
+                            .andDo(print());
+
+    }
+
     public ResultActions performPutRequest(String ressource, String body) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.put(ressource)
                                                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
