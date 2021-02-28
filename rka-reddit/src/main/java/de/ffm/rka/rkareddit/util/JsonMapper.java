@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JsonMapper {
     private static ObjectWriter objectWriter;
-
+    private JsonMapper(){}
     public static String createJson(Object obj) throws JsonProcessingException {
         if (objectWriter == null){
             objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
         }
-        String json = objectWriter.writeValueAsString(obj);
-        return json;
+        return objectWriter.writeValueAsString(obj);
     }
 }
