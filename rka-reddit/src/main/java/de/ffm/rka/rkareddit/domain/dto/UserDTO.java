@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
@@ -54,23 +55,28 @@ public class UserDTO {
 	
 	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserChangeEmail.class})
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20, groups = {ValidationUserChangeEmail.class})
+	@JsonIgnore
 	private String newEmail;
 	
 	@Size(message = "password must be between  5 and 20 signs",min = 5,
 			max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
 	@CorrectPassword(groups = {ValidationUserChangePassword.class, ValidationUserChangeEmail.class})
+	@JsonIgnore
 	private String password;
 	
 	@NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})
+	@JsonIgnore
 	private String confirmPassword;
 	
 	@OldPasswordNewPasswordNotMatcher(groups = {ValidationUserChangePassword.class})
 	@Size(message = "password must be between 5 and 20 signs",
 			min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+	@JsonIgnore
 	private String newPassword;
 	
 	@Size(message = "password must be between 5 and 20 signs",
 			min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+	@JsonIgnore
 	private String confirmNewPassword;
 	
 	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserProperties.class,
@@ -89,16 +95,25 @@ public class UserDTO {
 	@Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserProperties.class,
 																				ValidationUserRegistration.class})
 	private  String aliasName;
-	
+
+	@JsonIgnore
 	private String activationCode;
-		
+
+	@JsonIgnore
 	private List<Comment> userComment = new ArrayList<>(); 
-	
+
+	@JsonIgnore
 	private List<Link> userLinks = new ArrayList<>();
-	
+
+	@JsonIgnore
 	private LocalDateTime lastModifiedDate;
-	
+
+	@JsonIgnore
 	private LocalDateTime creationDate;
+
+	@JsonProperty
+	private String userCreationDate;
+
 	
 	public String getFullName() {
 		String fName = Optional.ofNullable(firstName).orElse("");
@@ -108,7 +123,12 @@ public class UserDTO {
 	}
 	
 	public static UserDTO mapUserToUserDto(User user) {
-		return modelMapper.map(user, UserDTO.class);
+		final UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+		final String creationDate = Optional.ofNullable(userDTO.getCreationDate())
+											.map(localDateTime -> localDateTime.toString())
+											.orElse("");
+		userDTO.setUserCreationDate(creationDate);
+		return userDTO;
 	}
 
 	public static User mapUserDtoToUser(UserDTO user) {
