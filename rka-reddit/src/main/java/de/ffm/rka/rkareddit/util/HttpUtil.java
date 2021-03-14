@@ -6,14 +6,17 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class HttpUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
-	
+
 	private HttpUtil() { }
 	
 	public static void listSessionAttributesFromRequest(HttpServletRequest request) {
@@ -28,5 +31,16 @@ public class HttpUtil {
 			});
 		}
 	}
+
+	public static void listAllRequestParams(HttpServletRequest request){
+		Stream.of(request.getParameterNames()).forEach(header -> {
+			LOGGER.info("PARAM {} VALUE {}");
+		});
+	}
+
+	public static String encodeParam(String value){
+		return URLEncoder.encode(value, StandardCharsets.UTF_8);
+	}
+
 
 }
