@@ -1,8 +1,11 @@
 package de.ffm.rka.rkareddit.exception;
 
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.ErrorDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.util.HttpUtil;
+import de.ffm.rka.rkareddit.util.JsonMapper;
 import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +42,7 @@ public class GlobalControllerAdvisor {
     public static final String ANONYMOUS = "anonymous";
 
     UserDetailsServiceImpl userDetailsService;
-
+    Logger logger = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
     public GlobalControllerAdvisor(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
@@ -105,7 +108,7 @@ public class GlobalControllerAdvisor {
                 break;
         }
 
-        return createErrorView(req.getRequestURL().toString(), user, view);
+        return createErrorView(req, res.getStatus(), user, view, exception.getMessage());
     }
 
     @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
@@ -115,16 +118,39 @@ public class GlobalControllerAdvisor {
         return new ResponseEntity<>(responseBody, new HttpHeaders(), org.springframework.http.HttpStatus.BAD_REQUEST);
     }
 
-    private ModelAndView createErrorView(String req, UserDTO user, String errorView) {
-
+    /**
+     * +JsonMapper.createJson(msg)
+     * @param req to get current request of error
+     * @param errorStatus from response
+     * @param user
+     * @param errorView for suitable error
+     * @return redirect-request with json-param
+     */
+    private ModelAndView createErrorView(HttpServletRequest req, int errorStatus, UserDTO user, String errorView, String error) {
         ModelAndView mav = new ModelAndView();
+        mav.getModel().clear();
 
-        mav.addObject("userDto", user);
-        mav.addObject("userContent", user);
-        mav.addObject("url", req);
-        mav.setViewName("redirect:/error");
+        try {
+            // TODO: 14.03.2021 mask user-emails 
+            // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser 
+            // TODO: 14.03.2021 pass correct view 
+            final ErrorDTO msg = ErrorDTO.builder()
+                    .loggedUser(user)
+                    .userContent(user)
+                    .error(error)
+                    .errorStatus(errorStatus)
+                    .url(req.getRequestURL().toString())
+                    .build();
+            final String encodedJson = HttpUtil.encodeParam(JsonMapper.createJson(msg));
+            mav.setViewName("redirect:/error?errorDTO="+encodedJson);
+        } catch (Exception e) {
+            logger.error("FAIL TO CONVERT ERROR MESSAGE TO JSON {}", e.getMessage());
+            mav.setViewName("redirect:/error");
+        }
         return mav;
     }
+
+
 
     /**
      * determines exception name of full qualified name
