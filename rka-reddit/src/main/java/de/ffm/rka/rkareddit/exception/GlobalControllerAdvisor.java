@@ -105,6 +105,7 @@ public class GlobalControllerAdvisor {
                 break;
             default:
                 res.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                view = DEFAULT_APPLICATION_ERROR;
                 break;
         }
 
