@@ -1,11 +1,13 @@
 package de.ffm.rka.rkareddit.config;
 
+import de.ffm.rka.rkareddit.controller.converter.ErrorDTOConverter;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import org.modelmapper.ModelMapper;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -20,7 +22,7 @@ import java.util.List;
 
 @Configuration
 @EnableAsync
-public class AppConfig implements WebMvcConfigurer{
+public class AppConfig  implements WebMvcConfigurer{
 
 	@Bean
 	public PrettyTime getPrettyTime() {
@@ -74,7 +76,14 @@ public class AppConfig implements WebMvcConfigurer{
 		registry.addInterceptor(new ApplicationHandlerInterceptor());
 		WebMvcConfigurer.super.addInterceptors(registry);
 	}
-	
-	
 
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new ErrorDTOConverter());
+	}
+
+	@Bean
+	public ErrorDTOConverter stringToError(){
+		return new ErrorDTOConverter();
+	}
 }
