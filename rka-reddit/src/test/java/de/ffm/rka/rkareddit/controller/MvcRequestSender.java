@@ -19,12 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
+import java.net.URI;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ActiveProfiles("test")
 /** spring-test-support is enabled */
@@ -62,7 +61,7 @@ public abstract class MvcRequestSender {
     }
 
     public ResultActions performGetRequest(String ressource) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(get(ressource))
+        final ResultActions resultActions = this.mockMvc.perform(get(new URI(ressource)))
                                                         .andDo(print());
         return resultActions;
     }
@@ -99,10 +98,8 @@ public abstract class MvcRequestSender {
         return resultActions;
     }
 
-    public void sendRedirect(String redirectionSource) throws Exception {
-        redirectionSource = redirectionSource.substring(0,redirectionSource.indexOf("?"));
-        performGetRequest(redirectionSource)
-                .andExpect(status().isNotFound())
-                .andExpect(view().name("error/pageNotFound"));
+    public ResultActions sendRedirect(String redirectionSource) throws Exception {
+        return performGetRequest(redirectionSource);
+
     }
 }
