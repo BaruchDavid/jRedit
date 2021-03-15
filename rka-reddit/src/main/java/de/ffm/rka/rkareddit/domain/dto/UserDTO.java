@@ -51,7 +51,8 @@ public class UserDTO {
 	
 	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserRegistration.class})
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20,  groups = {ValidationUserRegistration.class})
-	private String email;
+	@Builder.Default
+	private String email="";
 	
 	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserChangeEmail.class})
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20, groups = {ValidationUserChangeEmail.class})
@@ -85,7 +86,8 @@ public class UserDTO {
 	
 	@NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserProperties.class,
 																ValidationUserRegistration.class})
-	private String secondName;
+	@Builder.Default
+	private String secondName="";
 	
 	@JsonIgnore
 	private  String fullName;
@@ -94,7 +96,8 @@ public class UserDTO {
 															ValidationUserRegistration.class})
 	@Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserProperties.class,
 																				ValidationUserRegistration.class})
-	private  String aliasName;
+	@Builder.Default
+	private  String aliasName="";
 
 	@JsonIgnore
 	private String activationCode;
@@ -112,7 +115,8 @@ public class UserDTO {
 	private LocalDateTime creationDate;
 
 	@JsonProperty
-	private String userCreationDate;
+	@Builder.Default
+	private String userCreationDate="";
 
 	
 	public String getFullName() {
