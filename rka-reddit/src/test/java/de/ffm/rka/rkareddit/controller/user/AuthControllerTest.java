@@ -1,20 +1,17 @@
 package de.ffm.rka.rkareddit.controller.user;
 
-import de.ffm.rka.rkareddit.controller.AuthController;
 import de.ffm.rka.rkareddit.controller.MvcRequestSender;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -167,10 +164,11 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     public void showEditProfilePageForUnknownUserAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/profile/private/me")
-                //.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()))
                 .andReturn();
-        sendRedirect(mvcResult.getResponse().getHeader("location"));
-                //.andExpect(view().name("error/application"));
+        final String location = mvcResult.getResponse().getHeader("location");
+        final ResultActions result = sendRedirect(location.replace("+", ""));
+        result.andExpect(view().name("error/application"))
+            .andExpect(status().is(HttpStatus.SC_UNAUTHORIZED));
 
     }
 
