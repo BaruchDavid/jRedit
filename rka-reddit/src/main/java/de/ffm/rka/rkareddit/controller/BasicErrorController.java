@@ -31,8 +31,8 @@ public class BasicErrorController implements ErrorController {
     }
 
 
-    @GetMapping("/error")
-    public String error(@RequestParam(value = "errorDTO") ErrorDTO errorDTO, Model model, HttpServletResponse resp) {
+    @GetMapping(value = "/error")
+    public String error(@RequestParam(value = "errorDTO", required = false) ErrorDTO errorDTO, Model model, HttpServletResponse resp) {
 
         String view;
         try {
