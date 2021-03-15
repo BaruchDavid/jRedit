@@ -109,7 +109,7 @@ public class GlobalControllerAdvisor {
                 break;
         }
 
-        return createErrorView(req, res.getStatus(), user, view, exception.getMessage());
+        return createErrorView(req, res, user, view, exception.getLocalizedMessage());
     }
 
     @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
@@ -127,19 +127,19 @@ public class GlobalControllerAdvisor {
      * @param errorView for suitable error
      * @return redirect-request with json-param
      */
-    private ModelAndView createErrorView(HttpServletRequest req, int errorStatus, UserDTO user, String errorView, String error) {
+    private ModelAndView createErrorView(HttpServletRequest req, HttpServletResponse res, UserDTO user, String errorView, String error) {
         ModelAndView mav = new ModelAndView();
         mav.getModel().clear();
 
         try {
             // TODO: 14.03.2021 mask user-emails 
-            // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser 
-            // TODO: 14.03.2021 pass correct view 
+            // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser
             final ErrorDTO msg = ErrorDTO.builder()
                     .loggedUser(user)
                     .userContent(user)
+                    .errorView(errorView)
                     .error(error)
-                    .errorStatus(errorStatus)
+                    .errorStatus(res.getStatus())
                     .url(req.getRequestURL().toString())
                     .build();
             final String encodedJson = HttpUtil.encodeParam(JsonMapper.createJson(msg));
