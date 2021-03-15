@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
@@ -40,6 +42,10 @@ public class HttpUtil {
 
 	public static String encodeParam(String value){
 		return URLEncoder.encode(value, StandardCharsets.UTF_8);
+	}
+
+	public static String decodeParam(String value) throws UnsupportedEncodingException {
+		return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
 	}
 
 
