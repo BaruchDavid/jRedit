@@ -116,14 +116,14 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * show public non existing profile from grm as unauthenticated user
      */
-    // TODO: 27.12.2020 BEI EINEM FEHLER 
     @Test
     public void showPublicNoExistedProfileAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/profile/public/grm@gmx.de")
-               /* .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(view().name("error/basicError"))*/
                 .andReturn();
-        sendRedirect(mvcResult.getResponse().getHeader("location"));
+        final String urlEncoded = mvcResult.getResponse().getHeader("location");
+        final ResultActions resultActions = sendRedirect(urlEncoded.replace("+", ""));
+        resultActions.andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
+                .andExpect(view().name("error/basicError"));
     }
 
     @Test
