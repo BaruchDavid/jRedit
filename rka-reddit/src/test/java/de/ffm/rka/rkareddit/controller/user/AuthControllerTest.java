@@ -354,9 +354,10 @@ public class AuthControllerTest extends MvcRequestSender {
         String body = "email=romakapt@gmx.de&password=roman&confirmNewPassword=rororo&newPassword=rororo";
         final MvcResult mvcResult = super.performPostRequest("/profile/private/me/password", body)
                                          .andReturn();
-        sendRedirect(mvcResult.getResponse().getHeader("location"));
-               /* .andExpect(status().is(405))
-                .andExpect(view().name("error/pageNotFound"));*/
+        final String encodedUrl = mvcResult.getResponse().getHeader("location");
+        final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
+        result.andExpect(status().is(405))
+                .andExpect(view().name("error/pageNotFound"));
 
     }
 
