@@ -41,7 +41,7 @@ public class BasicErrorController implements ErrorController {
             UserDTO userDto = !ANONYMOUS.equals(authentication.getName()) ?
                     Optional.ofNullable(errorDTO.getLoggedUser())
                             .orElseGet(() -> buildAnonymousUser()) : buildAnonymousUser();
-            LOGGER.error("EXCEPTION {} REQUEST {} STATUS {}", errorDTO.getError(), errorDTO.getErrorStatus(), errorDTO.getUrl());
+            LOGGER.error("EXCEPTION {} ON REQUEST {} WITH STATUS {}", errorDTO.getError(), errorDTO.getUrl(), errorDTO.getErrorStatus());
             model.addAttribute(USER_DTO, userDto);
             resp.setStatus(errorDTO.getErrorStatus());
         } catch (Exception e) {
