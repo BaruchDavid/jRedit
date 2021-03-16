@@ -2,7 +2,7 @@ package de.ffm.rka.rkareddit.security.mock;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

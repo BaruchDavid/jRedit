@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.security;
+package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;

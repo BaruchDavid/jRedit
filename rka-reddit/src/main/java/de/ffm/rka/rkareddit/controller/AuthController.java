@@ -6,7 +6,7 @@ import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.UserService;

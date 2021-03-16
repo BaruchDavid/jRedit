@@ -4,7 +4,7 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.validator.comment.CommentValidationgroup;
 import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.security;
 
 import de.ffm.rka.rkareddit.exception.GlobalAccessDeniedHandler;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;

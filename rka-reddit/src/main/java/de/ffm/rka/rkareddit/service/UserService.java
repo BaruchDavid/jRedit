@@ -5,7 +5,6 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import de.ffm.rka.rkareddit.util.FileNIO;
 import de.ffm.rka.rkareddit.util.ImageManager;

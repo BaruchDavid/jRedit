@@ -3,7 +3,7 @@ package de.ffm.rka.rkareddit.exception;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.ErrorDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.HttpUtil;
 import de.ffm.rka.rkareddit.util.JsonMapper;
 import org.apache.commons.httpclient.HttpStatus;

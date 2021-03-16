@@ -6,7 +6,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
 import de.ffm.rka.rkareddit.domain.validator.PictureValidator;
-import de.ffm.rka.rkareddit.security.UserDetailsServiceImpl;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
 import org.apache.commons.lang.StringUtils;
