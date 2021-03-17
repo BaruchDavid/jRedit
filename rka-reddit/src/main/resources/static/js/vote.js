@@ -4,8 +4,9 @@ $('.upvote, .downvote').on('click', function(){
             const voteCountVal = $('#votecount-'+this.getAttribute("data-id"));         
             
             fetch('/jReditt/link/'+linkId+'/vote/direction/'+direction+'/votecount/'+voteCountVal.text())
-                    .then(
-                        response => response.json())
+                    .then(response =>{
+                        response => response.json();
+                    })
                     .then(data => {
                             if(!isNaN(data))
 								$(voteCountVal).html(data);
