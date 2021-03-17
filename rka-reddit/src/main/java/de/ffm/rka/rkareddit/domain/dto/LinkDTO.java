@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.exception.IllegalVoteException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
@@ -173,7 +174,7 @@ public class LinkDTO implements Serializable {
         } catch (Exception ex) {
             String msg = "NO VALID LINK-SIGNATURE: ".concat(timeInSeconds);
             LOGGER.error(msg.concat(timeInSeconds), ex);
-            throw new IllegalArgumentException(msg.concat(timeInSeconds));
+            throw new IllegalVoteException(msg.concat(timeInSeconds));
         }
         return id;
     }

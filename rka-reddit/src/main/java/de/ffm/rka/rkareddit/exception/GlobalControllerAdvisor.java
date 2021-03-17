@@ -112,17 +112,29 @@ public class GlobalControllerAdvisor {
         return createErrorView(req, res, user, view, exception.getLocalizedMessage());
     }
 
-    @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
+    @ExceptionHandler(value = {MaxUploadSizeExceededException.class, IllegalVoteException.class})
     public ResponseEntity<String> defaultRestErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
-        String responseBody = "File size exceeds limit!";
-        LOGGER.warn("NEW PICTURE VALIDATOR-ERRORS {}", responseBody);
+        String responseBody = "Error occurred!";
+        final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
+        switch (exceptionType) {
+            case "MaxUploadSizeExceededException":
+                responseBody = "Picture file size exceeds limit!";
+                break;
+            case "IllegalVoteException":
+                responseBody = "illegal vote!";
+                break;
+            default:
+                break;
+        }
+        res.setStatus(HttpStatus.SC_BAD_REQUEST);
+        LOGGER.error("ERROR ON {} WITH EXCEPTION {} AND RESPONSE-BODY {}", req.getRequestURI(), exception.getMessage(), responseBody);
         return new ResponseEntity<>(responseBody, new HttpHeaders(), org.springframework.http.HttpStatus.BAD_REQUEST);
     }
 
     /**
      * +JsonMapper.createJson(msg)
      * @param req to get current request of error
-     * @param errorStatus from response
+     * @param res from response
      * @param user
      * @param errorView for suitable error
      * @return redirect-request with json-param

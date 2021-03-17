@@ -39,7 +39,8 @@ public class VoteController {
 					@PathVariable short direction,
 					@AuthenticationPrincipal UserDetails userDetails,
 					@PathVariable int voteCount, HttpServletRequest req, HttpServletResponse res) throws ServiceException {
-
+		// TODO: 14.03.2021 fehler beim voting soll der exceptionhandler for rest abfangen
+		lSig ="01010";
 		if(userDetails != null && !ANONYMOUS.equals(userDetails.getUsername())){
 			int newCount = voteService.saveVote(direction, lSig, voteCount);
 			if (voteCount != newCount) {
