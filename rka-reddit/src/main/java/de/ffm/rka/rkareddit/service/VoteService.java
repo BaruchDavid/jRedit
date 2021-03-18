@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.exception.IllegalVoteException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import org.slf4j.Logger;
@@ -43,10 +44,10 @@ public class VoteService {
 		final long linkId = LinkDTO.convertEpochSecToId(linkSignature);
 		Optional<Link> link = linkRepository.findByLinkId(linkId);
 		int currentCount = link.map(Link::getVoteCount)
-								.orElseThrow(() -> new ServiceException("kein Vote für die Link signature: ".concat(linkSignature)));
+								.orElseThrow(() -> new IllegalVoteException("kein Vote für die Link signature: ".concat(linkSignature)));
 		
 		if(currentCount == voteCount && isValidDirection) {
-			Link checkedLink = link.orElseThrow(() -> new ServiceException("LINK NOT FOUND with SIGNATURE ".concat(linkSignature)
+			Link checkedLink = link.orElseThrow(() -> new IllegalVoteException("LINK NOT FOUND with SIGNATURE ".concat(linkSignature)
 					.concat("and ID ".concat(String.valueOf(linkId)))));
 			checkedLink.setVoteCount(currentCount+direction);
 			linkRepository.save(checkedLink);

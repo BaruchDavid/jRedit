@@ -2,53 +2,36 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
-import de.ffm.rka.rkareddit.util.BeanUtil;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.persistence.EntityManager;
-
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
 public class VoteControllerTest extends  MvcRequestSender{
 
-		@Test
+	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteOnIllegleLink() throws Exception {
 		final MvcResult mvcResult = super.performGetRequest("/link/01010/vote/direction/1/votecount/1")
-				.andExpect(status().is3xxRedirection())
-				/*.andExpect(view().name("error/basicError"))*/
+				.andExpect(status().isBadRequest())
 				.andReturn();
-		sendRedirect(mvcResult.getResponse().getHeader("location"));
-	}
+		Assert.assertEquals("illegal vote!", mvcResult.getResponse().getContentAsString());
+
+
+		}
 
 	@Test
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteOnNotExistentLink() throws Exception {
 		final MvcResult mvcResult = super.performGetRequest("/link/987654321911499/vote/direction/1/votecount/1")
-				.andExpect(status().is3xxRedirection())
-				/*.andExpect(view().name("error/basicError"))*/
+				.andExpect(status().isBadRequest())
 				.andReturn();
-		sendRedirect(mvcResult.getResponse().getHeader("location"));
+		Assert.assertEquals("illegal vote!", mvcResult.getResponse().getContentAsString());
+
 	}
 
 	@Test
@@ -59,10 +42,6 @@ public class VoteControllerTest extends  MvcRequestSender{
 		MvcResult mvcResult = super.performGetRequest("/link/"+linkDTO.getLinkSignature()+"/vote/direction/1/votecount/10")
 				.andExpect(status().is(400))
 				.andReturn();
-		/*mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/1/votecount/10"))
-				.andDo(print())
-				.andExpect(status().is(400))
-				.andReturn();*/
 		mvcResult.getResponse().getContentAsString().equals(10);
 	}
 
