@@ -41,7 +41,7 @@ public class VoteService {
 	public int saveVote(short direction, String linkSignature, int voteCount) throws ServiceException  {
 		LOGGER.info("VOTING FOR Link {} WITH COUNT {}", linkSignature, voteCount);
 		final boolean isValidDirection = direction != 0 && direction < 2 && direction > -2;
-		final long linkId = LinkDTO.convertEpochSecToId(linkSignature);
+		final long linkId = LinkDTO.convertEpochSecToLinkId(linkSignature);
 		Optional<Link> link = linkRepository.findByLinkId(linkId);
 		int currentCount = link.map(Link::getVoteCount)
 								.orElseThrow(() -> new IllegalVoteException("kein Vote für die Link signature: ".concat(linkSignature)));

@@ -78,13 +78,13 @@ public class LinkService {
 	 */
 	Link findLinkModelWithUser(final String signature) throws  ServiceException{
 		LOGGER.info("FIND LINK WITH SIGNATURE {}", signature);
-		final long id = LinkDTO.convertEpochSecToId(signature);
+		final long id = LinkDTO.convertEpochSecToLinkId(signature);
 		return linkRepository.findLinkWithUserByLinkId(id)
 				.orElseThrow(() ->new ServiceException("not found"));
 	}
 
-	public Link findLinkWithTags(final String signature) {
-		final long id = LinkDTO.convertEpochSecToId(signature);
+	public Link findLinkWithTags(final String signature) throws ServiceException {
+		final long id = LinkDTO.convertEpochSecToLinkId(signature);
 		return  linkRepository.findTagsForLink(id);
 
 	}

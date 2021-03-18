@@ -167,14 +167,12 @@ public class LinkDTO implements Serializable {
      * @param timeInSeconds which represent creation date
      * @return creation date as localdatetime
      */
-    public static long convertEpochSecToId(final String timeInSeconds) {
+    public static long convertEpochSecToLinkId(final String timeInSeconds) throws ServiceException {
         long id = 0L;
         try {
             id = Long.parseLong(timeInSeconds.substring(TIME_LATTERS));
         } catch (Exception ex) {
-            String msg = "NO VALID LINK-SIGNATURE: ".concat(timeInSeconds);
-            LOGGER.error(msg.concat(timeInSeconds), ex);
-            throw new IllegalVoteException(msg.concat(timeInSeconds));
+            throw new ServiceException("NO VALID LINK-SIGNATURE: "+timeInSeconds);
         }
         return id;
     }
