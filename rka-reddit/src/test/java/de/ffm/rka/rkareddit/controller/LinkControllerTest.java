@@ -6,6 +6,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.service.LinkService;
+import org.apache.commons.httpclient.HttpStatus;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -111,8 +113,14 @@ public class LinkControllerTest extends MvcRequestSender {
     //@DisplayName"Beim Aufruf von nicht existierendem Link wird basicError angezeigt")
     public void illegalArguments() throws Exception {
         String invalidPage = UUID.randomUUID().toString();
-        super.performGetRequest("/links/link/".concat(invalidPage))
-                                                .andExpect(status().is(302));
+        final MvcResult mvcResult = super.performGetRequest("/links/link/".concat(invalidPage))
+                .andExpect(status().is(302))
+                .andReturn();
+        final String location = mvcResult.getResponse().getHeader("location");
+        final ResultActions result = sendRedirect(location.replace("+", ""));
+        result.andExpect(view().name("error/basicError"))
+                .andExpect(status().is(HttpStatus.SC_NOT_FOUND));
+
 
     }
 

@@ -69,14 +69,12 @@ public class GlobalControllerAdvisor {
             user.setFirstName("guest");
         }
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-        LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {}", exceptionType, exception.getMessage(),
+        LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {} WITH STACKTRACE {}", exceptionType, exception.getMessage(),
                 visitorName,
                 req.getMethod(),
-                req.getRequestURL());
-        LOGGER.error("LOCALIZED MESSAGE {} AND STACK TRACE ", exception.getLocalizedMessage(), exception);
-
+                req.getRequestURL(),
+                exception);
         switch (exceptionType) {
-
             case "MissingServletRequestParameterException":
             case "ValidationException":
             case "MethodArgumentTypeMismatchException":

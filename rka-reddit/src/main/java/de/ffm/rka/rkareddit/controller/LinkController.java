@@ -163,7 +163,7 @@ public class LinkController {
 	 * @return view
 	 */
 	@GetMapping("/links/link/NOT_IN_USE_FOR_GUI_JUST_NOW/{signature}")
-	public String linkWithTags(@PathVariable String signature) {
+	public String linkWithTags(@PathVariable String signature) throws ServiceException {
 		linkService.findLinkWithTags(signature);
 		return "link/link_view";
 	}
