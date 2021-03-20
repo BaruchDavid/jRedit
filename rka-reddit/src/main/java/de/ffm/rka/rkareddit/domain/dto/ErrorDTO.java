@@ -21,6 +21,8 @@ public class ErrorDTO {
 
     @Builder.Default
     String error = "";
-    int errorStatus;
+
+    @Builder.Default
+    int errorStatus=404;
 
 }

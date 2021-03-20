@@ -37,7 +37,9 @@ public class BasicErrorController implements ErrorController {
         String view;
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            view = errorDTO.getErrorView().isEmpty() ? "error/basicError" : errorDTO.getErrorView();
+            errorDTO = Optional.ofNullable(errorDTO)
+                                .orElseGet(() -> new ErrorDTO());
+            view = errorDTO.getErrorView().isEmpty() ? "error/basicError": errorDTO.getErrorView();
             UserDTO userDto = !ANONYMOUS.equals(authentication.getName()) ?
                     Optional.ofNullable(errorDTO.getLoggedUser())
                             .orElseGet(() -> buildAnonymousUser()) : buildAnonymousUser();
