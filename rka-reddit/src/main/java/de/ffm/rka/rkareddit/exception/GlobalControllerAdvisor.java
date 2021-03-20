@@ -139,8 +139,6 @@ public class GlobalControllerAdvisor {
      */
     private ModelAndView createErrorView(HttpServletRequest req, HttpServletResponse res, UserDTO user, String errorView, String error) {
         ModelAndView mav = new ModelAndView();
-        mav.getModel().clear();
-
         try {
             // TODO: 14.03.2021 mask user-emails 
             // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser
