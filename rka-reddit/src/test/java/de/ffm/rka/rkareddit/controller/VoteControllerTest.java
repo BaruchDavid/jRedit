@@ -2,13 +2,16 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
 public class VoteControllerTest extends  MvcRequestSender{
@@ -17,7 +20,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteOnIllegleLink() throws Exception {
 		final MvcResult mvcResult = super.performGetRequest("/link/01010/vote/direction/1/votecount/1")
-				.andExpect(status().isBadRequest())
+				.andExpect(status().is3xxRedirection())
 				.andReturn();
 		Assert.assertEquals("illegal vote!", mvcResult.getResponse().getContentAsString());
 
@@ -28,9 +31,12 @@ public class VoteControllerTest extends  MvcRequestSender{
 	@WithUserDetails("romakapt@gmx.de")
 	public void increaseVoteOnNotExistentLink() throws Exception {
 		final MvcResult mvcResult = super.performGetRequest("/link/987654321911499/vote/direction/1/votecount/1")
-				.andExpect(status().isBadRequest())
+				.andExpect(status().is3xxRedirection())
 				.andReturn();
-		Assert.assertEquals("illegal vote!", mvcResult.getResponse().getContentAsString());
+		final String location = mvcResult.getResponse().getHeader("location");
+		final ResultActions result = sendRedirect(location.replace("+", ""));
+		result.andExpect(view().name("error/basicError"))
+				.andExpect(status().is(HttpStatus.SC_NOT_FOUND));
 
 	}
 
@@ -80,10 +86,6 @@ public class VoteControllerTest extends  MvcRequestSender{
 														"/vote/direction/10/votecount/3")
 				.andExpect(status().is(400))
 				.andReturn();
-			/*MvcResult mvcResult = this.mockMvc.perform(get("/link/"+linkDTO.getLinkSignature()+"/vote/direction/10/votecount/3"))
-					.andDo(print())
-					.andExpect(status().is(400))
-					.andReturn();*/
 		mvcResult.getResponse().getContentAsString().equals(3);
 	}
 
