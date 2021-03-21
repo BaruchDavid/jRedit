@@ -42,7 +42,6 @@ public class GlobalControllerAdvisor {
     public static final String ANONYMOUS = "anonymous";
 
     UserDetailsServiceImpl userDetailsService;
-    Logger logger = LoggerFactory.getLogger(GlobalControllerAdvisor.class);
     public GlobalControllerAdvisor(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
@@ -69,11 +68,14 @@ public class GlobalControllerAdvisor {
             user.setFirstName("guest");
         }
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-        LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} {} WITH STACKTRACE {}", exceptionType, exception.getMessage(),
+       LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} : {}" +
+                       " STACKTRACE: {}",
+                exceptionType,
+                exception.getMessage(),
                 visitorName,
                 req.getMethod(),
                 req.getRequestURL(),
-                exception);
+               exception);
         switch (exceptionType) {
             case "MissingServletRequestParameterException":
             case "ValidationException":
@@ -153,7 +155,7 @@ public class GlobalControllerAdvisor {
             final String encodedJson = HttpUtil.encodeParam(JsonMapper.createJson(msg));
             mav.setViewName("redirect:/error?errorDTO="+encodedJson);
         } catch (Exception e) {
-            logger.error("FAIL TO CONVERT ERROR MESSAGE TO JSON {}", e.getMessage());
+            LOGGER.error("FAIL TO CONVERT ERROR MESSAGE TO JSON {}", e.getMessage());
             mav.setViewName("redirect:/error");
         }
         return mav;
