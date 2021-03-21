@@ -6,9 +6,8 @@ import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.CommentService;
-import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
 import org.apache.commons.lang.StringUtils;
@@ -55,15 +54,13 @@ public class AuthController {
     private static final String USER_VISIT_NO_CACHE_CONTROL = "cacheControl";
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final LinkService linkService;
     private final CommentService commentService;
     private CacheController cacheController;
 
     public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService,
-                          LinkService linkService, CommentService commentService, CacheController cacheController) {
+                          CommentService commentService, CacheController cacheController) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
-        this.linkService = linkService;
         this.commentService = commentService;
         this.cacheController = cacheController;
     }

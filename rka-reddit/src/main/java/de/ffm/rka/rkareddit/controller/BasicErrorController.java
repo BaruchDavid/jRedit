@@ -38,11 +38,11 @@ public class BasicErrorController implements ErrorController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             errorDTO = Optional.ofNullable(errorDTO)
-                                .orElseGet(() -> new ErrorDTO());
+                                .orElseGet(ErrorDTO::new);
             view = errorDTO.getErrorView().isEmpty() ? "error/basicError": errorDTO.getErrorView();
             UserDTO userDto = !ANONYMOUS.equals(authentication.getName()) ?
                     Optional.ofNullable(errorDTO.getLoggedUser())
-                            .orElseGet(() -> buildAnonymousUser()) : buildAnonymousUser();
+                            .orElseGet(this::buildAnonymousUser) : buildAnonymousUser();
             LOGGER.error("EXCEPTION {} ON REQUEST {} WITH STATUS {}", errorDTO.getError(), errorDTO.getUrl(), errorDTO.getErrorStatus());
             model.addAttribute(USER_DTO, userDto);
             resp.setStatus(errorDTO.getErrorStatus());
@@ -73,7 +73,6 @@ public class BasicErrorController implements ErrorController {
     @GetMapping("/error/accessDenied")
     public String accessDenied(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
         LOGGER.error("SHOW ACCESS-DENIED-VEW {} WITH EXCEPTION {}", request.getRequestURI(), ex.getMessage());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         model.addAttribute(USER_DTO, UserDTO.builder().build());
         resp.setStatus(403);
         return "error/accessDenied";
