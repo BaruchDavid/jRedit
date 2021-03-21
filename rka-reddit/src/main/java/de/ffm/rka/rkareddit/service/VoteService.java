@@ -39,7 +39,6 @@ public class VoteService {
     @Transactional(readOnly = false)
     public int saveVote(short direction, String linkSignature, int voteCount) throws ServiceException {
         LOGGER.info("VOTING FOR Link {} WITH COUNT {}", linkSignature, voteCount);
-        linkSignature = "987654321911499";
         final boolean isValidDirection = validateVote(direction);
         final long linkId = LinkDTO.convertEpochSecToLinkId(linkSignature);
         Optional<Link> link = linkRepository.findByLinkId(linkId);

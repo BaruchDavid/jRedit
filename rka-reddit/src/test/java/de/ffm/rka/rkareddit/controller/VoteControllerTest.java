@@ -22,7 +22,10 @@ public class VoteControllerTest extends  MvcRequestSender{
 		final MvcResult mvcResult = super.performGetRequest("/link/01010/vote/direction/1/votecount/1")
 				.andExpect(status().is3xxRedirection())
 				.andReturn();
-		Assert.assertEquals("illegal vote!", mvcResult.getResponse().getContentAsString());
+		final String location = mvcResult.getResponse().getHeader("location");
+		final ResultActions result = sendRedirect(location.replace("+", ""));
+		result.andExpect(view().name("error/basicError"))
+				.andExpect(status().is(HttpStatus.SC_NOT_FOUND));
 
 
 		}
