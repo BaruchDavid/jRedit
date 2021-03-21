@@ -35,8 +35,8 @@ public class HttpUtil {
 	}
 
 	public static void listAllRequestParams(HttpServletRequest request){
-		Stream.of(request.getParameterNames()).forEach(header -> {
-			LOGGER.info("PARAM {} VALUE {}");
+		request.getParameterMap().forEach((key, value) -> {
+			LOGGER.info("PARAM KEY {} VALUE {}", key, value);
 		});
 	}
 
