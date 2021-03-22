@@ -39,12 +39,12 @@ public class VoteService {
     @Transactional(readOnly = false)
     public int saveVote(short direction, String linkSignature, int voteCount) throws ServiceException {
         LOGGER.info("VOTING FOR Link {} WITH COUNT {}", linkSignature, voteCount);
-        final boolean isValidDirection = validateVote(direction);
         final long linkId = LinkDTO.convertEpochSecToLinkId(linkSignature);
         Optional<Link> link = linkRepository.findByLinkId(linkId);
         Link checkedLink = link.orElseThrow(() -> new ServiceException("LINK NOT FOUND with SIGNATURE: "
 																		+ "linkSignature" + " and ID: " + linkId));
-        if (checkedLink.getVoteCount() == voteCount && isValidDirection) {
+        validateVote(direction);
+        if (checkedLink.getVoteCount() == voteCount) {
 
             checkedLink.setVoteCount(checkedLink.getVoteCount() + direction);
             linkRepository.save(checkedLink);
@@ -59,7 +59,7 @@ public class VoteService {
         if (!isValidDirection) {
             throw new IllegalVoteException("vote is illegal");
         } else {
-            return isValidDirection;
+            return true;
         }
     }
 }
