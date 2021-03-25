@@ -59,6 +59,7 @@ public class ProfileMetaDataController {
      * @param userPrincipal for authentication
      * @return list of clicked Links
      */
+    // TODO: 22.03.2021 write unit-test for this
     @GetMapping("/information/userClickedLinks")
     @ResponseBody
     public List<LinkDTO> userClickedLinksHistory(@RequestParam(name = "user") String requestedUser,
@@ -81,7 +82,7 @@ public class ProfileMetaDataController {
     // TODO: 21.02.2021 MediaType festlegen
     @GetMapping(value = "/information/content/user-pic")
     @ResponseBody
-    public ResponseEntity<byte[]> imageAsByteArray(@AuthenticationPrincipal UserDetails userPrincipal, HttpServletRequest req) {
+    public ResponseEntity<byte[]> imageAsByteArray(HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         byte[] media = new byte[0];
         final HttpStatus responseStatus;
