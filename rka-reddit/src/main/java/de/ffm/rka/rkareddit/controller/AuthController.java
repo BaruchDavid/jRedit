@@ -95,15 +95,8 @@ public class AuthController {
                 .stream()
                 .map(LinkDTO::mapFullyLinkToDto)
                 .collect(Collectors.toSet());
-
-        // TODO: 11.01.2021 für die profile_comments view muss man user-comments im anderen handler befüllen
-        Set<CommentDTO> userComments = Optional.ofNullable(pageContentUser.getUserComment())
-                .orElse(Collections.emptySet())
-                .stream()
-                .map(CommentDTO::getCommentToCommentDto)
-                .collect(Collectors.toSet());
-
-
+        final int commentSize = Optional.ofNullable(pageContentUser.getUserComment())
+                .orElse(Collections.emptySet()).size();
         if (model.containsAttribute(SUCCESS)) {
             model.addAttribute(SUCCESS, true);
             model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
@@ -111,7 +104,7 @@ public class AuthController {
         UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
         model.addAttribute(CONTENT_USER, contentUser);
         model.addAttribute("posts", userLinks);
-        model.addAttribute("commentCount", userComments.size());
+        model.addAttribute("commentCount", commentSize);
         model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(contentUser.getCreationDate()));
         return "auth/profileLinks";
@@ -142,17 +135,20 @@ public class AuthController {
         return pageContentUser;
     }
 
+    // TODO: 22.03.2021 CURRENT BUG: click on Posts or Comments müssen immer einen Content_user
+    // enhalten, damit die email-variable nicht null ist
+    // TODO: 22.03.2021 test with different logged_user und content_user
     @GetMapping(value = {"/profile/private/comments"})
     public String profileWithComponents(@AuthenticationPrincipal UserDetails userPrincipal,
                                         @PathVariable(required = false) String email,
                                         Model model) {
-
         final User pageContentUser = createContentUser(model, email, userPrincipal);
-        final Set<CommentDTO> comments = commentService.retrieveUserComments(userPrincipal.getUsername());
         UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
+        final Set<CommentDTO> comments = commentService.retrieveUserComments(contentUser.getEmail());
+        final int linkSize = Optional.ofNullable(pageContentUser.getUserLinks())
+                .orElse(Collections.emptySet()).size();
         model.addAttribute(CONTENT_USER, contentUser);
-        // TODO: 07.02.2021 die Daten auf der rechten Seite in einen ajax-rest-request auslagern
-        // TODO: 07.02.2021 da es für links und comments-seite notwendig ist
+        model.addAttribute("postsCount", linkSize);
         model.addAttribute("comments", comments);
         model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(contentUser.getCreationDate()));
