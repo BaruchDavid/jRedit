@@ -83,8 +83,10 @@ public class AuthController {
      *
      * @throws UsernameNotFoundException on non exists user
      */
+    // TODO: 25.03.2021 überprüfe  /profile/{email}/links
+    // TODO: 25.03.2021 {email} ist vom userContent. Wenn man auf eigener Seite ist, dann ist userDTO == userContent
     @GetMapping(value = {"/profile/private",
-            "/profile/private/links",
+            "/profile/{email}/links",
             "/profile/public/{email:.+}"})
     public String profile(@AuthenticationPrincipal UserDetails userPrincipal,
                           @PathVariable(required = false) String email,
@@ -110,11 +112,12 @@ public class AuthController {
         return "auth/profileLinks";
     }
 
-    private User createContentUser(Model model, String email, UserDetails userPrincipal) {
+    private User createContentUser(Model model, String emailForContent, UserDetails userPrincipal) {
 
         Optional<UserDetails> authenticatedUser = Optional.ofNullable(userPrincipal);
-        email = authenticatedUser.isPresent() && email == null ? authenticatedUser.get().getUsername() : email;
-        User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(email))
+        emailForContent = authenticatedUser.isPresent() && emailForContent == null ?
+                authenticatedUser.get().getUsername() : emailForContent;
+        User pageContentUser = Optional.ofNullable(userService.getUserWithLinks(emailForContent))
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
         String authenticatedUserName = authenticatedUser.map(UserDetails::getUsername)
@@ -135,10 +138,11 @@ public class AuthController {
         return pageContentUser;
     }
 
-    // TODO: 22.03.2021 CURRENT BUG: click on Posts or Comments müssen immer einen Content_user
-    // enhalten, damit die email-variable nicht null ist
+
+    // TODO: 25.03.2021 überprüfe  /profile/{email}/comments
+    // TODO: 25.03.2021 {email} ist vom userContent. Wenn man auf eigener Seite ist, dann ist userDTO == userContent
     // TODO: 22.03.2021 test with different logged_user und content_user
-    @GetMapping(value = {"/profile/private/comments"})
+    @GetMapping(value = {"/profile/{email}/comments"})
     public String profileWithComponents(@AuthenticationPrincipal UserDetails userPrincipal,
                                         @PathVariable(required = false) String email,
                                         Model model) {

@@ -63,7 +63,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void showProfileWithLinksOfUserAsAuthenticated() throws Exception {
+    public void showProfileWithLinksOfLoggedInUserAsAuthenticated() throws Exception {
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
                 .stream()
                 .map(LinkDTO::mapFullyLinkToDto)
@@ -71,18 +71,17 @@ public class AuthControllerTest extends MvcRequestSender {
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
 
-        super.performGetRequest("/profile/private/links")
+        super.performGetRequest("/profile/"+loggedInUser.getEmail()+"/links")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", loggedUserLinks))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 2));
-
     }
 
     @Test
     @WithUserDetails("romakapt@gmx.de")
-    public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
+    public void showProfileWithCommentsOfLoggedInAsAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
                 .stream()
                 .map(CommentDTO::getCommentToCommentDto)
@@ -90,12 +89,51 @@ public class AuthControllerTest extends MvcRequestSender {
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
-        super.performGetRequest("/profile/private/comments")
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("userSince", userSince))
-                .andExpect(model().attribute("comments", loggedUserComments));
+                .andExpect(model().attribute("comments", loggedUserComments))
+                .andExpect(model().attribute("postsCount", 5));
 
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void showProfileWithLinksOfOtherUserAsAuthenticated() throws Exception {
+        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        final Set<LinkDTO> userContentLinks = pageContentUser.getUserLinks()
+                .stream()
+                .map(LinkDTO::mapFullyLinkToDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(pageContentUser.getCreationDate());
+
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/links")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileLinks"))
+                .andExpect(model().attribute("posts", userContentLinks))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("commentCount", 6));
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void showProfileWithCommentsOfOtherUserAsAuthenticated() throws Exception {
+        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        final Set<CommentDTO> userContentComments = pageContentUser.getUserComment()
+                .stream()
+                .map(CommentDTO::getCommentToCommentDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(pageContentUser.getCreationDate());
+
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileComments"))
+                .andExpect(model().attribute("comments", userContentComments))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("postsCount", 5));
     }
 
     /**
