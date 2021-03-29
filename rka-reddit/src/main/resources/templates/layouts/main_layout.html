@@ -78,7 +78,7 @@
 		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
 			<input type="hidden" id="cache" th:value="${cacheControl}">
 			<div id="drop-area">
-				<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
+				<div th:if="${userDto.getEmail() == userContent.getEmail()}">
 					<form id="pic-form" class="my-form">
 						<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">
 						<label class="button" for="fileElem">drop picture or click here</label>
