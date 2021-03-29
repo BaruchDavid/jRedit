@@ -20,9 +20,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -53,11 +51,7 @@ public class LinkControllerTest extends MvcRequestSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkControllerTest.class);
     @Before
     public void setup() {
-/*
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-        entityManager = BeanUtil.getBeanFromContext(EntityManager.class);*/
+
         hibernateSession = super.getEntityManager().unwrap(Session.class);
         hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
     }
@@ -122,6 +116,19 @@ public class LinkControllerTest extends MvcRequestSender {
                 .andExpect(status().is(HttpStatus.SC_NOT_FOUND));
 
 
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void addNewLinkOnClickToUserClickedLinks() throws Exception {
+        super.performGetRequest("/links/link/16170428593248")
+                .andExpect(status().isOk());
+        final User userWithLinks = userService.getUserWithLinks("romakapt@gmx.de");
+        final Set<Link> userClickedLinks = userWithLinks.getUserClickedLinks();
+        final Optional<Link> clickedLink = userClickedLinks.stream()
+                .filter(link -> link.getLinkId() == 8)
+                .findAny();
+        assertTrue(clickedLink.isPresent());
     }
 
     /**
