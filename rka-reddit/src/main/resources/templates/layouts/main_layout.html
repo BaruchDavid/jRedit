@@ -85,11 +85,11 @@
 					</form>
 				</div>
 			</div>
-			<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'me')}">
-				<h2 id="userName" th:name="${userDto.getEmail()}" style="text-align: center;" class="display-6" th:text="${userDto.getFullName()}"></h2>
+			<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'private/me')}">
+				<h2 id="userNameAuth" th:name="${userDto.getEmail()}" style="text-align: center;" class="display-6" th:text="${userDto.getFullName()}"></h2>
 			</div>
-			<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'me')}">
-				<h2 id="user-name" style="text-align: center;" class="display-6" th:text="${userContent.getFullName()}"></h2>
+			<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'private/me')}">
+				<h2 id="userNameUnAuth" style="text-align: center;" class="display-6" th:text="${userContent.getFullName()}"></h2>
 			</div>
 		</div>
     </div>
