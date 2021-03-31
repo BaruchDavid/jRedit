@@ -290,8 +290,15 @@ public class AuthController {
         return "auth/passwordChange";
     }
 
-    private void getUserForView(UserDetails user, Model model) {
-        String userName = Optional.ofNullable(user)
+    @GetMapping("/profile/private/me/update/email")
+    public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
+        UserDTO userDto = getUserForView(user, model);
+        userDto.setNewEmail(StringUtils.EMPTY);
+        return "auth/emailChange";
+    }
+
+    private UserDTO getUserForView(UserDetails user, Model model) {
+        Optional.ofNullable(user)
                 .map(UserDetails::getUsername)
                 .orElseThrow(() -> {
                     RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
@@ -305,20 +312,10 @@ public class AuthController {
                     return UserDetailsServiceImpl.throwUnauthenticatedUserException(request.getRemoteHost() +
                             request.getRequestURI());
                 });
-        User requestedUser = (User) userDetailsService.loadUserByUsername(userName);
-        final UserDTO userDTO = UserDTO.mapUserToUserDto(requestedUser);
+        final UserDTO userDTO = UserDTO.mapUserToUserDto((User) user);
         model.addAttribute(LOGGED_IN_USER, userDTO);
         model.addAttribute(CONTENT_USER, userDTO);
-
-    }
-
-
-    @GetMapping("/profile/private/me/update/email")
-    public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
-        UserDTO userDto = UserDTO.mapUserToUserDto((User) user);
-        userDto.setNewEmail(StringUtils.EMPTY);
-        model.addAttribute(LOGGED_IN_USER, userDto);
-        return "auth/emailChange";
+        return  userDTO;
     }
 
     /**
