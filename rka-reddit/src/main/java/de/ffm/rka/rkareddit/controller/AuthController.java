@@ -306,7 +306,9 @@ public class AuthController {
                             request.getRequestURI());
                 });
         User requestedUser = (User) userDetailsService.loadUserByUsername(userName);
-        model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto(requestedUser));
+        final UserDTO userDTO = UserDTO.mapUserToUserDto(requestedUser);
+        model.addAttribute(LOGGED_IN_USER, userDTO);
+        model.addAttribute(CONTENT_USER, userDTO);
 
     }
 
