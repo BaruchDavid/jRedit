@@ -57,23 +57,25 @@ function uploadFile(file) {
             console.log('saved!!!');
             getPicture('no-cache');
         } else {
-            response.text().then(function(textBody){
-                let msgArray = textBody.split(';');
-                let ul = $('<ul>');
-                for (i = 0; i < msgArray.length; i++) {
-                  var li = $('<li>', {html:msgArray[i]});
-                  li.appendTo(ul);
-                }
-                var div = $('<div>',{class: 'error_msg'});
-                ul.appendTo(div)
-                $('#user-name').before(div);
-                setTimeout(function(){
-                    $('.error_msg').css('display','none');
-                }, 3000);
-            });
+            response.text().then(printError(textBody));
         }
     }).catch(function (error) {
        console.log ("error: " + error);
     });
+}
 
+function printError(textBody) {
+    let msgArray = textBody.split(';');
+    let ul = $('<ul>');
+    for (i = 0; i < msgArray.length; i++) {
+      var li = $('<li>', {html:msgArray[i]});
+      li.appendTo(ul);
+    }
+    var div = $('<div>',{class: 'error_msg'});
+    ul.appendTo(div)
+
+    $("h2[title='userName']").before(div);
+    setTimeout(function(){
+        $('.error_msg').css('display','none');
+    }, 3000);
 }

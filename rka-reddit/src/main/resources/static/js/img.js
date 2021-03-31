@@ -9,17 +9,21 @@ function getPicture(control){
     { headers: {'Cache-Control': control}})
               .then(res=>{return res.blob()})
               .then(blob=>{
-                const img = URL.createObjectURL(blob);
-                var image = $('<img>');
-                    var div = $('#drop-area');
-                    image.one('load', function() {
-                      div.css({
-                        'width': '12em',
-                        'height': '13em',
-                        'background-image': 'url(' + this.src + ')'
-                      });
-                      $('#container').append(div);
-                    });
-                    image.attr('src', img);
+                if(blob.type==='image/jpeg'){
+                    const img = URL.createObjectURL(blob);
+                    var image = $('<img>');
+                        var div = $('#drop-area');
+                        image.one('load', function() {
+                          div.css({
+                            'width': '12em',
+                            'height': '13em',
+                            'background-image': 'url(' + this.src + ')'
+                          });
+                          $('#container').append(div);
+                        });
+                        image.attr('src', img);
+                } else {
+                    printError("user picture not availible, please contact admin")
+                }
               });
 }
