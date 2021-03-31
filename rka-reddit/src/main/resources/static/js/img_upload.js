@@ -57,7 +57,7 @@ function uploadFile(file) {
             console.log('saved!!!');
             getPicture('no-cache');
         } else {
-            response.text().then(printError(textBody));
+            response.text().then(textBody => printError(textBody));
         }
     }).catch(function (error) {
        console.log ("error: " + error);
