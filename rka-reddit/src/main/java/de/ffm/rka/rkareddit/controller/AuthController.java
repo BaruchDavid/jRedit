@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -200,10 +201,12 @@ public class AuthController {
      */
     @PatchMapping(value = {"/profile/private/me/update/email"})
     public String userChangeEmail(@Validated(value = {UserValidationgroup.ValidationUserChangeEmail.class}) UserDTO userDto,
-                                  BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res,
+                                  BindingResult bindingResult, RedirectAttributes attributes,
+                                  @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse res,
                                   HttpServletRequest req, Model model) throws ServiceException {
         LOGGER.info("TRY TO CHANGE EMAIL OF USER {}", userDto);
         if (bindingResult.hasErrors()) {
+            getUserForView(userDetails,model);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
             final String newEmail = userDto.getNewEmail();
@@ -265,6 +268,7 @@ public class AuthController {
 
         if (bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
+            getUserForView(userDetails,model);
             return "auth/passwordChange";
         } else {
             userDto.setEmail(userDetails.getUsername());
