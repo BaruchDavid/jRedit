@@ -59,7 +59,6 @@ public class ProfileMetaDataController {
      * @param userPrincipal for authentication
      * @return list of clicked Links
      */
-    // TODO: 22.03.2021 write unit-test for this
     @GetMapping("/information/userClickedLinks")
     @ResponseBody
     public List<LinkDTO> userClickedLinksHistory(@RequestParam(name = "user") String requestedUser,
@@ -103,7 +102,7 @@ public class ProfileMetaDataController {
 
     @PostMapping(value = "/information/content/user-pic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> submit(@Valid @ModelAttribute("pic") PictureDTO pictureDTO,
-                                         BindingResult result, Model model,
+                                         BindingResult result,
                                          @AuthenticationPrincipal UserDetails userPrincipal) {
         String errors = "";
         try {
