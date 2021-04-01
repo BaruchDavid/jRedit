@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.security.mock;
+package de.ffm.rka.rkareddit.config;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.repository.UserRepository;

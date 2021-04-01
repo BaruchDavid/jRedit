@@ -1,10 +1,10 @@
 package de.ffm.rka.rkareddit.controller;
 
 
+import de.ffm.rka.rkareddit.config.SpringSecurityTestConfig;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.interceptor.ApplicationHandlerInterceptor;
 import de.ffm.rka.rkareddit.rest.controller.TagController;
-import de.ffm.rka.rkareddit.security.mock.SpringSecurityTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
