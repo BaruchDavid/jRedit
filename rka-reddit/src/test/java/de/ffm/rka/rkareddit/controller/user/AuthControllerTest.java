@@ -212,7 +212,8 @@ public class AuthControllerTest extends MvcRequestSender {
         super.performGetRequest("/profile/private/me")
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", loggedInUserDto));
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto));
     }
 
     @Test
@@ -234,17 +235,12 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showChangeEmailPage() throws Exception {
-        Optional<User> user = userService.findUserById("romakapt@gmx.de");
-        if (user.isPresent()) {
-            user.get().setNewEmail(StringUtils.EMPTY);
-            UserDTO userDto = UserDTO.mapUserToUserDto(user.get());
-            super.performGetRequest("/profile/private/me/update/email")
-                    .andExpect(status().isOk())
-                    .andExpect(model().attribute("userDto", userDto))
-                    .andExpect(view().name("auth/emailChange"));
-        } else {
-            fail("user for test-request not found");
-        }
+        loggedInUserDto.setNewEmail(StringUtils.EMPTY);
+        super.performGetRequest("/profile/private/me/update/email")
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
+                .andExpect(view().name("auth/emailChange"));
     }
 
     @Test
@@ -253,6 +249,7 @@ public class AuthControllerTest extends MvcRequestSender {
         super.performGetRequest("/profile/private/me/password")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(view().name("auth/passwordChange"));
     }
 
@@ -266,6 +263,8 @@ public class AuthControllerTest extends MvcRequestSender {
         super.performPutRequest("/profile/private/me/update", body)
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/profile/private"))
+                .andExpect(flash().attribute("success", true))
+                .andExpect(flash().attribute("redirectMessage", "your profile has been updated"))
                 .andExpect(flash().attributeExists("success")).andReturn();
     }
 
