@@ -31,6 +31,11 @@ public class AuthControllerTest extends MvcRequestSender {
     private User loggedInUser;
     private UserDTO loggedInUserDto;
 
+    private UserDTO emptyUser = UserDTO.builder()
+                                        .userComment(Collections.emptyList())
+                                        .userLinks(Collections.emptyList())
+                                        .build();
+
     @Before
     public void setup() {
 
@@ -127,6 +132,25 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
+    public void showProfileWithLinksOfOtherUserAsUnAuthenticated() throws Exception {
+        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        final Set<LinkDTO> userContentLinks = pageContentUser.getUserLinks()
+                .stream()
+                .map(LinkDTO::mapFullyLinkToDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(pageContentUser.getCreationDate());
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/links")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileLinks"))
+                .andExpect(model().attribute("posts", userContentLinks))
+                .andExpect(model().attribute("userDto", emptyUser))
+                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(pageContentUser)))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("commentCount", 6));
+    }
+
+    @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showProfileWithCommentsOfOtherUserAsAuthenticated() throws Exception {
         pageContentUser = userService.findUserById("dascha@gmx.de").get();
@@ -147,6 +171,26 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("postsCount", 5));
     }
 
+    @Test
+    public void showProfileWithCommentsOfOtherUserAsUnAuthenticated() throws Exception {
+        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        final Set<CommentDTO> userContentComments = pageContentUser.getUserComment()
+                .stream()
+                .map(CommentDTO::getCommentToCommentDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(pageContentUser.getCreationDate());
+
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileComments"))
+                .andExpect(model().attribute("comments", userContentComments))
+                .andExpect(model().attribute("userDto", emptyUser))
+                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(pageContentUser)))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("postsCount", 5));
+    }
+
     /**
      * show public profile from grom as unautheticated user
      * cach-flag: no-cache is set, cause for content-user you will see
@@ -155,10 +199,6 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     public void showPublicProfileAsUnauthenticated() throws Exception {
         User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
-        UserDTO emptyUser = UserDTO.builder()
-                                    .userComment(Collections.emptyList())
-                                    .userLinks(Collections.emptyList())
-                                    .build();
         super.performGetRequest("/profile/public/grom@gmx.de")
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(status().isOk())
@@ -279,6 +319,8 @@ public class AuthControllerTest extends MvcRequestSender {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/profile/private"))
             .andExpect(flash().attributeExists("success"))
+            .andExpect(flash().attribute("success", true))
+            .andExpect(flash().attribute("redirectMessage", "you got email, check it out!"))
             .andReturn();
 
     }
