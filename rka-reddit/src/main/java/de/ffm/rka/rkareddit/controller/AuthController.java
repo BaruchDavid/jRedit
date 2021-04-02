@@ -84,8 +84,6 @@ public class AuthController {
      *
      * @throws UsernameNotFoundException on non exists user
      */
-    // TODO: 25.03.2021 überprüfe  /profile/{email}/links
-    // TODO: 25.03.2021 {email} ist vom userContent. Wenn man auf eigener Seite ist, dann ist userDTO == userContent
     @GetMapping(value = {"/profile/private",
             "/profile/{email}/links",
             "/profile/public/{email:.+}"})

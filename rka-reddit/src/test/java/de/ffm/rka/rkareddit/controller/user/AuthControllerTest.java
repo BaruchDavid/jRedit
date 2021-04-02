@@ -56,6 +56,8 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", loggedUserLinks))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 2))
                 .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
