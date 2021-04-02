@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,6 +78,8 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", loggedUserLinks))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 2));
     }
@@ -95,6 +98,8 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(model().attribute("comments", loggedUserComments))
                 .andExpect(model().attribute("postsCount", 5));
 
@@ -115,6 +120,8 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", userContentLinks))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(pageContentUser)))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 6));
     }
@@ -134,6 +141,8 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("comments", userContentComments))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(pageContentUser)))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("postsCount", 5));
     }
@@ -146,9 +155,14 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     public void showPublicProfileAsUnauthenticated() throws Exception {
         User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
+        UserDTO emptyUser = UserDTO.builder()
+                                    .userComment(Collections.emptyList())
+                                    .userLinks(Collections.emptyList())
+                                    .build();
         super.performGetRequest("/profile/public/grom@gmx.de")
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("userDto", emptyUser))
                 .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(grom)))
                 .andExpect(model().attribute("cacheControl", "no-cache"));
     }

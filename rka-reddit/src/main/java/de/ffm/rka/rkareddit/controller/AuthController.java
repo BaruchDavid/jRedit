@@ -137,10 +137,6 @@ public class AuthController {
         return pageContentUser;
     }
 
-
-    // TODO: 25.03.2021 überprüfe  /profile/{email}/comments
-    // TODO: 25.03.2021 {email} ist vom userContent. Wenn man auf eigener Seite ist, dann ist userDTO == userContent
-    // TODO: 22.03.2021 test with different logged_user und content_user
     @GetMapping(value = {"/profile/{email}/comments"})
     public String profileWithComponents(@AuthenticationPrincipal UserDetails userPrincipal,
                                         @PathVariable(required = false) String email,
