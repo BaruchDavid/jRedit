@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -78,7 +77,6 @@ public class ProfileMetaDataController {
         return userClickedLinksDTO;
     }
 
-    // TODO: 21.02.2021 MediaType festlegen
     @GetMapping(value = "/information/content/user-pic")
     @ResponseBody
     public ResponseEntity<byte[]> imageAsByteArray(HttpServletRequest req) {
@@ -90,7 +88,7 @@ public class ProfileMetaDataController {
         if (!requestedUser.isEmpty()) {
             User user = userService.getUser(requestedUser);
             media = userService.getUserPic(requestedUser)
-                                .orElse(new byte[0]);
+                    .orElse(new byte[0]);
             LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", media.length, requestedUser);
             headers = cacheController.setCacheHeader(user.getFotoCreationDate());
             responseStatus = HttpStatus.OK;
