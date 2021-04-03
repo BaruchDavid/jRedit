@@ -291,7 +291,7 @@ public class UserService {
         }
     }
 
-    public InputStream resizeUserPic(InputStream inputStream, String extension) throws Exception {
+    public InputStream resizeUserPic(InputStream inputStream, String extension) throws IOException {
         final BufferedImage bufferedImage = ImageManager.simpleResizeImage(inputStream, TARGET_WIDTH);
         return new ByteArrayInputStream(FileNIO.readPictureToByteArray(bufferedImage, extension));
     }

@@ -3,6 +3,9 @@ package de.ffm.rka.rkareddit.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -46,6 +49,18 @@ public class HttpUtil {
 
 	public static String decodeParam(String value) throws UnsupportedEncodingException {
 		return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
+	}
+
+	public static HttpServletRequest getCurrentRequest() {
+		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = null;
+		if (requestAttributes instanceof ServletRequestAttributes) {
+			request = Optional.ofNullable(((ServletRequestAttributes) requestAttributes).getRequest())
+					.orElse(null);
+		}
+		request = Optional.ofNullable(request)
+				.orElseThrow();
+		return request;
 	}
 
 

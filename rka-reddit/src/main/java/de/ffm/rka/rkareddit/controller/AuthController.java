@@ -10,6 +10,7 @@ import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
+import de.ffm.rka.rkareddit.util.HttpUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -296,17 +297,9 @@ public class AuthController {
     }
 
     private UserDTO getUserForView(UserDetails user, Model model) {
-        Optional.ofNullable(user)
-                .map(UserDetails::getUsername)
+        user = Optional.ofNullable(user)
                 .orElseThrow(() -> {
-                    RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-                    HttpServletRequest request = null;
-                    if (requestAttributes instanceof ServletRequestAttributes) {
-                        request = Optional.ofNullable(((ServletRequestAttributes) requestAttributes).getRequest())
-                                .orElse(null);
-                    }
-                    request = Optional.ofNullable(request)
-                            .orElseThrow();
+                    HttpServletRequest request = HttpUtil.getCurrentRequest();
                     return UserDetailsServiceImpl.throwUnauthenticatedUserException(request.getRemoteHost() +
                             request.getRequestURI());
                 });
