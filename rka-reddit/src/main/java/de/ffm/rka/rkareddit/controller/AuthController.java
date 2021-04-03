@@ -356,4 +356,3 @@ public class AuthController {
         res.setStatus(HttpStatus.BAD_REQUEST.value());
     }
 }
-
