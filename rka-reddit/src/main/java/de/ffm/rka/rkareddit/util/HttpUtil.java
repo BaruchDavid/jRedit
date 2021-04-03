@@ -38,9 +38,7 @@ public class HttpUtil {
 	}
 
 	public static void listAllRequestParams(HttpServletRequest request){
-		request.getParameterMap().forEach((key, value) -> {
-			LOGGER.info("PARAM KEY {} VALUE {}", key, value);
-		});
+		request.getParameterMap().forEach((key, value) -> LOGGER.info("PARAM KEY {} VALUE {}", key, value));
 	}
 
 	public static String encodeParam(String value){
