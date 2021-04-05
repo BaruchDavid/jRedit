@@ -92,15 +92,12 @@ public class GlobalControllerAdvisor {
             case "PreAuthenticatedCredentialsNotFoundException":
                 res.setStatus(HttpStatus.SC_UNAUTHORIZED);
                 break;
-            case "AccessDeniedException":
-                res.setStatus(HttpStatus.SC_FORBIDDEN);
-                break;
             case "HttpRequestMethodNotSupportedException":
                 view = PAGE_NOT_FOUND;
                 res.setStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
                 break;
             case "ServiceException":
-                view = DEFAULT_APPLICATION_ERROR;
+                view = USER_ERROR_VIEW;
                 res.setStatus(HttpStatus.SC_NOT_FOUND);
                 break;
             default:
@@ -142,6 +139,7 @@ public class GlobalControllerAdvisor {
     private ModelAndView createErrorView(HttpServletRequest req, HttpServletResponse res, UserDTO user, String errorView, String error) {
         ModelAndView mav = new ModelAndView();
         try {
+            // TODO: 04.04.2021 man muss die errorUrl anpassen, zb. für accessDenied im BasicErrorController
             // TODO: 14.03.2021 mask user-emails 
             // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser
             final ErrorDTO msg = ErrorDTO.builder()
