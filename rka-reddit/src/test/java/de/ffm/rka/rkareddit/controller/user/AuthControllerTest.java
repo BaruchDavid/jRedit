@@ -226,6 +226,38 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andDo(print()).andExpect(status().isNotFound());
     }
 
+    @Test
+    @WithUserDetails("dascha@gmx.de")
+    public void accessToDBAsWrongUser() throws Exception {
+        final MvcResult mvcResult = super.performGetRequest("/data/h2-console")
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        final String redirectedUrl = mvcResult.getResponse().getHeader("location");
+        final ResultActions result = sendRedirect(Optional.ofNullable(redirectedUrl).orElse(""));
+        result.andExpect(status().is(HttpStatus.SC_FORBIDDEN))
+                .andExpect(view().name("error/accessDenied"))
+                .andExpect(model().attribute("userDto", UserDTO.builder()
+                                                                    .firstName("dascha")
+                                                                    .build()));
+    }
+
+    /**
+     * without authentication, you will be redirected to login for authentication
+     * @throws Exception
+     */
+    @Test
+    public void accessWithNoAuthorizationAsUnauthenticated() throws Exception {
+        final MvcResult mvcResult = super.performGetRequest("/data/h2-console")
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        final String redirectedUrl = mvcResult.getResponse().getHeader("location");
+        final ResultActions result = sendRedirect(Optional.ofNullable(redirectedUrl).orElse(""));
+        result.andExpect(status().is(HttpStatus.SC_OK))
+                .andExpect(view().name("auth/login"));
+    }
+
     /**
      * show profile public site of some user as authenticated user
      * cach-flag: no-cache is set, cause for content-user you will see
@@ -451,7 +483,7 @@ public class AuthControllerTest extends MvcRequestSender {
                                          .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
-        result.andExpect(status().is(405))
+        result.andExpect(status().is(HttpStatus.SC_FORBIDDEN))
                 .andExpect(view().name("error/pageNotFound"));
 
     }
