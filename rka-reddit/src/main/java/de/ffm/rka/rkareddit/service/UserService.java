@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 /**
  * manages login- and register-process
@@ -294,5 +295,13 @@ public class UserService {
     public InputStream resizeUserPic(InputStream inputStream, String extension) throws IOException {
         final BufferedImage bufferedImage = ImageManager.simpleResizeImage(inputStream, TARGET_WIDTH);
         return new ByteArrayInputStream(FileNIO.readPictureToByteArray(bufferedImage, extension));
+    }
+
+    public static UserDTO buildAnonymousUser() {
+        Supplier<UserDTO> userDTOSupplier = () -> UserDTO.builder()
+                .firstName("Guest")
+                .secondName("")
+                .build();
+        return userDTOSupplier.get();
     }
 }
