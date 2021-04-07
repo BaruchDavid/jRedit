@@ -97,7 +97,6 @@ public class GlobalControllerAdvisor {
                 res.setStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
                 break;
             case "ServiceException":
-                view = USER_ERROR_VIEW;
                 res.setStatus(HttpStatus.SC_NOT_FOUND);
                 break;
             default:
@@ -114,9 +113,6 @@ public class GlobalControllerAdvisor {
         String responseBody = "Error occurred!";
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
         switch (exceptionType) {
-            case "MaxUploadSizeExceededException":
-                responseBody = "Picture file size exceeds limit!";
-                break;
             case "IllegalVoteException":
                 responseBody = "illegal vote!";
                 break;
