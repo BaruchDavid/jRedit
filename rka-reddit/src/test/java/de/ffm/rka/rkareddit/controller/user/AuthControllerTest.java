@@ -329,14 +329,20 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("userContent", loggedInUserDto));
     }
 
+    /**
+     * expect login-page, cause request protected resources as unautheticated
+     * needs to be login at first, not depend about which kind of resource
+     * has been requested
+     * @throws Exception
+     */
     @Test
     public void showEditProfilePageForUnknownUserAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/profile/private/me")
                 .andReturn();
         final String location = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(location.replace("+", ""));
-        result.andExpect(view().name("error/application"))
-            .andExpect(status().is(HttpStatus.SC_UNAUTHORIZED));
+        result.andExpect(view().name("auth/login"))
+            .andExpect(status().is(HttpStatus.SC_OK));
 
     }
 
@@ -524,9 +530,8 @@ public class AuthControllerTest extends MvcRequestSender {
                                          .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
-        result.andExpect(status().is(HttpStatus.SC_FORBIDDEN))
+        result.andExpect(status().is(HttpStatus.SC_METHOD_NOT_ALLOWED))
                 .andExpect(view().name("error/pageNotFound"));
-
     }
 
     /**

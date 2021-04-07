@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -57,11 +58,11 @@ public class BasicErrorControllerTest {
 	@Test
 	@WithUserDetails("dascha@gmx.de")
 	public void accessDeniePage() throws Exception {
-		this.mockMvc.perform(get("/data/h2-console/**"))
-					.andDo(print())
-					.andExpect(status().is(302))
-					.andExpect(redirectedUrl("/error/accessDenied"))
-					.andReturn();
+		final MvcResult mvcResult = this.mockMvc.perform(get("/data/h2-console/**"))
+				.andDo(print())
+				.andExpect(status().is(302))
+				.andReturn();
+		mvcResult.getResponse().getRedirectedUrl().contains("/error/accessDenied");
 	}
 	
 	@Test

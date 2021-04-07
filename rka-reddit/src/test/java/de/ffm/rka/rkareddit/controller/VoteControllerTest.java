@@ -24,7 +24,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 				.andReturn();
 		final String location = mvcResult.getResponse().getHeader("location");
 		final ResultActions result = sendRedirect(location.replace("+", ""));
-		result.andExpect(view().name("error/basicError"))
+		result.andExpect(view().name("error/application"))
 				.andExpect(status().is(HttpStatus.SC_NOT_FOUND));
 
 
@@ -38,7 +38,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 				.andReturn();
 		final String location = mvcResult.getResponse().getHeader("location");
 		final ResultActions result = sendRedirect(location.replace("+", ""));
-		result.andExpect(view().name("error/basicError"))
+		result.andExpect(view().name("error/application"))
 				.andExpect(status().is(HttpStatus.SC_NOT_FOUND));
 
 	}
