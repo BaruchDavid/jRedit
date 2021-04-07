@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.net.URI;
+import java.util.Map;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -62,6 +63,12 @@ public abstract class MvcRequestSender {
 
     public ResultActions performGetRequest(String ressource) throws Exception {
         final ResultActions resultActions = this.mockMvc.perform(get(new URI(ressource)))
+                                                        .andDo(print());
+        return resultActions;
+    }
+
+    public ResultActions performGetRequestWithFalshAttributes(String ressource, Map<String, Object> flashAttributes) throws Exception {
+        final ResultActions resultActions = this.mockMvc.perform(get(new URI(ressource)).flashAttrs(flashAttributes))
                                                         .andDo(print());
         return resultActions;
     }

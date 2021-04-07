@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
 import static org.junit.Assert.fail;
@@ -379,12 +381,23 @@ public class AuthControllerTest extends MvcRequestSender {
                 "email=romakapt@gmx.de&" +
                 "secondName=rka.odem&" +
                 "aliasName=worker";
-        super.performPutRequest("/profile/private/me/update", body)
+        final MvcResult mvcResult = super.performPutRequest("/profile/private/me/update", body)
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/profile/private"))
                 .andExpect(flash().attribute("success", true))
                 .andExpect(flash().attribute("redirectMessage", "your profile has been updated"))
-                .andExpect(flash().attributeExists("success")).andReturn();
+                .andExpect(flash().attributeExists("success"))
+                .andReturn();
+        loggedInUserDto.setSecondName("rka.odem");
+        loggedInUserDto.setFullName("rka.odem");
+        Map<String, Object> flashAttributes = new HashMap<>();
+        flashAttributes.put("success", true);
+        performGetRequestWithFalshAttributes(mvcResult.getResponse().getRedirectedUrl(), flashAttributes)
+                .andExpect(view().name("auth/profileLinks"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
+                .andExpect(model().attribute("success", true));
     }
 
     @Test
