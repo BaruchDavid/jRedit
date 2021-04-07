@@ -168,11 +168,6 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
                 "formDataWithFile", byteArrayOutputStream.toByteArray(), oneRequestParam)
                 .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
                 .andExpect(content().string("Picture size is bigger then 1MB"));
-        /*this.mockMvc.perform(MockMvcRequestBuilders.multipart("/profile/information/content/user-pic")
-                .file("formDataWithFile", byteArrayOutputStream.toByteArray())
-                .param("pictureExtension", "jpg"))
-                .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
-                .andExpect(content().string("Picture size is bigger then 1MB"));*/
     }
 
 }
