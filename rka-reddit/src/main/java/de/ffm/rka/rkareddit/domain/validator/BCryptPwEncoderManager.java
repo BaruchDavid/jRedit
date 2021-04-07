@@ -2,7 +2,6 @@ package de.ffm.rka.rkareddit.domain.validator;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.util.BeanUtil;
-import org.springframework.jdbc.support.CustomSQLErrorCodesTranslation;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,15 +29,6 @@ public interface BCryptPwEncoderManager {
 								return encoder.matches(comparedPw, user.getPassword());
 							})
 							.orElse(false);
-
-
-		/*if() {
-			BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-			User user = (User) authetication.get().getPrincipal();
-			return encoder.matches(comparedPw, user.getPassword());
-		} else {
-			return false;
-		}*/
 	}
 
 	default boolean isUsuerAuthenticated(Authentication authentication){

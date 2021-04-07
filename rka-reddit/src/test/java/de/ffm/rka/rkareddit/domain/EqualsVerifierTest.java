@@ -1,11 +1,16 @@
 package de.ffm.rka.rkareddit.domain;
 
+import de.ffm.rka.rkareddit.domain.dto.ErrorDTO;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.hibernate.engine.spi.PersistentAttributeInterceptor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -82,6 +87,20 @@ public class EqualsVerifierTest {
     /**
      * comentText can be null, since commentDto has @NonNull check
      */
+    @Test
+    public void equalsHashCodeErrorDTOContracts() {
+        final Link link1 = Link.builder().url("www.url.com").build();
+        final Link link2 = Link.builder().url("url.com").build();
+        final UserDTO user1 = UserDTO.builder().email("test@.com").userComment(Collections.emptyList()).build();
+        final UserDTO user2 = UserDTO.builder().email("test@.de").userComment(Collections.emptyList()).build();
+        EqualsVerifier.forClass(ErrorDTO.class)
+                .withPrefabValues(UserDTO.class, user1, user2)
+                .suppress(Warning.STRICT_INHERITANCE)
+                .suppress(Warning.NONFINAL_FIELDS)
+                .suppress(Warning.ALL_FIELDS_SHOULD_BE_USED)
+                .verify();
+    }
+
     @Test
     public void equalsHashCodeCommentContracts() {
         final Link link1 = Link.builder().url("www.url.com").build();
