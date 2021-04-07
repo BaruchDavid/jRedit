@@ -10,7 +10,6 @@ import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
-import de.ffm.rka.rkareddit.util.HttpUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,7 +196,7 @@ public class AuthController {
                                   HttpServletRequest req, Model model) throws ServiceException {
         LOGGER.info("TRY TO CHANGE EMAIL OF USER {}", userDto);
         if (bindingResult.hasErrors()) {
-            getUserForView(userDetails,model);
+            getUserForView(userDetails, model);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
             final String newEmail = userDto.getNewEmail();
@@ -260,7 +259,7 @@ public class AuthController {
         // passiert ?
         if (bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
-            getUserForView(userDetails,model);
+            getUserForView(userDetails, model);
             return "auth/passwordChange";
         } else {
             userDto.setEmail(userDetails.getUsername());
@@ -293,13 +292,12 @@ public class AuthController {
         return "auth/emailChange";
     }
 
+    /**
+     * @param user  is never null. If it is null, you will be redirected to login
+     * @param model to save user for view
+     * @return logged in user
+     */
     private UserDTO getUserForView(UserDetails user, Model model) {
-        user = Optional.ofNullable(user)
-                .orElseThrow(() -> {
-                    HttpServletRequest request = HttpUtil.getCurrentRequest();
-                    return UserDetailsServiceImpl.throwUnauthenticatedUserException(request.getRemoteHost() +
-                            request.getRequestURI());
-                });
         final UserDTO userDTO = UserDTO.mapUserToUserDto((User) user);
         model.addAttribute(LOGGED_IN_USER, userDTO);
         model.addAttribute(CONTENT_USER, userDTO);
