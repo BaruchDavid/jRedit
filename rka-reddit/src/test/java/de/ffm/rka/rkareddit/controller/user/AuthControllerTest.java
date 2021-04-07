@@ -89,6 +89,29 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("commentCount", 2));
     }
 
+    /**
+     * anonymous guets can see profile links from user
+     * @throws Exception
+     */
+    @Test
+    public void showProfileWithLinksOfUserAsUnAuthenticated() throws Exception {
+        final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
+                .stream()
+                .map(LinkDTO::mapFullyLinkToDto)
+                .collect(Collectors.toSet());
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(loggedInUserDto.getCreationDate());
+
+        super.performGetRequest("/profile/"+loggedInUser.getEmail()+"/links")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileLinks"))
+                .andExpect(model().attribute("posts", loggedUserLinks))
+                .andExpect(model().attribute("userDto", emptyUser))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("commentCount", 2));
+    }
+
     @Test
     @WithUserDetails("romakapt@gmx.de")
     public void showProfileWithCommentsOfLoggedInAsAuthenticated() throws Exception {
@@ -107,7 +130,45 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(model().attribute("comments", loggedUserComments))
                 .andExpect(model().attribute("postsCount", 5));
+    }
 
+    @Test
+    public void showProfileWithCommentsOfAsUnAuthenticated() throws Exception {
+        final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
+                .stream()
+                .map(CommentDTO::getCommentToCommentDto)
+                .collect(Collectors.toSet());
+
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(loggedInUserDto.getCreationDate());
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileComments"))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("userDto", emptyUser))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
+                .andExpect(model().attribute("comments", loggedUserComments))
+                .andExpect(model().attribute("postsCount", 5));
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
+    public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
+        final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
+                .stream()
+                .map(CommentDTO::getCommentToCommentDto)
+                .collect(Collectors.toSet());
+
+        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                .format(loggedInUserDto.getCreationDate());
+        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/profileComments"))
+                .andExpect(model().attribute("userSince", userSince))
+                .andExpect(model().attribute("userDto", loggedInUserDto))
+                .andExpect(model().attribute("userContent", loggedInUserDto))
+                .andExpect(model().attribute("comments", loggedUserComments))
+                .andExpect(model().attribute("postsCount", 5));
     }
 
     @Test
@@ -166,26 +227,6 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("comments", userContentComments))
                 .andExpect(model().attribute("userDto", loggedInUserDto))
-                .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(pageContentUser)))
-                .andExpect(model().attribute("userSince", userSince))
-                .andExpect(model().attribute("postsCount", 5));
-    }
-
-    @Test
-    public void showProfileWithCommentsOfOtherUserAsUnAuthenticated() throws Exception {
-        pageContentUser = userService.findUserById("dascha@gmx.de").get();
-        final Set<CommentDTO> userContentComments = pageContentUser.getUserComment()
-                .stream()
-                .map(CommentDTO::getCommentToCommentDto)
-                .collect(Collectors.toSet());
-        String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                .format(pageContentUser.getCreationDate());
-
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
-                .andExpect(status().isOk())
-                .andExpect(view().name("auth/profileComments"))
-                .andExpect(model().attribute("comments", userContentComments))
-                .andExpect(model().attribute("userDto", emptyUser))
                 .andExpect(model().attribute("userContent", UserDTO.mapUserToUserDto(pageContentUser)))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("postsCount", 5));

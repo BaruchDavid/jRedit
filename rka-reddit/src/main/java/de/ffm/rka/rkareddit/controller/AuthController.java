@@ -256,7 +256,8 @@ public class AuthController {
     public String userPasswordChange(@Validated(UserValidationgroup.ValidationUserChangePassword.class) UserDTO userDto,
                                      BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
                                      @AuthenticationPrincipal UserDetails userDetails, Model model) {
-
+        // TODO: 04.04.2021 warum auf Passwörter prüfen, wenn es in der Validierungsgruppe  ValidationUserChangePassword
+        // passiert ?
         if (bindingResult.hasErrors() || userDto.getPassword().equals(userDto.getNewPassword())) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
             getUserForView(userDetails,model);

@@ -32,55 +32,55 @@ import static de.ffm.rka.rkareddit.security.Role.*;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecConfig extends WebSecurityConfigurerAdapter {
-	
+
 	@Bean
     public AuthenticationSuccessHandler userSuccessfulAuthenticationHandler(){
         return new UserSuccessfullAthenticationHandler();
     }
-	
+
 	@Bean
     public AuthenticationFailureHandler userFailureAuthenticationHandler(){
         return new UserFailureAuthenticationHandler();
     }
-	
+
 	@Bean
     public UserDetailsService getUserDetailsService(){
         return new UserDetailsServiceImpl();
     }
-		
+
 	@Bean
 	public AccessDeniedHandler getAccessDeniedHandler() {
 		return new GlobalAccessDeniedHandler();
 	}
-	
-	
+
+
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		final int oneDay = 86400;
 		http.csrf().disable()
  					.headers().frameOptions().disable()
  			.and()
- 			.authorizeRequests()			
+ 			.authorizeRequests()
 							.antMatchers("/","/links/","/resources/**").permitAll()
-							.antMatchers("/login*").hasRole(ANONYMOUS.name())
 							.antMatchers("/profile/public").permitAll()
+							.antMatchers(HttpMethod.GET, "/links/link/{signature}").permitAll()
+							.antMatchers("/login*").hasRole(ANONYMOUS.name())
 							.antMatchers("/registration").hasRole(ANONYMOUS.name())
 							.antMatchers(HttpMethod.GET, "/profile/private").hasRole(USER.name())
-							.antMatchers(HttpMethod.GET, "/profile/private/me/{email:.+}").hasRole(USER.name())
-							.antMatchers(HttpMethod.GET, "/profile/private/me/{email:.+}/password").hasRole(USER.name())
-							.antMatchers(HttpMethod.GET, "/profile/private/me/update/email/{email:.+}").hasRole(USER.name())
-							.antMatchers(HttpMethod.PATCH, "/profile/private/me/update/email/{email:.+}").hasRole(USER.name())
-							.antMatchers(HttpMethod.PUT, "/profile/private/me/update").hasRole(USER.name())
-							.antMatchers(HttpMethod.PUT, "/profile/private/me/{email:.+}/password").hasRole(USER.name())
-							.antMatchers("/vote/link/{linkId}/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
-							.antMatchers(HttpMethod.POST, "/tags/tag/create", "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
-							.antMatchers(HttpMethod.DELETE, "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.GET, "/profile/private/me").hasRole(USER.name())
+							.antMatchers(HttpMethod.GET, "/profile/private/me/password").hasRole(USER.name())
+							.antMatchers(HttpMethod.GET, "/profile/private/me/update/email").hasRole(USER.name())
 							.antMatchers(HttpMethod.GET, "/links/link").hasRole(USER.name())
+							.antMatchers(HttpMethod.PATCH, "/profile/private/me/update/email").hasRole(USER.name())
+							.antMatchers(HttpMethod.PUT, "/profile/private/me/update").hasRole(USER.name())
+							.antMatchers(HttpMethod.PUT, "/profile/private/me/password").hasRole(USER.name())
+							.antMatchers("/link/{lSig}/vote/direction/{direction}/votecount/{voteCount}").hasRole(USER.name())
+							.antMatchers(HttpMethod.DELETE, "/tag/deleteTag/{tagId}").hasRole(ADMIN.name())
+							.antMatchers(HttpMethod.POST, "/tags/tag/create").hasRole(ADMIN.name())
 							.antMatchers(HttpMethod.POST, "/links/link").hasRole(USER.name())
-							.antMatchers(HttpMethod.POST, "/links/link/comments").hasRole(USER.name())
+							.antMatchers(HttpMethod.POST, "/comments/comment").hasRole(USER.name())
 							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
-							
 			.and()
 			.formLogin().loginPage("/login")
 						.usernameParameter("email")
@@ -88,23 +88,20 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 						.failureHandler(userFailureAuthenticationHandler())
 						.failureUrl("/login?error")
 			.and()
-		    .exceptionHandling().accessDeniedPage("/links/")
-		    .and()
+			.exceptionHandling().accessDeniedHandler(getAccessDeniedHandler())
+			.and()
 			.logout().deleteCookies("JSESSIONID")
 					.logoutUrl("/logout")
 					.invalidateHttpSession(true)
 					.clearAuthentication(true)
 			.and()
- 			.exceptionHandling().accessDeniedHandler(getAccessDeniedHandler())		
-			.and()
 			.rememberMe().key("uniqueAndSecret")
 						 .tokenValiditySeconds(oneDay)
 			.and()
 			.sessionManagement()
-						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)						
+						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 						.maximumSessions(1)
-						.expiredUrl("/login?oneSession")
-			;	
+						.expiredUrl("/login?oneSession");
 	}
 
 
@@ -112,7 +109,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth) {
 		auth.authenticationProvider(authenticationProvider()).eraseCredentials(false);
 	}
-	
+
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
