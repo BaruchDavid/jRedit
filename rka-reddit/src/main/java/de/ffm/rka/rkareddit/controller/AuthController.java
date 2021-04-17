@@ -196,7 +196,7 @@ public class AuthController {
                                   HttpServletRequest req, Model model) throws ServiceException {
         LOGGER.info("TRY TO CHANGE EMAIL OF USER {}", userDto);
         if (bindingResult.hasErrors()) {
-            getUserForView(userDetails, model);
+            setUserForLoginAndContentOnView((User) userDetails, model);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
             final String newEmail = userDto.getNewEmail();
@@ -257,7 +257,7 @@ public class AuthController {
                                      @AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (bindingResult.hasErrors()) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
-            getUserForView(userDetails, model);
+            setUserForLoginAndContentOnView((User) userDetails, model);
             return "auth/passwordChange";
         } else {
             userDto.setEmail(userDetails.getUsername());
@@ -272,22 +272,29 @@ public class AuthController {
 
     @GetMapping("/profile/private/me")
     public String showViewForEmailChange(@AuthenticationPrincipal UserDetails user, Model model) {
-        getUserForView(user, model);
+        setUserForLoginAndContentOnView((User) user, model);
         return "auth/profileEdit";
     }
 
 
     @GetMapping("/profile/private/me/password")
     public String changePassword(@AuthenticationPrincipal UserDetails user, Model model) {
-        getUserForView(user, model);
+        setUserForLoginAndContentOnView((User) user, model);
         return "auth/passwordChange";
     }
 
     @GetMapping("/profile/private/me/update/email")
     public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
-        UserDTO userDto = getUserForView(user, model);
+        UserDTO userDto = setUserForLoginAndContentOnView((User) user, model);
         userDto.setNewEmail(StringUtils.EMPTY);
         return "auth/emailChange";
+    }
+
+    @GetMapping("/profile/user/recovering")
+    public String showSendUserDataView(Model model) {
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("dummy").build());
+        model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
+        return "auth/recoverUserData";
     }
 
     /**
@@ -295,7 +302,7 @@ public class AuthController {
      * @param model to save user for view
      * @return logged in user
      */
-    private UserDTO getUserForView(UserDetails user, Model model) {
+    private UserDTO setUserForLoginAndContentOnView(User user, Model model) {
         final UserDTO userDTO = UserDTO.mapUserToUserDto((User) user);
         model.addAttribute(LOGGED_IN_USER, userDTO);
         model.addAttribute(CONTENT_USER, userDTO);
