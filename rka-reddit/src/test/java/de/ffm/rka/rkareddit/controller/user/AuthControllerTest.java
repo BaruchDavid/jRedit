@@ -366,6 +366,17 @@ public class AuthControllerTest extends MvcRequestSender {
 
     @Test
     @WithUserDetails("romakapt@gmx.de")
+    public void showForgotPasswordView() throws Exception {
+        loggedInUserDto.setNewEmail(StringUtils.EMPTY);
+        super.performGetRequest("/profile/user/recovering")
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("userDto", UserDTO.builder().email("dummy").build()))
+                .andExpect(model().attribute("userContent", UserDTO.builder().firstName("Guest").build()))
+                .andExpect(view().name("auth/recoverUserData"));
+    }
+
+    @Test
+    @WithUserDetails("romakapt@gmx.de")
     public void showChangePasswordPage() throws Exception {
         super.performGetRequest("/profile/private/me/password")
                 .andExpect(status().isOk())
