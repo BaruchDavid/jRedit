@@ -12,6 +12,7 @@ import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.Validation
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangePassword;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserRegistration;
 import lombok.*;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
@@ -38,6 +39,13 @@ public class UserDTO {
 	static {
 		modelMapper	= new ModelMapper();
 		modelMapper.getConfiguration().setAmbiguityIgnored(true);
+		modelMapper.createTypeMap(User.class, UserDTO.class).setPostConverter( context -> {
+			final UserDTO destination = context.getDestination();
+			if (destination.getEmail() == null){
+				destination.setEmail(StringUtils.EMPTY);
+			}
+			return  destination;
+		});
 		modelMapper.addMappings(new PropertyMap<User, UserDTO>() {
 		    @Override
 		    protected void configure() {
