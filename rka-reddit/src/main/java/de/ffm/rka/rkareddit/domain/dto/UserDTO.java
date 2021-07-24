@@ -11,6 +11,7 @@ import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.Validation
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangeEmail;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangePassword;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserRegistration;
+import jdk.jfr.Description;
 import lombok.*;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -56,7 +57,11 @@ public class UserDTO {
 		    }
 		});
 	}
-	
+
+	@Description("needs to be mapped for updating user")
+	@JsonIgnore
+	private Long userId;
+
 	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserRegistration.class})
 	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20,  groups = {ValidationUserRegistration.class})
 	@Builder.Default

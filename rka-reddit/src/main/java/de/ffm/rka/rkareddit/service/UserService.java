@@ -211,6 +211,12 @@ public class UserService {
         mailService.sendWelcomeEmail(user);
     }
 
+    public void sendRecoverEmail(UserDTO user) {
+        user.setActivationCode(String.valueOf(UUID.randomUUID()));
+        userRepository.saveAndFlush(UserDTO.mapUserDtoToUser(user));
+        mailService.sendRecoverEmail(user);
+    }
+
     @Transactional(readOnly = false)
     public User save(User user) {
         User newUser = userRepository.save(user);
