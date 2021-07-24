@@ -7,7 +7,7 @@
     <nav th:replace="~{layouts/main_layout :: nav}"></nav>
     <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
 
-    <form class="form-horizontal" role="form" th:object="${userDto}" th:method="POST" th:action="@{/profile/private/me/update/email/}" >
+    <form class="form-horizontal" role="form" th:method="POST" th:action="@{/profile/private/me/recover/pw/}" >
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -17,18 +17,18 @@
     </div>
     <div class="row">
         <div class="col-md-3 field-label-responsive">
-            <label for="newEmail"></label>
+            <label for="userEmail"></label>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                     <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
                     <input type="text"
-                           name="newEmail"
+                           name="userEmail"
                            class="form-control"
-                           id="newEmail"
-                           placeholder="you.new@example.com"
-                           th:field="*{newEmail}"
+                           id="userEmail"
+                           placeholder="type your registered email here"
+                           th:value="*{userEmail}"
                            required autofocus>
                 </div>
             </div>
@@ -38,11 +38,11 @@
         <div class="col-md-3"></div>
 	  	<div class="col-md-6">
 	  			<div class="float-md-left">
-	  			<a th:href="@{/profile/private}" id="cancel" name="cancel" class="btn btn-danger"> 
+	  			<a th:href="@{/login}" id="cancel" name="cancel" class="btn btn-danger">
 		    	<i class="fa fa-stop-circle"></i> Cancel</a>
 	  		</div>
 	  		<div class="float-md-right">
-	  			<button type="submit" class="btn btn-success"><i class="fa fa-user-circle"></i> send data to me!</button>
+	  			<button type="submit" class="btn btn-success"><i class="fa fa-user-circle"></i> recover me!</button>
 	  		</div>
 	  	</div>
     </div>
