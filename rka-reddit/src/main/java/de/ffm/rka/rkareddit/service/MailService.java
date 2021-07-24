@@ -109,5 +109,10 @@ public class MailService {
         sendEmailFromTemplate(user, "mail/welcome", "Welcome new LinkMe User");
     }
 
+    @Async
+    public void sendRecoverEmail(UserDTO user) {
+        sendEmailFromTemplate(user, "mail/recover", "Welcome new LinkMe User");
+    }
+
 
 }

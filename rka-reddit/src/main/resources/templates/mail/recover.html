@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Welcome to linkMe</title>
+</head>
+<body>
+    <h1>Password recovering</h1>
+    <div th:object = "${user}">
+    	<p th:text="|Dear *{fullName}|"></p>
+    	<p>Please click on below link to set your new password on your registered email.
+            You can change your password everytime in your account preferences</p>
+        <a th:href="${baseURL} + '/jReditt/recover/' + *{email} + '/' + *{activationCode}">set new password</a>
+    </div>
+</body>
+</html>
