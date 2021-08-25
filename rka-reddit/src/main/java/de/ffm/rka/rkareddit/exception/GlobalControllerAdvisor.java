@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * This controller advice works only on @Controller-Classes, not
@@ -155,6 +156,11 @@ public class GlobalControllerAdvisor {
         return mav;
     }
 
+    public static ServiceException throwServiceException(String message) {
+        LOGGER.error(message);
+        Supplier<ServiceException> supplier = () -> new ServiceException(message);
+        return supplier.get();
+    }
 
 
     /**
