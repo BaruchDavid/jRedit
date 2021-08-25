@@ -111,7 +111,7 @@ public class MailService {
 
     @Async
     public void sendRecoverEmail(UserDTO user) {
-        sendEmailFromTemplate(user, "mail/recover", "Welcome new LinkMe User");
+        sendEmailFromTemplate(user, "mail/recoverPassword", "LinkMe password recovering");
     }
 
 
