@@ -3,6 +3,7 @@ package de.ffm.rka.rkareddit.service;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -106,7 +107,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
+    public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) {
         Optional<User> user;
         Optional<UserDTO> userDTO = Optional.empty();
         if (isNewEmail) {
@@ -122,9 +123,9 @@ public class UserService {
             newUser.setNewEmail(StringUtils.EMPTY);
             newUser.setActivationCode(StringUtils.EMPTY);
             save(newUser);
-            userDetailsService.reloadUserAuthentication(email);
+            userDetailsService.reloadUserAuthentication(email); // TODO: 25.08.2021 refactorn,  ändern des pw's in eigene Methode
             userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
-            sendWelcomeEmail(userDTO.get());
+            sendWelcomeEmail(userDTO.get()); // TODO: 25.08.2021 welcome-email nur beim Registrieren, wird auch beim recover ausgeführt 
         }
         return userDTO;
     }
@@ -211,17 +212,22 @@ public class UserService {
         mailService.sendWelcomeEmail(user);
     }
 
-    public void sendRecoverEmail(UserDTO user) {
+    @Transactional(readOnly = false)
+    public void saveNewActionCode(User user) {
         user.setActivationCode(String.valueOf(UUID.randomUUID()));
-        userRepository.saveAndFlush(UserDTO.mapUserDtoToUser(user));
-        mailService.sendRecoverEmail(user);
+        final User savedUser = save(user);
+        if (!savedUser.getActivationCode().equals(user.getActivationCode())) {
+            GlobalControllerAdvisor.throwServiceException("Could not save new activation code for user: " + user.getEmail());
+        }
+        mailService.sendRecoverEmail(UserDTO.mapUserToUserDto(user));
     }
 
     @Transactional(readOnly = false)
     public User save(User user) {
-        User newUser = userRepository.save(user);
-        LOGGER.info("new User has been saved {}", newUser);
-        return newUser;
+        userRepository.saveAndFlush(user);
+        User savedUser = (User) userDetailsService.loadUserByUsername(user.getEmail());
+        LOGGER.info("User has been saved {}", savedUser);
+        return savedUser;
     }
 
     @Transactional(readOnly = false)
