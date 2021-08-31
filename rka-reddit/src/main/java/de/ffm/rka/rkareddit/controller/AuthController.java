@@ -183,6 +183,23 @@ public class AuthController {
         }
     }
 
+    @PostMapping(value = {"/user/recover/pw/"})
+    public String userPasswordRecover(@RequestParam String userEmail, RedirectAttributes attributes, HttpServletResponse res,
+                                      HttpServletRequest req, Model model) throws ServiceException {
+        LOGGER.info("TRY TO RECOVER USER WITH EMAIL {}", userEmail);
+        userService.findUserById(userEmail)
+                .ifPresent(user -> userService.saveNewActionCode(user));
+
+        // TODO: 12.05.2021 auf den Link in der email klicken,
+        //  der Recover-Controller prüft die Checksumme, dann es öffnet sich eine SkyLink-Seite
+        // TODO: 12.05.2021 die den user auffordert neuen pw zu vergeben
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
+        attributes.addFlashAttribute(SUCCESS, true);
+        LOGGER.info("RECOVERING USER PASSWORD SUCCESSFULLY {}", userEmail);
+        return "recover/recoverUserPwRequestApplied";
+
+    }
+
     /**
      * user changes own email address
      *
@@ -209,19 +226,32 @@ public class AuthController {
         }
     }
 
-    @GetMapping(value = {"/activation/{email}/{activationCode}", "/mailchange/{email}/{activationCode}"})
+    @GetMapping(value = {"/activation/{email}/{activationCode}",
+                        "/mailchange/{email}/{activationCode}",
+                        "/reset/{email}/{activationCode}"})
     public String accountActivation(@PathVariable String email, @PathVariable String activationCode,
                                     HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
         boolean isNewEmail = false;
-        String returnLink = "auth/activated";
+        String returnLink = "redirect:/error/registrationError";
+        Optional<UserDTO> userDTO = Optional.empty();
         if (req.getRequestURI().contains("mailchange")) {
             isNewEmail = true;
             returnLink = REDIRECT_TO_PRIVATE_PROFILE;
             attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
             attributes.addFlashAttribute(SUCCESS, true);
+        } else if(req.getRequestURI().contains("activation")){
+            returnLink = "auth/activated";
+            userDTO = userService.emailActivation(email, activationCode, isNewEmail);
+        } else if(req.getRequestURI().contains("reset")) {
+            returnLink = "recover/passwordRecovery";
+            userDTO = userService.getUserForPasswordReset(email, activationCode);
+            if (userDTO.isPresent()){
+                model.addAttribute(LOGGED_IN_USER, userDTO.get());
+                return returnLink;
+            }
         }
-        Optional<UserDTO> userDTO = userService.emailActivation(email, activationCode, isNewEmail);
+
 
         if (userDTO.isPresent()) {
             model.addAttribute(LOGGED_IN_USER, userDTO.get());
@@ -232,6 +262,7 @@ public class AuthController {
             return "redirect:/error/registrationError";
         }
     }
+
 
     @PutMapping("/profile/private/me/update")
     public String user(@Validated(UserValidationgroup.ValidationChangeUserProperties.class) UserDTO userDto,
@@ -294,7 +325,7 @@ public class AuthController {
     public String showSendUserDataView(Model model) {
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("dummy").build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
-        return "auth/recoverUserData";
+        return "recover/recoverUserPwRequest";
     }
 
     /**
