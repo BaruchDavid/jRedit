@@ -130,6 +130,13 @@ public class UserService {
         return userDTO;
     }
 
+    public Optional<UserDTO> getUserForPasswordReset(final String email, final String activationCode) throws ServiceException {
+        final String errorMessage = String.format("PASSWORD-RESETING: WRONG ACTIVATION-CODE %s ON %s", activationCode, email);
+        final User user = findUserByMailAndActivationCode(email, activationCode)
+                .orElseThrow(() -> GlobalControllerAdvisor.throwServiceException(errorMessage));
+        return Optional.ofNullable(UserDTO.mapUserToUserDto(user));
+    }
+
 
     private void sendEmailToNewUserEmailAddress(UserDTO userDto) {
         mailService.sendEmailToNewEmailAccount(userDto);
