@@ -334,7 +334,7 @@ public class AuthController {
 
     @GetMapping("/profile/user/recovering")
     public String showSendUserDataView(Model model) {
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("dummy").build());
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
         return "recover/recoverUserPwRequest";
     }

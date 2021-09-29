@@ -370,9 +370,9 @@ public class AuthControllerTest extends MvcRequestSender {
         loggedInUserDto.setNewEmail(StringUtils.EMPTY);
         super.performGetRequest("/profile/user/recovering")
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", UserDTO.builder().email("dummy").build()))
+                .andExpect(model().attribute("userDto", UserDTO.builder().email("notLoggedIn").build()))
                 .andExpect(model().attribute("userContent", UserDTO.builder().firstName("Guest").build()))
-                .andExpect(view().name("auth/recoverUserData"));
+                .andExpect(view().name("recover/recoverUserPwRequest"));
     }
 
     @Test
