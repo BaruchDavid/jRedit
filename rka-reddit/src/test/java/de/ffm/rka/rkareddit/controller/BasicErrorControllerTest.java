@@ -56,7 +56,7 @@ public class BasicErrorControllerTest {
 	 * @throws Exception
 	 */
 	@Test
-	@WithUserDetails("dascha@gmx.de")
+	@WithUserDetails("grom@gmx.de")
 	public void accessDeniePage() throws Exception {
 		final MvcResult mvcResult = this.mockMvc.perform(get("/data/h2-console/**"))
 				.andDo(print())

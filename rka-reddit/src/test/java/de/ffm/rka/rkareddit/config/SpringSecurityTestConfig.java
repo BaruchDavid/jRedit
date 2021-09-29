@@ -37,9 +37,11 @@ public class SpringSecurityTestConfig   {
     	
     	User masterUser = userRepository.findByEmailWithRoles("kaproma@yahoo.de")
 										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("kaproma@yahoo.de"));
-    	User user = userRepository.findByEmailWithRoles("dascha@gmx.de")
-										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("kaproma@yahoo.de"));
-        users = Arrays.asList(masterUser, user);
+    	User dascha = userRepository.findByEmailWithRoles("dascha@gmx.de")
+										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("dascha@gmx.de"));
+    	User grom = userRepository.findByEmailWithRoles("grom@gmx.de")
+										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("grom@gmx.de"));
+        users = Arrays.asList(masterUser, dascha);
     	return userDetailsService;
     }
 
