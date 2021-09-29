@@ -270,7 +270,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("dascha@gmx.de")
+    @WithUserDetails("grom@gmx.de")
     public void accessToDBAsWrongUser() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/data/h2-console")
                 .andDo(print())
@@ -281,7 +281,7 @@ public class AuthControllerTest extends MvcRequestSender {
         result.andExpect(status().is(HttpStatus.SC_FORBIDDEN))
                 .andExpect(view().name("error/accessDenied"))
                 .andExpect(model().attribute("userDto", UserDTO.builder()
-                                                                    .firstName("dascha")
+                                                                    .firstName("grom")
                                                                     .build()));
     }
 
