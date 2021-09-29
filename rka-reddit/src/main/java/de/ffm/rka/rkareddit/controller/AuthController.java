@@ -211,8 +211,6 @@ public class AuthController {
             setUserForLoginAndContentOnView((User) userDetails, model);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
-            final String newEmail = userDto.getNewEmail();
-            userDto.setNewEmail(newEmail);
             userDto = userService.emailChange(userDto);
             attributes.addFlashAttribute(SUCCESS, true);
             attributes.addFlashAttribute(REDIRECT_MESSAGE, "you got email, check it out!");

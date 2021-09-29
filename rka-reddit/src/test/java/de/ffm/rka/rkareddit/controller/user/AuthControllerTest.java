@@ -415,7 +415,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailOK() throws Exception {
         String body = "email=kaproma@yahoo.de&" +
-                    "newEmail=kaproma@yahoo.de&" +
+                    "newEmail=romakap@yahoo.de&" +
                     "password=roman&" +
                     "confirmPassword=roman";
         super.performPatchRequest("/profile/private/me/update/email", body)
