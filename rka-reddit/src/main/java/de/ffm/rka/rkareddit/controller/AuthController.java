@@ -184,15 +184,10 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/user/recover/pw/"})
-    public String userPasswordRecover(@RequestParam String userEmail, RedirectAttributes attributes, HttpServletResponse res,
-                                      HttpServletRequest req, Model model) throws ServiceException {
+    public String userPasswordRecover(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
         LOGGER.info("TRY TO RECOVER USER WITH EMAIL {}", userEmail);
         userService.findUserById(userEmail)
                 .ifPresent(user -> userService.saveNewActionCode(user));
-
-        // TODO: 12.05.2021 auf den Link in der email klicken,
-        //  der Recover-Controller prüft die Checksumme, dann es öffnet sich eine SkyLink-Seite
-        // TODO: 12.05.2021 die den user auffordert neuen pw zu vergeben
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
         attributes.addFlashAttribute(SUCCESS, true);
         LOGGER.info("RECOVERING USER PASSWORD SUCCESSFULLY {}", userEmail);
@@ -226,9 +221,9 @@ public class AuthController {
         }
     }
 
+    // TODO: 29.09.2021 Refactorn 
     @GetMapping(value = {"/activation/{email}/{activationCode}",
-                        "/mailchange/{email}/{activationCode}",
-                        "/reset/{email}/{activationCode}"})
+            "/mailchange/{email}/{activationCode}"})
     public String accountActivation(@PathVariable String email, @PathVariable String activationCode,
                                     HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
@@ -236,17 +231,17 @@ public class AuthController {
         String returnLink = "redirect:/error/registrationError";
         Optional<UserDTO> userDTO = Optional.empty();
         if (req.getRequestURI().contains("mailchange")) {
-            isNewEmail = true;
+            userDTO = userService.emailActivation(email, activationCode, true);
             returnLink = REDIRECT_TO_PRIVATE_PROFILE;
             attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
             attributes.addFlashAttribute(SUCCESS, true);
-        } else if(req.getRequestURI().contains("activation")){
+        } else if (req.getRequestURI().contains("activation")) {
             returnLink = "auth/activated";
-            userDTO = userService.emailActivation(email, activationCode, isNewEmail);
-        } else if(req.getRequestURI().contains("reset")) {
+            userDTO = userService.emailActivation(email, activationCode, false);
+        } else if (req.getRequestURI().contains("reset")) {
             returnLink = "recover/passwordRecovery";
             userDTO = userService.getUserForPasswordReset(email, activationCode);
-            if (userDTO.isPresent()){
+            if (userDTO.isPresent()) {
                 model.addAttribute(LOGGED_IN_USER, userDTO.get());
                 return returnLink;
             }
@@ -256,6 +251,22 @@ public class AuthController {
         if (userDTO.isPresent()) {
             model.addAttribute(LOGGED_IN_USER, userDTO.get());
             LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
+            return returnLink;
+        } else {
+            LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);
+            return "redirect:/error/registrationError";
+        }
+    }
+
+    @GetMapping(value = {"/reset/{email}/{activationCode}"})
+    public String getPasswordRecoveryView(@PathVariable String email, @PathVariable String activationCode, Model model)
+            throws ServiceException {
+        LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
+
+        String returnLink = "recover/passwordRecovery";
+        Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
+        if (userDTO.isPresent()) {
+            model.addAttribute(LOGGED_IN_USER, userDTO.get());
             return returnLink;
         } else {
             LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);
