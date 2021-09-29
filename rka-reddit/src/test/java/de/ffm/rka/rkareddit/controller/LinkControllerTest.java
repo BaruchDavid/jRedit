@@ -58,7 +58,7 @@ public class LinkControllerTest extends MvcRequestSender {
 
     @Test()
     //@DisplayName"Beim Aufruf von der Hauptseite werden alle links für den eingelogten User zurückgegeben")
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void shouldReturnAllLinks() throws Exception {
 
         List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
@@ -119,11 +119,11 @@ public class LinkControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void addNewLinkOnClickToUserClickedLinks() throws Exception {
         super.performGetRequest("/links/link/16170428593248")
                 .andExpect(status().isOk());
-        final User userWithLinks = userService.getUserWithLinks("romakapt@gmx.de");
+        final User userWithLinks = userService.getUserWithLinks("kaproma@yahoo.de");
         final Set<Link> userClickedLinks = userWithLinks.getUserClickedLinks();
         final Optional<Link> clickedLink = userClickedLinks.stream()
                 .filter(link -> link.getLinkId() == 8)
@@ -150,7 +150,7 @@ public class LinkControllerTest extends MvcRequestSender {
                 .andReturn();
         linkDTO = (LinkDTO) mvcResult.getModelAndView().getModel().get("linkDto");
         User linkCreator = new User();
-        linkCreator.setEmail("romakapt@gmx.de");
+        linkCreator.setEmail("kaproma@yahoo.de");
         assertEquals("user anzeigen, der den Link erzeugt hat",
                 linkCreator.getEmail(), linkDTO.getUser().getEmail());
 
@@ -160,7 +160,7 @@ public class LinkControllerTest extends MvcRequestSender {
 
     @Test
     //@DisplayName"Anzeigen von einem Link für einen eingelogten User")
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void readLinkTestAsAutheticated() throws Exception {
         Link currentLink = super.getEntityManager().find(Link.class, 1L);
         LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
@@ -176,7 +176,7 @@ public class LinkControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void saveNewLinkTest() throws Exception {
 
         MvcResult res = super.performPostRequest("/links/link", linksWithTagsBody)
@@ -212,7 +212,7 @@ public class LinkControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     //@DisplayName"Zeige Seite für einen neuen Test")
     public void createNewLinkTest() throws Exception {
         Link link = new Link();

@@ -45,7 +45,7 @@ public class LinkServiceTest {
 						.url("http://test.de")
 						.tags(Collections.emptyList())
 						.build();
-		link = linkService.saveLink("romakapt@gmx.de",link);
+		link = linkService.saveLink("kaproma@yahoo.de",link);
 		Thread.sleep(5000l);
 		assertEquals("gerade eben", link.getElapsedTime());		
 	}

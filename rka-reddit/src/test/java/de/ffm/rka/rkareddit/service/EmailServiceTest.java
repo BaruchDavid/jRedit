@@ -62,7 +62,7 @@ public class EmailServiceTest {
 	 */
 	@Test
 	public void linkSizeForUserOne() {
-		Optional<User> user = userRepository.findByEmail("romakapt@gmx.de");
+		Optional<User> user = userRepository.findByEmail("kaproma@yahoo.de");
 		UserDTO userDto = UserDTO.mapUserToUserDto(user.get());
 		String context = ReflectionTestUtils.invokeMethod(mailService, "createEmailContext", "localhost", userDto, "mail/new_email_activation");
 		assertTrue("should contains dear baruch-david rka", context.contains("Dear baruc-david rka"));

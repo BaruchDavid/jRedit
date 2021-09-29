@@ -65,7 +65,7 @@ public class TagControllerTest {
 	 */
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void postNewComment() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/tags/tag/create")
@@ -77,7 +77,7 @@ public class TagControllerTest {
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void postAvailibleTag() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/tags/tag/create")
@@ -89,7 +89,7 @@ public class TagControllerTest {
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void testSchouldNotDeleteRelatedTag() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","1")
@@ -102,7 +102,7 @@ public class TagControllerTest {
 
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void testSchouldNotDeleteNotAvailibleTag() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","101")
@@ -114,7 +114,7 @@ public class TagControllerTest {
 	}
 	
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void testSchouldDeleteNotRelatedTag() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","6")

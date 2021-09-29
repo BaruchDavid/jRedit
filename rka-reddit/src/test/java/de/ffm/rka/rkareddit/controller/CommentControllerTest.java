@@ -32,7 +32,7 @@ public class CommentControllerTest extends MvcRequestSender{
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void shouldReturnAllLinks() throws Exception {
 		UserDTO userDto = UserDTO.builder()
 								.firstName("baruc-david")
@@ -74,7 +74,7 @@ public class CommentControllerTest extends MvcRequestSender{
 	 * testing new post of valid comment
 	 */
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void postNewComment() throws Exception {
 
 		String body = "lSig="+linkDTO.getLinkSignature()+"&commentText="+StringUtil.generateRandomString(600);
@@ -85,7 +85,7 @@ public class CommentControllerTest extends MvcRequestSender{
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void rejectToBigComment() throws Exception {
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(linkRepository.findByLinkId(1).get());
 		String body = "lSig="+linkDTO.getLinkSignature()+"&commentText="+StringUtil.generateRandomString(601);
@@ -100,7 +100,7 @@ public class CommentControllerTest extends MvcRequestSender{
 	 * without suitable link
 	 */
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void rejectCommentWithoutSuitableLinkId() throws Exception {
 		String body = "lSig="+null+"&commentText=hallo Kommentar";
 		final MvcResult mvcResult = super.performPostRequest("/comments/comment", body)

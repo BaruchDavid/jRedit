@@ -51,7 +51,7 @@ public class RegistrationTest {
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         if (loggedInUser == null) {
-            loggedInUser = userService.findUserById("romakapt@gmx.de").get();
+            loggedInUser = userService.findUserById("kaproma@yahoo.de").get();
             loggedInUserDto = UserDTO.mapUserToUserDto(loggedInUser);
         }
 
@@ -122,7 +122,7 @@ public class RegistrationTest {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showRegisterViewAsAutheticatedTest() throws Exception {
         this.mockMvc.perform(get("/registration")).andDo(print()).andExpect(status().is(302))
                 .andExpect(redirectedUrl("/links"));
@@ -130,7 +130,7 @@ public class RegistrationTest {
 
     @Test
     public void activateAccountTest() throws Exception {
-        this.mockMvc.perform(get("/activation/romakapt@gmx.de/activation")).andDo(print())
+        this.mockMvc.perform(get("/activation/kaproma@yahoo.de/activation")).andDo(print())
                 .andExpect(view().name("auth/activated"));
     }
 
@@ -142,8 +142,15 @@ public class RegistrationTest {
     }
 
     @Test
+    public void changeResetPasswordTest() throws Exception {
+        this.mockMvc.perform(get("/reset/kaproma@yahoo.de/activation"))
+                .andDo(print()).andExpect(status().is(200))
+                .andExpect(model().attribute("userDto", loggedInUserDto));
+    }
+
+    @Test
     public void activateInvalidAccountTest() throws Exception {
-        this.mockMvc.perform(get("/activation/romakapt@gmx.de/actiion")).andDo(print())
+        this.mockMvc.perform(get("/activation/kaproma@yahoo.de/actiion")).andDo(print())
                 .andExpect(redirectedUrl("/error/registrationError"));
     }
 
@@ -151,7 +158,7 @@ public class RegistrationTest {
      * @author RKA send register request as autheticated user
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void registerAsAuthenticated() throws Exception {
 
         this.mockMvc

@@ -35,10 +35,10 @@ public class SpringSecurityTestConfig   {
     @Primary
     public UserDetailsService userDetailsService() {
     	
-    	User masterUser = userRepository.findByEmailWithRoles("romakapt@gmx.de")
-										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("romakapt@gmx.de"));
+    	User masterUser = userRepository.findByEmailWithRoles("kaproma@yahoo.de")
+										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("kaproma@yahoo.de"));
     	User user = userRepository.findByEmailWithRoles("dascha@gmx.de")
-										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("romakapt@gmx.de"));
+										.orElseThrow(() ->UserDetailsServiceImpl.throwUserNameNotFoundException("kaproma@yahoo.de"));
         users = Arrays.asList(masterUser, user);
     	return userDetailsService;
     }

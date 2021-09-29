@@ -31,7 +31,7 @@ public class AuditorAwareImpl implements AuditorAware<String>{
 			}
 		}else {
 			LOGGER.warn("AUDITING MOCK IS USING.");
-			authenticatedUser = Optional.of("romakapt@gmx.de");
+			authenticatedUser = Optional.of("kaproma@yahoo.de");
 		}
 		return authenticatedUser;
 	}

@@ -35,9 +35,9 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
 
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void shouldReturnUserPicture() throws Exception {
-        String getRequest = "/profile/information/content/user-pic?user=romakapt@gmx.de";
+        String getRequest = "/profile/information/content/user-pic?user=kaproma@yahoo.de";
         MvcResult result = super.performGetRequest(getRequest)
                             .andExpect(status().isOk())
                             .andReturn();
@@ -51,7 +51,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void shouldReturnUserPicForNotExistUser() throws Exception {
         String getRequest = "/profile/information/content/user-pic?user=xxx@gmx.de";
         final MvcResult mvcResult = super.performGetRequest(getRequest)
@@ -62,13 +62,13 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
 
     @Test
     public void schouldNotReturnPicWithEmptyParamNameAsUnauthenticated() throws Exception {
-        super.performGetRequest("/profile/information/content/user-pic?romakapt@gmx.de")
+        super.performGetRequest("/profile/information/content/user-pic?kaproma@yahoo.de")
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void shouldReturnUserPictureAsUnauthenticated() throws Exception {
-        MvcResult result = super.performGetRequest("/profile/information/content/user-pic?user=romakapt@gmx.de")
+        MvcResult result = super.performGetRequest("/profile/information/content/user-pic?user=kaproma@yahoo.de")
                                 .andExpect(status().isOk())
                                 .andReturn();
         byte[] data = result.getResponse().getContentAsByteArray();
@@ -81,9 +81,9 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void clickedLinksHistoryForAuthenticatedUser() throws Exception {
-        MvcResult result = super.performGetRequest("/profile/information/userClickedLinks?user=romakapt@gmx.de")
+        MvcResult result = super.performGetRequest("/profile/information/userClickedLinks?user=kaproma@yahoo.de")
                             .andExpect(status().isOk())
                             .andReturn();
         final String stringRes = result.getResponse().getContentAsString();
@@ -94,7 +94,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
 
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void clickedLinksHistoryForStrangeAuthenticatedUser() throws Exception {
         MvcResult result =  super.performGetRequest("/profile/information/userClickedLinks?user=dascha@gmx.de")
                                 .andExpect(status().is(200))
@@ -113,7 +113,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void postValidNewPicture() throws Exception {
         Path path = Paths.get(URI.create(FileNIO.getFullQualifiedPathWithAsURL(ProfileMetaDataController.class)
                 + "/static/images/profile_small.png"));
@@ -129,7 +129,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void postInValidNewPictureWithWrongExtension() throws Exception {
         final String defaultBaseDir = System.getProperty("java.io.tmpdir");
         final String fileName = "postgresql-12.2-2-windows-x64.exe";
@@ -154,7 +154,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
      * @throws Exception
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void postToBigValidNewPicture() throws Exception {
         String defaultBaseDir = System.getProperty("java.io.tmpdir");
         Path path = Paths.get(defaultBaseDir + "1mb-TestBild.jpg");

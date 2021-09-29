@@ -42,7 +42,7 @@ public class AuthControllerTest extends MvcRequestSender {
     public void setup() {
 
         if (loggedInUser == null) {
-            loggedInUser = userService.findUserById("romakapt@gmx.de").get();
+            loggedInUser = userService.findUserById("kaproma@yahoo.de").get();
             pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
             loggedInUserDto = UserDTO.mapUserToUserDto(loggedInUser);
         }
@@ -52,7 +52,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     @SuppressWarnings("unchecked")
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showProfileOfUserAsAuthenticated() throws Exception {
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
                 .stream()
@@ -72,7 +72,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithLinksOfLoggedInUserAsAuthenticated() throws Exception {
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
                 .stream()
@@ -115,7 +115,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfLoggedInAsAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
                 .stream()
@@ -154,7 +154,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
                 .stream()
@@ -174,7 +174,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithLinksOfOtherUserAsAuthenticated() throws Exception {
         pageContentUser = userService.findUserById("dascha@gmx.de").get();
         final Set<LinkDTO> userContentLinks = pageContentUser.getUserLinks()
@@ -214,7 +214,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfOtherUserAsAuthenticated() throws Exception {
         pageContentUser = userService.findUserById("dascha@gmx.de").get();
         final Set<CommentDTO> userContentComments = pageContentUser.getUserComment()
@@ -265,7 +265,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     @Test
     public void showPrivateProfileAsUnauthenticated() throws Exception {
-        super.performGetRequest("/profile/private/romakapt@gmx.de")
+        super.performGetRequest("/profile/private/kaproma@yahoo.de")
                 .andDo(print()).andExpect(status().isNotFound());
     }
 
@@ -307,7 +307,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * everytime actual saved picture and not cached picture
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showPublicProfileAsAuthenticated() throws Exception {
         Optional<User> userContent = userService.findUserById("grom@gmx.de");
         if (userContent.isPresent()) {
@@ -322,7 +322,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showEditProfilePage() throws Exception {
         super.performGetRequest("/profile/private/me")
                 .andDo(print())
@@ -354,7 +354,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * thrown
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showChangeEmailPage() throws Exception {
         loggedInUserDto.setNewEmail(StringUtils.EMPTY);
         super.performGetRequest("/profile/private/me/update/email")
@@ -365,7 +365,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showForgotPasswordView() throws Exception {
         loggedInUserDto.setNewEmail(StringUtils.EMPTY);
         super.performGetRequest("/profile/user/recovering")
@@ -376,7 +376,7 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void showChangePasswordPage() throws Exception {
         super.performGetRequest("/profile/private/me/password")
                 .andExpect(status().isOk())
@@ -386,10 +386,10 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void saveChangesOnAuthUserOK() throws Exception {
         String body = "firstName=baruc-david&" +
-                "email=romakapt@gmx.de&" +
+                "email=kaproma@yahoo.de&" +
                 "secondName=rka.odem&" +
                 "aliasName=worker";
         final MvcResult mvcResult = super.performPutRequest("/profile/private/me/update", body)
@@ -412,9 +412,9 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailOK() throws Exception {
-        String body = "email=romakapt@gmx.de&" +
+        String body = "email=kaproma@yahoo.de&" +
                     "newEmail=kaproma@yahoo.de&" +
                     "password=roman&" +
                     "confirmPassword=roman";
@@ -434,9 +434,9 @@ public class AuthControllerTest extends MvcRequestSender {
      * @throws Exception
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNotOK() throws Exception {
-        String body = "email=romakapt@gmx.de&newEmail=romakapt@gmx.de&password=doman&confirmPassword=doman";
+        String body = "email=kaproma@yahoo.de&newEmail=kaproma@yahoo.de&password=doman&confirmPassword=doman";
         super.performPatchRequest("/profile/private/me/update/email", body)
                 .andExpect(status().is(400))
                 .andExpect(view().name("auth/emailChange"))
@@ -449,9 +449,9 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailToSmall() throws Exception {
-        String body = "email=romakapt@gmx.de&newEmail=r@e&password=doman&confirmPassword=doman";
+        String body = "email=kaproma@yahoo.de&newEmail=r@e&password=doman&confirmPassword=doman";
         super.performPatchRequest("/profile/private/me/update/email", body)
                 .andExpect(status().is(400)).andExpect(view().name("auth/emailChange"))
                 .andExpect(model().errorCount(2))
@@ -466,9 +466,9 @@ public class AuthControllerTest extends MvcRequestSender {
      * @throws Exception
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNoEmail() throws Exception {
-        String body = "email=romakapt@gmx.de&" +
+        String body = "email=kaproma@yahoo.de&" +
                         "password=roman";
         super.performPatchRequest("/profile/private/me/update/email", body)
                 .andExpect(status().is(400)).andExpect(view().name("auth/emailChange"))
@@ -482,9 +482,9 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailToBig() throws Exception {
-        String body = "email=romakapt@gmx.de&" +
+        String body = "email=kaproma@yahoo.de&" +
                     "newEmail=radfadfadfsddsdfadfadfsdsdfs@de&" +
                     "password=doman&" +
                     "confirmPassword=doman";
@@ -503,10 +503,10 @@ public class AuthControllerTest extends MvcRequestSender {
      * @throws Exception
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNotOKAllErrors() throws Exception {
-        String body = "email=romakapt@gmx.de&" +
-                        "newEmail=romakapt@gmx.de&" +
+        String body = "email=kaproma@yahoo.de&" +
+                        "newEmail=kaproma@yahoo.de&" +
                         "password=doman&" +
                         "confirmPassword=soman";
         super.performPatchRequest("/profile/private/me/update/email", body)
@@ -521,15 +521,15 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void saveChangesOnAuthUserWithValidationChangeUserGroup() throws Exception {
         String body = "firstName=baruc-david&" +
-                "email=romakapt@gmx.de&" +
+                "email=kaproma@yahoo.de&" +
                 "secondName=rka.odem&" +
                 "aliasName=wor";
         super.performPutRequest("/profile/private/me/update", body)
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile/private/me/romakapt@gmx.de"))
+                .andExpect(redirectedUrl("/profile/private/me/kaproma@yahoo.de"))
                 .andExpect(flash().attributeExists("bindingError"));
     }
 
@@ -537,7 +537,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * old pw is ok new pw is ok
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void saveAuthUserWithValidationChangeUserPasswordGroupOK() throws Exception {
         String body = "password=roman&confirmNewPassword=rororo&newPassword=rororo";
         super.performPutRequest("/profile/private/me/password", body)
@@ -547,9 +547,9 @@ public class AuthControllerTest extends MvcRequestSender {
     }
 
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void saveAuthUserWithValidationChangeUserPasswordGroupFalseMethod() throws Exception {
-        String body = "email=romakapt@gmx.de&password=roman&confirmNewPassword=rororo&newPassword=rororo";
+        String body = "email=kaproma@yahoo.de&password=roman&confirmNewPassword=rororo&newPassword=rororo";
         final MvcResult mvcResult = super.performPostRequest("/profile/private/me/password", body)
                                          .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
@@ -562,9 +562,9 @@ public class AuthControllerTest extends MvcRequestSender {
      * @author RKA passwordchange with wrong old password
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordWrongOldPassword() throws Exception {
-        String body = "email=romakapt@gmx.de&" +
+        String body = "email=kaproma@yahoo.de&" +
                         "password=ronan&" +
                         "confirmNewPassword=rororo&" +
                         "newPassword=rororo";
@@ -579,9 +579,9 @@ public class AuthControllerTest extends MvcRequestSender {
      * not equal
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordNewPwNotEqualNewPWConfirm() throws Exception {
-        String body = "email=romakapt@gmx.de&password=ronan&confirmNewPassword=rororo&newPassword=bobobo";
+        String body = "email=kaproma@yahoo.de&password=ronan&confirmNewPassword=rororo&newPassword=bobobo";
         super.performPutRequest("/profile/private/me/password", body)
             .andExpect(status().is(400))
             .andExpect(view().name("auth/passwordChange"))
@@ -595,7 +595,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * @throws Exception
      */
     @Test
-    @WithUserDetails("romakapt@gmx.de")
+    @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordNewAndOldShouldNotBeEqual() throws Exception {
         String body = "password=roman&confirmNewPassword=roman&newPassword=roman";
         super.performPutRequest("/profile/private/me/password", body)

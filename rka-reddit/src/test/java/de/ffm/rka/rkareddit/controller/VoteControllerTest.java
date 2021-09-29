@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VoteControllerTest extends  MvcRequestSender{
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVoteOnIllegleLink() throws Exception {
 		final MvcResult mvcResult = super.performGetRequest("/link/01010/vote/direction/1/votecount/1")
 				.andExpect(status().is3xxRedirection())
@@ -31,7 +31,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 		}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVoteOnNotExistentLink() throws Exception {
 		final MvcResult mvcResult = super.performGetRequest("/link/987654321911499/vote/direction/1/votecount/1")
 				.andExpect(status().is3xxRedirection())
@@ -44,7 +44,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVoteWithIllegleCount() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
@@ -55,7 +55,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVoteWithIllegleDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
@@ -68,7 +68,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVoteWithIllegleNegativeDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
@@ -81,7 +81,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 	}
 
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVoteWithIllegleDirectionAndIllegleDirection() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
@@ -97,7 +97,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 	 * @throws Exception
 	 */
 	@Test
-	@WithUserDetails("romakapt@gmx.de")
+	@WithUserDetails("kaproma@yahoo.de")
 	public void increaseVote() throws Exception {
 		Link currentLink = entityManager.find(Link.class, 1l);
 		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
