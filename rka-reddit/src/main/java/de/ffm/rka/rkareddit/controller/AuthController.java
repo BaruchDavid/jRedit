@@ -183,8 +183,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping(value = {"/user/recover/pw/"})
-    public String userPasswordRecover(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
+    @PostMapping("/user/recover/pw/")
+    public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
         LOGGER.info("TRY TO RECOVER USER WITH EMAIL {}", userEmail);
         userService.findUserById(userEmail)
                 .ifPresent(user -> userService.saveNewActionCode(user));
@@ -208,7 +208,7 @@ public class AuthController {
                                   HttpServletRequest req, Model model) throws ServiceException {
         LOGGER.info("TRY TO CHANGE EMAIL OF USER {}", userDto);
         if (bindingResult.hasErrors()) {
-            setUserForLoginAndContentOnView((User) userDetails, model);
+            setSameUserForLoginAndContent((User) userDetails, model);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
             userDto = userService.emailChange(userDto);
@@ -225,7 +225,6 @@ public class AuthController {
     public String accountActivation(@PathVariable String email, @PathVariable String activationCode,
                                     HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-        boolean isNewEmail = false;
         String returnLink = "redirect:/error/registrationError";
         Optional<UserDTO> userDTO = Optional.empty();
         if (req.getRequestURI().contains("mailchange")) {
@@ -256,7 +255,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping(value = {"/reset/{email}/{activationCode}"})
+    @GetMapping("/recover/{email}/{activationCode}")
     public String getPasswordRecoveryView(@PathVariable String email, @PathVariable String activationCode, Model model)
             throws ServiceException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
@@ -264,7 +263,8 @@ public class AuthController {
         String returnLink = "recover/passwordRecovery";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
         if (userDTO.isPresent()) {
-            model.addAttribute(LOGGED_IN_USER, userDTO.get());
+            model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
+            model.addAttribute(CONTENT_USER, UserDTO.builder().firstName(userDTO.get().getFullName()).build());
             return returnLink;
         } else {
             LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);
@@ -297,7 +297,7 @@ public class AuthController {
                                      @AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (bindingResult.hasErrors()) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
-            setUserForLoginAndContentOnView((User) userDetails, model);
+            setSameUserForLoginAndContent((User) userDetails, model);
             return "auth/passwordChange";
         } else {
             userDto.setEmail(userDetails.getUsername());
@@ -312,26 +312,26 @@ public class AuthController {
 
     @GetMapping("/profile/private/me")
     public String showViewForEmailChange(@AuthenticationPrincipal UserDetails user, Model model) {
-        setUserForLoginAndContentOnView((User) user, model);
+        setSameUserForLoginAndContent((User) user, model);
         return "auth/profileEdit";
     }
 
 
     @GetMapping("/profile/private/me/password")
     public String changePassword(@AuthenticationPrincipal UserDetails user, Model model) {
-        setUserForLoginAndContentOnView((User) user, model);
+        setSameUserForLoginAndContent((User) user, model);
         return "auth/passwordChange";
     }
 
     @GetMapping("/profile/private/me/update/email")
     public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
-        UserDTO userDto = setUserForLoginAndContentOnView((User) user, model);
+        UserDTO userDto = setSameUserForLoginAndContent((User) user, model);
         userDto.setNewEmail(StringUtils.EMPTY);
         return "auth/emailChange";
     }
 
     @GetMapping("/profile/user/recovering")
-    public String showSendUserDataView(Model model) {
+    public String showRecoverUserPwRequest(Model model) {
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
         return "recover/recoverUserPwRequest";
@@ -342,8 +342,8 @@ public class AuthController {
      * @param model to save user for view
      * @return logged in user
      */
-    private UserDTO setUserForLoginAndContentOnView(User user, Model model) {
-        final UserDTO userDTO = UserDTO.mapUserToUserDto((User) user);
+    private UserDTO setSameUserForLoginAndContent(User user, Model model) {
+        final UserDTO userDTO = UserDTO.mapUserToUserDto(user);
         model.addAttribute(LOGGED_IN_USER, userDTO);
         model.addAttribute(CONTENT_USER, userDTO);
         return userDTO;
