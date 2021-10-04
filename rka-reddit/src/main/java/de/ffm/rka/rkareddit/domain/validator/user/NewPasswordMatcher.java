@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NewPasswordMatcher {
 
-	String message () default "New password and password confirmation must be equal";
+	String message () default "New password and new password confirmation must be equal";
 	Class<?>[] groups() default{};
 	Class<? extends Payload>[] payload() default {}; 
 }

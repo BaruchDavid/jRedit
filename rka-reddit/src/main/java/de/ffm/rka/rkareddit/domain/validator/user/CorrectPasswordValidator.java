@@ -17,7 +17,7 @@ public class CorrectPasswordValidator implements ConstraintValidator<CorrectPass
 	
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		return this.matches(value);
+		return this.passwordAndPwConfirmationMatches(value);
 	}
 
 	/**
@@ -25,12 +25,12 @@ public class CorrectPasswordValidator implements ConstraintValidator<CorrectPass
 	 * otherwise it will be invoked from email changing function
 	 */
 	@Override
-	public boolean matches(String comparedPw) {
+	public boolean passwordAndPwConfirmationMatches(String comparedPw) {
 		Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
 		if(!authentication.isEmpty() && "anonymousUser".equals(authentication.get().getPrincipal())) {
 			return true;
 		} else {
-			return BCryptPwEncoderManager.super.matches(comparedPw);
+			return BCryptPwEncoderManager.super.passwordAndPwConfirmationMatches(comparedPw);
 		}
 		
 	}	

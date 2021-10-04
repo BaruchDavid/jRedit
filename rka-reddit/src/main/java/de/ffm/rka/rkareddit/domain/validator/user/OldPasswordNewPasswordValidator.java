@@ -16,7 +16,7 @@ public class OldPasswordNewPasswordValidator implements ConstraintValidator<OldP
 
 	@Override
 	public boolean isValid(String newPw, ConstraintValidatorContext context) {
-		return !matches(newPw);
+		return !passwordAndPwConfirmationMatches(newPw);
 	}
 
 }
