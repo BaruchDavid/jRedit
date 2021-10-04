@@ -17,21 +17,13 @@ public interface BCryptPwEncoderManager {
 	 * @param comparedPw is a new pw
 	 * @return true for equals pw or false
 	 */
-	default boolean matches(final String comparedPw) {
-
-
-
+	default boolean passwordAndPwConfirmationMatches(final String comparedPw) {
 		Optional<Authentication> authetication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-		return authetication.map(this::isUsuerAuthenticated)
-							.map(authenticated -> {
+		return authetication.map(authenticated -> {
 								BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
 								User user = (User) authetication.get().getPrincipal();
 								return encoder.matches(comparedPw, user.getPassword());
 							})
 							.orElse(false);
-	}
-
-	default boolean isUsuerAuthenticated(Authentication authentication){
-		return !"anonymousUser".equals(authentication.getPrincipal());
 	}
 }
