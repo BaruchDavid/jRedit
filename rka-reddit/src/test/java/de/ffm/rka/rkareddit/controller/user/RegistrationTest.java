@@ -143,7 +143,7 @@ public class RegistrationTest {
 
     @Test
     public void changeResetPasswordTest() throws Exception {
-        this.mockMvc.perform(get("/reset/kaproma@yahoo.de/activation"))
+        this.mockMvc.perform(get("/profile/user/recover/form/kaproma@yahoo.de/activation"))
                 .andDo(print()).andExpect(status().is(200))
                 .andExpect(model().attribute("userDto", loggedInUserDto));
     }
