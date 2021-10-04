@@ -15,9 +15,15 @@ public interface UserValidationgroup {
     }
 
     /**
-     * marker interface for user password change
+     * marker interface for authenticated user password change
      */
 	interface ValidationUserChangePassword {
+    }
+
+    /**
+     * marker interface for unauthenticated user password change
+     */
+	interface UnauthenticatedUserRecoverPassword {
     }
 
     /**

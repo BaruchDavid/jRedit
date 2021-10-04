@@ -11,6 +11,7 @@ import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.Validation
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangeEmail;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangePassword;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserRegistration;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.UnauthenticatedUserRecoverPassword;
 import jdk.jfr.Description;
 import lombok.*;
 import org.apache.commons.lang.StringUtils;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @EmailNotEqualToNewEmail(groups = {ValidationUserChangeEmail.class})
-@NewPasswordMatcher(groups = {ValidationUserChangePassword.class})
+@NewPasswordMatcher(groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
 @PasswordMatcher(groups = {ValidationUserRegistration.class, ValidationUserChangeEmail.class})
 @Getter @Setter 
 @EqualsAndHashCode
@@ -84,12 +85,12 @@ public class UserDTO {
 	
 	@OldPasswordNewPasswordNotMatcher(groups = {ValidationUserChangePassword.class})
 	@Size(message = "password must be between 5 and 20 signs",
-			min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+			min = 5, max = 20, groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
 	@JsonIgnore
 	private String newPassword;
 	
 	@Size(message = "password must be between 5 and 20 signs",
-			min = 5, max = 20, groups = {ValidationUserChangePassword.class})
+			min = 5, max = 20, groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
 	@JsonIgnore
 	private String confirmNewPassword;
 	
