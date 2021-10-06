@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
+import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
@@ -238,14 +239,13 @@ public class AuthController {
             userDTO = userService.emailActivation(email, activationCode, false);
         }
 
-        if (userDTO.isPresent()) {
-            model.addAttribute(LOGGED_IN_USER, userDTO.get());
+        userDTO.map(user -> {
+            model.addAttribute(LOGGED_IN_USER, user);
             LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
-            return returnLink;
-        } else {
-            LOGGER.error("USER {} WITH ACTIVATION-CODE {} HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode);
-            return "redirect:/error/registrationError";
-        }
+            return "dontCare";
+        }).orElseThrow(() -> GlobalControllerAdvisor.createServiceException(
+                String.format("USER %s WITH ACTIVATION-CODE %s HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode)));
+        return returnLink;
     }
 
     @GetMapping("/recover/{email}/{activationCode}")
