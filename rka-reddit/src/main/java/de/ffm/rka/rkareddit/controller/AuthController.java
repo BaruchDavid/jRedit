@@ -227,6 +227,7 @@ public class AuthController {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
         String returnLink = "redirect:/error/registrationError";
         Optional<UserDTO> userDTO = Optional.empty();
+
         if (req.getRequestURI().contains("mailchange")) {
             userDTO = userService.emailActivation(email, activationCode, true);
             returnLink = REDIRECT_TO_PRIVATE_PROFILE;
@@ -235,15 +236,7 @@ public class AuthController {
         } else if (req.getRequestURI().contains("activation")) {
             returnLink = "auth/activated";
             userDTO = userService.emailActivation(email, activationCode, false);
-        } else if (req.getRequestURI().contains("reset")) {
-            returnLink = "recover/passwordRecovery";
-            userDTO = userService.getUserForPasswordReset(email, activationCode);
-            if (userDTO.isPresent()) {
-                model.addAttribute(LOGGED_IN_USER, userDTO.get());
-                return returnLink;
-            }
         }
-
 
         if (userDTO.isPresent()) {
             model.addAttribute(LOGGED_IN_USER, userDTO.get());
