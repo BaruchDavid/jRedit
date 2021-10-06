@@ -101,13 +101,14 @@ public class UserService {
         userDto.setEmail(userDto.getNewEmail());
         newUser.setNewEmail(userDto.getNewEmail());
         newUser.setActivationCode(userDto.getActivationCode());
+        newUser.setActivationDeadLineDate(LocalDateTime.now());
         LOGGER.info("User changes Email: OLD {} NEW {}", newUser.getEmail(), newUser.getNewEmail());
         sendEmailToNewUserEmailAddress(userDto);
         return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
     }
 
     @Transactional(readOnly = false)
-    public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) {
+    public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
         Optional<User> user;
         Optional<UserDTO> userDTO = Optional.empty();
         if (isNewEmail) {
@@ -116,16 +117,22 @@ public class UserService {
             user = findUserByMailAndActivationCode(email, activationCode);
         }
         if (user.isPresent()) {
-            User newUser = user.get();
-            newUser.setEnabled(true);
-            newUser.setConfirmPassword(newUser.getPassword());
-            newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
-            newUser.setNewEmail(StringUtils.EMPTY);
-            newUser.setActivationCode(StringUtils.EMPTY);
-            save(newUser);
-            userDetailsService.reloadUserAuthentication(email); // TODO: 25.08.2021 refactorn,  ändern des pw's in eigene Methode
-            userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
-            sendWelcomeEmail(userDTO.get()); // TODO: 25.08.2021 welcome-email nur beim Registrieren, wird auch beim recover ausgeführt 
+        final boolean behindDeadline = TimeService.isBehindDeadline(1, user.get().getActivationDeadLineDate());
+            if(!behindDeadline){
+                User newUser = user.get();
+                newUser.setEnabled(true);
+                newUser.setConfirmPassword(newUser.getPassword());
+                newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
+                newUser.setNewEmail(StringUtils.EMPTY);
+                newUser.setActivationCode(StringUtils.EMPTY);
+                newUser.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
+                save(newUser);
+                userDetailsService.reloadUserAuthentication(email); // TODO: 25.08.2021 refactorn,  ändern des pw's in eigene Methode
+                userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
+                sendWelcomeEmail(userDTO.get());
+            } else {
+                throw GlobalControllerAdvisor.createServiceException("Der Aktivierungslink für die Email ist abgelaufen");
+            }
         }
         return userDTO;
     }
@@ -133,14 +140,13 @@ public class UserService {
     public Optional<UserDTO> getUserForPasswordReset(final String email, final String activationCode) throws ServiceException {
         final String errorMessage = String.format("PASSWORD-RESETING: WRONG ACTIVATION-CODE %s ON %s", activationCode, email);
         final User user = findUserByMailAndActivationCode(email, activationCode)
-                .orElseThrow(() -> GlobalControllerAdvisor.throwServiceException(errorMessage));
+                .orElseThrow(() ->  GlobalControllerAdvisor.createServiceException(errorMessage));
         return Optional.ofNullable(UserDTO.mapUserToUserDto(user));
     }
 
 
     private void sendEmailToNewUserEmailAddress(UserDTO userDto) {
         mailService.sendEmailToNewEmailAccount(userDto);
-
     }
 
     /**
@@ -178,11 +184,13 @@ public class UserService {
         if (checkActivationDeadline(userDto)){
             BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
             String secret = encoder.encode(userDto.getNewPassword());
+            user.setActivationDeadLineDate(LocalDateTime.of(5000,1,1,0,0));
+            user.setActivationCode("activation");
             user.setPassword(secret);
             user.setConfirmPassword(secret);
             userRepository.saveAndFlush(user);
         } else {
-            GlobalControllerAdvisor.throwServiceException("TIME FOR PW-RECOVERY IS EXPIRED");
+            GlobalControllerAdvisor.createServiceException("TIME FOR PW-RECOVERY IS EXPIRED");
         }
     }
 
@@ -233,7 +241,7 @@ public class UserService {
         user.setActivationDeadLineDate(LocalDateTime.now());
         final User savedUser = save(user);
         if (!savedUser.getActivationCode().equals(user.getActivationCode())) {
-            GlobalControllerAdvisor.throwServiceException("Could not save new activation code for user: " + user.getEmail());
+            GlobalControllerAdvisor.createServiceException("Could not save new activation code for user: " + user.getEmail());
         }
         mailService.sendRecoverEmail(UserDTO.mapUserToUserDto(user));
     }
