@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.util;
 
+import de.ffm.rka.rkareddit.service.TimeService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class CacheController {
      * @return true when modificationDate is wished time ago
      */
     private boolean checkForExpiredModification(LocalDateTime modificationDate) {
-        return LocalDateTime.now().minusMinutes(PAST_MINUTES_OF_CACHE_EXPIRATION).isAfter(modificationDate);
+        return TimeService.isBehindDeadline(PAST_MINUTES_OF_CACHE_EXPIRATION, modificationDate);
     }
 
 }

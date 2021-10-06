@@ -175,11 +175,19 @@ public class UserService {
     @Transactional(readOnly = false)
     public void changeUserPassword(UserDTO userDto) {
         User user = getUser(userDto.getEmail());
-        BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-        String secret = encoder.encode(userDto.getNewPassword());
-        user.setPassword(secret);
-        user.setConfirmPassword(secret);
-        userRepository.saveAndFlush(user);
+        if (checkActivationDeadline(userDto)){
+            BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
+            String secret = encoder.encode(userDto.getNewPassword());
+            user.setPassword(secret);
+            user.setConfirmPassword(secret);
+            userRepository.saveAndFlush(user);
+        } else {
+            GlobalControllerAdvisor.throwServiceException("TIME FOR PW-RECOVERY IS EXPIRED");
+        }
+    }
+
+    public boolean checkActivationDeadline(UserDTO userDTO){
+        return TimeService.isBehindDeadline(1, userDTO.getActivationDeadLineDate());
     }
 
     public UserDTO updateUser(UserDTO userDto) {
@@ -222,6 +230,7 @@ public class UserService {
     @Transactional(readOnly = false)
     public void saveNewActionCode(User user) {
         user.setActivationCode(String.valueOf(UUID.randomUUID()));
+        user.setActivationDeadLineDate(LocalDateTime.now());
         final User savedUser = save(user);
         if (!savedUser.getActivationCode().equals(user.getActivationCode())) {
             GlobalControllerAdvisor.throwServiceException("Could not save new activation code for user: " + user.getEmail());
