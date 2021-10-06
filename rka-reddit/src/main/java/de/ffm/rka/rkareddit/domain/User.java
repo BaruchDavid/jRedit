@@ -47,6 +47,9 @@ public class User extends Auditable implements UserDetails, Serializable {
 	@Column
 	private LocalDateTime fotoCreationDate;
 
+	@Column
+	private LocalDateTime activationDeadLineDate;
+
 	@Column(length = 50)
 	private String firstName;
 

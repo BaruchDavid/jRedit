@@ -1,11 +1,11 @@
-INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, foto_creation_Date, confirm_password,creation_date)
-VALUES(1, 'kaproma@yahoo.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'baruc-david', 'rka', 'worker', 'kaproma@yahoo.de', null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
+INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, foto_creation_Date, activation_dead_line_date, confirm_password,creation_date)
+VALUES(1, 'kaproma@yahoo.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'baruc-david', 'rka', 'worker', 'kaproma@yahoo.de', null, null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
 
-INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, foto_creation_Date, confirm_password, creation_date)
-VALUES(2, 'dascha@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'dascha', 'unknown', 'ceo', '', null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
+INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, foto_creation_Date, activation_dead_line_date, confirm_password, creation_date)
+VALUES(2, 'dascha@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'dascha', 'unknown', 'ceo', '', null, null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
 
-INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, foto_creation_Date, confirm_password,creation_date)
-VALUES(3, 'grom@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'grom', 'grm', 'worker2', '', null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
+INSERT INTO User(user_id, email, enabled, password, first_name, second_name, alias_name, new_email, profile_foto, foto_creation_Date, activation_dead_line_date, confirm_password,creation_date)
+VALUES(3, 'grom@gmx.de', 1, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', 'grom', 'grm', 'worker2', '', null, null, null, '$2a$10$kd02GLWJlGR94dyTT7xiLu07CejGocL0oqSSRsInjvwahu3d900ne', NOW());
 
 
 INSERT INTO LINK(link_id,  title,  subtitle, description, url,  COMMENT_COUNT,VOTE_COUNT, creation_Date, user_id)
