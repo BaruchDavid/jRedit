@@ -2,6 +2,7 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.UnauthenticatedUserRecoverPassword;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.UserService;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.UnauthenticatedUserRecoverPassword;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
@@ -46,22 +46,32 @@ public class PwRecoverController {
     }
 
     @GetMapping("/profile/user/recover/{email}/{activationCode}")
-    public String getPasswordRecoveryForm(@PathVariable String email, @PathVariable String activationCode, Model model)
+    public String getPasswordRecoveryForm(@PathVariable String email, @PathVariable String activationCode, RedirectAttributes attributes, Model model)
             throws ServiceException {
         LOGGER.info("TRY TO SHOW PW-RECOVER-VIEW FOR USER {} ON GIVEN ACTIVATION-CODE ", email, activationCode);
         String returnLink = "recover/passwordRecoveryForm";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
-        if (userDTO.isPresent()) {
+        final boolean isPwRecoveringExpired = userDTO.map(userForRecovering -> userService.checkActivationDeadline(userForRecovering))
+                .orElse(false);
+
+        if (isPwRecoveringExpired) {
+            attributes.addFlashAttribute(SUCCESS, false);
+            attributes.addFlashAttribute(REDIRECT_MESSAGE, "Link for password recovering is expired! \nNavigate to Home page");
+            LOGGER.error("USER {} PASSED ACTIVATION-CODE {} FOR PW-RECOVERING NOT SUCCESSFULLY", email, activationCode);
+            return "redirect:/error/pwRecover";
+        } else {
             model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
             model.addAttribute(CONTENT_USER, UserDTO.builder().email(email).build());
             LOGGER.error("USER {} PASSED ACTIVATION-CODE {} FOR PW-RECOVERING SUCCESSFULLY", email, activationCode);
             return returnLink;
-        } else {
-            LOGGER.error("USER {} PASSED ACTIVATION-CODE {} FOR PW-RECOVERING NOT SUCCESSFULLY", email, activationCode);
-            return "redirect:/error/registrationError";
         }
     }
 
+    @GetMapping("/error/pwRecover")
+    public String showRecoveringError(Model model){
+        model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
+        return "/error/pwRecoverError";
+    }
 
     @PostMapping("/profile/user/recover/")
     public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
@@ -82,7 +92,6 @@ public class PwRecoverController {
         LOGGER.info("TRY TO SAVE NEW PASSWORD FOR PW-RECOVERING FOR USER{}", userDto.getEmail());
         if (bindingResult.hasErrors()) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
-            //setSameUserForLoginAndContent((User) userDetails, model);
             return "auth/passwordChange";
         } else {
             userService.changeUserPassword(userDto);
