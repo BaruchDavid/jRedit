@@ -126,6 +126,9 @@ public class UserDTO {
 	private LocalDateTime lastModifiedDate;
 
 	@JsonIgnore
+	private LocalDateTime activationDeadLineDate;
+
+	@JsonIgnore
 	private LocalDateTime creationDate;
 
 	@JsonProperty
