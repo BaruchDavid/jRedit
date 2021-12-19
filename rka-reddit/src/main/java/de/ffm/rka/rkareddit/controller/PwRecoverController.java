@@ -51,7 +51,8 @@ public class PwRecoverController {
         LOGGER.info("TRY TO SHOW PW-RECOVER-VIEW FOR USER {} ON GIVEN ACTIVATION-CODE ", email, activationCode);
         String returnLink = "recover/passwordRecoveryForm";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
-        final boolean isPwRecoveringExpired = userDTO.map(userForRecovering -> userService.checkActivationDeadline(userForRecovering))
+        final boolean isPwRecoveringExpired = userDTO
+                .map(userForRecovering -> userService.checkActivationDeadline(userForRecovering.getActivationDeadLineDate()))
                 .orElse(false);
 
         if (isPwRecoveringExpired) {
@@ -68,7 +69,7 @@ public class PwRecoverController {
     }
 
     @GetMapping("/error/pwRecover")
-    public String showRecoveringError(Model model){
+    public String showRecoveringError(Model model) {
         model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
         return "/error/pwRecoverError";
     }

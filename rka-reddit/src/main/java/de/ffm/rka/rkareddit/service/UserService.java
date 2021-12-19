@@ -38,6 +38,7 @@ public class UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private static final int TARGET_WIDTH = 320;
+    private static final int MAX_MINUTES_DIFF = 5;
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final MailService mailService;
@@ -181,7 +182,7 @@ public class UserService {
     @Transactional(readOnly = false)
     public void changeUserPassword(UserDTO userDto) {
         User user = getUser(userDto.getEmail());
-        if (checkActivationDeadline(userDto)){
+        if (checkActivationDeadline(user.getActivationDeadLineDate())){
             BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
             String secret = encoder.encode(userDto.getNewPassword());
             user.setActivationDeadLineDate(LocalDateTime.of(5000,1,1,0,0));
@@ -194,8 +195,8 @@ public class UserService {
         }
     }
 
-    public boolean checkActivationDeadline(UserDTO userDTO){
-        return TimeService.isBehindDeadline(1, userDTO.getActivationDeadLineDate());
+    public boolean checkActivationDeadline(LocalDateTime activationDeadLineDate){
+        return TimeService.isBehindDeadline(MAX_MINUTES_DIFF, activationDeadLineDate);
     }
 
     public UserDTO updateUser(UserDTO userDto) {
