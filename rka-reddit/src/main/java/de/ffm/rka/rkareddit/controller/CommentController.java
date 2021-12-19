@@ -35,6 +35,8 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    // TODO: 27.04.2021 einbinden von https://github.com/OWASP/owasp-java-encoder
+    // TODO: 27.04.2021  für die Absicherung von inputs
     @PostMapping(value = "/comments/comment")
     public String newComment(@Validated(value = {CommentValidationgroup.ValidationCommentSize.class,
                                                 LinkValidationGroup.signaturSize.class}) CommentDTO comment,
