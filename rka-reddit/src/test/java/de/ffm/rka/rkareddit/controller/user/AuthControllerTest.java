@@ -15,12 +15,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Map;
-import java.util.HashMap;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
 import static org.junit.Assert.fail;
@@ -34,9 +30,9 @@ public class AuthControllerTest extends MvcRequestSender {
     private UserDTO loggedInUserDto;
 
     private UserDTO emptyUser = UserDTO.builder()
-                                        .userComment(Collections.emptyList())
-                                        .userLinks(Collections.emptyList())
-                                        .build();
+            .userComment(Collections.emptyList())
+            .userLinks(Collections.emptyList())
+            .build();
 
     @Before
     public void setup() {
@@ -81,7 +77,7 @@ public class AuthControllerTest extends MvcRequestSender {
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
 
-        super.performGetRequest("/profile/"+loggedInUser.getEmail()+"/links")
+        super.performGetRequest("/profile/" + loggedInUser.getEmail() + "/links")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", loggedUserLinks))
@@ -93,6 +89,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     /**
      * anonymous guets can see profile links from user
+     *
      * @throws Exception
      */
     @Test
@@ -104,7 +101,7 @@ public class AuthControllerTest extends MvcRequestSender {
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
 
-        super.performGetRequest("/profile/"+loggedInUser.getEmail()+"/links")
+        super.performGetRequest("/profile/" + loggedInUser.getEmail() + "/links")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", loggedUserLinks))
@@ -124,7 +121,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+        super.performGetRequest("/profile/" + pageContentUser.getEmail() + "/comments")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("userSince", userSince))
@@ -143,7 +140,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+        super.performGetRequest("/profile/" + pageContentUser.getEmail() + "/comments")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("userSince", userSince))
@@ -163,7 +160,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(loggedInUserDto.getCreationDate());
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+        super.performGetRequest("/profile/" + pageContentUser.getEmail() + "/comments")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("userSince", userSince))
@@ -184,7 +181,7 @@ public class AuthControllerTest extends MvcRequestSender {
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(pageContentUser.getCreationDate());
 
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/links")
+        super.performGetRequest("/profile/" + pageContentUser.getEmail() + "/links")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", userContentLinks))
@@ -203,7 +200,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .collect(Collectors.toSet());
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(pageContentUser.getCreationDate());
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/links")
+        super.performGetRequest("/profile/" + pageContentUser.getEmail() + "/links")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", userContentLinks))
@@ -224,7 +221,7 @@ public class AuthControllerTest extends MvcRequestSender {
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(pageContentUser.getCreationDate());
 
-        super.performGetRequest("/profile/"+pageContentUser.getEmail()+"/comments")
+        super.performGetRequest("/profile/" + pageContentUser.getEmail() + "/comments")
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/profileComments"))
                 .andExpect(model().attribute("comments", userContentComments))
@@ -281,12 +278,13 @@ public class AuthControllerTest extends MvcRequestSender {
         result.andExpect(status().is(HttpStatus.SC_FORBIDDEN))
                 .andExpect(view().name("error/accessDenied"))
                 .andExpect(model().attribute("userDto", UserDTO.builder()
-                                                                    .firstName("grom")
-                                                                    .build()));
+                        .firstName("grom")
+                        .build()));
     }
 
     /**
      * without authentication, you will be redirected to login for authentication
+     *
      * @throws Exception
      */
     @Test
@@ -335,6 +333,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * expect login-page, cause request protected resources as unautheticated
      * needs to be login at first, not depend about which kind of resource
      * has been requested
+     *
      * @throws Exception
      */
     @Test
@@ -344,7 +343,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final String location = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(location.replace("+", ""));
         result.andExpect(view().name("auth/login"))
-            .andExpect(status().is(HttpStatus.SC_OK));
+                .andExpect(status().is(HttpStatus.SC_OK));
 
     }
 
@@ -415,16 +414,16 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailOK() throws Exception {
         String body = "email=kaproma@yahoo.de&" +
-                    "newEmail=romakap@yahoo.de&" +
-                    "password=roman&" +
-                    "confirmPassword=roman";
+                "newEmail=romakap@yahoo.de&" +
+                "password=roman&" +
+                "confirmPassword=roman";
         super.performPatchRequest("/profile/private/me/update/email", body)
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/profile/private"))
-            .andExpect(flash().attributeExists("success"))
-            .andExpect(flash().attribute("success", true))
-            .andExpect(flash().attribute("redirectMessage", "you got email, check it out!"))
-            .andReturn();
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/profile/private"))
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(flash().attribute("success", true))
+                .andExpect(flash().attribute("redirectMessage", "you got email, check it out!"))
+                .andReturn();
 
     }
 
@@ -444,7 +443,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(globalErrors().hasOneGlobalError("userDTO",
                         "Old and new email must be different"))
                 .andExpect(model().attributeHasFieldErrorCode("userDTO",
-                            "password", "CorrectPassword"));
+                        "password", "CorrectPassword"));
 
     }
 
@@ -469,7 +468,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNoEmail() throws Exception {
         String body = "email=kaproma@yahoo.de&" +
-                        "password=roman";
+                "password=roman";
         super.performPatchRequest("/profile/private/me/update/email", body)
                 .andExpect(status().is(400)).andExpect(view().name("auth/emailChange"))
                 .andExpect(model().errorCount(3))
@@ -485,9 +484,9 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailToBig() throws Exception {
         String body = "email=kaproma@yahoo.de&" +
-                    "newEmail=radfadfadfsddsdfadfadfsdsdfs@de&" +
-                    "password=doman&" +
-                    "confirmPassword=doman";
+                "newEmail=radfadfadfsddsdfadfadfsdsdfs@de&" +
+                "password=doman&" +
+                "confirmPassword=doman";
         super.performPatchRequest("/profile/private/me/update/email", body)
                 .andExpect(status().is(400))
                 .andExpect(view().name("auth/emailChange"))
@@ -506,9 +505,9 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNotOKAllErrors() throws Exception {
         String body = "email=kaproma@yahoo.de&" +
-                        "newEmail=kaproma@yahoo.de&" +
-                        "password=doman&" +
-                        "confirmPassword=soman";
+                "newEmail=kaproma@yahoo.de&" +
+                "password=doman&" +
+                "confirmPassword=soman";
         super.performPatchRequest("/profile/private/me/update/email", body)
                 .andExpect(status().is(400))
                 .andExpect(view().name("auth/emailChange"))
@@ -551,7 +550,7 @@ public class AuthControllerTest extends MvcRequestSender {
     public void saveAuthUserWithValidationChangeUserPasswordGroupFalseMethod() throws Exception {
         String body = "email=kaproma@yahoo.de&password=roman&confirmNewPassword=rororo&newPassword=rororo";
         final MvcResult mvcResult = super.performPostRequest("/profile/private/me/password", body)
-                                         .andReturn();
+                .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
         result.andExpect(status().is(HttpStatus.SC_METHOD_NOT_ALLOWED))
@@ -565,9 +564,9 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordWrongOldPassword() throws Exception {
         String body = "email=kaproma@yahoo.de&" +
-                        "password=ronan&" +
-                        "confirmNewPassword=rororo&" +
-                        "newPassword=rororo";
+                "password=ronan&" +
+                "confirmNewPassword=rororo&" +
+                "newPassword=rororo";
         super.performPutRequest("/profile/private/me/password", body)
                 .andDo(print()).andExpect(status().is(400))
                 .andExpect(view().name("auth/passwordChange"))
@@ -583,9 +582,9 @@ public class AuthControllerTest extends MvcRequestSender {
     public void changePasswordNewPwNotEqualNewPWConfirm() throws Exception {
         String body = "email=kaproma@yahoo.de&password=ronan&confirmNewPassword=rororo&newPassword=bobobo";
         super.performPutRequest("/profile/private/me/password", body)
-            .andExpect(status().is(400))
-            .andExpect(view().name("auth/passwordChange"))
-            .andExpect(model().attributeHasErrors("userDTO"));
+                .andExpect(status().is(400))
+                .andExpect(view().name("auth/passwordChange"))
+                .andExpect(model().attributeHasErrors("userDTO"));
 
     }
 
@@ -599,8 +598,8 @@ public class AuthControllerTest extends MvcRequestSender {
     public void changePasswordNewAndOldShouldNotBeEqual() throws Exception {
         String body = "password=roman&confirmNewPassword=roman&newPassword=roman";
         super.performPutRequest("/profile/private/me/password", body)
-            .andExpect(status().is(400))
-            .andExpect(view().name("auth/passwordChange"));
+                .andExpect(status().is(400))
+                .andExpect(view().name("auth/passwordChange"));
     }
 
 }
