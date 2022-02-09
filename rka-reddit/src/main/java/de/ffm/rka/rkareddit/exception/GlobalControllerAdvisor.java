@@ -60,6 +60,7 @@ public class GlobalControllerAdvisor {
         String view = USER_ERROR_VIEW;
         String errorEndPoint = null;
         String visitorName = "";
+        String encodedErrorDtoJson="";
         if (authentication.isPresent()) {
             visitorName = authentication.get().getName();
             if (!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName)) {
@@ -101,7 +102,8 @@ public class GlobalControllerAdvisor {
             case "UsernameNotFoundException":
                 errorDTO.setErrorStatus(HttpStatus.SC_BAD_REQUEST);
                 errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
-                errorDTO.setErrorEndPoint("/error");
+                encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
+                errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
                 break;
             case "UserAuthenticationLostException":
             case "AuthenticationCredentialsNotFoundException":
@@ -117,7 +119,7 @@ public class GlobalControllerAdvisor {
                 break;
             case "ServiceException":
                 errorDTO.setErrorStatus(HttpStatus.SC_NOT_FOUND);
-                String encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
+                encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
                 errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
                 break;
             case "RegisterException":
