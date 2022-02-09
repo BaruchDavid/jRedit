@@ -115,7 +115,8 @@ public class GlobalControllerAdvisor {
             case "HttpRequestMethodNotSupportedException":
                 errorDTO.setErrorStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
                 errorDTO.setErrorView(PAGE_NOT_FOUND);
-                errorDTO.setErrorEndPoint("/error");
+                encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
+                errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
                 break;
             case "ServiceException":
                 errorDTO.setErrorStatus(HttpStatus.SC_NOT_FOUND);
