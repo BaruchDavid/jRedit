@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.ErrorDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
@@ -52,11 +53,12 @@ public class GlobalControllerAdvisor {
             IllegalArgumentException.class, IllegalAccessException.class,
             NumberFormatException.class, ServiceException.class, UsernameNotFoundException.class,
             Exception.class, PreAuthenticatedCredentialsNotFoundException.class})
-    public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
+    public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) throws JsonProcessingException {
         Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
         res.setHeader("location","/error");
         UserDTO user = new UserDTO();
         String view = USER_ERROR_VIEW;
+        String errorEndPoint = null;
         String visitorName = "";
         if (authentication.isPresent()) {
             visitorName = authentication.get().getName();
@@ -69,7 +71,7 @@ public class GlobalControllerAdvisor {
             user.setFirstName("guest");
         }
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-       LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} : {}" +
+        LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} : {}" +
                        " STACKTRACE: {}",
                 exceptionType,
                 exception.getMessage(),
@@ -77,6 +79,18 @@ public class GlobalControllerAdvisor {
                 req.getMethod(),
                 req.getRequestURL(),
                exception);
+        // TODO: 04.04.2021 man muss die errorUrl anpassen, zb. für accessDenied im BasicErrorController
+        // TODO: 14.03.2021 mask user-emails
+        // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser
+        final ErrorDTO errorDTO = ErrorDTO.builder()
+                .loggedUser(user)
+                .userContent(user)
+                .errorView(view)
+                .errorEndPoint(errorEndPoint)
+                .error(exception.getLocalizedMessage())
+                .errorStatus(res.getStatus())
+                .url(req.getRequestURL().toString())
+                .build();
         switch (exceptionType) {
             case "MissingServletRequestParameterException":
             case "ValidationException":
@@ -85,28 +99,48 @@ public class GlobalControllerAdvisor {
             case "NullPointerException":
             case "NumberFormatException":
             case "UsernameNotFoundException":
-                view = DEFAULT_APPLICATION_ERROR;
-                res.setStatus(HttpStatus.SC_BAD_REQUEST);
+                errorDTO.setErrorStatus(HttpStatus.SC_BAD_REQUEST);
+                errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
+                errorDTO.setErrorEndPoint("/error");
                 break;
             case "UserAuthenticationLostException":
             case "AuthenticationCredentialsNotFoundException":
             case "PreAuthenticatedCredentialsNotFoundException":
-                res.setStatus(HttpStatus.SC_UNAUTHORIZED);
+                errorDTO.setErrorStatus(HttpStatus.SC_UNAUTHORIZED);
+                errorDTO.setErrorView(PAGE_NOT_FOUND);
+                errorDTO.setErrorEndPoint("/error/accessDenied");
                 break;
             case "HttpRequestMethodNotSupportedException":
-                view = PAGE_NOT_FOUND;
-                res.setStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
+                errorDTO.setErrorStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
+                errorDTO.setErrorView(PAGE_NOT_FOUND);
+                errorDTO.setErrorEndPoint("/error");
                 break;
             case "ServiceException":
-                res.setStatus(HttpStatus.SC_NOT_FOUND);
+                errorDTO.setErrorStatus(HttpStatus.SC_NOT_FOUND);
+                String encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
+                errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
+                break;
+            case "RegisterException":
+                res.setStatus(HttpStatus.SC_BAD_REQUEST);
+                errorDTO.setErrorEndPoint("/error/registrationError");
                 break;
             default:
-                res.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-                view = DEFAULT_APPLICATION_ERROR;
+                errorDTO.setErrorStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
+                errorDTO.setErrorEndPoint("/error");
                 break;
         }
 
-        return createErrorView(req, res, user, view, exception.getLocalizedMessage());
+        return createErrorView(errorDTO);
+    }
+
+    private String convertErrorDtoToJsonAndEncode(ErrorDTO errorDTO) {
+        try {
+            return HttpUtil.encodeParam(JsonMapper.createJson(errorDTO));
+        } catch (Exception e) {
+            LOGGER.error("FAIL TO CONVERT ERROR MESSAGE TO JSON {}", e.getMessage());
+            return "";
+        }
     }
 
     @ExceptionHandler(value = {MaxUploadSizeExceededException.class, IllegalVoteException.class})
@@ -126,39 +160,22 @@ public class GlobalControllerAdvisor {
     }
 
     /**
-     * +JsonMapper.createJson(msg)
-     * @param req to get current request of error
-     * @param res from response
-     * @param user
-     * @param errorView for suitable error
      * @return redirect-request with json-param
      */
-    private ModelAndView createErrorView(HttpServletRequest req, HttpServletResponse res, UserDTO user, String errorView, String error) {
+    private ModelAndView createErrorView(ErrorDTO msg) {
         ModelAndView mav = new ModelAndView();
-        try {
-            // TODO: 04.04.2021 man muss die errorUrl anpassen, zb. für accessDenied im BasicErrorController
-            // TODO: 14.03.2021 mask user-emails 
-            // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser
-            final ErrorDTO msg = ErrorDTO.builder()
-                    .loggedUser(user)
-                    .userContent(user)
-                    .errorView(errorView)
-                    .error(error)
-                    .errorStatus(res.getStatus())
-                    .url(req.getRequestURL().toString())
-                    .build();
-            final String encodedJson = HttpUtil.encodeParam(JsonMapper.createJson(msg));
-            mav.setViewName("redirect:/error?errorDTO="+encodedJson);
-        } catch (Exception e) {
-            LOGGER.error("FAIL TO CONVERT ERROR MESSAGE TO JSON {}", e.getMessage());
-            mav.setViewName("redirect:/error");
-        }
+        mav.setViewName("redirect:"+msg.getErrorEndPoint());
         return mav;
     }
 
     public static ServiceException createServiceException(String message) {
         Supplier<ServiceException> supplier = () -> new ServiceException(message);
         return supplier.get();
+    }
+
+    public static RegisterException createRegisterException(String message) {
+        Supplier<RegisterException> registerExceptionSupplier = () -> new RegisterException(message);
+        return registerExceptionSupplier.get();
     }
 
 
