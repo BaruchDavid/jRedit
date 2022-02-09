@@ -20,6 +20,9 @@ public class ErrorDTO {
     String errorView="";
 
     @Builder.Default
+    String errorEndPoint="";
+
+    @Builder.Default
     String error = "";
 
     @Builder.Default
