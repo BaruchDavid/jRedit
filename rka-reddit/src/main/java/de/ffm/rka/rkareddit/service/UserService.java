@@ -120,7 +120,7 @@ public class UserService {
             user = findUserByMailAndActivationCode(email, activationCode);
         }
         if (user.isPresent()) {
-        final boolean behindDeadline = TimeService.isBehindDeadline(1, user.get().getActivationDeadLineDate());
+        final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff, user.get().getActivationDeadLineDate());
             if(!behindDeadline){
                 User newUser = user.get();
                 newUser.setEnabled(true);
@@ -136,6 +136,8 @@ public class UserService {
             } else {
                 throw GlobalControllerAdvisor.createServiceException("Der Aktivierungslink für die Email ist abgelaufen");
             }
+        } else {
+            LOGGER.error("NO USE HAS BEEN FOUND ON EMAIL {} AND ACTIVATION CODE {}", email, activationCode);
         }
         return userDTO;
     }
