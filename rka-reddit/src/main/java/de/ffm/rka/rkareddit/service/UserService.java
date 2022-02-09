@@ -12,6 +12,7 @@ import de.ffm.rka.rkareddit.util.ImageManager;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,13 +39,14 @@ public class UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private static final int TARGET_WIDTH = 320;
-    private static final int MAX_MINUTES_DIFF = 5;
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final MailService mailService;
     private final UserDetailsServiceImpl userDetailsService;
     private final LinkService linkService;
 
+    @Value("${password.time.expiration}")
+    private  int maxTimeDiff;
 
     public UserService(MailService mailService, UserRepository userRepository,
                        RoleService roleService, UserDetailsServiceImpl userDetailsService, LinkService linkService) {
@@ -196,7 +198,7 @@ public class UserService {
     }
 
     public boolean checkActivationDeadline(LocalDateTime activationDeadLineDate){
-        return TimeService.isBehindDeadline(MAX_MINUTES_DIFF, activationDeadLineDate);
+        return TimeService.isBehindDeadline(maxTimeDiff, activationDeadLineDate);
     }
 
     public UserDTO updateUser(UserDTO userDto) {
