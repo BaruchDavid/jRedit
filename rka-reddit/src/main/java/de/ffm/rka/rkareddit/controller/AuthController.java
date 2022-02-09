@@ -6,6 +6,7 @@ import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
+import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
@@ -224,7 +225,7 @@ public class AuthController {
     @GetMapping(value = {"/activation/{email}/{activationCode}",
             "/mailchange/{email}/{activationCode}"})
     public String accountActivation(@PathVariable String email, @PathVariable String activationCode,
-                                    HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException {
+                                    HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
         String returnLink = "redirect:/error/registrationError";
         Optional<UserDTO> userDTO = Optional.empty();
@@ -243,7 +244,7 @@ public class AuthController {
             model.addAttribute(LOGGED_IN_USER, user);
             LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
             return "dontCare";
-        }).orElseThrow(() -> GlobalControllerAdvisor.createServiceException(
+        }).orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
                 String.format("USER %s WITH ACTIVATION-CODE %s HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode)));
         return returnLink;
     }
