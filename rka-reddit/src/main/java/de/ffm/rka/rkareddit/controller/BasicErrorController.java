@@ -32,14 +32,18 @@ public class BasicErrorController implements ErrorController {
 
 
     @GetMapping(value = "/error")
-    public String error(@RequestParam(value = "errorDTO", required = false) ErrorDTO errorDTO, Model model, HttpServletResponse resp) {
+    public String error(@RequestParam(value = "errorDTO", required = false) ErrorDTO errorDTO, Model model,
+                        HttpServletRequest req, HttpServletResponse resp) {
 
         String view;
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             errorDTO = Optional.ofNullable(errorDTO)
-                                .orElseGet(ErrorDTO::new);
-            view = errorDTO.getErrorView().isEmpty() ? "error/basicError": errorDTO.getErrorView();
+                    .orElseGet(() -> ErrorDTO.builder()
+                            .errorStatus(resp.getStatus())
+                            .error(req.getRequestURI())
+                            .build());
+            view = errorDTO.getErrorView().isEmpty() ? "error/basicError" : errorDTO.getErrorView();
             UserDTO userDto = !ANONYMOUS.equals(authentication.getName()) ?
                     Optional.ofNullable(errorDTO.getLoggedUser())
                             .orElseGet(UserService::buildAnonymousUser) : UserService.buildAnonymousUser();
@@ -55,7 +59,6 @@ public class BasicErrorController implements ErrorController {
     }
 
 
-
     @GetMapping("/error/registrationError")
     public String registrationError(HttpServletRequest request, HttpServletResponse resp, Exception ex) {
         LOGGER.error("SHOW REGISTRATION-ERROR-VEW {} WITH EXCEPTION {}", request.getRequestURI(), ex.getMessage());
@@ -65,6 +68,7 @@ public class BasicErrorController implements ErrorController {
 
     /**
      * will be accessed from GlobalAccessDeniedHandler
+     *
      * @param request
      * @param resp
      * @param ex
@@ -75,8 +79,8 @@ public class BasicErrorController implements ErrorController {
     public String accessDenied(HttpServletRequest request, HttpServletResponse resp, Exception ex, Model model) {
         LOGGER.error("SHOW ACCESS-DENIED-VEW {} WITH EXCEPTION {}", request.getRequestURI(), ex.getMessage());
         model.addAttribute(USER_DTO, UserDTO.builder()
-                                            .firstName(request.getParameter("name"))
-                                            .build());
+                .firstName(request.getParameter("name"))
+                .build());
         resp.setStatus(403);
         return "error/accessDenied";
     }
