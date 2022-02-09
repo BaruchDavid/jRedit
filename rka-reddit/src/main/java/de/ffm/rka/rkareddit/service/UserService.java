@@ -98,7 +98,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public UserDTO emailChange(UserDTO userDto) throws ServiceException {
+    public UserDTO emailChange(UserDTO userDto) {
         userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
         User newUser = getUser(userDto.getEmail());
         userDto.setEmail(userDto.getNewEmail());
