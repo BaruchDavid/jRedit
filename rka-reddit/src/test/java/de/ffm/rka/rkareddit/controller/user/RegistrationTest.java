@@ -31,7 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+                classes = SpringSecurityTestConfig.class,
+                properties = { "password.time.expiration=10" })
 @Transactional
 public class RegistrationTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
@@ -143,14 +145,14 @@ public class RegistrationTest {
 
     @Test
     public void changeResetPasswordTest() throws Exception {
-        this.mockMvc.perform(get("/profile/user/recover/form/kaproma@yahoo.de/activation"))
+        this.mockMvc.perform(get("/profile/user/recover/kaproma@yahoo.de/activation"))
                 .andDo(print()).andExpect(status().is(200))
                 .andExpect(model().attribute("userDto", loggedInUserDto));
     }
 
     @Test
     public void activateInvalidAccountTest() throws Exception {
-        this.mockMvc.perform(get("/activation/kaproma@yahoo.de/actiion")).andDo(print())
+        this.mockMvc.perform(get("/activation/kaproma@yahoo.de/action")).andDo(print())
                 .andExpect(redirectedUrl("/error/registrationError"));
     }
 
