@@ -157,7 +157,6 @@ public class GlobalControllerAdvisor {
     }
 
     public static ServiceException createServiceException(String message) {
-        LOGGER.error(message);
         Supplier<ServiceException> supplier = () -> new ServiceException(message);
         return supplier.get();
     }
