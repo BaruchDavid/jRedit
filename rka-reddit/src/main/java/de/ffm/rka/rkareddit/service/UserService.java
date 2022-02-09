@@ -46,7 +46,7 @@ public class UserService {
     private final LinkService linkService;
 
     @Value("${password.time.expiration}")
-    private  int maxTimeDiff;
+    private int maxTimeDiff;
 
     public UserService(MailService mailService, UserRepository userRepository,
                        RoleService roleService, UserDetailsServiceImpl userDetailsService, LinkService linkService) {
@@ -120,8 +120,8 @@ public class UserService {
             user = findUserByMailAndActivationCode(email, activationCode);
         }
         if (user.isPresent()) {
-        final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff, user.get().getActivationDeadLineDate());
-            if(!behindDeadline){
+            final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff, user.get().getActivationDeadLineDate());
+            if (!behindDeadline) {
                 User newUser = user.get();
                 newUser.setEnabled(true);
                 newUser.setConfirmPassword(newUser.getPassword());
@@ -145,7 +145,7 @@ public class UserService {
     public Optional<UserDTO> getUserForPasswordReset(final String email, final String activationCode) throws ServiceException {
         final String errorMessage = String.format("PASSWORD-RESETING: WRONG ACTIVATION-CODE %s ON %s", activationCode, email);
         final User user = findUserByMailAndActivationCode(email, activationCode)
-                .orElseThrow(() ->  GlobalControllerAdvisor.createServiceException(errorMessage));
+                .orElseThrow(() -> GlobalControllerAdvisor.createServiceException(errorMessage));
         return Optional.ofNullable(UserDTO.mapUserToUserDto(user));
     }
 
@@ -186,20 +186,20 @@ public class UserService {
     @Transactional(readOnly = false)
     public void changeUserPassword(UserDTO userDto) {
         User user = getUser(userDto.getEmail());
-        if (checkActivationDeadline(user.getActivationDeadLineDate())){
+        if (checkActivationDeadline(user.getActivationDeadLineDate())) {
             BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
             String secret = encoder.encode(userDto.getNewPassword());
-            user.setActivationDeadLineDate(LocalDateTime.of(5000,1,1,0,0));
+            user.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
             user.setActivationCode("activation");
             user.setPassword(secret);
             user.setConfirmPassword(secret);
             userRepository.saveAndFlush(user);
         } else {
-            GlobalControllerAdvisor.createServiceException("TIME FOR PW-RECOVERY IS EXPIRED");
+            GlobalControllerAdvisor.createServiceException(String.format("TIME FOR PW-RECOVERY FOR USER %s IS EXPIRED", userDto.getEmail()));
         }
     }
 
-    public boolean checkActivationDeadline(LocalDateTime activationDeadLineDate){
+    public boolean checkActivationDeadline(LocalDateTime activationDeadLineDate) {
         return TimeService.isBehindDeadline(maxTimeDiff, activationDeadLineDate);
     }
 
