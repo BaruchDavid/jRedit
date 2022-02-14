@@ -30,7 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 /** spring-test-support is enabled */
 @RunWith(SpringRunner.class)
 /** enable of application-context */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = SpringSecurityTestConfig.class,
+        properties = {"password.time.expiration=10"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @Transactional
 public abstract class MvcRequestSender {
