@@ -75,13 +75,13 @@ public class PwRecoverController {
     }
 
     @PostMapping("/profile/user/recover/")
-    public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
+    public String createActivationCodeAndSendMail(@RequestParam String userEmail, Model model) {
         LOGGER.info("TRY TO CREATE ACTIVATION CODE AND SEND MAIL WITH EMAIL FOR PW-RECOVERING {}", userEmail);
         userService.findUserById(userEmail)
                 .ifPresent(user -> userService.saveNewActionCode(user));
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
-        attributes.addFlashAttribute(SUCCESS, true);
+        model.addAttribute(SUCCESS, true);
         LOGGER.info("ACTIVATION CODE AND SEND MAIL WITH EMAIL FOR PW-RECOVERING SUCCESSFUL {}", userEmail);
         return "recover/recoverUserPwRequestApplied";
 
