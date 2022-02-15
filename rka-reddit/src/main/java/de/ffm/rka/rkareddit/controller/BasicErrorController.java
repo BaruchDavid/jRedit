@@ -40,7 +40,7 @@ public class BasicErrorController implements ErrorController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             errorDTO = Optional.ofNullable(errorDTO)
                     .orElseGet(() -> ErrorDTO.builder()
-                            .errorStatus(resp.getStatus())
+                            .errorStatus(404)
                             .error(req.getRequestURI())
                             .build());
             view = errorDTO.getErrorView().isEmpty() ? "error/basicError" : errorDTO.getErrorView();
