@@ -34,30 +34,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
-/** spring-test-support is enabled */
-@RunWith(SpringRunner.class) 
-/** enable of application-context */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SpringSecurityTestConfig.class)
+
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
-public class AllControllersTransactionTest {
+public class AllControllersTransactionTest extends MvcRequestSender {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AllControllersTransactionTest.class);
 	private static final int MAX_JDBC_TRANSACTION = 3;
-	private MockMvc mockMvc;
-	
-	@Autowired
-	private WebApplicationContext context;
+
 	private Statistics hibernateStatistic;
 	private Session hibernateSession;
 	private EntityManager entityManager;
 	
 	@Before
 	public void setup() {
-
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-										.apply(springSecurity())
-										.build();
 		entityManager = BeanUtil.getBeanFromContext(EntityManager.class);
 		hibernateSession = entityManager.unwrap(Session.class);
 		hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
@@ -74,8 +63,7 @@ public class AllControllersTransactionTest {
 								.secondName("rka")
 								.build();
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
-		MvcResult result =  this.mockMvc.perform(get("/links/"))
-					.andDo(print())
+		MvcResult result =  super.performGetRequest("/links/")
 					.andExpect(status().isOk())
 					.andExpect(model().attribute("pageNumbers", pages))
 					.andReturn();
@@ -91,8 +79,7 @@ public class AllControllersTransactionTest {
 				.secondName("rka")
 				.build();
 		List<Integer> pages = Arrays.asList(new Integer[] {1,2});
-		MvcResult result =  this.mockMvc.perform(get("/links/"))
-				.andDo(print())
+		MvcResult result =  super.performGetRequest("/links/")
 				.andExpect(status().isOk())
 				.andExpect(model().attribute("pageNumbers", pages))
 				.andReturn();
