@@ -288,7 +288,7 @@ public class AuthController {
     @PutMapping("/profile/private/me/password")
     public String userPasswordChange(@Validated(UserValidationgroup.ValidationUserChangePassword.class) UserDTO userDto,
                                      BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
-                                     @AuthenticationPrincipal UserDetails userDetails, Model model) {
+                                     @AuthenticationPrincipal UserDetails userDetails, Model model) throws ServiceException {
         if (bindingResult.hasErrors()) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
             setSameUserForLoginAndContent((User) userDetails, model);
