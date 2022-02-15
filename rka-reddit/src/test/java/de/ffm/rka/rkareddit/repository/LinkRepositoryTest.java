@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
  */
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"password.time.expiration=10"})
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class LinkRepositoryTest {
 
