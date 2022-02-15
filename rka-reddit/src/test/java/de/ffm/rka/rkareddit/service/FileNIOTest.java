@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"password.time.expiration=10"})
 public class FileNIOTest {
 	
 	@Autowired

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"password.time.expiration=10"})
 public class UserServiceTest {
 
 	@Test
