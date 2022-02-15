@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.controller.MvcRequestSender;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import org.junit.Test;
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @Transactional
-@SpringBootTest
+@SpringBootTest(properties = {"password.time.expiration=10"} )
 public class LinkServiceTest {
 
 	@Autowired
