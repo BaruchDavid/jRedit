@@ -52,7 +52,7 @@ public class PwRecoverController {
         String returnLink = "recover/passwordRecoveryForm";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
         final boolean isPwRecoveringExpired = userDTO
-                .map(userForRecovering -> userService.checkActivationDeadline(userForRecovering.getActivationDeadLineDate()))
+                .map(userForRecovering -> userService.isActivationDeadlineExpired(userForRecovering.getActivationDeadLineDate()))
                 .orElse(false);
 
         if (isPwRecoveringExpired) {
@@ -89,7 +89,7 @@ public class PwRecoverController {
 
     @PutMapping("/profile/user/recover")
     public String userPasswordRecovery(@Validated(UnauthenticatedUserRecoverPassword.class) UserDTO userDto,
-                                       BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes, Model model) {
+                                       BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes, Model model) throws ServiceException {
         LOGGER.info("TRY TO SAVE NEW PASSWORD FOR PW-RECOVERING FOR USER{}", userDto.getEmail());
         if (bindingResult.hasErrors()) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);

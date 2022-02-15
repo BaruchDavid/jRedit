@@ -184,9 +184,9 @@ public class UserService {
      * @param userDto hold changes to be saved
      */
     @Transactional(readOnly = false)
-    public void changeUserPassword(UserDTO userDto) {
+    public void changeUserPassword(UserDTO userDto) throws ServiceException {
         User user = getUser(userDto.getEmail());
-        if (checkActivationDeadline(user.getActivationDeadLineDate())) {
+        if (!isActivationDeadlineExpired(user.getActivationDeadLineDate())) {
             BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
             String secret = encoder.encode(userDto.getNewPassword());
             user.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
@@ -195,11 +195,11 @@ public class UserService {
             user.setConfirmPassword(secret);
             userRepository.saveAndFlush(user);
         } else {
-            GlobalControllerAdvisor.createServiceException(String.format("TIME FOR PW-RECOVERY FOR USER %s IS EXPIRED", userDto.getEmail()));
+            throw GlobalControllerAdvisor.createServiceException(String.format("TIME FOR PW-RECOVERY FOR USER %s IS EXPIRED", userDto.getEmail()));
         }
     }
 
-    public boolean checkActivationDeadline(LocalDateTime activationDeadLineDate) {
+    public boolean isActivationDeadlineExpired(LocalDateTime activationDeadLineDate) {
         return TimeService.isBehindDeadline(maxTimeDiff, activationDeadLineDate);
     }
 
