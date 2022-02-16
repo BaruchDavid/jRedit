@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @Transactional
-@SpringBootTest
+@SpringBootTest(properties = {"password.time.expiration=10"})
 public class EmailServiceTest {
 
 	//@Autowired

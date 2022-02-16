@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
  */
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"password.time.expiration=10"})
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class LinkTransactionTest {
 
