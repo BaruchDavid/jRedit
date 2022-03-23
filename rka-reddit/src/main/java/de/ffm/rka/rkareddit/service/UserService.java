@@ -130,7 +130,7 @@ public class UserService {
                 newUser.setActivationCode(StringUtils.EMPTY);
                 newUser.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
                 save(newUser);
-                userDetailsService.reloadUserAuthentication(email); // TODO: 25.08.2021 refactorn,  ändern des pw's in eigene Methode
+                userDetailsService.reloadUserCredentials(email); // TODO: 25.08.2021 refactorn,  ändern des pw's in eigene Methode
                 userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
                 sendWelcomeEmail(userDTO.get());
             } else {
@@ -167,6 +167,7 @@ public class UserService {
         user.setSecondName(userDto.getSecondName());
         user.setAliasName(userDto.getAliasName());
         userRepository.saveAndFlush(user);
+        userDetailsService.reloadUserCredentials(user.getEmail());
     }
 
     public User getUser(String userMail) {
