@@ -32,12 +32,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> throwUserNameNotFoundException(username));
     }
 
-    public void reloadUserAuthentication(final String newEmail) {
+    public void reloadUserCredentials(final String email) {
         Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmailWithRoles(newEmail)
+        User user = userRepository.findByEmailWithRoles(email)
                 .orElseThrow(() -> {
-                    LOGGER.error("USER {} could not be found", newEmail);
-                    return new UsernameNotFoundException(newEmail);
+                    LOGGER.error("USER {} could not be found during reloading user credentials", email);
+                    return new UsernameNotFoundException(email);
                 });
         Authentication newAuth = new UsernamePasswordAuthenticationToken(user, oldAuth.getCredentials(), oldAuth.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(newAuth);
