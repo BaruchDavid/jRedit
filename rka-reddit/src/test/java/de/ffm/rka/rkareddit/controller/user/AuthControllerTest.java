@@ -399,7 +399,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(flash().attributeExists("success"))
                 .andReturn();
         loggedInUserDto.setSecondName("rka.odem");
-        loggedInUserDto.setFullName("rka.odem");
+
         Map<String, Object> flashAttributes = new HashMap<>();
         flashAttributes.put("success", true);
         performGetRequestWithFalshAttributes(mvcResult.getResponse().getRedirectedUrl(), flashAttributes)
