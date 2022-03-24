@@ -1,0 +1,72 @@
+openapi: "3.0.2"
+info:
+  title: API Title
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /login/:
+    get:
+      tags:
+        - login, user, Benutzer
+      summary: bei dieser Url kann man sich einloggen
+      responses:
+        200:
+          description: login successed
+  /profile/{email}/links/:
+    get:
+      summary: eingeloggter Benutzer sieht links vom anderen Benutzer
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LinkItem'
+  /profile/private/:
+    get:
+      summary: Zugriff auf eigenes Profil
+      responses:
+        200:
+          $ref: '#/components/responses/CommentCounter'
+
+
+
+
+
+components:
+  responses:
+    CommentCounter:
+      description: Anzahl der Kommentare eines Benutzers
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommentCount'
+  schemas:
+    LinkItem:
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        url:
+          type: string
+          format: uri
+      example:
+        title: springBoot
+        subtitle: java
+        url: /spring/java
+    CommentCount:
+      type: integer
+      example: 5
+
+
