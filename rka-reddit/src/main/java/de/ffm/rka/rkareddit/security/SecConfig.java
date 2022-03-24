@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -82,6 +83,8 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
 			.and()
+				.requiresChannel(requestRegistry -> requestRegistry.anyRequest().requiresSecure())
+				.authorizeRequests(interceptUrlRegistry -> interceptUrlRegistry.anyRequest().permitAll())
 			.formLogin().loginPage("/login")
 						.usernameParameter("email")
 						.successHandler(userSuccessfulAuthenticationHandler())
