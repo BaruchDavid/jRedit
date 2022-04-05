@@ -104,7 +104,7 @@ public class VoteControllerTest extends  MvcRequestSender{
 		MvcResult mvcResult = super.performGetRequest("/link/"+
 														linkDTO.getLinkSignature()+"/vote/direction/1/votecount/"
 														+linkDTO.getVoteCount())
-				.andDo(print())
+
 				.andExpect(status().is(200))
 				.andReturn();
 		mvcResult.getResponse().getContentAsString().equals(6);

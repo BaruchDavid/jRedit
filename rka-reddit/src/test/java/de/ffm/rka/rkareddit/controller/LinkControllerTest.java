@@ -166,7 +166,6 @@ public class LinkControllerTest extends MvcRequestSender {
         LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
 
         MvcResult result = super.performGetRequest("/links/link/15921918064981")
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))
                 .andExpect(view().name("link/link_view"))

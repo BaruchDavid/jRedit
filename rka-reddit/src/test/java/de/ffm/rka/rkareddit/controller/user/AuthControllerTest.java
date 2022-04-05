@@ -263,14 +263,13 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     public void showPrivateProfileAsUnauthenticated() throws Exception {
         super.performGetRequest("/profile/private/kaproma@yahoo.de")
-                .andDo(print()).andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 
     @Test
     @WithUserDetails("grom@gmx.de")
     public void accessToDBAsWrongUser() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/data/h2-console")
-                .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
         final String redirectedUrl = mvcResult.getResponse().getHeader("location");
@@ -290,7 +289,6 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     public void accessWithNoAuthorizationAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/data/h2-console")
-                .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
         final String redirectedUrl = mvcResult.getResponse().getHeader("location");
@@ -323,7 +321,6 @@ public class AuthControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void showEditProfilePage() throws Exception {
         super.performGetRequest("/profile/private/me")
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("userDto", loggedInUserDto))
                 .andExpect(model().attribute("userContent", loggedInUserDto));

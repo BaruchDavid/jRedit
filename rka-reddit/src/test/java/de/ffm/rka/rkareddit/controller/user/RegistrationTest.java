@@ -128,7 +128,7 @@ public class RegistrationTest extends MvcRequestSender {
         String body = "firstName=Paul&secondName=Grom&aliasName=grünes" +
                 "&password=tata&confirmPassword=tata";
         super.performPostRequest("/registration", body)
-                .andDo(print()).andExpect(status().is(302))
+                .andExpect(status().is(302))
                 .andExpect(redirectedUrl("/links"));
     }
 
