@@ -64,47 +64,51 @@ public abstract class MvcRequestSender {
     }
 
     public ResultActions performGetRequest(String ressource) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(get(new URI(ressource)))
-                                                        .andDo(print());
-        return resultActions;
+        return this.mockMvc.perform(get(new URI(ressource)).secure(true))
+                .andDo(print());
+
     }
 
     public ResultActions performGetRequestWithFalshAttributes(String ressource, Map<String, Object> flashAttributes) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(get(new URI(ressource)).flashAttrs(flashAttributes))
-                                                        .andDo(print());
-        return resultActions;
+        return this.mockMvc.perform(get(new URI(ressource))
+                                        .flashAttrs(flashAttributes)
+                                        .secure(true))
+                .andDo(print());
+
     }
 
     public ResultActions performPostRequest(String ressource, String body) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.post(ressource)
+        return this.mockMvc.perform(MockMvcRequestBuilders.post(ressource)
+                                                        .secure(true)
                                                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                                         .content(body))
                                                         .andDo(print());
-        return resultActions;
     }
 
     public ResultActions performPostByteArray(String url, String fileName, byte[] byteContent, String[] content) throws Exception {
                  return this.mockMvc.perform(MockMvcRequestBuilders.multipart(url)
                             .file(fileName,byteContent)
+                            .secure(true)
                             .param(content[0], content[1]))
                             .andDo(print());
 
     }
 
     public ResultActions performPutRequest(String ressource, String body) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.put(ressource)
+        return this.mockMvc.perform(MockMvcRequestBuilders.put(ressource)
+                                                        .secure(true)
                                                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                                         .content(body))
                                                         .andDo(print());
-        return resultActions;
+
     }
 
     public ResultActions performPatchRequest(String ressource, String body) throws Exception {
-        final ResultActions resultActions = this.mockMvc.perform(MockMvcRequestBuilders.patch(ressource)
+        return this.mockMvc.perform(MockMvcRequestBuilders.patch(ressource)
+                                                        .secure(true)
                                                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                                         .content(body))
                                                         .andDo(print());
-        return resultActions;
     }
 
     public ResultActions sendRedirect(String redirectionSource) throws Exception {
