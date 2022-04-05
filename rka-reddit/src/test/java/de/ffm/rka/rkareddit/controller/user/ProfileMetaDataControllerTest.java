@@ -106,7 +106,6 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     @Test
     public void clickedLinksHistoryForEmptyUser() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/profile/information/userClickedLinks")
-                .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
         sendRedirect(mvcResult.getResponse().getHeader("location"));
