@@ -1,11 +1,8 @@
 package de.ffm.rka.rkareddit.controller;
 
 
-import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
-import de.ffm.rka.rkareddit.rest.controller.TagController;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,7 +26,7 @@ public class TagControllerTest extends MvcRequestSender{
        /* MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(tagController)
 										.addInterceptors(new ApplicationHandlerInterceptor())
-										.setControllerAdvice(globalControllerAdvice)		
+										.setControllerAdvice(globalControllerAdvice)
 										.setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver(), new PageableHandlerMethodArgumentResolver())
 										.build();*/
 	}
@@ -64,6 +61,7 @@ public class TagControllerTest extends MvcRequestSender{
 	public void testSchouldNotDeleteRelatedTag() throws Exception {
 
 		MvcResult result = super.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","1")
+																	.secure(true)
 																	.contentType(MediaType.APPLICATION_JSON))
 							.andDo(print())
 							.andExpect(status().isOk())
@@ -76,9 +74,9 @@ public class TagControllerTest extends MvcRequestSender{
 	@WithUserDetails("kaproma@yahoo.de")
 	public void testSchouldNotDeleteNotAvailibleTag() throws Exception {
 
-		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","101")
+		MvcResult result = super.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","101")
+																	.secure(true)
 																	.contentType(MediaType.APPLICATION_JSON))
-							.andDo(print())
 							.andExpect(status().isOk())
 							.andReturn();
 		assertEquals("", result.getResponse().getContentAsString());
@@ -89,8 +87,8 @@ public class TagControllerTest extends MvcRequestSender{
 	public void testSchouldDeleteNotRelatedTag() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.delete("/tags/tag/deleteTag/{tagId}","6")
+																	.secure(true)
 																	.contentType(MediaType.APPLICATION_JSON))
-							.andDo(print())
 							.andExpect(status().isOk())
 							.andReturn();
 		assertEquals("6", result.getResponse().getContentAsString());
