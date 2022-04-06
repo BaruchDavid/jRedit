@@ -5,7 +5,6 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
-import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.CommentService;
@@ -164,15 +163,15 @@ public class AuthController {
     }
 
     /**
-     * register user into system
      *
      * @return user
-     * @throws ServiceException will be triggered on any errors
+     * @throws ExecutionException may be thrown
+     * @throws InterruptedException may be thrown
      */
     @PostMapping(value = {REGISTRATION})
     public String userRegistration(@Validated(value = {UserValidationgroup.ValidationUserRegistration.class}) UserDTO userDto,
                                    BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res,
-                                   HttpServletRequest req, Model model) throws ServiceException, ExecutionException, InterruptedException {
+                                   HttpServletRequest req, Model model) throws ExecutionException, InterruptedException {
         LOGGER.info("TRY TO REGISTER {}", userDto);
         if (bindingResult.hasErrors()) {
             return manageValidationErrors(userDto, bindingResult, res, req, model);
@@ -189,7 +188,7 @@ public class AuthController {
     public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
         LOGGER.info("TRY TO RECOVER USER WITH EMAIL {}", userEmail);
         userService.findUserById(userEmail)
-                .ifPresent(user -> userService.saveNewActionCode(user));
+                .ifPresent(userService::saveNewActionCode);
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
         attributes.addFlashAttribute(SUCCESS, true);
         LOGGER.info("RECOVERING USER PASSWORD SUCCESSFULLY {}", userEmail);
@@ -198,16 +197,15 @@ public class AuthController {
     }
 
     /**
-     * user changes own email address
      *
+     * user changes own email address
      * @return new userDto object and success
-     * @throws ServiceException will be triggered on any errors
      */
     @PatchMapping(value = {"/profile/private/me/update/email"})
     public String userChangeEmail(@Validated(value = {UserValidationgroup.ValidationUserChangeEmail.class}) UserDTO userDto,
                                   BindingResult bindingResult, RedirectAttributes attributes,
                                   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse res,
-                                  HttpServletRequest req, Model model) throws ServiceException {
+                                  HttpServletRequest req, Model model) {
         LOGGER.info("TRY TO CHANGE EMAIL OF USER {}", userDto);
         if (bindingResult.hasErrors()) {
             setSameUserForLoginAndContent((User) userDetails, model);
@@ -221,33 +219,29 @@ public class AuthController {
         }
     }
 
-    // TODO: 29.09.2021 Refactorn 
-    @GetMapping(value = {"/activation/{email}/{activationCode}",
-            "/mailchange/{email}/{activationCode}"})
+    @GetMapping(value = {"/activation/{email}/{activationCode}"})
     public String accountActivation(@PathVariable String email, @PathVariable String activationCode,
-                                    HttpServletRequest req, Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
+                                    Model model) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-        String returnLink = "redirect:/error/registrationError";
-        Optional<UserDTO> userDTO = Optional.empty();
-
-        if (req.getRequestURI().contains("mailchange")) {
-            userDTO = userService.emailActivation(email, activationCode, true);
-            returnLink = REDIRECT_TO_PRIVATE_PROFILE;
-            attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
-            attributes.addFlashAttribute(SUCCESS, true);
-        } else if (req.getRequestURI().contains("activation")) {
-            returnLink = "auth/activated";
-            userDTO = userService.emailActivation(email, activationCode, false);
-        }
-
-        userDTO.map(user -> {
-            model.addAttribute(LOGGED_IN_USER, user);
-            LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
-            return "dontCare";
-        }).orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
-                String.format("USER %s WITH ACTIVATION-CODE %s HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode)));
+        String returnLink = "auth/activated";
+        UserDTO userDTO = userService.emailActivation(email, activationCode, false);
+        model.addAttribute(LOGGED_IN_USER, userDTO);
+        LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
         return returnLink;
     }
+    @GetMapping(value = {"/mailchange/{email}/{activationCode}"})
+    public String emailActivation(@PathVariable String email, @PathVariable String activationCode,
+                                    Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
+        LOGGER.info("TRY TO ACTIVATE ACCOUNT WITH NEW EMAIL {}", email);
+        UserDTO userDTO = userService.emailActivation(email, activationCode, true);
+        attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
+        attributes.addFlashAttribute(SUCCESS, true);
+        model.addAttribute(LOGGED_IN_USER, userDTO);
+        LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
+        return REDIRECT_TO_PRIVATE_PROFILE;
+    }
+
+
 
     @GetMapping("/recover/{email}/{activationCode}")
     public String getPasswordRecoveryView(@PathVariable String email, @PathVariable String activationCode, Model model)
