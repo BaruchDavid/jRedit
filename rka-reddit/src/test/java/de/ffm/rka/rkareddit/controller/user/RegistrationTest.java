@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -92,7 +91,7 @@ public class RegistrationTest extends MvcRequestSender {
     }
 
     @Test
-    public void activateAccountTest() throws Exception {
+    public void mailAccountTest() throws Exception {
        super.performGetRequest("/activation/kaproma@yahoo.de/activation")
                 .andExpect(view().name("auth/activated"));
     }
@@ -103,6 +102,13 @@ public class RegistrationTest extends MvcRequestSender {
                 .andExpect(status().is(302))
                 .andExpect(flash().attribute("redirectMessage", "your new email has been activated"))
                 .andExpect(redirectedUrl("/profile/private"));
+    }
+
+    @Test
+    public void changeCorruptedEmailFromLinkTest() throws Exception {
+        super.performGetRequest("/mailchange/kaproooma@yahoo.de/activation")
+                .andExpect(status().is(302))
+                .andExpect(redirectedUrl("/error/registrationError"));
     }
 
     @Test
