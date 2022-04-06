@@ -4,6 +4,7 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
+import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -74,7 +75,7 @@ public class UserService {
      * disable user before saving , send activation email register user
      *
      * @return UserDTO
-     * @throws ServiceException
+     * @throws ServiceException if registration fails
      */
     @Transactional(readOnly = false)
     public UserDTO register(UserDTO userDto) throws ExecutionException, InterruptedException {
@@ -111,18 +112,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public Optional<UserDTO> emailActivation(final String email, final String activationCode, final boolean isNewEmail) throws ServiceException {
-        Optional<User> user;
+    public UserDTO emailActivation(final String email, final String activationCode, final boolean isNewEmail)
+            throws ServiceException, RegisterException {
         Optional<UserDTO> userDTO = Optional.empty();
-        if (isNewEmail) {
-            user = findUserByMailAndReActivationCode(email, activationCode);
-        } else {
-            user = findUserByMailAndActivationCode(email, activationCode);
-        }
-        if (user.isPresent()) {
-            final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff, user.get().getActivationDeadLineDate());
+        final Optional<User> userForMailActivation = findUserForMailActivation(email, activationCode, isNewEmail);
+        if (userForMailActivation.isPresent()) {
+            final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff,
+                    userForMailActivation.get().getActivationDeadLineDate());
             if (!behindDeadline) {
-                User newUser = user.get();
+                User newUser = userForMailActivation.get();
                 newUser.setEnabled(true);
                 newUser.setConfirmPassword(newUser.getPassword());
                 newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
@@ -130,23 +128,36 @@ public class UserService {
                 newUser.setActivationCode(StringUtils.EMPTY);
                 newUser.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
                 save(newUser);
-                userDetailsService.reloadUserCredentials(email); // TODO: 25.08.2021 refactorn,  ändern des pw's in eigene Methode
+                userDetailsService.reloadUserCredentials(email);
                 userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
                 sendWelcomeEmail(userDTO.get());
             } else {
                 throw GlobalControllerAdvisor.createServiceException("Der Aktivierungslink für die Email ist abgelaufen");
             }
         } else {
-            LOGGER.error("NO USE HAS BEEN FOUND ON EMAIL {} AND ACTIVATION CODE {}", email, activationCode);
+            LOGGER.error("NO USER HAS BEEN FOUND ON EMAIL {} AND ACTIVATION CODE {}", email, activationCode);
         }
-        return userDTO;
+
+        return userDTO.orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
+                String.format("USER %s WITH ACTIVATION-CODE %s HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode)));
     }
+
+    private Optional<User> findUserForMailActivation(String email, String activationCode, boolean isNewEmail) {
+        Optional<User> user;
+        if (isNewEmail) {
+            user = findUserByMailAndReActivationCode(email, activationCode);
+        } else {
+            user = findUserByMailAndActivationCode(email, activationCode);
+        }
+        return user;
+    }
+
 
     public Optional<UserDTO> getUserForPasswordReset(final String email, final String activationCode) throws ServiceException {
         final String errorMessage = String.format("PASSWORD-RESETING: WRONG ACTIVATION-CODE %s ON %s", activationCode, email);
         final User user = findUserByMailAndActivationCode(email, activationCode)
                 .orElseThrow(() -> GlobalControllerAdvisor.createServiceException(errorMessage));
-        return Optional.ofNullable(UserDTO.mapUserToUserDto(user));
+        return Optional.of(UserDTO.mapUserToUserDto(user));
     }
 
 
