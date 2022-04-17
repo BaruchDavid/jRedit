@@ -27,9 +27,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /*TODO: Caching einführen*/
     @Override
-    public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByEmailWithRoles(username)
-                .orElseThrow(() -> throwUserNameNotFoundException(username));
+    public UserDetails loadUserByUsername(String email) {
+        return userRepository.findByEmailWithRoles(email)
+                .orElseThrow(() -> throwUserNameNotFoundException(email));
     }
 
     public void reloadUserCredentials(final String email) {
