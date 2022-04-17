@@ -75,7 +75,6 @@ public class GlobalControllerAdvisor {
         LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} : {}" +
                        " STACKTRACE: {}",
                 exceptionType,
-                exception.getMessage(),
                 visitorName,
                 req.getMethod(),
                 req.getRequestURL(),
