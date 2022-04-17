@@ -88,18 +88,7 @@ public class UserService {
         newUser.addRole(roleService.findByName("ROLE_USER"));
         newUser.setActivationDeadLineDate(LocalDateTime.now().plusMinutes(5));
         LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
-        final CompletableFuture<UserDTO> sentAndSavedUser =
-                mailService.sendActivationEmail(newUserDto).thenApply((sent) -> {
-                    UserDTO userDTO = UserDTO.builder().build();
-                    if (isRegisteredEmailUnique(newUser.getEmail())){
-                        userDTO = UserDTO.mapUserToUserDto(save(newUser));
-                        LOGGER.info("USER {} and EMAIL {} SUCCESSFULLY SAVED ON REGISTRATION", newUser.getEmail(), newUser.getEmail());
-                        return userDTO;
-                    } else {
-                        LOGGER.info("USER {} and EMAIL {} ARE ALREADY REGISTERED", newUser.getEmail(), newUser.getEmail());
-                    }
-                    return userDTO;
-                });
+        mailService.sendActivationEmail(newUserDto).thenApply((sent) -> saveNewUnregisteredUser(newUser));
         //sentAndSavedUser.completeExceptionally(new ServiceException(String.format("New User %s could not be registered properly",
         //        newUser.getEmail())));
     }
