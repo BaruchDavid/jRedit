@@ -176,10 +176,10 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
-            userDto = userService.register(userDto);
+            userService.register(userDto);
             model.addAttribute(LOGGED_IN_USER, userDto);
             attributes.addFlashAttribute(SUCCESS, true);
-            LOGGER.info("REGISTER SUCCESSFULLY {}", userDto);
+            LOGGER.info("REGISTER-REQUEST HAS BEEN DONE {}", userDto);
             return "redirect:".concat(REGISTRATION);
         }
     }
