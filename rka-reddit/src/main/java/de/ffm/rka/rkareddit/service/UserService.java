@@ -25,9 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+
+
 
 /**
  * manages login- and register-process
@@ -78,24 +79,50 @@ public class UserService {
      * @throws ServiceException if registration fails
      */
     @Transactional(readOnly = false)
-    public UserDTO register(UserDTO userDto) throws ExecutionException, InterruptedException {
-        userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
-        User newUser = UserDTO.mapUserDtoToUser(userDto);
-        String secret;
-        BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-        secret = encoder.encode(newUser.getPassword());
+    public void register(UserDTO newUserDto) {
+        newUserDto.setActivationCode(String.valueOf(UUID.randomUUID()));
+        User newUser = UserDTO.mapUserDtoToUser(newUserDto);
+        String secret = encodeUserPw(newUser.getPassword());
         newUser.setPassword(secret);
         newUser.setConfirmPassword(secret);
         newUser.addRole(roleService.findByName("ROLE_USER"));
-        Future<Boolean> sendResult = sendActivatonEmail(userDto);
-        if (sendResult.isDone()) {
-            if (Boolean.TRUE.equals(sendResult.get())) {
-                return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
-            } else {
-                LOGGER.info("REGISTRATION FAILED FOR USER {} and EMAIL {}", userDto.getEmail(), userDto.getEmail());
-            }
+        newUser.setActivationDeadLineDate(LocalDateTime.now().plusMinutes(5));
+        LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
+        final CompletableFuture<UserDTO> sentAndSavedUser =
+                mailService.sendActivationEmail(newUserDto).thenApply((sent) -> {
+                    UserDTO userDTO = UserDTO.builder().build();
+                    if (isRegisteredEmailUnique(newUser.getEmail())){
+                        userDTO = UserDTO.mapUserToUserDto(save(newUser));
+                        LOGGER.info("USER {} and EMAIL {} SUCCESSFULLY SAVED ON REGISTRATION", newUser.getEmail(), newUser.getEmail());
+                        return userDTO;
+                    } else {
+                        LOGGER.info("USER {} and EMAIL {} ARE ALREADY REGISTERED", newUser.getEmail(), newUser.getEmail());
+                    }
+                    return userDTO;
+                });
+        //sentAndSavedUser.completeExceptionally(new ServiceException(String.format("New User %s could not be registered properly",
+        //        newUser.getEmail())));
+    }
+
+    private String encodeUserPw(String password) {
+        BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
+        return encoder.encode(password);
+    }
+
+    private UserDTO saveNewUnregisteredUser(User newUser) {
+        UserDTO userDTO = UserDTO.builder().build();
+        if (isRegisteredEmailUnique(newUser.getEmail())){
+            userDTO = UserDTO.mapUserToUserDto(save(newUser));
+            LOGGER.info("USER {} and EMAIL {} SUCCESSFULLY SAVED ON REGISTRATION", newUser.getEmail(), newUser.getEmail());
+            return userDTO;
+        } else {
+            LOGGER.info("USER {} and EMAIL {} ARE ALREADY REGISTERED", newUser.getEmail(), newUser.getEmail());
         }
-        return userDto;
+        return userDTO;
+    }
+
+    private boolean isRegisteredEmailUnique(String email) {
+        return !userRepository.findByEmail(email).isPresent();
     }
 
     @Transactional(readOnly = false)
@@ -111,6 +138,7 @@ public class UserService {
         return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
     }
 
+    // TODO: 14.04.2022 wenn man sich normal registriert, soll nicht ein userDto des neu registrierten users zurückgegebe werden 
     @Transactional(readOnly = false)
     public UserDTO emailActivation(final String email, final String activationCode, final boolean isNewEmail)
             throws ServiceException, RegisterException {
@@ -199,8 +227,7 @@ public class UserService {
     public void changeUserPassword(UserDTO userDto) throws ServiceException {
         User user = getUser(userDto.getEmail());
         if (!isActivationDeadlineExpired(user.getActivationDeadLineDate())) {
-            BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
-            String secret = encoder.encode(userDto.getNewPassword());
+            String secret = encodeUserPw(userDto.getNewPassword());
             user.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
             user.setActivationCode("activation");
             user.setPassword(secret);
@@ -241,11 +268,6 @@ public class UserService {
     public Optional<User> findUserByMailAndActivationCode(String mail, String code) {
         LOGGER.info("FIND USER BY MAIL {} AND ACTIVATION_CODE {}", mail, code);
         return userRepository.findByEmailAndActivationCode(mail, code);
-    }
-
-    private Future<Boolean> sendActivatonEmail(UserDTO user) {
-        LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
-        return mailService.sendActivationEmail(user);
     }
 
     public void sendWelcomeEmail(UserDTO user) {

@@ -9,7 +9,6 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -18,7 +17,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * sending several email from template
@@ -70,7 +69,6 @@ public class MailService {
     /**
      * creates template for email
      */
-    //@Async
     public boolean sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) {
         LOGGER.info("SEND-EMAIL-FROM TEMPLATE METHOD-CALL -THREAD-NAME {}", Thread.currentThread().getName());
         return sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName),  true);
@@ -89,9 +87,12 @@ public class MailService {
      * activation mail sending
      */
     @Async
-    public Future<Boolean> sendActivationEmail(UserDTO user) {
-        LOGGER.info("SEND-ACTIVATION-EMAIL METHO CALL THREAD NAME {}", Thread.currentThread().getName());
-        return new AsyncResult<>(sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation"));
+    public CompletableFuture<Boolean> sendActivationEmail(UserDTO user) {
+        LOGGER.info("Mail-Service Thread: {}", Thread.currentThread().getName());
+        boolean linkMeUserActivation = sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation");
+        final CompletableFuture<Boolean> booleanCompletableFuture = CompletableFuture.completedFuture(linkMeUserActivation);
+        return booleanCompletableFuture;
+
     }
 
     @Async
