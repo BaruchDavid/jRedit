@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 
@@ -41,6 +40,7 @@ public class UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private static final int TARGET_WIDTH = 320;
+    private static final String REGISTRATION_FAILED = "REGISTRATION FAILS ON SENDING EMAIL OR SAVING NEW USER: {}";
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final MailService mailService;
@@ -88,9 +88,12 @@ public class UserService {
         newUser.addRole(roleService.findByName("ROLE_USER"));
         newUser.setActivationDeadLineDate(LocalDateTime.now().plusMinutes(5));
         LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
-        mailService.sendActivationEmail(newUserDto).thenApply((sent) -> saveNewUnregisteredUser(newUser));
-        //sentAndSavedUser.completeExceptionally(new ServiceException(String.format("New User %s could not be registered properly",
-        //        newUser.getEmail())));
+        mailService.sendActivationEmail(newUserDto)
+                .thenAccept((sent) -> saveNewUnregisteredUser(newUser))
+                .exceptionally(ex -> {
+                    LOGGER.error(REGISTRATION_FAILED, newUserDto.getEmail());
+                    return null;
+                });
     }
 
     private String encodeUserPw(String password) {
@@ -98,16 +101,13 @@ public class UserService {
         return encoder.encode(password);
     }
 
-    private UserDTO saveNewUnregisteredUser(User newUser) {
-        UserDTO userDTO = UserDTO.builder().build();
-        if (isRegisteredEmailUnique(newUser.getEmail())){
-            userDTO = UserDTO.mapUserToUserDto(save(newUser));
+    private void saveNewUnregisteredUser(User newUser) {
+                if (isRegisteredEmailUnique(newUser.getEmail())){
+            newUser = save(newUser);
             LOGGER.info("USER {} and EMAIL {} SUCCESSFULLY SAVED ON REGISTRATION", newUser.getEmail(), newUser.getEmail());
-            return userDTO;
         } else {
             LOGGER.info("USER {} and EMAIL {} ARE ALREADY REGISTERED", newUser.getEmail(), newUser.getEmail());
         }
-        return userDTO;
     }
 
     private boolean isRegisteredEmailUnique(String email) {
