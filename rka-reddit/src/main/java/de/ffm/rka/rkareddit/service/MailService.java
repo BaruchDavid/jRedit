@@ -90,8 +90,7 @@ public class MailService {
     public CompletableFuture<Boolean> sendActivationEmail(UserDTO user) {
         LOGGER.info("Mail-Service Thread: {}", Thread.currentThread().getName());
         boolean linkMeUserActivation = sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation");
-        final CompletableFuture<Boolean> booleanCompletableFuture = CompletableFuture.completedFuture(linkMeUserActivation);
-        return booleanCompletableFuture;
+        return CompletableFuture.completedFuture(linkMeUserActivation);
 
     }
 
