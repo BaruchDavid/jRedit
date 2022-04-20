@@ -47,7 +47,7 @@ public class MailService {
      * @throws ServiceException for application
      */
     //@Async
-    public boolean sendEmail(String to, String subject, String content, boolean isHtml) {
+    public boolean sendEmail(String to, String subject, String content, boolean isHtml) throws ServiceException {
         LOGGER.info("TRY SEND EMAIL TO {} witch Subject {}", to, subject);
         try {
             LOGGER.info("SEND-EMAIL-THREAD-NAME {}", Thread.currentThread().getName());
@@ -62,14 +62,14 @@ public class MailService {
             return true;
         } catch (MailException | MessagingException e) {
             LOGGER.error(FAIL_TO_SEND, "MailAuthenticationException", e);
-            return false;
+            throw new ServiceException(FAIL_TO_SEND);
         }
     }
 
     /**
      * creates template for email
      */
-    public boolean sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) {
+    public boolean sendEmailFromTemplate(UserDTO userDto, String templateName, String subject) throws ServiceException{
         LOGGER.info("SEND-EMAIL-FROM TEMPLATE METHOD-CALL -THREAD-NAME {}", Thread.currentThread().getName());
         return sendEmail(userDto.getEmail(), subject, createEmailContext(baseUrl, userDto, templateName),  true);
     }
@@ -87,15 +87,14 @@ public class MailService {
      * activation mail sending
      */
     @Async
-    public CompletableFuture<Boolean> sendActivationEmail(UserDTO user) {
+    public CompletableFuture<Boolean> sendActivationEmail(UserDTO user) throws ServiceException{
         LOGGER.info("Mail-Service Thread: {}", Thread.currentThread().getName());
         boolean linkMeUserActivation = sendEmailFromTemplate(user, "mail/activation", "LinkMe user Activation");
         return CompletableFuture.completedFuture(linkMeUserActivation);
-
     }
 
     @Async
-    public void sendEmailToNewEmailAccount(UserDTO user) {
+    public void sendEmailToNewEmailAccount(UserDTO user) throws ServiceException{
         sendEmailFromTemplate(user, "mail/new_email_activation", "LinkMe user email change");
     }
 
@@ -105,12 +104,12 @@ public class MailService {
      * @throws ServiceException for application
      */
     @Async
-    public void sendWelcomeEmail(UserDTO user) {
+    public void sendWelcomeEmail(UserDTO user) throws ServiceException{
         sendEmailFromTemplate(user, "mail/welcome", "Welcome new LinkMe User");
     }
 
     @Async
-    public void sendRecoverEmail(UserDTO user) {
+    public void sendRecoverEmail(UserDTO user) throws ServiceException{
         sendEmailFromTemplate(user, "mail/recoverPassword", "LinkMe password recovering");
     }
 
