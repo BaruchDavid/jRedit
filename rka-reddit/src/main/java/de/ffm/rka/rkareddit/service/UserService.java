@@ -41,6 +41,7 @@ public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private static final int TARGET_WIDTH = 320;
     private static final String REGISTRATION_FAILED = "REGISTRATION FAILS ON SENDING EMAIL OR SAVING NEW USER: {}";
+    private static final String REGISTRATION_ERROR = "REGISTRATION: {}";
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final MailService mailService;
@@ -79,7 +80,7 @@ public class UserService {
      * @throws ServiceException if registration fails
      */
     @Transactional(readOnly = false)
-    public void register(UserDTO newUserDto) {
+    public void register(UserDTO newUserDto) throws ServiceException {
         newUserDto.setActivationCode(String.valueOf(UUID.randomUUID()));
         User newUser = UserDTO.mapUserDtoToUser(newUserDto);
         String secret = encodeUserPw(newUser.getPassword());
@@ -92,8 +93,10 @@ public class UserService {
                 .thenAccept((sent) -> saveNewUnregisteredUser(newUser))
                 .exceptionally(ex -> {
                     LOGGER.error(REGISTRATION_FAILED, newUserDto.getEmail());
+                    LOGGER.error(REGISTRATION_ERROR, ex);
                     return null;
                 });
+
     }
 
     private String encodeUserPw(String password) {
@@ -102,7 +105,7 @@ public class UserService {
     }
 
     private void saveNewUnregisteredUser(User newUser) {
-                if (isRegisteredEmailUnique(newUser.getEmail())){
+        if (isRegisteredEmailUnique(newUser.getEmail())){
             newUser = save(newUser);
             LOGGER.info("USER {} and EMAIL {} SUCCESSFULLY SAVED ON REGISTRATION", newUser.getEmail(), newUser.getEmail());
         } else {
@@ -115,9 +118,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public UserDTO emailChange(UserDTO userDto) {
+    public UserDTO emailChange(UserDTO userDto) throws ServiceException {
+        User newUser = null;
         userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
-        User newUser = getUser(userDto.getEmail());
+        newUser = getUser(userDto.getEmail());
         userDto.setEmail(userDto.getNewEmail());
         newUser.setNewEmail(userDto.getNewEmail());
         newUser.setActivationCode(userDto.getActivationCode());
@@ -178,7 +182,7 @@ public class UserService {
     }
 
 
-    private void sendEmailToNewUserEmailAddress(UserDTO userDto) {
+    private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException{
         mailService.sendEmailToNewEmailAccount(userDto);
     }
 
@@ -259,16 +263,17 @@ public class UserService {
         return userRepository.findByEmailAndActivationCode(mail, code);
     }
 
-    public void sendWelcomeEmail(UserDTO user) {
+    public void sendWelcomeEmail(UserDTO user) throws ServiceException {
         mailService.sendWelcomeEmail(user);
     }
 
     @Transactional(readOnly = false)
-    public void saveNewActionCode(User user) {
+    public void saveNewActionCode(User user) throws ServiceException {
         user.setActivationCode(String.valueOf(UUID.randomUUID()));
         user.setActivationDeadLineDate(LocalDateTime.now());
         final User savedUser = save(user);
         if (!savedUser.getActivationCode().equals(user.getActivationCode())) {
+            // TODO: 19.04.2022 überprüfen, ob hier die Exception geworfen wird
             GlobalControllerAdvisor.createServiceException("Could not save new activation code for user: " + user.getEmail());
         }
         mailService.sendRecoverEmail(UserDTO.mapUserToUserDto(user));
@@ -311,7 +316,7 @@ public class UserService {
                 .orElseThrow(() -> UserDetailsServiceImpl.throwUserNameNotFoundException(userId));
     }
 
-    public boolean lockUser(String userName) {
+    public boolean lockUser(String userName) throws ServiceException {
         User dbUser = (User) userDetailsService.loadUserByUsername(userName);
         dbUser.setEnabled(false);
         mailService.sendEmail(userName, "Account is locked", "account is locked", false);

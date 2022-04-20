@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.controller;
 
+import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.UnauthenticatedUserRecoverPassword;
@@ -75,10 +76,12 @@ public class PwRecoverController {
     }
 
     @PostMapping("/profile/user/recover/")
-    public String createActivationCodeAndSendMail(@RequestParam String userEmail, Model model) {
+    public String createActivationCodeAndSendMail(@RequestParam String userEmail, Model model) throws ServiceException {
         LOGGER.info("TRY TO CREATE ACTIVATION CODE AND SEND MAIL WITH EMAIL FOR PW-RECOVERING {}", userEmail);
-        userService.findUserById(userEmail)
-                .ifPresent(user -> userService.saveNewActionCode(user));
+        final Optional<User> user = userService.findUserById(userEmail);
+        if (user.isPresent()){
+            userService.saveNewActionCode(user.get());
+        }
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
         model.addAttribute(SUCCESS, true);

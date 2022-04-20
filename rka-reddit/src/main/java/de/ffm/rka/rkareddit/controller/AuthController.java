@@ -171,7 +171,7 @@ public class AuthController {
     @PostMapping(value = {REGISTRATION})
     public String userRegistration(@Validated(value = {UserValidationgroup.ValidationUserRegistration.class}) UserDTO userDto,
                                    BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res,
-                                   HttpServletRequest req, Model model) throws ExecutionException, InterruptedException {
+                                   HttpServletRequest req, Model model) throws ServiceException {
         LOGGER.info("TRY TO REGISTER {}", userDto);
         if (bindingResult.hasErrors()) {
             return manageValidationErrors(userDto, bindingResult, res, req, model);
@@ -185,10 +185,13 @@ public class AuthController {
     }
 
     @PostMapping("/user/recover/pw/")
-    public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model) {
+    public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model)
+            throws ServiceException {
         LOGGER.info("TRY TO RECOVER USER WITH EMAIL {}", userEmail);
-        userService.findUserById(userEmail)
-                .ifPresent(userService::saveNewActionCode);
+        final Optional<User> user = userService.findUserById(userEmail);
+        if (user.isPresent()){
+            userService.saveNewActionCode(user.get());
+        }
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
         attributes.addFlashAttribute(SUCCESS, true);
         LOGGER.info("RECOVERING USER PASSWORD SUCCESSFULLY {}", userEmail);
@@ -205,7 +208,7 @@ public class AuthController {
     public String userChangeEmail(@Validated(value = {UserValidationgroup.ValidationUserChangeEmail.class}) UserDTO userDto,
                                   BindingResult bindingResult, RedirectAttributes attributes,
                                   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse res,
-                                  HttpServletRequest req, Model model) {
+                                  HttpServletRequest req, Model model) throws ServiceException {
         LOGGER.info("TRY TO CHANGE EMAIL OF USER {}", userDto);
         if (bindingResult.hasErrors()) {
             setSameUserForLoginAndContent((User) userDetails, model);
