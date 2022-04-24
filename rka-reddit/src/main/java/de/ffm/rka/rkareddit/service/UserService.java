@@ -42,6 +42,9 @@ public class UserService {
     private static final int TARGET_WIDTH = 320;
     private static final String REGISTRATION_FAILED = "REGISTRATION FAILS ON SENDING EMAIL OR SAVING NEW USER: {}";
     private static final String REGISTRATION_ERROR = "REGISTRATION: {}";
+    private static final String REACTIVATION_FAILED = "USER %s WITH REACTIVATION-CODE %s HAS BEEN FAILED";
+    private static final String MAIL_ACTIVATION_FAILED = "USER %s FOR REGISTER-ACTIVATION WITH ACTIVATION-CODE %s HAS BEEN FAILED";
+
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final MailService mailService;
@@ -131,36 +134,56 @@ public class UserService {
         return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
     }
 
-    // TODO: 14.04.2022 wenn man sich normal registriert, soll nicht ein userDto des neu registrierten users zurückgegebe werden 
-    @Transactional(readOnly = false)
-    public UserDTO emailActivation(final String email, final String activationCode, final boolean isNewEmail)
+    public UserDTO emailReActivation(final String email, final String activationCode)
             throws ServiceException, RegisterException {
-        Optional<UserDTO> userDTO = Optional.empty();
+        final Optional<User> user = Optional.ofNullable(emailActivation(email, activationCode, true));
+        return user.map(foundUser ->UserDTO.mapUserToUserDto(foundUser))
+                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
+                        String.format(REACTIVATION_FAILED, email, activationCode)));
+
+
+    }
+
+    public UserDTO completeRegistration(final String email, final String activationCode)
+            throws ServiceException, RegisterException {
+        Optional.ofNullable(emailActivation(email, activationCode, false))
+                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(MAIL_ACTIVATION_FAILED,
+                        email, activationCode)));
+        return UserDTO.builder().build();
+    }
+
+
+    @Transactional(readOnly = false)
+    private User emailActivation(final String email, final String activationCode, final boolean isNewEmail)
+            throws ServiceException {
+        User newUser = null;
         final Optional<User> userForMailActivation = findUserForMailActivation(email, activationCode, isNewEmail);
         if (userForMailActivation.isPresent()) {
             final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff,
                     userForMailActivation.get().getActivationDeadLineDate());
             if (!behindDeadline) {
-                User newUser = userForMailActivation.get();
-                newUser.setEnabled(true);
-                newUser.setConfirmPassword(newUser.getPassword());
-                newUser.setEmail(isNewEmail ? newUser.getNewEmail() : newUser.getEmail());
-                newUser.setNewEmail(StringUtils.EMPTY);
-                newUser.setActivationCode(StringUtils.EMPTY);
-                newUser.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
+                newUser = prepareUserForActivation(email, isNewEmail, userForMailActivation.get());
+                // TODO: 20.04.2022 blockierte sendWelcomeEmail auslagern
+                sendWelcomeEmail(UserDTO.mapUserToUserDto(newUser));
                 save(newUser);
-                userDetailsService.reloadUserCredentials(email);
-                userDTO = Optional.of(UserDTO.mapUserToUserDto(newUser));
-                sendWelcomeEmail(userDTO.get());
             } else {
                 throw GlobalControllerAdvisor.createServiceException("Der Aktivierungslink für die Email ist abgelaufen");
             }
         } else {
             LOGGER.error("NO USER HAS BEEN FOUND ON EMAIL {} AND ACTIVATION CODE {}", email, activationCode);
         }
+        return newUser;
+    }
 
-        return userDTO.orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
-                String.format("USER %s WITH ACTIVATION-CODE %s HAS BEEN NOT ACTIVATED SUCCESSFULLY", email, activationCode)));
+    private User prepareUserForActivation(String email, boolean isNewEmail, User userForMailActivation) {
+        userForMailActivation.setEnabled(true);
+        userForMailActivation.setConfirmPassword(userForMailActivation.getPassword());
+        userForMailActivation.setEmail(isNewEmail ? userForMailActivation.getNewEmail() : userForMailActivation.getEmail());
+        userForMailActivation.setNewEmail(StringUtils.EMPTY);
+        userForMailActivation.setActivationCode(StringUtils.EMPTY);
+        userForMailActivation.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
+        userDetailsService.reloadUserCredentials(email);
+        return userForMailActivation;
     }
 
     private Optional<User> findUserForMailActivation(String email, String activationCode, boolean isNewEmail) {
