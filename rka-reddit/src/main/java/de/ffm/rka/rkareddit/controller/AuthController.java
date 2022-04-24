@@ -223,11 +223,11 @@ public class AuthController {
     }
 
     @GetMapping(value = {"/activation/{email}/{activationCode}"})
-    public String accountActivation(@PathVariable String email, @PathVariable String activationCode,
-                                    Model model) throws ServiceException, RegisterException {
+    public String completeRegistration(@PathVariable String email, @PathVariable String activationCode,
+                                       Model model) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
         String returnLink = "auth/activated";
-        UserDTO userDTO = userService.emailActivation(email, activationCode, false);
+        UserDTO userDTO = userService.completeRegistration(email, activationCode);
         model.addAttribute(LOGGED_IN_USER, userDTO);
         LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
         return returnLink;
@@ -236,7 +236,7 @@ public class AuthController {
     public String emailActivation(@PathVariable String email, @PathVariable String activationCode,
                                     Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT WITH NEW EMAIL {}", email);
-        UserDTO userDTO = userService.emailActivation(email, activationCode, true);
+        UserDTO userDTO = userService.emailReActivation(email, activationCode);
         attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
         attributes.addFlashAttribute(SUCCESS, true);
         model.addAttribute(LOGGED_IN_USER, userDTO);
