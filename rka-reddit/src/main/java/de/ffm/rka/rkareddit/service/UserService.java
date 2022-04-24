@@ -134,6 +134,7 @@ public class UserService {
         return UserDTO.mapUserToUserDto(userRepository.saveAndFlush(newUser));
     }
 
+    @Transactional(readOnly = false)
     public UserDTO emailReActivation(final String email, final String activationCode)
             throws ServiceException, RegisterException {
         final Optional<User> user = Optional.ofNullable(emailActivation(email, activationCode, true));
@@ -144,6 +145,7 @@ public class UserService {
 
     }
 
+    @Transactional(readOnly = false)
     public UserDTO completeRegistration(final String email, final String activationCode)
             throws ServiceException, RegisterException {
         Optional.ofNullable(emailActivation(email, activationCode, false))
@@ -166,6 +168,7 @@ public class UserService {
                 // TODO: 20.04.2022 blockierte sendWelcomeEmail auslagern
                 sendWelcomeEmail(UserDTO.mapUserToUserDto(newUser));
                 save(newUser);
+                userDetailsService.reloadUserCredentials(email);
             } else {
                 throw GlobalControllerAdvisor.createServiceException("Der Aktivierungslink für die Email ist abgelaufen");
             }
@@ -182,7 +185,6 @@ public class UserService {
         userForMailActivation.setNewEmail(StringUtils.EMPTY);
         userForMailActivation.setActivationCode(StringUtils.EMPTY);
         userForMailActivation.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
-        userDetailsService.reloadUserCredentials(email);
         return userForMailActivation;
     }
 
