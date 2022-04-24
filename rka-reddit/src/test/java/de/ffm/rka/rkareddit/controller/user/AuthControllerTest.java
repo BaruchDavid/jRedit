@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.exception.ServiceException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -421,7 +422,19 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(flash().attribute("success", true))
                 .andExpect(flash().attribute("redirectMessage", "you got email, check it out!"))
                 .andReturn();
+    }
 
+    @Test
+    public void activateChangedEmail() throws Exception {
+       final Optional<User> user = super.userService.findUserById("kaproma@yahoo.de");
+        user.map(userMailChanged -> {
+            userMailChanged.setNewEmail("romakap@yahoo.de");
+            return super.userService.save(userMailChanged);
+        }).orElseThrow(() -> new ServiceException("Testuser konnte nicht gespeichert werden"));
+        super.performGetRequest("/mailchange/romakap@yahoo.de/activation")
+                .andExpect(status().is(302))
+                .andExpect(flash().attribute("redirectMessage", "your new email has been activated"))
+                .andExpect(redirectedUrl("/profile/private"));
     }
 
     /**
