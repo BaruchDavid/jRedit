@@ -105,14 +105,6 @@ public class RegistrationTest extends MvcRequestSender {
     }
 
     @Test
-    public void changeEmailFromLinkTest() throws Exception {
-        super.performGetRequest("/mailchange/kaproma@yahoo.de/activation")
-                .andExpect(status().is(302))
-                .andExpect(flash().attribute("redirectMessage", "your new email has been activated"))
-                .andExpect(redirectedUrl("/profile/private"));
-    }
-
-    @Test
     public void changeCorruptedEmailFromLinkTest() throws Exception {
         super.performGetRequest("/mailchange/kaproooma@yahoo.de/activation")
                 .andExpect(status().is(302))
