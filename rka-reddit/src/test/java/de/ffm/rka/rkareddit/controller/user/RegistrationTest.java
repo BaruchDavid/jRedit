@@ -91,9 +91,17 @@ public class RegistrationTest extends MvcRequestSender {
     }
 
     @Test
-    public void mailAccountTest() throws Exception {
+    public void completeRegistrationOKtest() throws Exception {
        super.performGetRequest("/activation/kaproma@yahoo.de/activation")
-                .andExpect(view().name("auth/activated"));
+                .andExpect(view().name("auth/activated"))
+                .andExpect(model().attribute("userDto",UserDTO.builder().build()));
+    }
+
+    @Test
+    public void completeRegistrationFAILEDtest() throws Exception {
+       super.performGetRequest("/activation/kaprooooma@yahoo.de/activation")
+                .andExpect(view().name("redirect:/error/registrationError"))
+                .andExpect(status().is(302));
     }
 
     @Test
