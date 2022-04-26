@@ -43,6 +43,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
+    public void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     public static UsernameNotFoundException throwUserNameNotFoundException(String username) {
         LOGGER.error("USER {} could not be found", username);
         Supplier<UsernameNotFoundException> supplier = () -> new UsernameNotFoundException(username);
