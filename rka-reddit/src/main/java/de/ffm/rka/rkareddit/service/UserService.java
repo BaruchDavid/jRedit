@@ -80,14 +80,17 @@ public class UserService {
      * @throws ServiceException if registration fails
      */
     @Transactional(readOnly = false)
-    public void register(UserDTO newUserDto) throws ServiceException {
+    public void register(UserDTO newUserDto) throws ServiceException, IOException {
         newUserDto.setActivationCode(String.valueOf(UUID.randomUUID()));
         User newUser = UserDTO.mapUserDtoToUser(newUserDto);
         String secret = encodeUserPw(newUser.getPassword());
+        Optional<byte[]> pic = FileNIO.readPictureToByte("static/images/profile_small.png");
         newUser.setPassword(secret);
         newUser.setConfirmPassword(secret);
         newUser.addRole(roleService.findByName("ROLE_USER"));
         newUser.setActivationDeadLineDate(LocalDateTime.now().plusMinutes(5));
+        newUser.setProfileFoto(pic.orElse(new byte[0]));
+        newUser.setFotoCreationDate(LocalDateTime.now());
         LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
         mailService.sendActivationEmail(newUserDto)
                 .thenAccept(sent -> saveNewUnregisteredUser(newUser))
