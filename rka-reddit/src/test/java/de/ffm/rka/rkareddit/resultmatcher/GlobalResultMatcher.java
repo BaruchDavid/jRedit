@@ -48,7 +48,7 @@ public class GlobalResultMatcher extends ModelResultMatchers {
 	
     private BindingResult getBindingResult(ModelAndView mav, String name) {
         BindingResult result = (BindingResult) mav.getModel().get(BindingResult.MODEL_KEY_PREFIX + name);
-        assertTrue("No BindingResult for attribute: " + name, result != null);
+        assertNotNull("No BindingResult for attribute: " + name, result);
         assertTrue("No global errors for attribute: " + name, result.getGlobalErrorCount() > 0);
         return result;
     }

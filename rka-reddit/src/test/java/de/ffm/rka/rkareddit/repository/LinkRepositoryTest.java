@@ -68,10 +68,10 @@ public class LinkRepositoryTest {
 		link.addComment(comment);
 		final Link savedLink = linkRepository.save(link);
 		final Comment one = commentRepository.getOne(link.getComments().get(0).getCommentId());
-		assertTrue(comment.getCommentText().equals(one.getCommentText()));
-		assertTrue(hibernateStatistic.getEntityInsertCount()==2);
-		assertTrue(savedLink.equals(link));
-		assertTrue(savedLink.getComments().get(0).getCommentText().equals(comment.getCommentText()));
+		assertEquals(comment.getCommentText(), one.getCommentText());
+		assertEquals(2, hibernateStatistic.getEntityInsertCount());
+		assertEquals(savedLink, link);
+		assertEquals(savedLink.getComments().get(0).getCommentText(), comment.getCommentText());
 
 	}
 }

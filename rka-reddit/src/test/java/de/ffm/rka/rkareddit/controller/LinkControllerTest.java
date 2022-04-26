@@ -221,7 +221,7 @@ public class LinkControllerTest extends MvcRequestSender {
                 .andReturn();
         UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");
         assertEquals(userDto.getFullName(), usr.getFullName());
-        assertTrue(result.getModelAndView().getModel().get("newLink").toString().equals(link.toString()));
+        assertEquals(result.getModelAndView().getModel().get("newLink").toString(), link.toString());
     }
 
     @Test
