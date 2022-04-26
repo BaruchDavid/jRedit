@@ -4,7 +4,6 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
-import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -42,8 +41,7 @@ public class UserService {
     private static final int TARGET_WIDTH = 320;
     private static final String REGISTRATION_FAILED = "REGISTRATION FAILS ON SENDING EMAIL OR SAVING NEW USER: {}";
     private static final String REGISTRATION_ERROR = "REGISTRATION: {}";
-    private static final String REACTIVATION_FAILED = "USER %s WITH REACTIVATION-CODE %s HAS BEEN FAILED";
-    private static final String MAIL_ACTIVATION_FAILED = "USER %s FOR REGISTER-ACTIVATION WITH ACTIVATION-CODE %s HAS BEEN FAILED";
+
 
     private final UserRepository userRepository;
     private final RoleService roleService;
@@ -79,7 +77,6 @@ public class UserService {
      * decodes pw assign role set activation code
      * disable user before saving , send activation email register user
      *
-     * @return UserDTO
      * @throws ServiceException if registration fails
      */
     @Transactional(readOnly = false)
@@ -93,10 +90,10 @@ public class UserService {
         newUser.setActivationDeadLineDate(LocalDateTime.now().plusMinutes(5));
         LOGGER.info("User-Service Thread: {}", Thread.currentThread().getName());
         mailService.sendActivationEmail(newUserDto)
-                .thenAccept((sent) -> saveNewUnregisteredUser(newUser))
+                .thenAccept(sent -> saveNewUnregisteredUser(newUser))
                 .exceptionally(ex -> {
                     LOGGER.error(REGISTRATION_FAILED, newUserDto.getEmail());
-                    LOGGER.error(REGISTRATION_ERROR, ex);
+                    LOGGER.error(REGISTRATION_ERROR, ex.getMessage(), ex);
                     return null;
                 });
 
@@ -122,7 +119,7 @@ public class UserService {
 
     @Transactional(readOnly = false)
     public UserDTO emailChange(UserDTO userDto) throws ServiceException {
-        User newUser = null;
+        User newUser;
         userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
         newUser = getUser(userDto.getEmail());
         userDto.setEmail(userDto.getNewEmail());
@@ -135,28 +132,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public UserDTO emailReActivation(final String email, final String activationCode)
-            throws ServiceException, RegisterException {
-        final Optional<User> user = Optional.ofNullable(emailActivation(email, activationCode, true));
-        return user.map(foundUser ->UserDTO.mapUserToUserDto(foundUser))
-                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
-                        String.format(REACTIVATION_FAILED, email, activationCode)));
-
-
-    }
-
-    @Transactional(readOnly = false)
-    public UserDTO completeRegistration(final String email, final String activationCode)
-            throws ServiceException, RegisterException {
-        Optional.ofNullable(emailActivation(email, activationCode, false))
-                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(MAIL_ACTIVATION_FAILED,
-                        email, activationCode)));
-        return UserDTO.builder().build();
-    }
-
-
-    @Transactional(readOnly = false)
-    private User emailActivation(final String email, final String activationCode, final boolean isNewEmail)
+    public User emailActivation(final String email, final String activationCode, final boolean isNewEmail)
             throws ServiceException {
         User newUser = null;
         final Optional<User> userForMailActivation = findUserForMailActivation(email, activationCode, isNewEmail);
@@ -164,11 +140,11 @@ public class UserService {
             final boolean behindDeadline = TimeService.isBehindDeadline(maxTimeDiff,
                     userForMailActivation.get().getActivationDeadLineDate());
             if (!behindDeadline) {
-                newUser = prepareUserForActivation(email, isNewEmail, userForMailActivation.get());
+                newUser = prepareUserForActivation(isNewEmail, userForMailActivation.get());
                 // TODO: 20.04.2022 blockierte sendWelcomeEmail auslagern
                 sendWelcomeEmail(UserDTO.mapUserToUserDto(newUser));
                 save(newUser);
-                userDetailsService.reloadUserCredentials(email);
+
             } else {
                 throw GlobalControllerAdvisor.createServiceException("Der Aktivierungslink für die Email ist abgelaufen");
             }
@@ -178,7 +154,7 @@ public class UserService {
         return newUser;
     }
 
-    private User prepareUserForActivation(String email, boolean isNewEmail, User userForMailActivation) {
+    private User prepareUserForActivation(boolean isNewEmail, User userForMailActivation) {
         userForMailActivation.setEnabled(true);
         userForMailActivation.setConfirmPassword(userForMailActivation.getPassword());
         userForMailActivation.setEmail(isNewEmail ? userForMailActivation.getNewEmail() : userForMailActivation.getEmail());
