@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
@@ -170,13 +171,11 @@ public class AuthController {
     /**
      *
      * @return user
-     * @throws ExecutionException may be thrown
-     * @throws InterruptedException may be thrown
      */
     @PostMapping(value = {REGISTRATION})
     public String userRegistration(@Validated(value = {UserValidationgroup.ValidationUserRegistration.class}) UserDTO userDto,
                                    BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res,
-                                   HttpServletRequest req, Model model) throws ServiceException {
+                                   HttpServletRequest req, Model model) throws ServiceException, IOException {
         LOGGER.info("TRY TO REGISTER {}", userDto);
         if (bindingResult.hasErrors()) {
             return manageValidationErrors(userDto, bindingResult, res, req, model);
@@ -240,6 +239,8 @@ public class AuthController {
         LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
         return returnLink;
     }
+
+
     @GetMapping(value = {"/mailchange/{email}/{activationCode}"})
     public String emailActivation(@PathVariable String email, @PathVariable String activationCode,
                                     Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
