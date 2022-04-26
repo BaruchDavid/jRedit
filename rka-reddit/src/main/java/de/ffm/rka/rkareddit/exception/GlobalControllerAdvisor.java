@@ -1,6 +1,5 @@
 package de.ffm.rka.rkareddit.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.ErrorDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
@@ -42,8 +41,10 @@ public class GlobalControllerAdvisor {
     public static final String PAGE_NOT_FOUND = "error/pageNotFound";
     public static final String ANONYMOUS_USER = "anonymousUser";
     public static final String ANONYMOUS = "anonymous";
+    private static final String ERROR_WITH_ERROR_DTO = "/error?errorDTO=";
 
     UserDetailsServiceImpl userDetailsService;
+
     public GlobalControllerAdvisor(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
@@ -53,7 +54,7 @@ public class GlobalControllerAdvisor {
             IllegalArgumentException.class, IllegalAccessException.class,
             NumberFormatException.class, ServiceException.class, UsernameNotFoundException.class,
             Exception.class, PreAuthenticatedCredentialsNotFoundException.class})
-    public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) throws JsonProcessingException {
+    public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
         Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
         res.setHeader("location","/error");
         UserDTO user = new UserDTO();
@@ -72,8 +73,7 @@ public class GlobalControllerAdvisor {
             user.setFirstName("guest");
         }
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-        LOGGER.error("EXCEPTION TYPE {} OCCURRED: MESSAGE {} FOR USER {} ON REQUESTED URL {} : {}" +
-                       " STACKTRACE: {}",
+        LOGGER.error("EXCEPTION TYPE {} OCCURRED: FOR USER {} ON REQUESTED URL {} : {}",
                 exceptionType,
                 visitorName,
                 req.getMethod(),
@@ -102,7 +102,7 @@ public class GlobalControllerAdvisor {
                 errorDTO.setErrorStatus(HttpStatus.SC_BAD_REQUEST);
                 errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
-                errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
+                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO +encodedErrorDtoJson);
                 break;
             case "UserAuthenticationLostException":
             case "AuthenticationCredentialsNotFoundException":
@@ -115,12 +115,12 @@ public class GlobalControllerAdvisor {
                 errorDTO.setErrorStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
                 errorDTO.setErrorView(PAGE_NOT_FOUND);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
-                errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
+                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO+encodedErrorDtoJson);
                 break;
             case "ServiceException":
                 errorDTO.setErrorStatus(HttpStatus.SC_NOT_FOUND);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
-                errorDTO.setErrorEndPoint("/error?errorDTO="+encodedErrorDtoJson);
+                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO+encodedErrorDtoJson);
                 break;
             case "RegisterException":
                 res.setStatus(HttpStatus.SC_BAD_REQUEST);
@@ -149,12 +149,8 @@ public class GlobalControllerAdvisor {
     public ResponseEntity<String> defaultRestErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
         String responseBody = "Error occurred!";
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-        switch (exceptionType) {
-            case "IllegalVoteException":
-                responseBody = "illegal vote!";
-                break;
-            default:
-                break;
+        if("IllegalVoteException".equals(exceptionType)){
+            responseBody = "illegal vote!";
         }
         res.setStatus(HttpStatus.SC_BAD_REQUEST);
         LOGGER.error("ERROR ON {} WITH EXCEPTION {} AND RESPONSE-BODY {}", req.getRequestURI(), exception.getMessage(), responseBody);

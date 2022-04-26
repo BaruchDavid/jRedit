@@ -31,6 +31,7 @@ public class PwRecoverController {
     private static final String ERROR_MESSAGE = "Update user validation Error: {} message: {}";
     private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
     private final UserService userService;
+    private static final String NOT_LOGGED_IN = "notLoggedIn";
 
 
     public PwRecoverController(UserService userService) {
@@ -40,8 +41,8 @@ public class PwRecoverController {
 
     @GetMapping("/profile/user/recover/view")
     public String showRecoverUserPwRequest(Model model) {
-        LOGGER.info("SHOW VIEW FOR PASSWORD RECOVERING {}");
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
+        LOGGER.info("SHOW VIEW FOR PASSWORD RECOVERING");
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email(NOT_LOGGED_IN).build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
         return "recover/recoverUserPwRequest";
     }
@@ -49,7 +50,7 @@ public class PwRecoverController {
     @GetMapping("/profile/user/recover/{email}/{activationCode}")
     public String getPasswordRecoveryForm(@PathVariable String email, @PathVariable String activationCode, RedirectAttributes attributes, Model model)
             throws ServiceException {
-        LOGGER.info("TRY TO SHOW PW-RECOVER-VIEW FOR USER {} ON GIVEN ACTIVATION-CODE ", email, activationCode);
+        LOGGER.info("TRY TO SHOW PW-RECOVER-VIEW FOR USER {} ON GIVEN ACTIVATION-CODE {}", email, activationCode);
         String returnLink = "recover/passwordRecoveryForm";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
         final boolean isPwRecoveringExpired = userDTO
@@ -62,7 +63,7 @@ public class PwRecoverController {
             LOGGER.error("USER {} PASSED ACTIVATION-CODE {} FOR PW-RECOVERING NOT SUCCESSFULLY", email, activationCode);
             return "redirect:/error/pwRecover";
         } else {
-            model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
+            model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email(NOT_LOGGED_IN).build());
             model.addAttribute(CONTENT_USER, UserDTO.builder().email(email).build());
             LOGGER.error("USER {} PASSED ACTIVATION-CODE {} FOR PW-RECOVERING SUCCESSFULLY", email, activationCode);
             return returnLink;
@@ -82,7 +83,7 @@ public class PwRecoverController {
         if (user.isPresent()){
             userService.saveNewActionCode(user.get());
         }
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email("notLoggedIn").build());
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email(NOT_LOGGED_IN).build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());
         model.addAttribute(SUCCESS, true);
         LOGGER.info("ACTIVATION CODE AND SEND MAIL WITH EMAIL FOR PW-RECOVERING SUCCESSFUL {}", userEmail);
