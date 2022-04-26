@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
+import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.CommentService;
@@ -40,7 +41,7 @@ public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
     private static final String LOGGED_IN_USER = "userDto";
     private static final String CONTENT_USER = "userContent";
-
+    private static final String REGISTRATION_REQUEST = "You have done it. Please check your email to activate your account.";
     private static final String SUCCESS = "success";
     private static final String REGISTRATION = "/registration";
     private static final String REDIRECT_MESSAGE = "redirectMessage";
@@ -50,6 +51,10 @@ public class AuthController {
     private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
     private static final String NOT_LOGGED_IN = "";
     private static final String USER_VISIT_NO_CACHE_CONTROL = "cacheControl";
+    private static final String MAIL_ACTIVATION_FAILED = "USER %s FOR REGISTER-ACTIVATION WITH ACTIVATION-CODE %s HAS BEEN FAILED";
+    private static final String REACTIVATION_FAILED = "USER %s WITH REACTIVATION-CODE %s HAS BEEN FAILED";
+
+
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
     private final CommentService commentService;
@@ -179,6 +184,7 @@ public class AuthController {
             userService.register(userDto);
             model.addAttribute(LOGGED_IN_USER, userDto);
             attributes.addFlashAttribute(SUCCESS, true);
+            attributes.addFlashAttribute(REDIRECT_MESSAGE, REGISTRATION_REQUEST);
             LOGGER.info("REGISTER-REQUEST HAS BEEN DONE {}", userDto);
             return "redirect:".concat(REGISTRATION);
         }
@@ -227,8 +233,10 @@ public class AuthController {
                                        Model model) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
         String returnLink = "auth/activated";
-        UserDTO userDTO = userService.completeRegistration(email, activationCode);
-        model.addAttribute(LOGGED_IN_USER, userDTO);
+        Optional.ofNullable(userService.emailActivation(email, activationCode, false))
+                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(MAIL_ACTIVATION_FAILED,
+                        email, activationCode)));
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
         LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
         return returnLink;
     }
@@ -236,12 +244,16 @@ public class AuthController {
     public String emailActivation(@PathVariable String email, @PathVariable String activationCode,
                                     Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT WITH NEW EMAIL {}", email);
-        UserDTO userDTO = userService.emailReActivation(email, activationCode);
-        attributes.addFlashAttribute(REDIRECT_MESSAGE, "your new email has been activated");
-        attributes.addFlashAttribute(SUCCESS, true);
-        model.addAttribute(LOGGED_IN_USER, userDTO);
+
+
+        Optional.ofNullable(userService.emailActivation(email, activationCode, true))
+                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(REACTIVATION_FAILED, email, activationCode)));
+        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
         LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
-        return REDIRECT_TO_PRIVATE_PROFILE;
+        attributes.addFlashAttribute(SUCCESS, true);
+        attributes.addFlashAttribute(REDIRECT_MESSAGE, "Your new email is active! Please login");
+        userDetailsService.clearSecurityContext();
+        return "redirect:".concat("/links");
     }
 
 
