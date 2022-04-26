@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
 import static org.junit.Assert.fail;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -50,6 +52,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @SuppressWarnings("unchecked")
     @Test
     @WithUserDetails("kaproma@yahoo.de")
+    @DirtiesContext(methodMode = BEFORE_METHOD)
     public void showProfileOfUserAsAuthenticated() throws Exception {
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
                 .stream()
@@ -433,8 +436,8 @@ public class AuthControllerTest extends MvcRequestSender {
         }).orElseThrow(() -> new ServiceException("Testuser konnte nicht gespeichert werden"));
         super.performGetRequest("/mailchange/romakap@yahoo.de/activation")
                 .andExpect(status().is(302))
-                .andExpect(flash().attribute("redirectMessage", "your new email has been activated"))
-                .andExpect(redirectedUrl("/profile/private"));
+                .andExpect(flash().attribute("redirectMessage", "Your new email is active! Please login"))
+                .andExpect(redirectedUrl("/links"));
     }
 
     /**
