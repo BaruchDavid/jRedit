@@ -15,7 +15,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class HttpUtil {

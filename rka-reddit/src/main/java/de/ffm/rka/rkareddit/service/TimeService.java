@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalUnit;
 
 public class TimeService {
 
