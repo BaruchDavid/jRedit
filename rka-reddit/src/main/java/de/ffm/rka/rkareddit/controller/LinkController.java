@@ -44,6 +44,7 @@ public class LinkController {
 	private static final String SUCCESS = "success";
 	private static final String ERROR_MESSAGE = "error_message";
 	private static final String USER_DTO = "userDto";
+	private static final String REDIRECT_MESSAGE = "redirectMessage";
 	private final TagServiceImpl tagService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
@@ -71,6 +72,11 @@ public class LinkController {
 											.collect(Collectors.toList());
 		if(user != null) {
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
+		}
+		if (model.containsAttribute(SUCCESS)) {
+			model.addAttribute(SUCCESS, true);
+			model.addAttribute(REDIRECT_MESSAGE, model.asMap().get(REDIRECT_MESSAGE));
+			model.addAttribute(USER_DTO, UserDTO.builder().build());
 		}
 		
 		model.addAttribute("links",links);
