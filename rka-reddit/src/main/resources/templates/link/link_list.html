@@ -5,9 +5,16 @@
 </head>
 
 <body>
-   <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
     <div class="container">
 		<nav th:replace="~{layouts/main_layout :: nav}"></nav>
+        <div class="row" th:if="${success}" id="displayMessage">
+            <div class="col-md-3"></div>
+            <div id="displayRegMessage" class="col-md-6 alert alert-success" role="alert" >
+                <p th:text="${redirectMessage}">Welcome to your place!</p>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
         <!-- links -->
         <div class="row link" th:each="link : ${links}">
                 <div class="col-1">

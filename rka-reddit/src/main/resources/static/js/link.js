@@ -33,3 +33,9 @@ $('#findbutton').click(function(){
 		}
 	});
 });
+
+$( "#displayMessage" ).show(function() {
+setTimeout(() => {
+	$('#displayMessage').css('display', 'none');
+}, 3000);
+});
