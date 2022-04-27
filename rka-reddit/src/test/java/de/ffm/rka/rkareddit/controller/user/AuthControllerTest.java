@@ -581,7 +581,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 "confirmNewPassword=rororo&" +
                 "newPassword=rororo";
         super.performPutRequest("/profile/private/me/password", body)
-                .andDo(print()).andExpect(status().is(400))
+                .andExpect(status().is(400))
                 .andExpect(view().name("auth/passwordChange"))
                 .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "CorrectPassword"));
     }
