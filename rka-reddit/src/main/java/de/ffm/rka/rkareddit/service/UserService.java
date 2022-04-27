@@ -144,7 +144,6 @@ public class UserService {
                     userForMailActivation.get().getActivationDeadLineDate());
             if (!behindDeadline) {
                 newUser = prepareUserForActivation(isNewEmail, userForMailActivation.get());
-                // TODO: 20.04.2022 blockierte sendWelcomeEmail auslagern
                 sendWelcomeEmail(UserDTO.mapUserToUserDto(newUser));
                 save(newUser);
 
