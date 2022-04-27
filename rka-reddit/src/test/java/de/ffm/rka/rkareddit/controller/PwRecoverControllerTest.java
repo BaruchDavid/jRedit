@@ -10,17 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class PwRecoverControllerTest extends MvcRequestSender {
 
-
     private User loggedInUser;
-
 
     @Before
     public void setup() {
-
         if (loggedInUser == null) {
             loggedInUser = userService.findUserById("kaproma@yahoo.de").get();
         }
-
     }
 
 
@@ -49,6 +45,17 @@ public class PwRecoverControllerTest extends MvcRequestSender {
 
     @Test
     public void createActivationCodeAndSendMail() throws Exception {
+        String body = "userEmail=kaproma@yahoo.de";
+        super.performPostRequest("/profile/user/recover/", body)
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("success", true))
+                .andExpect(model().attribute("userDto", UserDTO.builder().email("notLoggedIn").build()))
+                .andExpect(model().attribute("userContent", UserDTO.builder().firstName("Guest").build()))
+                .andExpect(view().name("recover/recoverUserPwRequestApplied"));
+    }
+
+    @Test
+    public void createWrongActivationCodeAndSendMail() throws Exception {
         String body = "userEmail=kaproma@yahoo.de";
         super.performPostRequest("/profile/user/recover/", body)
                 .andExpect(status().is(200))

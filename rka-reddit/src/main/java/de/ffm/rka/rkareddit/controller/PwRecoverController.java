@@ -76,6 +76,13 @@ public class PwRecoverController {
         return "/error/pwRecoverError";
     }
 
+    /**
+     * when user forget his credentials for login
+     * @param userEmail for recovering
+     * @param model to saving data for view
+     * @return view
+     * @throws ServiceException if new activation code could not be saved
+     */
     @PostMapping("/profile/user/recover/")
     public String createActivationCodeAndSendMail(@RequestParam String userEmail, Model model) throws ServiceException {
         LOGGER.info("TRY TO CREATE ACTIVATION CODE AND SEND MAIL WITH EMAIL FOR PW-RECOVERING {}", userEmail);
