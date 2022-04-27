@@ -276,8 +276,8 @@ public class UserService {
         user.setActivationDeadLineDate(LocalDateTime.now());
         final User savedUser = save(user);
         if (!savedUser.getActivationCode().equals(user.getActivationCode())) {
-            // TODO: 19.04.2022 überprüfen, ob hier die Exception geworfen wird
-            GlobalControllerAdvisor.createServiceException("Could not save new activation code for user: " + user.getEmail());
+            throw GlobalControllerAdvisor.createServiceException(
+                    "Could not save new activation code for user: "+ user.getEmail());
         }
         mailService.sendRecoverEmail(UserDTO.mapUserToUserDto(user));
     }
