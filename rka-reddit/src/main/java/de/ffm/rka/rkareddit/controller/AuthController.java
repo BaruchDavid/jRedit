@@ -188,21 +188,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/user/recover/pw/")
-    public String createActivationCodeAndSendMail(@RequestParam String userEmail, RedirectAttributes attributes, Model model)
-            throws ServiceException {
-        LOGGER.info("TRY TO RECOVER USER WITH EMAIL {}", userEmail);
-        final Optional<User> user = userService.findUserById(userEmail);
-        if (user.isPresent()){
-            userService.saveNewActionCode(user.get());
-        }
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
-        attributes.addFlashAttribute(SUCCESS, true);
-        LOGGER.info("RECOVERING USER PASSWORD SUCCESSFULLY {}", userEmail);
-        return "recover/recoverUserPwRequestApplied";
-
-    }
-
     /**
      *
      * user changes own email address
