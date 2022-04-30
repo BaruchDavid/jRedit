@@ -1,3 +1,6 @@
+body {
+  overflow-y: scroll;
+}
 #drop-area {
   border: 2px dashed #ccc;
   border-radius: 20px;
