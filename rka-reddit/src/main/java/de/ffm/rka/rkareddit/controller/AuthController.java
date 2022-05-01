@@ -23,12 +23,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
@@ -41,9 +43,7 @@ public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
     private static final String LOGGED_IN_USER = "userDto";
     private static final String CONTENT_USER = "userContent";
-    private static final String REGISTRATION_REQUEST = "You have done it. Please check your email to activate your account.";
     private static final String SUCCESS = "success";
-    private static final String REGISTRATION = "/registration";
     private static final String REDIRECT_MESSAGE = "redirectMessage";
     private static final String BINDING_ERROR = "bindingError";
     private static final String VALIDATION_ERRORS = "validationErrors";
@@ -51,7 +51,6 @@ public class AuthController {
     private static final String REDIRECT_TO_PRIVATE_PROFILE = "redirect:/profile/private";
     private static final String NOT_LOGGED_IN = "";
     private static final String USER_VISIT_NO_CACHE_CONTROL = "cacheControl";
-    private static final String MAIL_ACTIVATION_FAILED = "USER %s FOR REGISTER-ACTIVATION WITH ACTIVATION-CODE %s HAS BEEN FAILED";
     private static final String REACTIVATION_FAILED = "USER %s WITH REACTIVATION-CODE %s HAS BEEN FAILED";
 
 
@@ -156,38 +155,6 @@ public class AuthController {
         return "auth/profileComments";
     }
 
-
-    /**
-     * @param model to save userDto object
-     * @return view for registration
-     */
-    @GetMapping(value = {REGISTRATION, REGISTRATION + "/"})
-    public String registration(Model model) {
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
-        return "auth/register";
-    }
-
-    /**
-     *
-     * @return user
-     */
-    @PostMapping(value = {REGISTRATION})
-    public String userRegistration(@Validated(value = {UserValidationgroup.ValidationUserRegistration.class}) UserDTO userDto,
-                                   BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res,
-                                   HttpServletRequest req, Model model) throws ServiceException, IOException {
-        LOGGER.info("TRY TO REGISTER {}", userDto);
-        if (bindingResult.hasErrors()) {
-            return manageValidationErrors(userDto, bindingResult, res, req, model);
-        } else {
-            userService.register(userDto);
-            model.addAttribute(LOGGED_IN_USER, userDto);
-            attributes.addFlashAttribute(SUCCESS, true);
-            attributes.addFlashAttribute(REDIRECT_MESSAGE, REGISTRATION_REQUEST);
-            LOGGER.info("REGISTER-REQUEST HAS BEEN DONE {}", userDto);
-            return "redirect:".concat(REGISTRATION);
-        }
-    }
-
     /**
      *
      * user changes own email address
@@ -211,28 +178,13 @@ public class AuthController {
         }
     }
 
-    @GetMapping(value = {"/activation/{email}/{activationCode}"})
-    public String completeRegistration(@PathVariable String email, @PathVariable String activationCode,
-                                       Model model) throws ServiceException, RegisterException {
-        LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-        String returnLink = "auth/activated";
-        Optional.ofNullable(userService.emailActivation(email, activationCode, false))
-                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(MAIL_ACTIVATION_FAILED,
-                        email, activationCode)));
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
-        LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
-        return returnLink;
-    }
-
-
     @GetMapping(value = {"/mailchange/{email}/{activationCode}"})
     public String emailActivation(@PathVariable String email, @PathVariable String activationCode,
                                     Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT WITH NEW EMAIL {}", email);
-
-
         Optional.ofNullable(userService.emailActivation(email, activationCode, true))
-                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(REACTIVATION_FAILED, email, activationCode)));
+                .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
+                        String.format(REACTIVATION_FAILED, email, activationCode)));
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
         LOGGER.info("USER {} HAS BEEN ACTIVATED SUCCESSFULLY", email);
         attributes.addFlashAttribute(SUCCESS, true);
@@ -247,7 +199,6 @@ public class AuthController {
     public String getPasswordRecoveryView(@PathVariable String email, @PathVariable String activationCode, Model model)
             throws ServiceException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
-
         String returnLink = "recover/passwordRecovery";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
         if (userDTO.isPresent()) {
