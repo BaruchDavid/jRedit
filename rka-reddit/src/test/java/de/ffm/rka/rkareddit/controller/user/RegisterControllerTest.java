@@ -11,7 +11,7 @@ import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalError
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-public class RegistrationTest extends MvcRequestSender {
+public class RegisterControllerTest extends MvcRequestSender {
 
     private User loggedInUser;
 
