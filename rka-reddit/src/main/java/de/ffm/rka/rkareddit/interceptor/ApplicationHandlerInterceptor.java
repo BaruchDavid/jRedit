@@ -3,8 +3,8 @@ package de.ffm.rka.rkareddit.interceptor;
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -36,10 +36,10 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		LOGGER.info("REMOTE ADDRESS {} AS USER {} ACCESS IN PRE HANDLE-INTERCEPTOR TO {} "
-				+ " {} WITH STATUS: {}", request.getRemoteAddr(), SecurityContextHolder.getContext().getAuthentication().getPrincipal(),
-					request.getMethod(),  request.getRequestURL(), response.getStatus());
-		
+		MDC.put("session_id", request.getSession().getId());
+		MDC.put("user_ip", request.getRemoteAddr());
+		LOGGER.info("ACCESS IN PRE HANDLE-INTERCEPTOR TO {} {} WITH STATUS: {}", request.getMethod(),
+				request.getRequestURL(), response.getStatus());
 		if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
             if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
@@ -84,11 +84,12 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
+			ModelAndView modelAndView) {
 		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
 			LOGGER.info("REMOTE ADDRESS {} ACCESS IN POST HANDLE-INTERCEPTOR TO {} "
 						+ "PAGE NOT FOUND  {} WITH STATUS: {}", request.getRemoteAddr(),
 							request.getMethod(),  request.getRequestURL(), response.getStatus());
 		}
+		MDC.clear();
 	}
 }

@@ -13,7 +13,7 @@
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
-				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - tx.id=%X{transaction.id} tx.owner=%X{transaction.owner} %n
+				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - session_id=%X{session_id} user_ip=%X{user_ip}%n
 			</Pattern>
 		</encoder>
 		<rollingPolicy
@@ -31,7 +31,7 @@
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>
-				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - tx.id=%X{transaction.id} tx.owner=%X{transaction.owner} %n
+				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - session_id=%X{session_id} user_ip=%X{user_ip}%n
 			</pattern>
 			<charset>utf8</charset>
 		</encoder>
