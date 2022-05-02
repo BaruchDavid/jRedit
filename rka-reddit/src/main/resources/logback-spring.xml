@@ -13,8 +13,7 @@
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
-				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level
-				%logger{36}.%M - %msg%n
+				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - tx.id=%X{transaction.id} tx.owner=%X{transaction.owner} %n
 			</Pattern>
 		</encoder>
 		<rollingPolicy
@@ -32,7 +31,7 @@
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>
-				%d{HH:mm:ss.SSS} | %5p | %logger{25} | %m%n
+				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - tx.id=%X{transaction.id} tx.owner=%X{transaction.owner} %n
 			</pattern>
 			<charset>utf8</charset>
 		</encoder>
@@ -42,9 +41,9 @@
 
 	<springProfile name="test">
 		
-		<logger name="org.hibernate.SQL" level="INFO" />
-    	<logger name="org.hibernate.type" level="INFO" />
-    	<logger name="org.springframework.security" level="INFO" />
+		<logger name="org.hibernate.SQL" level="WARN" />
+    	<logger name="org.hibernate.type" level="WARN" />
+    	<logger name="org.springframework.security" level="WARN" />
 		<logger name="Hypersistence Optimizer" level="info"/>
 		<root level="INFO">
 			<appender-ref ref="CONSOLE" />
