@@ -5,6 +5,11 @@
     border-top: 7px solid #6db33f;
 }
 
+.s-btn {
+    background-color: #ffffff;
+    padding: 5px 9px;
+    color: black!important;
+}
 nav .nav-item {
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
