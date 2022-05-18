@@ -86,6 +86,9 @@ INSERT INTO users_roles(user_Id, role_Id)
 VALUES(2, 1);
 
 INSERT INTO users_roles(user_Id, role_Id)
+VALUES(2, 4);
+
+INSERT INTO users_roles(user_Id, role_Id)
 VALUES(2, 2);
 
 INSERT INTO users_roles(user_Id, role_Id)
