@@ -20,19 +20,6 @@ $(function() {
 	});
 });
 
-$('#findbutton').click(function(){
-	$.ajax({
-		url : "/jReditt/links/link/",
-		type : 'get',
-		dataType : "text",
-		data : {
-			search : request.term
-		},
-		success : function(data) {
-			response(JSON.parse(data));
-		}
-	});
-});
 
 $( "#displayMessage" ).show(function() {
 setTimeout(() => {
