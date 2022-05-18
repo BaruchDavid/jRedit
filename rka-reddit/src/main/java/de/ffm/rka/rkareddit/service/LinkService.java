@@ -86,7 +86,12 @@ public class LinkService {
 	public Link findLinkWithTags(final String signature) throws ServiceException {
 		final long id = LinkDTO.convertEpochSecToLinkId(signature);
 		return  linkRepository.findTagsForLink(id);
+	}
 
+	public Set<LinkDTO> findLinkOnTags(final String tag) {
+		Set<LinkDTO> linkDto = new HashSet<>();
+		linkRepository.findLinksOnTag(tag).forEach(link -> linkDto.add(LinkDTO.mapLinkToDto(link)));
+		return  linkDto;
 	}
 
 	public Optional<Set<Link>> findLinksWithCommentsByLinkIds(Set<Long> linkIds){

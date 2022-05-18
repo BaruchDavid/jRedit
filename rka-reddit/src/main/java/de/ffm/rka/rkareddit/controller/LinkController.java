@@ -23,15 +23,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -85,6 +83,28 @@ public class LinkController {
 	}
 
 	/**
+	 * @return view
+	 */
+	@GetMapping("/fetch/links")
+	public String linkWithTags(@RequestParam String tag,
+							   @PageableDefault(size = 6,
+									   direction = Sort.Direction.DESC,
+									   sort = "creationDate") Pageable page,
+							   Model model) {
+		final Set<LinkDTO> linkOnTags = linkService.findLinkOnTags(tag);
+		final Page<LinkDTO> pageLink = null; //new PageImpl<>(linkOnTags, page, pageLink.getTotalElements());;
+		LOGGER.info("{} Links has been found for start page", pageLink.getContent().size());
+		List<Integer> totalPages = IntStream.rangeClosed(1, pageLink.getTotalPages())
+				.boxed()
+				.collect(Collectors.toList());
+		model.addAttribute("links",linkOnTags);
+		model.addAttribute("pageNumbers",totalPages);
+		return "link/link_list";
+
+	}
+
+
+	/**
 	 *
 	 * @param model save data for view
 	 * @param signature for linkDTO
@@ -117,7 +137,6 @@ public class LinkController {
 			model.addAttribute(ERROR_MESSAGE, model.asMap().get(ERROR_MESSAGE));
 		}
 		return "link/link_view";
-
 	}
 
 
@@ -163,14 +182,4 @@ public class LinkController {
 		return tagService.findSuitableTags(search);
 	}
 
-	/**
-	 * NOT IN USE WITH GUI
-	 * @param signature for link
-	 * @return view
-	 */
-	@GetMapping("/links/link/NOT_IN_USE_FOR_GUI_JUST_NOW/{signature}")
-	public String linkWithTags(@PathVariable String signature) throws ServiceException {
-		linkService.findLinkWithTags(signature);
-		return "link/link_view";
-	}
 }
