@@ -56,4 +56,15 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 			+ "JOIN FETCH com.user usr "
 			+ "WHERE usr.email =:email ")
     Set<Link> findLinkWithUserComments(@Param("email") String username);
+
+
+	@Query(value = "SELECT l " +
+					"FROM Link l " +
+					"LEFT OUTER JOIN " +
+					"FETCH l.tags relTable " +
+					"WHERE relTable.tagId IN (SELECT tagId " +
+											"FROM Tag " +
+											"WHERE tagName =:tag)")
+	Set<Link> findLinksOnTag(@Param("tag") String tag);
+
 }
