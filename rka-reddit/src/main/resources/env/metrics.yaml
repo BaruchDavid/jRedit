@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  grafana:
+    build: './docker'
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../skylink.p12:/etc/prometheus/skylink.p12
+      - ../skylink.cert:/etc/prometheus/skylink.cert
+      - ../skylink.key:/etc/prometheus/skylink.key
+    user: 'root'
+    networks:
+      monitoring:
+        aliases:
+          - prometheus
+networks:
+  monitoring:
