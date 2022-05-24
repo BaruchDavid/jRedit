@@ -80,7 +80,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
 							.antMatchers(HttpMethod.POST, "/links/link").hasRole(USER.name())
 							.antMatchers(HttpMethod.POST, "/comments/comment").hasRole(USER.name())
 							.antMatchers("/data/h2-console/**").hasRole(DBA.name())
-							.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
+							//.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR.name())
 			.and()
 				.requiresChannel(requestRegistry -> requestRegistry.anyRequest().requiresSecure())
 				.authorizeRequests(interceptUrlRegistry -> interceptUrlRegistry.anyRequest().permitAll())
