@@ -70,10 +70,10 @@
                         <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
-                     <table style="display:none">
+                     <table > <!--style="display:none"-->
 	                     <tbody>
-		                     <tr th:each="book, itemStat : *{tags}">
-		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagId}" /></td>
+		                     <tr th:each="item, itemStat : *{tags}">
+		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagNum}" /></td>
 		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagName}" /></td>
 		                	</tr>
 	                     </tbody>
