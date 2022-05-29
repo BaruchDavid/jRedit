@@ -142,12 +142,12 @@ public class LinkController {
 
 	@GetMapping("/links/link")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
-		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));		
-		Link link = new Link();
+		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
+		LinkDTO linkDTO = new LinkDTO();
 		for(int i=0; i<4; ++i) {
-			link.addTag(Tag.builder().tagName("").build());
+			linkDTO.getTags().add(Tag.builder().tagName("").build());
 		}
-		model.addAttribute(NEW_LINK, link);
+		model.addAttribute(NEW_LINK, linkDTO);
 		return SUBMIT_LINK;
 	}
 
