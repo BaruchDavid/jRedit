@@ -107,11 +107,6 @@ public class LinkService {
 
 		Link link = LinkDTO.getMapDtoToLink(linkDto);
 		link.setUser((User)userDetailsService.loadUserByUsername(username));
-		List<Tag> tags = new ArrayList<>();
-		linkDto.getTags().stream()
-					  .filter( tag -> tag.getTagName().isEmpty())
-					  .forEach(tags::add);
-		link.getTags().removeAll(tags);
 		link.getTags().forEach(tag -> tag.getLinks().add(link));
 		LOGGER.debug("TRY TO SAVE LINK {}", link);
 		Link newLink = linkRepository.save(link);
