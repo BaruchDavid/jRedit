@@ -1,10 +1,10 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.domain.dto.TagDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.CommentService;
@@ -145,7 +145,7 @@ public class LinkController {
 		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));
 		LinkDTO linkDTO = new LinkDTO();
 		for(int i=0; i<4; ++i) {
-			linkDTO.getTags().add(Tag.builder().tagName("").build());
+			linkDTO.getTags().add(TagDTO.builder().tagName("").build());
 		}
 		model.addAttribute(NEW_LINK, linkDTO);
 		return SUBMIT_LINK;

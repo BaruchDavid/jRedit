@@ -89,7 +89,7 @@ public class LinkDTO implements Serializable {
      * don't call childElementUser for de/serialize json
      */
     @JsonIgnore
-    private List<Tag> tags = new ArrayList<>();
+    private List<TagDTO> tags = new ArrayList<>();
 
     /**
      * don't call childElementUser for de/serialize json
