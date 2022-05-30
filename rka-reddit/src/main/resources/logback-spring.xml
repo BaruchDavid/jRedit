@@ -31,7 +31,7 @@
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>
-				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - session_id=%X{session_id} user_ip=%X{user_ip}%n
+				%yellow(%d) | %cyan(%t) | %5p | %logger{25} | %m - session_id=%X{session_id} user_ip=%X{user_ip}%n
 			</pattern>
 			<charset>utf8</charset>
 		</encoder>
