@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
   grafana:
-    build: './docker'
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile
     ports:
       - 3000:3000
     volumes:
@@ -20,9 +22,9 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ../skylink.p12:/etc/prometheus/skylink.p12
-      - ../skylink.cert:/etc/prometheus/skylink.cert
-      - ../skylink.key:/etc/prometheus/skylink.key
+      - ./cert/skylink.p12:/etc/prometheus/skylink.p12
+      - ./cert/skylink.cert:/etc/prometheus/skylink.cert
+      - ./cert/skylink.key:/etc/prometheus/skylink.key
     user: 'root'
     networks:
       monitoring:
