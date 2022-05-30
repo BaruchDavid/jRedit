@@ -1,2 +1,2 @@
 FROM grafana/grafana
-#ADD ./provisioning /etc/grafana/provisioning
+COPY ../cert/ /etc/grafana/
