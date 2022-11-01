@@ -1,0 +1,24 @@
+==== Ansible in WSL installieren
+
+[source]
+----
+sudo apt install ansible
+----
+
+==== Existierende Datei verschlüsseln
+
+Die Datei wird dann unlesbar.
+
+[source]
+----
+ansible-vault encrypt skylink.key
+----
+
+==== Existierende Datei entschlüsseln
+
+Die Datei wird dann unlesbar.
+
+[source]
+----
+ansible-vault decrypt skylink.key
+----
