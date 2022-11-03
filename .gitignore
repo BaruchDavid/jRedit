@@ -3,5 +3,6 @@
 .idea/
 #das ist ein Kommentar
 rka-reddit/src/main/resources/env/cert/linkssky.cert
+
 rka-reddit/src/main/resources/env/cert/linkssky.key
 rka-reddit/src/main/resources/env/cert/linkssky.p12
