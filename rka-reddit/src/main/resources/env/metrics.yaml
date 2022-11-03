@@ -22,9 +22,9 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./cert/skylink.p12:/etc/prometheus/skylink.p12
-      - ./cert/skylink.cert:/etc/prometheus/skylink.cert
-      - ./cert/skylink.key:/etc/prometheus/skylink.key
+      - ./cert/linkssky.p12:/etc/prometheus/linkssky.p12
+      - ./cert/linkssky.cert:/etc/prometheus/linkssky.cert
+      - ./cert/linkssky.key:/etc/prometheus/linkssky.key
     user: 'root'
     networks:
       monitoring:
