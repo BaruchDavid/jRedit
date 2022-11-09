@@ -72,7 +72,7 @@
 			<h2 style="text-align: center;" class="display-4">SkyLink</h2>
 			<div class="fieldwrapper">
 				<input id="field_location" class="field" name="searchTerm" type="text" value="">
-				<a  class="s-btn" onclick = "this.href='fetch/links?tag=' + document.getElementById('field_location').value">Find</a>
+				<a  class="s-btn" th:href="@{links?searchTag='Java'}">Find</a>
 			</div>
 		</div>
 		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
