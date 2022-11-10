@@ -29,7 +29,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -62,8 +61,9 @@ public class LinkController {
 	 */
 	@GetMapping({"/","", "/links/", "/links"})
 	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
+						@RequestParam(name = "searchTag", required = false, defaultValue = "") String searchTag,
 						@AuthenticationPrincipal UserDetails user, Model model) {
-		Page<LinkDTO> links = linkService.fetchAllLinksWithUsers(page);
+		Page<LinkDTO> links = linkService.fetchLinksWithUsers(page, searchTag);
 		LOGGER.info("{} Links has been found for start page", links.getContent().size());
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
 											.boxed()
@@ -81,28 +81,6 @@ public class LinkController {
  		model.addAttribute("pageNumbers",totalPages);	
 		return "link/link_list";
 	}
-
-	/**
-	 * @return view
-	 */
-	@GetMapping("/fetch/links")
-	public String linkWithTags(@RequestParam String tag,
-							   @PageableDefault(size = 6,
-									   direction = Sort.Direction.DESC,
-									   sort = "creationDate") Pageable page,
-							   Model model) {
-		final Set<LinkDTO> linkOnTags = linkService.findLinkOnTags(tag);
-		final Page<LinkDTO> pageLink = null; //new PageImpl<>(linkOnTags, page, pageLink.getTotalElements());;
-		LOGGER.info("{} Links has been found for start page", pageLink.getContent().size());
-		List<Integer> totalPages = IntStream.rangeClosed(1, pageLink.getTotalPages())
-				.boxed()
-				.collect(Collectors.toList());
-		model.addAttribute("links",linkOnTags);
-		model.addAttribute("pageNumbers",totalPages);
-		return "link/link_list";
-
-	}
-
 
 	/**
 	 *
@@ -139,7 +117,12 @@ public class LinkController {
 		return "link/link_view";
 	}
 
-
+	/**
+	 * view for entering data for new link
+	 * @param user
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/links/link")
 	public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
 		model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto((User)user));

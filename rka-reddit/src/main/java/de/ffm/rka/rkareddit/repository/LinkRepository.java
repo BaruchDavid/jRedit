@@ -29,9 +29,6 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 
     Optional<Link> findByLinkId(long id);
 
-    @Query("SELECT link FROM Link link WHERE link.linkId =:id")
-    Optional<Link> findLinkById(@Param("id") long id);
-
     @Query("SELECT l "
     		+ "FROM Link l "
     		+ "INNER JOIN FETCH l.tags "
@@ -61,10 +58,10 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 	@Query(value = "SELECT l " +
 					"FROM Link l " +
 					"LEFT OUTER JOIN " +
-					"FETCH l.tags relTable " +
+					"l.tags relTable " +
 					"WHERE relTable.tagId IN (SELECT tagId " +
 											"FROM Tag " +
 											"WHERE tagName =:tag)")
-	Set<Link> findLinksOnTag(@Param("tag") String tag);
+	Page<Link> findLinksOnTag(@Param("tag") String tag, Pageable pageable);
 
 }

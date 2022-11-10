@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
@@ -39,23 +38,6 @@ public class LinkService {
 		this.userDetailsService = userDetailsService;
 	}
 
-	/**
-	 * return all available links
-	 */
-	public Optional<List<Link>> findAllLinks(){
-		List<Link> links = linkRepository.findAll();
-		LOGGER.info("Found {} links", links.size());
-		return Optional.ofNullable(links);
-	}
-
-	/**
-	 * return all available links
-	 */
-	public LinkDTO findLinkBySignature(final String signature) throws ServiceException {
-		Link linkModel = findLinkModelWithUser(signature);
-		return LinkDTO.mapFullyLinkToDto(linkModel);
-	}
-
 	public Link findLinkModelBySignature(final String signature) throws ServiceException {
 		return findLinkModelWithUser(signature);
 	}
@@ -86,12 +68,6 @@ public class LinkService {
 	public Link findLinkWithTags(final String signature) throws ServiceException {
 		final long id = LinkDTO.convertEpochSecToLinkId(signature);
 		return  linkRepository.findTagsForLink(id);
-	}
-
-	public Set<LinkDTO> findLinkOnTags(final String tag) {
-		Set<LinkDTO> linkDto = new HashSet<>();
-		linkRepository.findLinksOnTag(tag).forEach(link -> linkDto.add(LinkDTO.mapLinkToDto(link)));
-		return  linkDto;
 	}
 
 	public Optional<Set<Link>> findLinksWithCommentsByLinkIds(Set<Long> linkIds){
@@ -131,8 +107,10 @@ public class LinkService {
 	 * @param pageable, number for one page
 	 * @return linkDto objects as PageImpl
 	 */
-	public Page<LinkDTO> fetchAllLinksWithUsers(Pageable pageable){
-		Page<Link> ln = linkRepository.findAll(pageable);
+	public Page<LinkDTO> fetchLinksWithUsers(Pageable pageable, String searchTag){
+
+		Page<Link> ln = searchTag.isEmpty() ?  linkRepository.findAll(pageable)
+				: linkRepository.findLinksOnTag(searchTag, pageable);
 		Set<Link> linksWithComments = this.findLinksWithCommentsByLinkIds(getLinkIds(new HashSet<>(ln.getContent())))
 											.orElseGet(Collections::emptySet);
 		List<LinkDTO> links = linksWithComments.stream()
@@ -145,14 +123,5 @@ public class LinkService {
 		return links.stream()
 					.map(Link::getLinkId)
 					.collect(Collectors.toSet());
-	}
-
-	public List<Link> fetchAllLinksNoDTOWithUsersCommentsVotes(Pageable pageable){
-		Page<Link> ln = linkRepository.findAll(pageable);
-		return ln.getContent();
-	}
-
-	public Set<Link> findLinksWithOwnComments(String username) {
-		return linkRepository.findLinkWithUserComments(username);
 	}
 }
