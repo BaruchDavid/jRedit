@@ -70,14 +70,22 @@ public class Link extends Auditable implements Serializable {
     @JsonIgnore
     private Set<User> usersLinksHistory = new HashSet<>();
 
-
+    /**
+     * Many-Seite von der Beziehung: Ein User hat viele Links.
+     * JoinColumn stellt die unidirektionale Beziehung zur User her.
+     * Das ist der Owner-Side der Beziehung zwischen
+     * User und Link.
+     * Normaleweise hat die 'many'-Seite das Ownership
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 
     /**
-     * Comment is a owner cause of mappedBy argument
+     * mappedBy stellt eine Referenz zum Attribut auf der anderen
+     * Seite der Beziehung. In der Entität 'Comment' gibt es
+     * das Attribut 'link' und der wird beim 'mappedBy' angegeben
      */
     @Builder.Default
     @OneToMany(mappedBy = "link",

@@ -64,7 +64,15 @@ public class User extends Auditable implements UserDetails, Serializable {
 	private  String newEmail;
 
 	/**
-	 * Link is a owner of this Relation
+	 * mappedBy stellt die bidirektionale Verbindung
+	 * bei der Beziehung 'ein User hat viele Links'
+	 * und kennzeichnet, dass 'Link' der Owner
+	 * von der Beziehung ist.
+	 * Und der Wert 'user' ist die Referenz auf der
+	 * anderen Seite der Entität 'Link'
+	 * Man muss angeben, auf welches Feld in der Entität
+	 * gemappt werden soll
+	 * https://javabydeveloper.com/difference-between-joincolumn-and-mappedby/
 	 */
 	@Builder.Default
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
