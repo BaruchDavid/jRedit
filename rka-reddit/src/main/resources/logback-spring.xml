@@ -40,9 +40,14 @@
 
 
 	<springProfile name="test">
-		
-		<logger name="org.hibernate.SQL" level="WARN" />
-    	<logger name="org.hibernate.type" level="WARN" />
+
+		<!--SHOW SQL STATMENTS-->
+		<logger name="org.hibernate.SQL" level="DEBUG" />
+
+		<!--logging of values bound to parameters of the prepared statements-->
+		<!--<logger name="org.hibernate.type" level="DEBUG" />-->
+
+
     	<logger name="org.springframework.security" level="WARN" />
 		<logger name="Hypersistence Optimizer" level="info"/>
 		<root level="INFO">
