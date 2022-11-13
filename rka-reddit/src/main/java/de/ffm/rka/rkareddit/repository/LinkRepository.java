@@ -56,12 +56,13 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
 
 
 	@Query(value = "SELECT l " +
-					"FROM Link l " +
-					"LEFT OUTER JOIN " +
-					"l.tags relTable " +
-					"WHERE relTable.tagId IN (SELECT tagId " +
-											"FROM Tag " +
-											"WHERE tagName =:tag)")
+			"FROM Link l " +
+			"INNER JOIN FETCH l.user " +
+			"LEFT OUTER JOIN l.tags relTable " +
+			"WHERE relTable.tagId IN (SELECT tagId " +
+										"FROM Tag " +
+										"WHERE tagName =:tag)",
+			countQuery = "SELECT COUNT(l) FROM Link l INNER JOIN l.user")
 	Page<Link> findLinksOnTag(@Param("tag") String tag, Pageable pageable);
 
 }
