@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
 
@@ -64,10 +65,12 @@ public class CommentDTO extends Auditable implements Serializable{
 	@Autowired
 	private transient PrettyTime prettyTime;
 
+	private LocalDateTime creationDate;
+
 	
 	public String getElapsedTime() {
 		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
-		return prettyTime.format(from(super.getCreationDate().atZone(ZONE_ID).toInstant()));
+		return prettyTime.format(from(creationDate.atZone(ZONE_ID).toInstant()));
 	}
 	
 	public static Comment getMapDtoToComment(CommentDTO commentDto){
