@@ -1,13 +1,11 @@
 package de.ffm.rka.rkareddit.controller;
 
-import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.TagDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import de.ffm.rka.rkareddit.service.CommentService;
 import de.ffm.rka.rkareddit.service.LinkService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
 import org.slf4j.Logger;
@@ -45,14 +43,12 @@ public class LinkController {
 	private final TagServiceImpl tagService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
-	private final CommentService commentService;
+
 
 	public LinkController(LinkService linkService,
-						  TagServiceImpl tagService,
-						  CommentService commentService) {
+						  TagServiceImpl tagService) {
 		this.linkService = linkService;
 		this.tagService = tagService;
-		this.commentService = commentService;
 	}
 
 	/**
@@ -94,19 +90,17 @@ public class LinkController {
 	public String link(Model model, @PathVariable String signature,
 					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
-		Link link = linkService.findLinkModelBySignature(signature);
-		link.setComments(commentService.retrieveCommentsForLink(link.getLinkId()));
+		final LinkDTO linkDTO = linkService.fetchLinkWithComments(signature);
 		Optional.ofNullable(userDetails).ifPresent(loggedUser -> {
 			User userModel = (User)userDetails;
-			linkService.createClickedUserLinkHistory(userModel, link);
+			linkService.createClickedUserLinkHistory(userModel, linkDTO);
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
 		});
-		LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(link);
+
 		model.addAttribute("linkDto",linkDTO);
-		CommentDTO comment = CommentDTO.builder()
-										.lSig(linkDTO.getLinkSignature())
-										.build();
-		model.addAttribute("commentDto",comment);
+		model.addAttribute("commentDto", CommentDTO.builder()
+				.lSig(linkDTO.getLinkSignature())
+				.build());
 
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, model.containsAttribute(SUCCESS));
