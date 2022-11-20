@@ -2,7 +2,6 @@ package de.ffm.rka.rkareddit.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.Link;
-import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -112,7 +111,7 @@ public class LinkDTO implements Serializable {
     public String getLinkSignature() throws ServiceException {
         return Optional.ofNullable(this.linkSignature)
                 .orElseThrow(() -> new ServiceException("NO Link-Signature for this Link: "
-                        + this.toString()));
+                        + this));
     }
 
     public String getElapsedTime() {
@@ -167,11 +166,11 @@ public class LinkDTO implements Serializable {
      * @return creation date as localdatetime
      */
     public static long convertEpochSecToLinkId(final String timeInSeconds) throws ServiceException {
-        long id = 0L;
+        long id;
         try {
             id = Long.parseLong(timeInSeconds.substring(TIME_LATTERS));
-        } catch (Exception ex) {
-            throw new ServiceException("NO VALID LINK-SIGNATURE: "+timeInSeconds);
+        } catch (IndexOutOfBoundsException | NumberFormatException ex) {
+            throw new ServiceException("NO VALID LINK-SIGNATURE: " + timeInSeconds);
         }
         return id;
     }
