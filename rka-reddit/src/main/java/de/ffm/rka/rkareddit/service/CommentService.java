@@ -8,6 +8,7 @@ import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +28,16 @@ public class CommentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommentService.class);
 	private final CommentRepository commentRepository;
 	private final UserDetailsServiceImpl userDetailsService;
-	private final LinkService linkService;
+
+	private LinkService linkService;
 
 	public CommentService(CommentRepository commentRepository, UserDetailsServiceImpl userDetailsService,
-						  LinkService linkService) {
+						  @Lazy LinkService linkService) {
 		this.commentRepository = commentRepository;
 		this.userDetailsService = userDetailsService;
 		this.linkService = linkService;
 	}
-	
+
 	public String getElapsedTimeFromComment(Comment com) {
 		return commentRepository.findById(com.getCommentId())
 								.map(Comment::getElapsedTime)

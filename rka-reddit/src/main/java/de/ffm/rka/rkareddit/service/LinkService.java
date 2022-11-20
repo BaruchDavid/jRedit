@@ -2,11 +2,13 @@ package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,22 +35,37 @@ public class LinkService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkService.class);
 	private final LinkRepository linkRepository;
 	private final UserDetailsServiceImpl userDetailsService;
-	public LinkService(LinkRepository linkRepository, UserDetailsServiceImpl userDetailsService) {
+
+	private CommentService commentService;
+
+	public LinkService(LinkRepository linkRepository,
+					   UserDetailsServiceImpl userDetailsService) {
 		this.linkRepository = linkRepository;
 		this.userDetailsService = userDetailsService;
+
+	}
+	@Autowired
+	public void setCommentService(CommentService commentService) {
+		this.commentService = commentService;
 	}
 
-	public Link findLinkModelBySignature(final String signature) throws ServiceException {
-		return findLinkModelWithUser(signature);
+	public LinkDTO fetchLinkWithComments(final String signature) throws ServiceException {
+		final Link link = findLinkModelWithUser(signature);
+		link.setComments(commentService.retrieveCommentsForLink(link.getLinkId()));
+		final LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(link);
+		orderCommentsOfEachLink(linkDTO);
+		Thread.currentThread().getName();
+		return linkDTO;
 	}
 
 	@Async
 	@Transactional(readOnly = false)
-	public void createClickedUserLinkHistory(User user, Link link) {
+	public void createClickedUserLinkHistory(User user, LinkDTO linkDTO) {
+		Link link = LinkDTO.getMapDtoToLink(linkDTO);
 		link.setUsersLinksHistory(new HashSet<>(Collections.singletonList(user)));
 		link = linkRepository.save(link);
 		LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
-		LOGGER.info("THREAD ASYNC NAME: {}", Thread.currentThread().getName());
+		LOGGER.info("CREATE CLICK-HISTORY: THREAD ASYNC NAME: {}", Thread.currentThread().getName());
 	}
 
 	/**
@@ -117,6 +134,15 @@ public class LinkService {
 								.map(LinkDTO::mapFullyLinkToDto)
 								.collect(Collectors.toList());
 		return new PageImpl<>(links, pageable, ln.getTotalElements());
+	}
+
+	private void orderCommentsOfEachLink(LinkDTO linkDTO){
+
+		final Set<CommentDTO> comments = linkDTO.getCommentDTOS().stream()
+				.sorted(Comparator.comparing(CommentDTO::getCreationDate))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+		linkDTO.setCommentDTOS(comments);
+
 	}
 
 	Set<Long> getLinkIds(Set<Link> links) {
