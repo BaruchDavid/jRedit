@@ -5,7 +5,7 @@ import de.ffm.rka.rkareddit.domain.Tag;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.service.PostService;
 import org.apache.commons.httpclient.HttpStatus;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -32,28 +31,29 @@ public class LinkControllerTest extends MvcRequestSender {
     private static final int MAX_JDBC_TRANSACTION = 3;
 
     @Autowired
-    private LinkService linkService;
+    private PostService postService;
 
-    UserDTO userDto = UserDTO.builder()
-                            .firstName("baruc-david")
-                            .secondName("rka")
-                            .build();
+    private final UserDTO userDto = UserDTO.builder()
+            .firstName("baruc-david")
+            .secondName("rka")
+            .build();
 
-    String linksWithTagsBody = "tags[0].tagName=java12&" +
+    private final String linksWithTagsBody = "tags[0].tagName=java12&" +
             "tags[1].tagName=java13&" +
             "title=welt.de&" +
             "subtitle=neues subtitle&" +
-            "description=news&"+
+            "description=news&" +
             "url=http://welt.de";
 
     private Statistics hibernateStatistic;
-    private Session hibernateSession;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkControllerTest.class);
+
     @Before
     public void setup() {
-
-        hibernateSession = super.getEntityManager().unwrap(Session.class);
-        hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
+        try (Session hibernateSession = super.getEntityManager().unwrap(Session.class)) {
+            hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
+        }
     }
 
     @Test()
@@ -61,7 +61,7 @@ public class LinkControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void shouldReturnAllLinks() throws Exception {
 
-        List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
+        List<Integer> pages = Arrays.asList(1, 2);
         hibernateStatistic.clear();
         MvcResult result = super.performGetRequest("/links/")
                 .andExpect(status().isOk())
@@ -81,23 +81,23 @@ public class LinkControllerTest extends MvcRequestSender {
     @WithAnonymousUser
     public void shouldReturnAllLinksForAnonymous() throws Exception {
 
-        List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
+        List<Integer> pages = Arrays.asList(1, 2);
         MvcResult result = super.performGetRequest("/links/")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("pageNumbers", pages))
                 .andReturn();
-        assertTrue(!result.getResponse().getContentAsString().contains("Submit Link"));
+        assertFalse(result.getResponse().getContentAsString().contains("Submit Link"));
     }
 
     @Test
     //@DisplayName"Beim Aufruf von der Hauptseite mit CURL werden alle links für zurückgegeben")
     public void shouldReturnAllLinksForCURL() throws Exception {
-        List<Integer> pages = Arrays.asList(new Integer[]{1, 2});
+        List<Integer> pages = Arrays.asList(1, 2);
         MvcResult result = super.performGetRequest("/links/")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("pageNumbers", pages))
                 .andReturn();
-        assertTrue(!result.getResponse().getContentAsString().contains("Submit Link"));
+        assertFalse(result.getResponse().getContentAsString().contains("Submit Link"));
     }
 
     /**
@@ -141,8 +141,7 @@ public class LinkControllerTest extends MvcRequestSender {
     @Test
     //@DisplayName"Anzeigen von einem Link für einen nicht eingelogten User")
     public void readLinkTestAsUnautheticated() throws Exception {
-        Link currentLink = linkService.findLinkModelBySignature("15921918064983");
-        LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(currentLink);
+        LinkDTO linkDTO = postService.fetchLinkWithComments("15921918064983");
         MvcResult mvcResult = super.performGetRequest("/links/link/15921918064983")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))
@@ -184,7 +183,7 @@ public class LinkControllerTest extends MvcRequestSender {
                 .andReturn();
         String signature = res.getResponse().getRedirectedUrl().split("/")[3];
         assertEquals("12", signature.substring(13));
-        Link link = linkService.findLinkWithTags(signature);
+        Link link = postService.findLinkWithTags(signature);
         assertEquals("welt.de", link.getTitle());
         assertEquals("neues subtitle", link.getSubtitle());
         assertEquals("news", link.getDescription());
@@ -214,12 +213,12 @@ public class LinkControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     //@DisplayName"Zeige Seite für einen neuen Test")
     public void createNewLinkTest() throws Exception {
-        Link link = new Link();
         MvcResult result = super.performGetRequest("/links/link")
                 .andExpect(status().isOk())
                 .andExpect(view().name("link/submit"))
                 .andReturn();
         UserDTO usr = (UserDTO) result.getModelAndView().getModel().get("userDto");
+        LinkDTO link = new LinkDTO();
         assertEquals(userDto.getFullName(), usr.getFullName());
         assertEquals(result.getModelAndView().getModel().get("newLink").toString(), link.toString());
     }
@@ -241,10 +240,10 @@ public class LinkControllerTest extends MvcRequestSender {
         String body = "search=sc";
         List<String> expList = Arrays.asList("TypeScript", "JavaScript", "Delphi/Object Pascal");
         MvcResult result = super.performPostRequest("/links/link/tags", body)
-                                .andExpect(status().isOk())
-                                .andReturn();
+                .andExpect(status().isOk())
+                .andReturn();
         String[] resultArray = result.getResponse().getContentAsString().replace("[", "").replace("]", "").replace('"', ' ').split(",");
-        assertEquals(true, Stream.of(resultArray)
+        assertTrue(Stream.of(resultArray)
                 .peek(tag -> System.out.println("CURRENT TAG: " + tag))
                 .allMatch(tag -> expList.contains(tag.trim())));
 

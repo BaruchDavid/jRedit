@@ -6,7 +6,7 @@ import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.TagDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import de.ffm.rka.rkareddit.service.LinkService;
+import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.service.TagServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 
 @Controller
 public class LinkController {
-	private final LinkService linkService;
+	private final PostService postService;
 	private static final String NEW_LINK = "newLink";
 	private static final String SUBMIT_LINK = "link/submit";
 	private static final String SUCCESS = "success";
@@ -45,9 +45,9 @@ public class LinkController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
 
 
-	public LinkController(LinkService linkService,
+	public LinkController(PostService postService,
 						  TagServiceImpl tagService) {
-		this.linkService = linkService;
+		this.postService = postService;
 		this.tagService = tagService;
 	}
 
@@ -59,7 +59,7 @@ public class LinkController {
 	public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
 						@RequestParam(name = "searchTag", required = false, defaultValue = "") String searchTag,
 						@AuthenticationPrincipal UserDetails user, Model model) {
-		Page<LinkDTO> links = linkService.fetchLinksWithUsers(page, searchTag);
+		Page<LinkDTO> links = postService.fetchLinksWithUsers(page, searchTag);
 		LOGGER.info("{} Links has been found for start page", links.getContent().size());
 		List<Integer> totalPages = IntStream.rangeClosed(1, links.getTotalPages())
 											.boxed()
@@ -90,10 +90,11 @@ public class LinkController {
 	public String link(Model model, @PathVariable String signature,
 					   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
-		final LinkDTO linkDTO = linkService.fetchLinkWithComments(signature);
+		final LinkDTO linkDTO = postService.fetchLinkWithComments(signature);
+		LOGGER.info("CREATE CLICK-HISTORY: THREAD ASYNC NAME: {}", Thread.currentThread().getName());
 		Optional.ofNullable(userDetails).ifPresent(loggedUser -> {
 			User userModel = (User)userDetails;
-			linkService.createClickedUserLinkHistory(userModel, linkDTO);
+			postService.createClickedUserLinkHistory(userModel, linkDTO);
 			model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
 		});
 
@@ -101,7 +102,6 @@ public class LinkController {
 		model.addAttribute("commentDto", CommentDTO.builder()
 				.lSig(linkDTO.getLinkSignature())
 				.build());
-
 		if (model.containsAttribute(SUCCESS)) {
 			model.addAttribute(SUCCESS, model.containsAttribute(SUCCESS));
 		} else if(model.containsAttribute(ERROR_MESSAGE)) {
@@ -147,7 +147,7 @@ public class LinkController {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			return SUBMIT_LINK;
 		} else {
-			LinkDTO newLink = linkService.saveLink(user.getUsername(),link);
+			LinkDTO newLink = postService.saveLink(user.getUsername(),link);
 			redirectAttributes.addFlashAttribute(SUCCESS, true);
 			return "redirect:/links/link/".concat(newLink.getLinkSignature());
 		}

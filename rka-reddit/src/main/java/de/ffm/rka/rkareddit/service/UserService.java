@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.function.Supplier;
 
 
-
 /**
  * manages login- and register-process
  *
@@ -47,18 +46,18 @@ public class UserService {
     private final RoleService roleService;
     private final MailService mailService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final LinkService linkService;
+    private final PostService postService;
 
     @Value("${password.time.expiration}")
     private int maxTimeDiff;
 
     public UserService(MailService mailService, UserRepository userRepository,
-                       RoleService roleService, UserDetailsServiceImpl userDetailsService, LinkService linkService) {
+                       RoleService roleService, UserDetailsServiceImpl userDetailsService, PostService postService) {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.mailService = mailService;
-        this.linkService = linkService;
+        this.postService = postService;
     }
 
     /**
@@ -68,8 +67,8 @@ public class UserService {
      * @param userLinks with no comments
      */
     private Set<Link> fillLinkWithSuitableComments(Set<Link> userLinks) {
-        Set<Long> linkIds = linkService.getLinkIds(userLinks);
-        return linkService.findLinksWithCommentsByLinkIds(linkIds)
+        Set<Long> linkIds = postService.getLinkIds(userLinks);
+        return postService.findLinksWithCommentsByLinkIds(linkIds)
                 .orElseGet(Collections::emptySet);
     }
 
@@ -108,7 +107,7 @@ public class UserService {
     }
 
     private void saveNewUnregisteredUser(User newUser) {
-        if (isRegisteredEmailUnique(newUser.getEmail())){
+        if (isRegisteredEmailUnique(newUser.getEmail())) {
             newUser = save(newUser);
             LOGGER.info("USER {} and EMAIL {} SUCCESSFULLY SAVED ON REGISTRATION", newUser.getEmail(), newUser.getEmail());
         } else {
@@ -117,7 +116,7 @@ public class UserService {
     }
 
     private boolean isRegisteredEmailUnique(String email) {
-        return !userRepository.findByEmail(email).isPresent();
+        return userRepository.findByEmail(email).isEmpty();
     }
 
     @Transactional(readOnly = false)
@@ -185,7 +184,7 @@ public class UserService {
     }
 
 
-    private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException{
+    private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException {
         mailService.sendEmailToNewEmailAccount(userDto);
     }
 
@@ -277,7 +276,7 @@ public class UserService {
         final User savedUser = save(user);
         if (!savedUser.getActivationCode().equals(user.getActivationCode())) {
             throw GlobalControllerAdvisor.createServiceException(
-                    "Could not save new activation code for user: "+ user.getEmail());
+                    "Could not save new activation code for user: " + user.getEmail());
         }
         mailService.sendRecoverEmail(UserDTO.mapUserToUserDto(user));
     }
