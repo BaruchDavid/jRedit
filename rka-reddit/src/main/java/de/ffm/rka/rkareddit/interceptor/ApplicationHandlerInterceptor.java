@@ -38,8 +38,7 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
         boolean isForwardRequestToTargetURL = true;
         MDC.put("session_id", request.getSession().getId());
         MDC.put("user_ip", request.getRemoteAddr());
-        LOGGER.info("ACCESS IN PRE HANDLE-INTERCEPTOR TO {} {} WITH STATUS: {}", request.getMethod(),
-                request.getRequestURL(), response.getStatus());
+
 
         LOGGER.info("ACCESS IN PRE-HANDLE-INTERCEPTOR WITH URL: {} "
                         + "  {} WITH STATUS: {} FROM REMOTE ADDRESS {}",
