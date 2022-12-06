@@ -1,6 +1,7 @@
 package de.ffm.rka.rkareddit.interceptor;
 
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
+import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -19,77 +20,88 @@ import java.util.List;
 /**
  * purpose of this class is checking of authenticated users by using
  * annotation @AuthenticationPrincipal
- * 
- * @author rka
  *
+ * @author rka
  */
 public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationHandlerInterceptor.class);
-	private static final String IS_404_ERROR ="404";
-	private static final String IS_400_ERROR ="400";
-	public static final String PRIVATE_PROFILE_URL = "private";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationHandlerInterceptor.class);
+    public static final String PRIVATE_PROFILE_URL = "private";
 
-	/**
-	 * any method with @AuthenticationPrincipal and without @Secured
-	 * @throws Exception in pre-handle of request
-	 */
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		MDC.put("session_id", request.getSession().getId());
-		MDC.put("user_ip", request.getRemoteAddr());
-		LOGGER.info("ACCESS IN PRE HANDLE-INTERCEPTOR TO {} {} WITH STATUS: {}", request.getMethod(),
-				request.getRequestURL(), response.getStatus());
-		if (handler instanceof HandlerMethod) {
+    /**
+     * any method with @AuthenticationPrincipal and without @Secured
+     *
+     * @throws Exception in pre-handle of request
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        boolean isForwardRequestToTargetURL = true;
+        MDC.put("session_id", request.getSession().getId());
+        MDC.put("user_ip", request.getRemoteAddr());
+        LOGGER.info("ACCESS IN PRE HANDLE-INTERCEPTOR TO {} {} WITH STATUS: {}", request.getMethod(),
+                request.getRequestURL(), response.getStatus());
+
+        LOGGER.info("ACCESS IN PRE-HANDLE-INTERCEPTOR WITH URL: {} "
+                        + "  {} WITH STATUS: {} FROM REMOTE ADDRESS {}",
+                request.getMethod(), request.getRequestURL(), response.getStatus(), request.getRemoteAddr());
+
+
+        if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
-            if(method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
-            	&& PRIVATE_PROFILE_URL.contains(request.getRequestURL())) {
-            		LOGGER.info("METHODE: {}", method.getName());
-            		LOGGER.warn("authenticated user could not access method with authentication");
-            		LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
-            		LOGGER.warn("IP-Address {}", request.getHeader("True-Client-IP"));
-            		LOGGER.warn("Remote Address {}", request.getRemoteAddr());  	
-            		throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
-            } else if ((String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)
-            		|| (String.valueOf(response.getStatus()).startsWith(IS_400_ERROR)))
-            		&& !request.getRequestURI().contains("error")) {
-    			LOGGER.info("PAGE NOT FOUND:  {} with Status: {}", request.getRequestURL(), response.getStatus()); 
-    			response.sendRedirect("error");
-    			return false;
-    		}     		
+            if (method.getParameters()[0].getAnnotation(AuthenticationPrincipal.class) instanceof AuthenticationPrincipal
+                    && PRIVATE_PROFILE_URL.contains(request.getRequestURL())) {
+                LOGGER.info("METHODE: {}", method.getName());
+                LOGGER.warn("authenticated user could not access method with authentication");
+                LOGGER.warn("Browser-Info {}", request.getHeader("user-agent"));
+                LOGGER.warn("IP-Address {}", request.getHeader("True-Client-IP"));
+                LOGGER.warn("Remote Address {}", request.getRemoteAddr());
+                throw new UserAuthenticationLostException("LOST AUTHENTICATION-CONTEXT");
+            }
         }
-		return true;
-	}
-	
-	public static List<String> getRequestHeaderList(HttpServletRequest request) {
-		Enumeration<String> headerNames = request.getHeaderNames();
-		List<String> resultList = new ArrayList<>();
-		
-		if(headerNames != null) {
-			while (headerNames.hasMoreElements()) {
-				String headerName = headerNames.nextElement();
-				String headerValue = "";
-				Enumeration<String> header = request.getHeaders(headerName);
-				while (header != null && header.hasMoreElements()) {
-					headerValue = headerValue.concat(",").concat(header.nextElement());
-				}
-				if (headerValue.length() > 0) {
-					headerValue = headerValue.substring(1);
-				}
-				resultList.add(headerName.concat("=").concat(headerValue));
-			}
-		}
-		return resultList;
-	}
+        return isForwardRequestToTargetURL;
+    }
 
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) {
-		if(String.valueOf(response.getStatus()).startsWith(IS_404_ERROR)) {
-			LOGGER.info("REMOTE ADDRESS {} ACCESS IN POST HANDLE-INTERCEPTOR TO {} "
-						+ "PAGE NOT FOUND  {} WITH STATUS: {}", request.getRemoteAddr(),
-							request.getMethod(),  request.getRequestURL(), response.getStatus());
-		}
-		MDC.clear();
-	}
+    public static List<String> getRequestHeaderList(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        List<String> resultList = new ArrayList<>();
+
+        if (headerNames != null) {
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                String headerValue = "";
+                Enumeration<String> header = request.getHeaders(headerName);
+                while (header != null && header.hasMoreElements()) {
+                    headerValue = headerValue.concat(",").concat(header.nextElement());
+                }
+                if (headerValue.length() > 0) {
+                    headerValue = headerValue.substring(1);
+                }
+                resultList.add(headerName.concat("=").concat(headerValue));
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) {
+
+        if (isClientError(response.getStatus()) && notFromErrorHandler(request.getRequestURL().toString())) {
+            LOGGER.info("ACCESS IN POST-HANDLE-INTERCEPTOR CLIENT ERROR: WITH URL: {} "
+                            + " {} WITH STATUS: {} FROM REMOTE ADDRESS {}",
+                    request.getMethod(), request.getRequestURL(), response.getStatus(), request.getRemoteAddr());
+        } else if (!notFromErrorHandler(request.getRequestURL().toString())) {
+            LOGGER.info("ACCESS IN POST-HANDLE-INTERCEPTOR FROM ERROR-URL WITH ERROR-STATUS {} OF PREVIOUS ERROR",
+                    response.getStatus());
+        }
+        MDC.clear();
+    }
+
+    private boolean isClientError(int httpStatus) {
+        return httpStatus == HttpStatus.SC_BAD_REQUEST || httpStatus == HttpStatus.SC_NOT_FOUND;
+    }
+
+    private boolean notFromErrorHandler(String url) {
+        return !url.contains("/error");
+    }
 }
