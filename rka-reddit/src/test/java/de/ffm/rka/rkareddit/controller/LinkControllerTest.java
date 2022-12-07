@@ -141,7 +141,7 @@ public class LinkControllerTest extends MvcRequestSender {
     @Test
     //@DisplayName"Anzeigen von einem Link für einen nicht eingelogten User")
     public void readLinkTestAsUnautheticated() throws Exception {
-        LinkDTO linkDTO = postService.fetchLinkWithComments("15921918064983");
+        LinkDTO linkDTO = postService.findLinkWithComments("15921918064983");
         MvcResult mvcResult = super.performGetRequest("/links/link/15921918064983")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))

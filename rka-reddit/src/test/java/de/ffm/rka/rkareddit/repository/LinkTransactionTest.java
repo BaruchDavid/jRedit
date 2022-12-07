@@ -66,7 +66,7 @@ public class LinkTransactionTest {
         try (Session hibernateSession = entityManager.unwrap(Session.class)) {
             hibernateSession.getSessionFactory().getStatistics().clear();
             Statistics hibernateStatistic = hibernateSession.getSessionFactory().getStatistics();
-            Page<LinkDTO> links = postService.fetchLinksWithUsers(firstPageWithElevenElements, "");
+            Page<LinkDTO> links = postService.findLinksWithUsers(firstPageWithElevenElements, "");
             assertEquals("SHOULD EXECUTED ONLY TWO JDBC STATEMENTS", MAX_TRANSACTION_NUMBER, hibernateStatistic.getQueryExecutionCount());
 
             assertEquals("THEY ARE ELEVEN LINKS", 11L, links.getNumberOfElements());
