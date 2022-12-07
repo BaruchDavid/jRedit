@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.service;
 
 import de.ffm.rka.rkareddit.domain.Comment;
-import de.ffm.rka.rkareddit.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +13,17 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"password.time.expiration=10"})
-public class CommentServiceTest {
+public class PostServiceCommentTest {
 
-	@Autowired
-    private CommentService commentService ;
-	
-	@Test
-	public void testPrettyTime() {
-		Comment comment = Comment.builder()
-								.commentId(1l)
-								.build();
-	assertEquals("gerade eben", commentService.getElapsedTimeFromComment(comment)); 
-		
-	}
+    @Autowired
+    private PostService postService;
+
+    @Test
+    public void testPrettyTime() {
+        Comment comment = Comment.builder()
+                .commentId(1l)
+                .build();
+        assertEquals("gerade eben", postService.findCommentWithElapsedtime(comment));
+
+    }
 }
