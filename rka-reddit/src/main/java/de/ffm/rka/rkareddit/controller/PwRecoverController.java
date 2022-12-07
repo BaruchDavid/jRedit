@@ -54,7 +54,7 @@ public class PwRecoverController {
         String returnLink = "recover/passwordRecoveryForm";
         Optional<UserDTO> userDTO = userService.getUserForPasswordReset(email, activationCode);
         final boolean isPwRecoveringExpired = userDTO
-                .map(userForRecovering -> userService.isActivationDeadlineExpired(userForRecovering.getActivationDeadLineDate()))
+                .map(userForRecovering -> userService.isUserActivationDeadlineExpired(userForRecovering.getActivationDeadLineDate()))
                 .orElse(false);
 
         if (isPwRecoveringExpired) {
@@ -78,8 +78,9 @@ public class PwRecoverController {
 
     /**
      * when user forget his credentials for login
+     *
      * @param userEmail for recovering
-     * @param model to saving data for view
+     * @param model     to saving data for view
      * @return view
      * @throws ServiceException if new activation code could not be saved
      */
@@ -87,8 +88,8 @@ public class PwRecoverController {
     public String createActivationCodeAndSendMail(@RequestParam String userEmail, Model model) throws ServiceException {
         LOGGER.info("TRY TO CREATE ACTIVATION CODE AND SEND MAIL WITH EMAIL FOR PW-RECOVERING {}", userEmail);
         final Optional<User> user = userService.findUserById(userEmail);
-        if (user.isPresent()){
-            userService.saveNewActionCode(user.get());
+        if (user.isPresent()) {
+            userService.saveNewUserActivationCode(user.get());
         }
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().email(NOT_LOGGED_IN).build());
         model.addAttribute(CONTENT_USER, UserDTO.builder().firstName("Guest").build());

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -50,7 +51,6 @@ public class RegisterController {
     }
 
     /**
-     *
      * @return user
      */
     @PostMapping(value = {REGISTRATION})
@@ -95,7 +95,7 @@ public class RegisterController {
                                        Model model) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT {}", email);
         String returnLink = "auth/activated";
-        Optional.ofNullable(userService.emailActivation(email, activationCode, false))
+        Optional.ofNullable(userService.userEmailActivation(email, activationCode, false))
                 .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(String.format(MAIL_ACTIVATION_FAILED,
                         email, activationCode)));
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());

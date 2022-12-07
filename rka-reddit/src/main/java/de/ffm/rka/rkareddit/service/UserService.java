@@ -46,7 +46,7 @@ public class UserService {
     private final RoleService roleService;
     private final MailService mailService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final PostService postService;
+    private final PostService postService; //TODO: SOLID: single responsibility. Diese Klasse macht nichts mit Posts
 
     @Value("${password.time.expiration}")
     private int maxTimeDiff;
@@ -66,6 +66,8 @@ public class UserService {
      *
      * @param userLinks with no comments
      */
+    // TODO: SOLID Single Responsibility ist gebrochen
+    // TODO: Diese Klasse managed nur den User, hier geht aber um die Posts
     private Set<Link> fillLinkWithSuitableComments(Set<Link> userLinks) {
         Set<Long> linkIds = postService.getLinkIds(userLinks);
         return postService.findLinksWithCommentsByLinkIds(linkIds)
@@ -101,6 +103,7 @@ public class UserService {
 
     }
 
+    //TODO SOLID: bricht single responsiblity, diese Klasse verwaltet den user
     private String encodeUserPw(String password) {
         BCryptPasswordEncoder encoder = BeanUtil.getBeanFromContext(BCryptPasswordEncoder.class);
         return encoder.encode(password);
@@ -120,7 +123,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public UserDTO emailChange(UserDTO userDto) throws ServiceException {
+    public UserDTO userEmailChange(UserDTO userDto) throws ServiceException {
         User newUser;
         userDto.setActivationCode(String.valueOf(UUID.randomUUID()));
         newUser = getUser(userDto.getEmail());
@@ -134,7 +137,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public User emailActivation(final String email, final String activationCode, final boolean isNewEmail)
+    public User userEmailActivation(final String email, final String activationCode, final boolean isNewEmail)
             throws ServiceException {
         User newUser = null;
         final Optional<User> userForMailActivation = findUserForMailActivation(email, activationCode, isNewEmail);
@@ -177,12 +180,11 @@ public class UserService {
 
 
     public Optional<UserDTO> getUserForPasswordReset(final String email, final String activationCode) throws ServiceException {
-        final String errorMessage = String.format("PASSWORD-RESETING: WRONG ACTIVATION-CODE %s ON %s", activationCode, email);
+        final String errorMessage = String.format("PASSWORD-RESET: WRONG ACTIVATION-CODE %s ON %s", activationCode, email);
         final User user = findUserByMailAndActivationCode(email, activationCode)
                 .orElseThrow(() -> GlobalControllerAdvisor.createServiceException(errorMessage));
         return Optional.of(UserDTO.mapUserToUserDto(user));
     }
-
 
     private void sendEmailToNewUserEmailAddress(UserDTO userDto) throws ServiceException {
         mailService.sendEmailToNewEmailAccount(userDto);
@@ -221,7 +223,7 @@ public class UserService {
     @Transactional(readOnly = false)
     public void changeUserPassword(UserDTO userDto) throws ServiceException {
         User user = getUser(userDto.getEmail());
-        if (!isActivationDeadlineExpired(user.getActivationDeadLineDate())) {
+        if (!isUserActivationDeadlineExpired(user.getActivationDeadLineDate())) {
             String secret = encodeUserPw(userDto.getNewPassword());
             user.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
             user.setActivationCode("activation");
@@ -233,7 +235,7 @@ public class UserService {
         }
     }
 
-    public boolean isActivationDeadlineExpired(LocalDateTime activationDeadLineDate) {
+    public boolean isUserActivationDeadlineExpired(LocalDateTime activationDeadLineDate) {
         return TimeService.isBehindDeadline(maxTimeDiff, activationDeadLineDate);
     }
 
@@ -270,7 +272,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public void saveNewActionCode(User user) throws ServiceException {
+    public void saveNewUserActivationCode(User user) throws ServiceException {
         user.setActivationCode(String.valueOf(UUID.randomUUID()));
         user.setActivationDeadLineDate(LocalDateTime.now());
         final User savedUser = save(user);
@@ -336,7 +338,7 @@ public class UserService {
     /**
      * retrieve list of previously clicked links
      *
-     * @param requestedUser is a account owner, no public visitor
+     * @param requestedUser is account owner, no public visitor
      * @return either list of links oder empty list
      */
     public Set<Link> findUserClickedLinks(final String requestedUser) {
@@ -363,6 +365,8 @@ public class UserService {
         }
     }
 
+    // TODO: 03.12.2022 Diese Responsibility gehört nicht zum UserService
+    // TODO: SOLID Single Responsibility ist gebrochen.
     public InputStream resizeUserPic(InputStream inputStream, String extension) throws IOException {
         final BufferedImage bufferedImage = ImageManager.simpleResizeImage(inputStream, TARGET_WIDTH);
         return new ByteArrayInputStream(FileNIO.readPictureToByteArray(bufferedImage, extension));
