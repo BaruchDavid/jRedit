@@ -1,14 +1,15 @@
 package de.ffm.rka.rkareddit.service;
 
+import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
+import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,25 +35,21 @@ public class PostService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostService.class);
     private final LinkRepository linkRepository;
+
+    private final CommentRepository commentRepository;
     private final UserDetailsServiceImpl userDetailsService;
 
-    private CommentService commentService;
-
     public PostService(LinkRepository linkRepository,
-                       UserDetailsServiceImpl userDetailsService) {
+                       CommentRepository commentRepository, UserDetailsServiceImpl userDetailsService) {
         this.linkRepository = linkRepository;
+        this.commentRepository = commentRepository;
         this.userDetailsService = userDetailsService;
 
     }
 
-    @Autowired
-    public void setCommentService(CommentService commentService) {
-        this.commentService = commentService;
-    }
-
-    public LinkDTO fetchLinkWithComments(final String signature) throws ServiceException {
+    public LinkDTO findLinkWithComments(final String signature) throws ServiceException {
         final Link link = findLinkModelWithUser(signature);
-        link.setComments(commentService.retrieveCommentsForLink(link.getLinkId()));
+        link.setComments(this.findCommentsForLink(link.getLinkId()));
         final LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(link);
         orderCommentsOfEachLink(linkDTO);
         return linkDTO;
@@ -127,7 +124,7 @@ public class PostService {
      * @param pageable, number for one page
      * @return linkDto objects as PageImpl
      */
-    public Page<LinkDTO> fetchLinksWithUsers(Pageable pageable, String searchTag) {
+    public Page<LinkDTO> findLinksWithUsers(Pageable pageable, String searchTag) {
 
         Page<Link> ln = searchTag.isEmpty() ? linkRepository.findAll(pageable)
                 : linkRepository.findLinksOnTag(searchTag, pageable);
@@ -139,6 +136,8 @@ public class PostService {
         return new PageImpl<>(links, pageable, ln.getTotalElements());
     }
 
+    // TODO: 03.12.2022 gehört laut SOLID (erster Prinzip: Single Respositiblity)
+    //  NICHT HIER REIN. Hier wird nur mit Repositories gearbeitet
     private void orderCommentsOfEachLink(LinkDTO linkDTO) {
 
         final Set<CommentDTO> comments = linkDTO.getCommentDTOS().stream()
@@ -153,4 +152,43 @@ public class PostService {
                 .map(Link::getLinkId)
                 .collect(Collectors.toSet());
     }
+
+    public String findCommentWithElapsedtime(Comment com) {
+        return commentRepository.findById(com.getCommentId())
+                .map(Comment::getElapsedTime)
+                .orElse("No creation time available");
+    }
+
+    /**
+     * @param userName who creates comment
+     * @param comment  content
+     */
+    @Transactional(readOnly = false)
+    public CommentDTO saveNewComment(final String userName, CommentDTO comment) throws ServiceException {
+        comment.setUser((User) userDetailsService.loadUserByUsername(userName));
+        Comment cm = CommentDTO.getMapDtoToComment(comment);
+        Link suitableLink = findSuitableLink(comment.getLSig());
+        suitableLink.setCommentCount(suitableLink.getCommentCount() + 1);
+        cm.setLink(suitableLink);
+        comment = CommentDTO.getCommentToCommentDto(commentRepository.save(cm));
+        LOGGER.info("{} SAVED COMMENT FOR LINK {}", comment, comment.getLSig());
+        return comment;
+    }
+
+    private Link findSuitableLink(String linkSignature) throws ServiceException {
+        return this.findLinkModelWithUser(linkSignature);
+    }
+
+    public List<Comment> findCommentsForLink(Long linkId) {
+        LOGGER.info("THREAD NAME: {}", Thread.currentThread().getName());
+        return commentRepository.findAllCommentsWithLinkId(linkId);
+    }
+
+    public Set<CommentDTO> findUserComments(String username) {
+        final Set<Comment> userCommentsWithLink = commentRepository.getUserComments(username);
+        return userCommentsWithLink.stream()
+                .map(CommentDTO::getCommentToCommentDto)
+                .collect(Collectors.toSet());
+    }
+
 }

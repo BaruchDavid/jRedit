@@ -8,7 +8,7 @@ import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import de.ffm.rka.rkareddit.service.CommentService;
+import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
@@ -56,14 +56,14 @@ public class AuthController {
 
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final CommentService commentService;
-    private CacheController cacheController;
+    private final PostService postService;
+    private final CacheController cacheController;
 
     public AuthController(UserService userService, UserDetailsServiceImpl userDetailsService,
-                          CommentService commentService, CacheController cacheController) {
+                          PostService postService, CacheController cacheController) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
-        this.commentService = commentService;
+        this.postService = postService;
         this.cacheController = cacheController;
     }
 
@@ -144,7 +144,7 @@ public class AuthController {
                                         Model model) {
         final User pageContentUser = createContentUser(model, email, userPrincipal);
         UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
-        final Set<CommentDTO> comments = commentService.retrieveUserComments(contentUser.getEmail());
+        final Set<CommentDTO> comments = postService.findUserComments(contentUser.getEmail());
         final int linkSize = Optional.ofNullable(pageContentUser.getUserLinks())
                 .orElse(Collections.emptySet()).size();
         model.addAttribute(CONTENT_USER, contentUser);
@@ -156,8 +156,8 @@ public class AuthController {
     }
 
     /**
-     *
      * user changes own email address
+     *
      * @return new userDto object and success
      */
     @PatchMapping(value = {"/profile/private/me/update/email"})
@@ -170,7 +170,7 @@ public class AuthController {
             setSameUserForLoginAndContent((User) userDetails, model);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
-            userDto = userService.emailChange(userDto);
+            userDto = userService.userEmailChange(userDto);
             attributes.addFlashAttribute(SUCCESS, true);
             attributes.addFlashAttribute(REDIRECT_MESSAGE, "you got email, check it out!");
             LOGGER.info("CHANGE EMAIL SUCCESSFULLY {}", userDto);
@@ -180,9 +180,9 @@ public class AuthController {
 
     @GetMapping(value = {"/mailchange/{email}/{activationCode}"})
     public String emailActivation(@PathVariable String email, @PathVariable String activationCode,
-                                    Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
+                                  Model model, RedirectAttributes attributes) throws ServiceException, RegisterException {
         LOGGER.info("TRY TO ACTIVATE ACCOUNT WITH NEW EMAIL {}", email);
-        Optional.ofNullable(userService.emailActivation(email, activationCode, true))
+        Optional.ofNullable(userService.userEmailActivation(email, activationCode, true))
                 .orElseThrow(() -> GlobalControllerAdvisor.createRegisterException(
                         String.format(REACTIVATION_FAILED, email, activationCode)));
         model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
@@ -192,7 +192,6 @@ public class AuthController {
         userDetailsService.clearSecurityContext();
         return "redirect:".concat("/links");
     }
-
 
 
     @GetMapping("/recover/{email}/{activationCode}")

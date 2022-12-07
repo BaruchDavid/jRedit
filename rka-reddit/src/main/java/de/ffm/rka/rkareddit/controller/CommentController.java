@@ -4,8 +4,8 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.validator.comment.CommentValidationgroup;
 import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
 import de.ffm.rka.rkareddit.exception.ServiceException;
+import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
-import de.ffm.rka.rkareddit.service.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,29 +25,29 @@ import java.util.stream.Collectors;
 @Controller
 public class CommentController {
 
-    private final CommentService commentService;
+    private final PostService postService;
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
     private static final String SUCCESS = "success";
     private static final String ERROR_MESSAGE = "error_message";
 
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
+    public CommentController(PostService postService) {
+        this.postService = postService;
     }
 
     // TODO: 27.04.2021 einbinden von https://github.com/OWASP/owasp-java-encoder
     // TODO: 27.04.2021  für die Absicherung von inputs
     @PostMapping(value = "/comments/comment")
     public String newComment(@Validated(value = {CommentValidationgroup.ValidationCommentSize.class,
-                                                LinkValidationGroup.signaturSize.class}) CommentDTO comment,
+            LinkValidationGroup.signaturSize.class}) CommentDTO comment,
                              BindingResult bindingResult, RedirectAttributes attributes,
                              @AuthenticationPrincipal UserDetails userDetails,
                              HttpServletRequest req, HttpServletResponse res) throws ServiceException {
         userDetails = Optional.ofNullable(userDetails)
                 .orElseThrow(() ->
-                     UserDetailsServiceImpl.throwUnauthenticatedUserException(req.getRemoteHost() +
-                                                                            req.getRemotePort() + req.getRequestURI()));
-        if(bindingResult.hasErrors()) {
+                        UserDetailsServiceImpl.throwUnauthenticatedUserException(req.getRemoteHost() +
+                                req.getRemotePort() + req.getRequestURI()));
+        if (bindingResult.hasErrors()) {
             final String currentErrors = bindingResult.getAllErrors().stream()
                     .map(error -> {
                         LOGGER.error("VALIDATION ON COMMENT {} : CODES {} MESSAGE: {}",
@@ -55,14 +55,14 @@ public class CommentController {
                         return error.getDefaultMessage();
                     })
                     .collect(Collectors.joining());
-            if(currentErrors.contains("not valid comment")){
+            if (currentErrors.contains("not valid comment")) {
                 throw new IllegalArgumentException("Invalid comment");
             }
 
             res.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
             attributes.addFlashAttribute(ERROR_MESSAGE, currentErrors);
         } else {
-            commentService.saveNewComment(userDetails.getUsername(), comment);
+            postService.saveNewComment(userDetails.getUsername(), comment);
             attributes.addFlashAttribute(SUCCESS, true);
         }
 
