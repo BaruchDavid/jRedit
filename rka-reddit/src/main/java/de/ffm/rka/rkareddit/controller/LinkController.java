@@ -140,8 +140,9 @@ public class LinkController {
      * @return success ref to new link
      */
     @PostMapping("/links/link")
-    public String newLink(@Validated(value = {LinkValidationGroup.UniqueUrlMarker.class}) LinkDTO link, @AuthenticationPrincipal UserDetails user,
-                          Model model, HttpServletResponse response, BindingResult bindingResult,
+    public String newLink(@Validated(value = {LinkValidationGroup.UniqueUrlMarker.class}) LinkDTO link,
+                          BindingResult bindingResult, @AuthenticationPrincipal UserDetails user,
+                          Model model, HttpServletResponse response,
                           RedirectAttributes redirectAttributes) throws ServiceException {
         if (bindingResult.hasErrors()) {
             LOGGER.error("Validation failed of link: {}", link);
