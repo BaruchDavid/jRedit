@@ -4,7 +4,6 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.comment.CommentValidationgroup;
-import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
 import org.modelmapper.ModelMapper;
@@ -23,81 +22,81 @@ import static java.util.Date.from;
 
 
 @ToString(exclude = "user")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class CommentDTO extends Auditable implements Serializable{
-	
-	private static ModelMapper modelMapper; 
-	private static final long serialVersionUID = -5839947949942907414L;
-	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
-	private Long commentId;
-	
-	static {
-		modelMapper	= new ModelMapper();
-		modelMapper.getConfiguration().setAmbiguityIgnored(true);
-		modelMapper.addMappings(new PropertyMap<Comment, CommentDTO>() {
-		    @Override
-		    protected void configure() {
-		        skip(destination.getLinkDTO());
-		    }
-		});
-	}
-	
-	
-	@NotEmpty(message = "comment text must be present",
-			groups = CommentValidationgroup.ValidationCommentSize.class)
-	@Size(message = "maximal 600 letters are allowed", max=600, groups = CommentValidationgroup.ValidationCommentSize.class)
-	private String commentText;
+public class CommentDTO extends Auditable implements Serializable {
 
-	private User user;
+    private static ModelMapper modelMapper;
+    private static final long serialVersionUID = -5839947949942907414L;
+    private static final ZoneId ZONE_ID = ZoneId.systemDefault();
+    private Long commentId;
 
-	/**
-	 * signature for suitable link
-	 * used for frontend
-	 */
-	@NotEmpty(message = "not valid comment", groups = LinkValidationGroup.signaturSize.class)
-	private String lSig;
+    static {
+        modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        modelMapper.addMappings(new PropertyMap<Comment, CommentDTO>() {
+            @Override
+            protected void configure() {
+                skip(destination.getLinkDTO());
+            }
+        });
+    }
 
-	private LinkDTO linkDTO;
 
-	@Autowired
-	private transient PrettyTime prettyTime;
+    @NotEmpty(message = "comment text must be present",
+            groups = CommentValidationgroup.ValidationCommentSize.class)
+    @Size(message = "maximal 600 letters are allowed", max = 600, groups = CommentValidationgroup.ValidationCommentSize.class)
+    private String commentText;
 
-	private LocalDateTime creationDate;
+    private User user;
 
-	
-	public String getElapsedTime() {
-		prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
-		return prettyTime.format(from(creationDate.atZone(ZONE_ID).toInstant()));
-	}
-	
-	public static Comment getMapDtoToComment(CommentDTO commentDto){
-		return modelMapper.map(commentDto, Comment.class);
-	}
-	
-	public static CommentDTO getCommentToCommentDto(Comment comment) {
-		final CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
-		commentDTO.setLinkDTO(LinkDTO.mapLinkToDto(comment.getLink()));
-		return commentDTO;
-	}
-	
-	@Override
+    /**
+     * signature for suitable link
+     * used for frontend
+     */
+    private String lSig;
+
+    private LinkDTO linkDTO;
+
+    @Autowired
+    private transient PrettyTime prettyTime;
+
+    private LocalDateTime creationDate;
+
+
+    public String getElapsedTime() {
+        prettyTime = BeanUtil.getBeanFromContext(PrettyTime.class);
+        return prettyTime.format(from(creationDate.atZone(ZONE_ID).toInstant()));
+    }
+
+    public static Comment getMapDtoToComment(CommentDTO commentDto) {
+        return modelMapper.map(commentDto, Comment.class);
+    }
+
+    public static CommentDTO getCommentToCommentDto(Comment comment) {
+        final CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
+        commentDTO.setLinkDTO(LinkDTO.mapLinkToDto(comment.getLink()));
+        return commentDTO;
+    }
+
+    @Override
     public boolean equals(Object o) {
-		boolean result;
-		if (this == o) {
-			result = true;
-		} else if (!(o instanceof CommentDTO)) {
-			result = false;
-		} else {
-			CommentDTO other = (CommentDTO) o;
-			result = commentId != null &&
-					commentId.equals(other.getCommentId());
-		}
-		return result;
-	}
-	 
+        boolean result;
+        if (this == o) {
+            result = true;
+        } else if (!(o instanceof CommentDTO)) {
+            result = false;
+        } else {
+            CommentDTO other = (CommentDTO) o;
+            result = commentId != null &&
+                    commentId.equals(other.getCommentId());
+        }
+        return result;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(commentId, commentText);

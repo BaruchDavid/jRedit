@@ -2,8 +2,8 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.UnauthenticatedUserRecoverPassword;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationGroup;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationGroup.UnauthenticatedUserRecoverPassword;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.UserService;
 import org.slf4j.Logger;
@@ -116,7 +116,7 @@ public class PwRecoverController {
         }
     }
 
-    private void manageValidationErrors(@Validated(UserValidationgroup.ValidationChangeUserProperties.class) UserDTO userDto,
+    private void manageValidationErrors(@Validated(UserValidationGroup.ValidationChangeUserProperties.class) UserDTO userDto,
                                         BindingResult bindingResult, HttpServletResponse res,
                                         RedirectAttributes attributes, Model model) {
         bindingResult.getAllErrors().forEach(error -> LOGGER.warn(ERROR_MESSAGE,

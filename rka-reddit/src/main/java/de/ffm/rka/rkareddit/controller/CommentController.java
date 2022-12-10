@@ -2,7 +2,6 @@ package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.validator.comment.CommentValidationgroup;
-import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
@@ -38,8 +37,7 @@ public class CommentController {
     // TODO: 27.04.2021 einbinden von https://github.com/OWASP/owasp-java-encoder
     // TODO: 27.04.2021  für die Absicherung von inputs
     @PostMapping(value = "/comments/comment")
-    public String newComment(@Validated(value = {CommentValidationgroup.ValidationCommentSize.class,
-            LinkValidationGroup.signaturSize.class}) CommentDTO comment,
+    public String newComment(@Validated(value = {CommentValidationgroup.ValidationCommentSize.class}) CommentDTO comment,
                              BindingResult bindingResult, RedirectAttributes attributes,
                              @AuthenticationPrincipal UserDetails userDetails,
                              HttpServletRequest req, HttpServletResponse res) throws ServiceException {

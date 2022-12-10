@@ -1,7 +1,7 @@
 package de.ffm.rka.rkareddit.controller;
 
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationGroup;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
@@ -54,7 +54,7 @@ public class RegisterController {
      * @return user
      */
     @PostMapping(value = {REGISTRATION})
-    public String userRegistration(@Validated(value = {UserValidationgroup.ValidationUserRegistration.class}) UserDTO userDto,
+    public String userRegistration(@Validated(value = {UserValidationGroup.ValidationUserRegistration.class}) UserDTO userDto,
                                    BindingResult bindingResult, RedirectAttributes attributes, HttpServletResponse res,
                                    HttpServletRequest req, Model model) throws ServiceException, IOException {
         LOGGER.info("TRY TO REGISTER {}", userDto);
@@ -80,8 +80,8 @@ public class RegisterController {
      * @param model         saves userDto model and errors
      * @return either registration view or email change view
      */
-    private String manageValidationErrors(@Validated({UserValidationgroup.ValidationUserRegistration.class,
-            UserValidationgroup.ValidationUserChangeEmail.class}) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, HttpServletRequest req, Model model) {
+    private String manageValidationErrors(@Validated({UserValidationGroup.ValidationUserRegistration.class,
+            UserValidationGroup.ValidationUserChangeEmail.class}) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, HttpServletRequest req, Model model) {
         bindingResult.getAllErrors().forEach(error -> LOGGER.warn("Register validation Error: {} during registration: {}",
                 error.getCodes(), error.getDefaultMessage()));
         model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());

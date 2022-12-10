@@ -7,11 +7,7 @@ import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.validator.user.*;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationChangeUserProperties;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangeEmail;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserChangePassword;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.ValidationUserRegistration;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup.UnauthenticatedUserRecoverPassword;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationGroup.*;
 import jdk.jfr.Description;
 import lombok.*;
 import org.apache.commons.lang.StringUtils;
@@ -28,131 +24,132 @@ import java.util.Optional;
 @EmailNotEqualToNewEmail(groups = {ValidationUserChangeEmail.class})
 @NewPasswordMatcher(groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
 @PasswordMatcher(groups = {ValidationUserRegistration.class, ValidationUserChangeEmail.class})
-@Getter @Setter 
+@Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UserDTO {
-	
-	private static ModelMapper modelMapper;
-	
-	static {
-		modelMapper	= new ModelMapper();
-		modelMapper.getConfiguration().setAmbiguityIgnored(true);
-		modelMapper.createTypeMap(User.class, UserDTO.class).setPostConverter( context -> {
-			final UserDTO destination = context.getDestination();
-			if (destination.getEmail() == null){
-				destination.setEmail(StringUtils.EMPTY);
-			}
-			return  destination;
-		});
-		modelMapper.addMappings(new PropertyMap<User, UserDTO>() {
-		    @Override
-		    protected void configure() {
-		        skip(destination.getUserComment());
-		        skip(destination.getUserLinks());
-		        skip(destination.getLastModifiedDate());
-		        
-		    }
-		});
-	}
 
-	@Description("needs to be mapped for updating user")
-	@JsonIgnore
-	private Long userId;
+    private static ModelMapper modelMapper;
 
-	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserRegistration.class})
-	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20,  groups = {ValidationUserRegistration.class})
-	@Builder.Default
-	private String email="";
-	
-	@NotEmpty(message = "mail must be entered ", groups = {ValidationUserChangeEmail.class})
-	@Size(message = "email must be between 8 and 20 signs",min = 8, max = 20, groups = {ValidationUserChangeEmail.class})
-	@JsonIgnore
-	private String newEmail;
-	
-	@Size(message = "password must be between  5 and 20 signs",min = 5,
-			max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
-	@CorrectPassword(groups = {ValidationUserChangePassword.class, ValidationUserChangeEmail.class})
-	@JsonIgnore
-	private String password;
-	
-	@NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})
-	@JsonIgnore
-	private String confirmPassword;
-	
-	@OldPasswordNewPasswordNotMatcher(groups = {ValidationUserChangePassword.class})
-	@Size(message = "password must be between 5 and 20 signs",
-			min = 5, max = 20, groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
-	@JsonIgnore
-	private String newPassword;
-	
-	@Size(message = "password must be between 5 and 20 signs",
-			min = 5, max = 20, groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
-	@JsonIgnore
-	private String confirmNewPassword;
-	
-	@NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserProperties.class,
-																ValidationUserRegistration.class})
-	private String firstName;
-	
-	@NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserProperties.class,
-																ValidationUserRegistration.class})
-	@Builder.Default
-	private String secondName="";
-	
-	@JsonIgnore
-	private  String fullName;
-	
-	@NotEmpty(message = "Please enter alias.", groups = {ValidationChangeUserProperties.class,
-															ValidationUserRegistration.class})
-	@Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserProperties.class,
-																				ValidationUserRegistration.class})
-	@Builder.Default
-	private  String aliasName="";
+    static {
+        modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        modelMapper.createTypeMap(User.class, UserDTO.class).setPostConverter(context -> {
+            final UserDTO destination = context.getDestination();
+            if (destination.getEmail() == null) {
+                destination.setEmail(StringUtils.EMPTY);
+            }
+            return destination;
+        });
+        modelMapper.addMappings(new PropertyMap<User, UserDTO>() {
+            @Override
+            protected void configure() {
+                skip(destination.getUserComment());
+                skip(destination.getUserLinks());
+                skip(destination.getLastModifiedDate());
 
-	@JsonIgnore
-	private String activationCode;
+            }
+        });
+    }
 
-	@JsonIgnore
-	private List<Comment> userComment = new ArrayList<>(); 
+    @Description("needs to be mapped for updating user")
+    @JsonIgnore
+    private Long userId;
 
-	@JsonIgnore
-	private List<Link> userLinks = new ArrayList<>();
+    @NotEmpty(message = "mail must be entered ", groups = {ValidationUserRegistration.class})
+    @Size(message = "email must be between 8 and 20 signs", min = 8, max = 20, groups = {ValidationUserRegistration.class})
+    @Builder.Default
+    private String email = "";
 
-	@JsonIgnore
-	private LocalDateTime lastModifiedDate;
+    @NotEmpty(message = "mail must be entered ", groups = {ValidationUserChangeEmail.class})
+    @Size(message = "email must be between 8 and 20 signs", min = 8, max = 20, groups = {ValidationUserChangeEmail.class})
+    @JsonIgnore
+    private String newEmail;
 
-	@JsonIgnore
-	private LocalDateTime activationDeadLineDate;
+    @Size(message = "password must be between  5 and 20 signs", min = 5,
+            max = 20, groups = {ValidationUserRegistration.class, ValidationUserChangePassword.class})
+    @CorrectPassword(groups = {ValidationUserChangePassword.class, ValidationUserChangeEmail.class})
+    @JsonIgnore
+    private String password;
 
-	@JsonIgnore
-	private LocalDateTime creationDate;
+    @NotEmpty(message = "please confirm your password", groups = {ValidationUserRegistration.class})
+    @JsonIgnore
+    private String confirmPassword;
 
-	@JsonProperty
-	@Builder.Default
-	private String userCreationDate="";
+    @OldPasswordNewPasswordNotMatcher(groups = {ValidationUserChangePassword.class})
+    @Size(message = "password must be between 5 and 20 signs",
+            min = 5, max = 20, groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
+    @JsonIgnore
+    private String newPassword;
 
-	
-	public String getFullName() {
-		String fName = Optional.ofNullable(firstName).orElse("");
-		String sName = Optional.ofNullable(secondName).orElse("");
-		fullName = fName.concat(" ").concat(sName);
-		return fullName;
-	}
-	
-	public static UserDTO mapUserToUserDto(User user) {
-		final UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-		final String creationDate = Optional.ofNullable(userDTO.getCreationDate())
-											.map(localDateTime -> localDateTime.toString())
-											.orElse("");
-		userDTO.setUserCreationDate(creationDate);
-		return userDTO;
-	}
+    @Size(message = "password must be between 5 and 20 signs",
+            min = 5, max = 20, groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
+    @JsonIgnore
+    private String confirmNewPassword;
 
-	public static User mapUserDtoToUser(UserDTO user) {
-		return modelMapper.map(user, User.class);
-	}
+    @NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserProperties.class,
+            ValidationUserRegistration.class})
+    private String firstName;
+
+    @NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserProperties.class,
+            ValidationUserRegistration.class})
+    @Builder.Default
+    private String secondName = "";
+
+    @JsonIgnore
+    private String fullName;
+
+    @NotEmpty(message = "Please enter alias.", groups = {ValidationChangeUserProperties.class,
+            ValidationUserRegistration.class})
+    @Size(min = 5, message = "at least 5 characters for alias name", groups = {ValidationChangeUserProperties.class,
+            ValidationUserRegistration.class})
+    @Builder.Default
+    private String aliasName = "";
+
+    @JsonIgnore
+    private String activationCode;
+
+    @JsonIgnore
+    private List<Comment> userComment = new ArrayList<>();
+
+    @JsonIgnore
+    private List<Link> userLinks = new ArrayList<>();
+
+    @JsonIgnore
+    private LocalDateTime lastModifiedDate;
+
+    @JsonIgnore
+    private LocalDateTime activationDeadLineDate;
+
+    @JsonIgnore
+    private LocalDateTime creationDate;
+
+    @JsonProperty
+    @Builder.Default
+    private String userCreationDate = "";
+
+
+    public String getFullName() {
+        String fName = Optional.ofNullable(firstName).orElse("");
+        String sName = Optional.ofNullable(secondName).orElse("");
+        fullName = fName.concat(" ").concat(sName);
+        return fullName;
+    }
+
+    public static UserDTO mapUserToUserDto(User user) {
+        final UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        final String creationDate = Optional.ofNullable(userDTO.getCreationDate())
+                .map(localDateTime -> localDateTime.toString())
+                .orElse("");
+        userDTO.setUserCreationDate(creationDate);
+        return userDTO;
+    }
+
+    public static User mapUserDtoToUser(UserDTO user) {
+        return modelMapper.map(user, User.class);
+    }
 }
