@@ -4,7 +4,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import de.ffm.rka.rkareddit.domain.validator.user.UserValidationgroup;
+import de.ffm.rka.rkareddit.domain.validator.user.UserValidationGroup;
 import de.ffm.rka.rkareddit.exception.GlobalControllerAdvisor;
 import de.ffm.rka.rkareddit.exception.RegisterException;
 import de.ffm.rka.rkareddit.exception.ServiceException;
@@ -161,7 +161,7 @@ public class AuthController {
      * @return new userDto object and success
      */
     @PatchMapping(value = {"/profile/private/me/update/email"})
-    public String userChangeEmail(@Validated(value = {UserValidationgroup.ValidationUserChangeEmail.class}) UserDTO userDto,
+    public String userChangeEmail(@Validated(value = {UserValidationGroup.ValidationUserChangeEmail.class}) UserDTO userDto,
                                   BindingResult bindingResult, RedirectAttributes attributes,
                                   @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse res,
                                   HttpServletRequest req, Model model) throws ServiceException {
@@ -212,7 +212,7 @@ public class AuthController {
 
 
     @PutMapping("/profile/private/me/update")
-    public String user(@Validated(UserValidationgroup.ValidationChangeUserProperties.class) UserDTO userDto,
+    public String user(@Validated(UserValidationGroup.ValidationChangeUserProperties.class) UserDTO userDto,
                        BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
                        @AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (bindingResult.hasErrors()) {
@@ -230,7 +230,7 @@ public class AuthController {
     }
 
     @PutMapping("/profile/private/me/password")
-    public String userPasswordChange(@Validated(UserValidationgroup.ValidationUserChangePassword.class) UserDTO userDto,
+    public String userPasswordChange(@Validated(UserValidationGroup.ValidationUserChangePassword.class) UserDTO userDto,
                                      BindingResult bindingResult, HttpServletResponse res, RedirectAttributes attributes,
                                      @AuthenticationPrincipal UserDetails userDetails, Model model) throws ServiceException {
         if (bindingResult.hasErrors()) {
@@ -297,8 +297,8 @@ public class AuthController {
      * @param model         saves userDto model and errors
      * @return either registration view or email change view
      */
-    private String manageValidationErrors(@Validated({UserValidationgroup.ValidationUserRegistration.class,
-            UserValidationgroup.ValidationUserChangeEmail.class}) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, HttpServletRequest req, Model model) {
+    private String manageValidationErrors(@Validated({UserValidationGroup.ValidationUserRegistration.class,
+            UserValidationGroup.ValidationUserChangeEmail.class}) UserDTO userDto, BindingResult bindingResult, HttpServletResponse res, HttpServletRequest req, Model model) {
         bindingResult.getAllErrors().forEach(error -> LOGGER.warn("Register validation Error: {} during registration: {}",
                 error.getCodes(), error.getDefaultMessage()));
         model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
@@ -316,7 +316,7 @@ public class AuthController {
      * @param attributes    set attributes for redirect
      * @param model         saves userDto
      */
-    private void manageValidationErrors(@Validated(UserValidationgroup.ValidationChangeUserProperties.class) UserDTO userDto,
+    private void manageValidationErrors(@Validated(UserValidationGroup.ValidationChangeUserProperties.class) UserDTO userDto,
                                         BindingResult bindingResult, HttpServletResponse res,
                                         RedirectAttributes attributes, Model model) {
         bindingResult.getAllErrors().forEach(error -> LOGGER.warn(ERROR_MESSAGE,
