@@ -56,12 +56,12 @@ public class GlobalControllerAdvisor {
             Exception.class, PreAuthenticatedCredentialsNotFoundException.class})
     public ModelAndView defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
         Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-        res.setHeader("location","/error");
+        res.setHeader("location", "/error");
         UserDTO user = new UserDTO();
         String view = USER_ERROR_VIEW;
         String errorEndPoint = null;
         String visitorName = "";
-        String encodedErrorDtoJson="";
+        String encodedErrorDtoJson = "";
         if (authentication.isPresent()) {
             visitorName = authentication.get().getName();
             if (!ANONYMOUS.equals(visitorName) && !ANONYMOUS_USER.equals(visitorName)) {
@@ -78,7 +78,7 @@ public class GlobalControllerAdvisor {
                 visitorName,
                 req.getMethod(),
                 req.getRequestURL(),
-               exception);
+                exception);
         // TODO: 04.04.2021 man muss die errorUrl anpassen, zb. für accessDenied im BasicErrorController
         // TODO: 14.03.2021 mask user-emails
         // TODO: 14.03.2021 evaluate necesseary userContent and loggedUser
@@ -102,7 +102,7 @@ public class GlobalControllerAdvisor {
                 errorDTO.setErrorStatus(HttpStatus.SC_BAD_REQUEST);
                 errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
-                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO +encodedErrorDtoJson);
+                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO + encodedErrorDtoJson);
                 break;
             case "UserAuthenticationLostException":
             case "AuthenticationCredentialsNotFoundException":
@@ -115,12 +115,12 @@ public class GlobalControllerAdvisor {
                 errorDTO.setErrorStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
                 errorDTO.setErrorView(PAGE_NOT_FOUND);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
-                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO+encodedErrorDtoJson);
+                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO + encodedErrorDtoJson);
                 break;
             case "ServiceException":
                 errorDTO.setErrorStatus(HttpStatus.SC_NOT_FOUND);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
-                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO+encodedErrorDtoJson);
+                errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO + encodedErrorDtoJson);
                 break;
             case "RegisterException":
                 res.setStatus(HttpStatus.SC_BAD_REQUEST);
@@ -149,7 +149,7 @@ public class GlobalControllerAdvisor {
     public ResponseEntity<String> defaultRestErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception exception) {
         String responseBody = "Error occurred!";
         final String exceptionType = getExceptionName(exception.getClass().getCanonicalName());
-        if("IllegalVoteException".equals(exceptionType)){
+        if ("IllegalVoteException".equals(exceptionType)) {
             responseBody = "illegal vote!";
         }
         res.setStatus(HttpStatus.SC_BAD_REQUEST);
@@ -162,7 +162,7 @@ public class GlobalControllerAdvisor {
      */
     private ModelAndView createErrorView(ErrorDTO msg) {
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("redirect:"+msg.getErrorEndPoint());
+        mav.setViewName("redirect:" + msg.getErrorEndPoint());
         return mav;
     }
 
