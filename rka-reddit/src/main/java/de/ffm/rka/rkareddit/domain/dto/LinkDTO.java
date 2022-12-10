@@ -3,6 +3,8 @@ package de.ffm.rka.rkareddit.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
+import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
+import de.ffm.rka.rkareddit.domain.validator.link.UniqueUrl;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import lombok.*;
@@ -63,6 +65,7 @@ public class LinkDTO implements Serializable {
 
     @NotEmpty(message = "url is required")
     @URL(message = "valid url is required")
+    @UniqueUrl(groups = {LinkValidationGroup.UniqueUrlMarker.class})
     private String url;
 
     @Autowired

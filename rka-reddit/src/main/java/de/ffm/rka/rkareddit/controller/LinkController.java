@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.TagDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.service.TagService;
@@ -114,9 +115,9 @@ public class LinkController {
     /**
      * view for entering data for new link
      *
-     * @param user
-     * @param model
-     * @return
+     * @param user  who adds new link
+     * @param model transfers data to backend
+     * @return form for new link
      */
     @GetMapping("/links/link")
     public String newLink(@AuthenticationPrincipal UserDetails user, Model model) {
@@ -139,7 +140,7 @@ public class LinkController {
      * @return success ref to new link
      */
     @PostMapping("/links/link")
-    public String newLink(@Validated LinkDTO link, @AuthenticationPrincipal UserDetails user,
+    public String newLink(@Validated(value = {LinkValidationGroup.UniqueUrlMarker.class}) LinkDTO link, @AuthenticationPrincipal UserDetails user,
                           Model model, HttpServletResponse response, BindingResult bindingResult,
                           RedirectAttributes redirectAttributes) throws ServiceException {
         if (bindingResult.hasErrors()) {
