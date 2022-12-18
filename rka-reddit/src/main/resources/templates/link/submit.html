@@ -1,93 +1,102 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layouts/main_layout :: head(title = 'create link')}">
-	
+<head title="save post"
+      th:replace="~{layouts/main_layout :: head(title = 'create link')}">
+
 </head>
 <body>
-    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-    <div class="container"><nav th:replace="~{layouts/main_layout :: nav}"></nav>
-        <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
-                <h4>Submit Link</h4>
-                <br/>
-                <!-- th:object("${newLink}") ist Binding zum Model-Backend im Contrller-->
-                <form method="POST" th:action="@{/links/link}" th:object="${newLink}">
-                    <div class="form-group">
-                        <label for="title">Title</label>
-                        <input type="text"
-                                class="form-control"
-                                id="title"
-                                placeholder="min. 5 and max. 50 letters"
+<div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+<div class="container">
+    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h4>Submit Link</h4>
+            <br/>
+            <!-- th:object("${newLink}") ist Binding zum Model-Backend im Contrller-->
+            <form method="POST" th:action="@{/links/link}"
+                  th:object="${newLink}">
+                <div class="form-group">
+                    <label for="link_title">Title</label>
+                    <input type="text"
+                           class="form-control"
+                           id="link_title"
+                           placeholder="min. 5 and max. 50 letters"
 
-                                th:field="*{title}">
-                        <small th:errors="*{title}" style="color:red;"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="title">Subtitle</label>
-                        <input type="text"
-                                class="form-control"
-                                id="title"
-                                placeholder="min. 5 max. 80 letters"
+                           th:field="*{title}">
+                    <small th:errors="*{title}" style="color:red;"></small>
+                </div>
+                <div class="form-group">
+                    <label for="link_subtitle">Subtitle</label>
+                    <input type="text"
+                           class="form-control"
+                           id="link_subtitle"
+                           placeholder="min. 5 max. 80 letters"
 
-                                th:field="*{subtitle}">
-                        <small th:errors="*{subtitle}" style="color:red;"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="url">URL</label>
-                        <input type="url" class="form-control" id="url" placeholder="URL" required="required" th:field="*{url}">
-                        <small th:errors="*{url}" style="color:red;"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <input type="text"
-                               class="form-control"
-                               id="description"
-                               placeholder="max. 100 letters"
-                               th:field="*{description}">
-                        <small th:errors="*{description}" style="color:#ff0000;"></small>
-                    </div>
-                    <label>tags</label>
-                    <div class="form-group tag-form">  
-                        <input type="text"
-                                class="form-control tag-input"
-                                placeholder="tag" 
-                                id="tags0">
-                        <input type="text"
-                                class="form-control tag-input"
-                                placeholder="tag" 
-                                id="tags1">
-                        <input type="text"
-                                class="form-control tag-input"
-                                placeholder="tag" 
-                                id="tags2">
-                        <input type="text"
-                                class="form-control tag-input"
-                                placeholder="tag" 
-                                id="tags3">      
-                                
-                        <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                     <table style="display:none">
-	                     <tbody>
-		                     <tr th:each="item, itemStat : *{tags}">
-		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagNum}" /></td>
-		                    	<td><input th:field="*{tags[__${itemStat.index}__].tagName}" /></td>
-		                	</tr>
-	                     </tbody>
-                     </table>
-                     
-                     
-                </form>
-            </div>
-            <div class="col-md-3"></div>
+                           th:field="*{subtitle}">
+                    <small th:errors="*{subtitle}" style="color:red;"></small>
+                </div>
+                <div class="form-group">
+                    <label for="url">URL</label>
+                    <input type="text" class="form-control" id="url"
+                           placeholder="URL" th:field="*{url}">
+                    <small th:errors="*{url}" style="color:red;"></small>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text"
+                           class="form-control"
+                           id="description"
+                           placeholder="max. 100 letters"
+                           th:field="*{description}">
+                    <small th:errors="*{description}"
+                           style="color:#ff0000;"></small>
+                </div>
+                <label>tags</label>
+                <div class="form-group tag-form">
+                    <input type="text"
+                           class="form-control tag-input"
+                           placeholder="tag"
+                           id="tags0">
+                    <input type="text"
+                           class="form-control tag-input"
+                           placeholder="tag"
+                           id="tags1">
+                    <input type="text"
+                           class="form-control tag-input"
+                           placeholder="tag"
+                           id="tags2">
+                    <input type="text"
+                           class="form-control tag-input"
+                           placeholder="tag"
+                           id="tags3">
+
+                    <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <table style="display:none">
+                    <tbody>
+                    <tr th:each="item, itemStat : *{tags}">
+                        <td><input
+                                th:field="*{tags[__${itemStat.index}__].tagNum}"/>
+                        </td>
+                        <td><input
+                                th:field="*{tags[__${itemStat.index}__].tagName}"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+            </form>
         </div>
+        <div class="col-md-3"></div>
     </div>
-    <!-- Bootstrap core JavaScript -->
-	<div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
-	<script th:src="@{/js/tag.js}"></script>
+</div>
+<!-- Bootstrap core JavaScript -->
+<div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
+<script th:src="@{/js/tag.js}"></script>
 </body>
 
 </html>
