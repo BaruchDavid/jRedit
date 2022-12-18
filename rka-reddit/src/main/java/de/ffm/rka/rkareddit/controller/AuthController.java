@@ -217,7 +217,7 @@ public class AuthController {
                        @AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (bindingResult.hasErrors()) {
             manageValidationErrors(userDto, bindingResult, res, attributes, model);
-            return "redirect:/profile/private/me/".concat(userDto.getEmail());
+            return "redirect:/profile/private/me/";
         } else {
             userDto.setEmail(userDetails.getUsername());
             userService.changeUserDetails(userDto);
