@@ -97,6 +97,8 @@ public class UserDTO {
 
     @NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserProperties.class,
             ValidationUserRegistration.class})
+    @Size(min = 2, max = 10, message = "lastname must be between 2 and 10 signs", groups = {ValidationChangeUserProperties.class,
+            ValidationUserRegistration.class})
     @Builder.Default
     private String secondName = "";
 
@@ -143,7 +145,7 @@ public class UserDTO {
     public static UserDTO mapUserToUserDto(User user) {
         final UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         final String creationDate = Optional.ofNullable(userDTO.getCreationDate())
-                .map(localDateTime -> localDateTime.toString())
+                .map(LocalDateTime::toString)
                 .orElse("");
         userDTO.setUserCreationDate(creationDate);
         return userDTO;
