@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layouts/main_layout :: head(title = 'Springit - Register for an account')}">
-</head>
+<head th:replace="~{layouts/main_layout :: head(title = 'Register on linkssky')}">
+    <title>Register on linkssky</title></head>
 <body>
 
-    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
-    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+<nav th:replace="~{layouts/main_layout :: nav}"></nav>
+<div th:replace="~{layouts/main_layout :: jumbotron}"></div>
 
-    <div class="row" th:if="${success}">
-        <div class="col-md-3"></div>
-        <div id="displayRegMessage" class="col-md-6 alert alert-success" role="alert" >
-            <p th:text="${redirectMessage}">Welcome to your place!</p>
-        </div>
-        <div class="col-md-3"></div>
+<div class="row" th:if="${success}">
+    <div class="col-md-3"></div>
+    <div id="displayRegMessage" class="col-md-6 alert alert-success"
+         role="alert">
+        <p th:text="${redirectMessage}">Welcome to your place!</p>
     </div>
+    <div class="col-md-3"></div>
+</div>
 
-    <!-- User Registration form -->
-    <form th:if="!${success}" class="form-horizontal" role="form" method="POST" th:action="@{/registration}" th:object="${userDto}">
+<!-- User Registration form -->
+<form th:if="!${success}" class="form-horizontal" role="form" method="POST"
+      th:action="@{/registration}" th:object="${userDto}">
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -24,7 +26,7 @@
             <hr>
         </div>
     </div>
-     <div class="row" th:if="${validationErrors}">
+    <div class="row" th:if="${validationErrors}">
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <span class="text-danger align-middle">
@@ -41,7 +43,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                    <div class="input-group-addon" style="width: 2.6rem"><i
+                            class="fa fa-user"></i></div>
                     <input type="text"
                            name="first-name"
                            class="form-control"
@@ -60,7 +63,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                    <div class="input-group-addon" style="width: 2.6rem"><i
+                            class="fa fa-user"></i></div>
                     <input type="text"
                            name="last-name"
                            class="form-control"
@@ -79,7 +83,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                    <div class="input-group-addon" style="width: 2.6rem"><i
+                            class="fa fa-user"></i></div>
                     <input type="text"
                            name="alias"
                            class="form-control"
@@ -98,7 +103,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
+                    <div class="input-group-addon" style="width: 2.6rem"><i
+                            class="fa fa-at"></i></div>
                     <input type="text"
                            name="email"
                            class="form-control"
@@ -117,7 +123,8 @@
         <div class="col-md-6">
             <div class="form-group has-danger">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                    <div class="input-group-addon" style="width: 2.6rem"><i class="fas fa-key"></i></div>
+                    <div class="input-group-addon" style="width: 2.6rem"><i
+                            class="fas fa-key"></i></div>
                     <input type="password"
                            name="password"
                            class="form-control"
@@ -146,14 +153,16 @@
                            placeholder="Confirm Password"
                            th:field="*{confirmPassword}"
                            required>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <button type="submit" class="btn btn-success"><i class="fa fa-user-plus"></i> Register</button>
+            <button type="submit" class="btn btn-success"><i
+                    class="fa fa-user-plus"></i> Register
+            </button>
         </div>
     </div>
 </form>

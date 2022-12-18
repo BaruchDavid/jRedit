@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layouts/main_layout :: head(title = 'Springit - Register for an account')}">
+<head th:replace="~{layouts/main_layout :: head(title = 'edit your information')}">
+    <title>edit your information</title>
 </head>
 <body>
 
@@ -72,7 +73,7 @@
                            id="first-name"
                            placeholder="First Name"
                            th:field="*{firstName}"
-                           autofocus>
+                           autofocus required>
                 </div>
             </div>
         </div>
@@ -92,7 +93,7 @@
                            id="last-name"
                            placeholder="Last Name"
                            th:field="*{secondName}"
-                           autofocus>
+                           autofocus required>
                 </div>
             </div>
         </div>
@@ -112,7 +113,7 @@
                            id="alias"
                            placeholder="This will be your display name on links & comments"
                            th:field="*{aliasName}"
-                           autofocus>
+                           autofocus required>
                 </div>
             </div>
         </div>
@@ -121,7 +122,7 @@
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <div class="float-md-left">
-                <a th:href="@{/profile/private}" id="cancel" name="cancel"
+                <a th:href="@{/profile/private}" id="cancel"
                    class="btn btn-danger">
                     <i class="fa fa-stop-circle"></i>
                     Cancel
