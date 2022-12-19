@@ -277,7 +277,7 @@ public class AuthController {
     }
 
     /**
-     * @param user  is never null. If it is null, you will be redirected to login
+     * @param user  same user, who is logged in and creates content
      * @param model to save user for view
      * @return logged in user
      */
