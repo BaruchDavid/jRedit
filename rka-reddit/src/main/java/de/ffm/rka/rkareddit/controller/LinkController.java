@@ -40,7 +40,9 @@ public class LinkController {
     private static final String SUCCESS = "success";
     private static final String ERROR_MESSAGE = "error_message";
     private static final String USER_DTO = "userDto";
-    private static final String REDIRECT_MESSAGE = "redirectMessage";
+    private static final String REDIRECT_MESSAGE = "rediretMessage";
+    private static final String LOGGED_IN_USER = "userDto";
+    private static final String VALIDATION_ERRORS = "validationErrors";
     private final TagService tagService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkController.class);
@@ -57,6 +59,8 @@ public class LinkController {
      *
      * @param page contains a page-number, page-size and sorting
      */
+
+    // TODO: 10.12.2022 BUG: link anlegen und danach suchen, es wird nicht gefunden, nur die test-daten-links werden gefunden 
     @GetMapping({"/", "", "/links/", "/links"})
     public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
                         @RequestParam(name = "searchTag", required = false, defaultValue = "") String searchTag,
@@ -87,6 +91,10 @@ public class LinkController {
      * @param response    set status
      * @return either link view in success or links-overview
      */
+
+
+    // TODO: 10.12.2022 BUG; BEIM ERSTEN BENUTZEN DER FIND-METHODE STEHT IN DER SIGNATUR ANSTATT DER SIGNATUR "links"
+    // TODO: 10.12.2022 Eingabewert ist ein Parameter "suchBegriff" und keine Signatur, es braucht einen anderen Handler
     @GetMapping("/links/link/{signature}")
     public String link(Model model, @PathVariable String signature,
                        @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
@@ -140,13 +148,15 @@ public class LinkController {
      * @return success ref to new link
      */
     @PostMapping("/links/link")
-    public String newLink(@Validated(value = {LinkValidationGroup.UniqueUrlMarker.class}) LinkDTO link,
+    public String newLink(@Validated(value = {LinkValidationGroup.UniqueUrlMarker.class, LinkValidationGroup.SizeMarker.class}) LinkDTO link,
                           BindingResult bindingResult, @AuthenticationPrincipal UserDetails user,
                           Model model, HttpServletResponse response,
                           RedirectAttributes redirectAttributes) throws ServiceException {
         if (bindingResult.hasErrors()) {
             LOGGER.error("Validation failed of link: {}", link);
             model.addAttribute(NEW_LINK, link);
+            model.addAttribute(LOGGED_IN_USER, UserDTO.mapUserToUserDto((User) user));
+            model.addAttribute(VALIDATION_ERRORS, bindingResult.getAllErrors());
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return SUBMIT_LINK;
         } else {
@@ -161,5 +171,4 @@ public class LinkController {
     public List<String> searchTags(String search) {
         return tagService.findSuitableTags(search);
     }
-
 }

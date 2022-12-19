@@ -4,4 +4,7 @@ public interface LinkValidationGroup {
 
     interface UniqueUrlMarker {
     }
+
+    interface SizeMarker {
+    }
 }
