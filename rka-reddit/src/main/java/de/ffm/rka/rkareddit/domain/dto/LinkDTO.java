@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup;
+import de.ffm.rka.rkareddit.domain.validator.link.LinkValidationGroup.SizeMarker;
 import de.ffm.rka.rkareddit.domain.validator.link.UniqueUrl;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -52,20 +53,20 @@ public class LinkDTO implements Serializable {
         });
     }
 
-    @NotEmpty(message = "title is required")
-    @Size(min = 5, max = 50, message = "maximal 50 letter allowed")
+    @NotEmpty(message = "title is required", groups = {SizeMarker.class})
+    @Size(min = 5, max = 50, message = "title must be between 5 and 50 letters", groups = {SizeMarker.class})
     private String title;
 
-    @NotEmpty(message = "title is required")
-    @Size(min = 5, max = 80, message = "maximal 80 letter allowed")
+
+    @Size(min = 0, max = 80, message = "subtitle must be between 5 and 80 letters", groups = {SizeMarker.class})
     private String subtitle;
 
-    @Size(min = 0, max = 100, message = "maximal 100 letter allowed")
+    @Size(max = 100, message = "maximal 100 letter allowed", groups = {SizeMarker.class})
     private String description;
 
-    @NotEmpty(message = "url is required")
     @URL(message = "valid url is required")
     @UniqueUrl(groups = {LinkValidationGroup.UniqueUrlMarker.class})
+    @Size(max = 2000, message = "maximal 2000 letters in the url are allowed", groups = {SizeMarker.class})
     private String url;
 
     @Autowired
