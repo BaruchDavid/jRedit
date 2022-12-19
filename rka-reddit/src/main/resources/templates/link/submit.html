@@ -3,12 +3,22 @@
 
 <head title="save post"
       th:replace="~{layouts/main_layout :: head(title = 'create link')}">
-
+    <title>create link</title>
 </head>
 <body>
 <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
 <div class="container">
     <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    <div class="row" th:if="${validationErrors}">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <span class="text-danger align-middle">
+                <ul th:each="error : ${validationErrors}">
+                    <li th:text="${error.getDefaultMessage()}"></li>
+                </ul>
+            </span>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -23,8 +33,7 @@
                            class="form-control"
                            id="link_title"
                            placeholder="min. 5 and max. 50 letters"
-
-                           th:field="*{title}">
+                           th:field="*{title}" required>
                     <small th:errors="*{title}" style="color:red;"></small>
                 </div>
                 <div class="form-group">
@@ -71,8 +80,6 @@
                            class="form-control tag-input"
                            placeholder="tag"
                            id="tags3">
-
-                    <!-- <small th:errors="*{tag}" style="color:red;"></small> -->
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <table style="display:none">
