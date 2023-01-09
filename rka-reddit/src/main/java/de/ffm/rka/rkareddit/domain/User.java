@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
-@Entity(name="User")
-@Table(name = "user")
+@Entity(name="Users")
+@Table(name = "Users")
 @Getter @Setter
 @ToString(exclude = {"userLinks", "userComment", "roles", "profileFoto", "userClickedLinks"})
 @AllArgsConstructor
