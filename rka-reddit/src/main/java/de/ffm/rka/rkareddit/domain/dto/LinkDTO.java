@@ -16,6 +16,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -124,7 +125,7 @@ public class LinkDTO implements Serializable {
     }
 
     public String getHoster() throws URISyntaxException {
-        URI domain = new URI(url);
+        URI domain = new URI(unNullfyUrl(url));
         return domain.getHost();
     }
 
@@ -138,7 +139,18 @@ public class LinkDTO implements Serializable {
     }
 
     public static Link getMapDtoToLink(LinkDTO linkDto) {
+        nullfyUrl(linkDto);
         return modelMapper.map(linkDto, Link.class);
+    }
+
+    private static void nullfyUrl(LinkDTO link) {
+        if(!StringUtils.hasText(link.getUrl())){
+            link.setUrl(null);
+        }
+    }
+
+    private static String unNullfyUrl(String url) {
+        return Optional.ofNullable(url).orElse("");
     }
 
     /**
@@ -160,6 +172,7 @@ public class LinkDTO implements Serializable {
 
     public static LinkDTO mapLinkToDto(Link link) {
         final LinkDTO linkDTO = modelMapper.map(link, LinkDTO.class);
+        linkDTO.setUrl(unNullfyUrl(linkDTO.getUrl()));
         linkDTO.setLinkSignature(LinkDTO.createLinkSignature(link));
         return linkDTO;
     }
