@@ -27,7 +27,8 @@ public class Link extends Auditable implements Serializable {
     private static final long serialVersionUID = -5337989744648444109L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "link_generator")
+    @SequenceGenerator(name="link_generator", sequenceName = "LINK_SEQ", initialValue = 1 ,allocationSize=20)
     private Long linkId;
 
     @NotEmpty(message = "title is required")
@@ -40,7 +41,7 @@ public class Link extends Auditable implements Serializable {
     @Column(length = 100, nullable = true)
     private String description;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String url;
 
 
