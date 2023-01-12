@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class Link extends Auditable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "link_generator")
-    @SequenceGenerator(name="link_generator", sequenceName = "LINK_SEQ", initialValue = 1 ,allocationSize=20)
+    @SequenceGenerator(name = "link_generator", sequenceName = "LINK_SEQ", initialValue = 1, allocationSize = 20)
     private Long linkId;
 
     @NotEmpty(message = "title is required")
@@ -139,7 +140,8 @@ public class Link extends Auditable implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(url);
+        return Objects.hash(Optional.ofNullable(super.getCreationDate())
+                .map(LocalDateTime::getNano).orElse(0));
     }
 
     public void addUserToLinkHistory(User userModel) {
