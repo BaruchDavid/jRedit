@@ -147,52 +147,55 @@ INSERT INTO users_roles(user_Id, role_Id)
 VALUES (3, 1);
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (1, 'Erstes Kommentar von romakapt', 1, 1, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'Erstes Kommentar von romakapt', 1, 1, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (2, 'zweites kommentar von dascha ', 21, 2, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'zweites kommentar von dascha ', 21, 2, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (3, 'drittes kommentar von grom', 121, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'drittes kommentar von grom', 121, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (10, '10 Kommentar von romakapt', 121, 1, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), '10 Kommentar von romakapt', 121, 1, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (4, 'Viertes Kommentar für zweiten Link von dascha', 101, 2, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'Viertes Kommentar für zweiten Link von dascha',
+        101, 2, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (5, 'fünftes Kommentar für zweiten Link von dascha', 201, 2, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'fünftes Kommentar für zweiten Link von dascha',
+        201, 2, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (6, 'sechstes kommentar von dascha.', 201, 2, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'sechstes kommentar von dascha.', 201, 2,
+        NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (7, 'siebtes kommentar von dascha.', 81, 2, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'siebtes kommentar von dascha.', 81, 2, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (8, 'achtes kommentar von dascha.', 21, 2, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'achtes kommentar von dascha.', 21, 2, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (9, 'neuntes kommentar von grom.', 41, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'neuntes kommentar von grom.', 41, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (12, 'zwölftes kommentar von grom.', 41, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), 'zwölftes kommentar von grom.', 41, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (22, '22 kommentar von grom.', 41, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), '22 kommentar von grom.', 41, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (23, '23 kommentar von grom', 41, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), '23 kommentar von grom', 41, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (24, '24 kommentar von grom', 61, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), '24 kommentar von grom', 61, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (25, '25 kommentar von grom', 61, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), '25 kommentar von grom', 61, 3, NOW());
 
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
-VALUES (26, '26 kommentar von grom', 61, 3, NOW());
+VALUES (NEXTVAL('COMMENT_SEQ'), '26 kommentar von grom', 61, 3, NOW());
 
 INSERT INTO Tag(tag_id, tag_name)
 VALUES (NEXTVAL('TAG_SEQ'), 'Java');
