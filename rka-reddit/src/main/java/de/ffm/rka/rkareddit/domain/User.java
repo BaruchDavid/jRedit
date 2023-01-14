@@ -14,181 +14,187 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
-@Entity(name="Users")
+@Entity(name = "Users")
 @Table(name = "Users")
-@Getter @Setter
-@ToString(exclude = {"userLinks", "userComment", "roles", "profileFoto", "userClickedLinks"})
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class User extends Auditable implements UserDetails, Serializable {
 
-	private static final long serialVersionUID = -5987601453095162765L;
-
+    private static final long serialVersionUID = -5987601453095162765L;
 
 
 //	GUID globale id selbst generieren
 //	UUID
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_generator")
+    @SequenceGenerator(name = "user_generator", sequenceName = "USER_SEQ", allocationSize = 1)
+    private Long userId;
 
-	@Column(unique = true, nullable=false)
-	private String email;
+    @Column(unique = true, nullable = false)
+    private String email;
 
-	@Column(length = 100)
-	private String password;
+    @Column(length = 100)
+    private String password;
 
-	@Lob
-	@Basic(fetch=FetchType.LAZY)
-	private byte[] profileFoto;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private byte[] profileFoto;
 
-	@Column
-	private LocalDateTime fotoCreationDate;
+    @Column
+    private LocalDateTime fotoCreationDate;
 
-	@Column
-	private LocalDateTime activationDeadLineDate;
+    @Column
+    private LocalDateTime activationDeadLineDate;
 
-	@Column(length = 50)
-	private String firstName;
-
-
-	@Column(length = 50)
-	private String secondName;
-
-	@Column(nullable = false, unique = true)
-	private  String aliasName;
-
-	@Column(nullable = true, unique = false)
-	private  String newEmail;
-
-	/**
-	 * mappedBy stellt die bidirektionale Verbindung
-	 * bei der Beziehung 'ein User hat viele Links'
-	 * und kennzeichnet, dass 'Link' der Owner
-	 * von der Beziehung ist.
-	 * Und der Wert 'user' ist die Referenz auf der
-	 * anderen Seite der Entität 'Link'
-	 * Man muss angeben, auf welches Feld in der Entität
-	 * gemappt werden soll
-	 * https://javabydeveloper.com/difference-between-joincolumn-and-mappedby/
-	 */
-	@Builder.Default
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<Link> userLinks = new HashSet<>();
-
-	@Builder.Default
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private Set<Comment> userComment = new HashSet<>();
+    @Column(length = 50)
+    private String firstName;
 
 
-	@Builder.Default
-	@Column(nullable = false)
-	private boolean enabled=false;
+    @Column(length = 50)
+    private String secondName;
+
+    @Column(nullable = false, unique = true)
+    private String aliasName;
+
+    @Column(nullable = true, unique = false)
+    private String newEmail;
+
+    /**
+     * mappedBy stellt die bidirektionale Verbindung
+     * bei der Beziehung 'ein User hat viele Links'
+     * und kennzeichnet, dass 'Link' der Owner
+     * von der Beziehung ist.
+     * Und der Wert 'user' ist die Referenz auf der
+     * anderen Seite der Entität 'Link'
+     * Man muss angeben, auf welches Feld in der Entität
+     * gemappt werden soll
+     * https://javabydeveloper.com/difference-between-joincolumn-and-mappedby/
+     */
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<Link> userLinks = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<Comment> userComment = new HashSet<>();
 
 
-	@NotEmpty(message = "please confirm your password")
-	private String confirmPassword;
-
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "users_roles",
-			joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
-			inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
-	)
-	private Set<Role> roles = new HashSet<>();
-
-	@Builder.Default
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "usersLinksHistory")
-	@JsonIgnore
-	private Set<Link> userClickedLinks = new HashSet<>();
-
-	public void addLink(Link link) {
-		userLinks.add(link);
-		link.setUser(this);
-	}
-
-	public void removeLink(Link link) {
-		userLinks.remove(link);
-		link.setUser(null);
-	}
-
-	private String activationCode;
-
-	public User(
-			String mail, String password) {
-		this.email = mail;
-		this.password = password;
-	}
-
-	public void addLinkToUser(Link link) {
-		this.userLinks.add(link);
-	}
-
-	public void addRoles(Set<Role> roles) {
-		this.roles.addAll(roles);
-	}
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean enabled = false;
 
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		roles.forEach(role ->authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
-		return authorities;
-	}
+    @NotEmpty(message = "please confirm your password")
+    private String confirmPassword;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
+            inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
+    )
+    @ToString.Exclude
+    private Set<Role> roles = new HashSet<>();
+
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "usersLinksHistory")
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Link> userClickedLinks = new HashSet<>();
+
+    public void addLink(Link link) {
+        userLinks.add(link);
+        link.setUser(this);
+    }
+
+    public void removeLink(Link link) {
+        userLinks.remove(link);
+        link.setUser(null);
+    }
+
+    private String activationCode;
+
+    public User(
+            String mail, String password) {
+        this.email = mail;
+        this.password = password;
+    }
+
+    public void addLinkToUser(Link link) {
+        this.userLinks.add(link);
+    }
+
+    public void addRoles(Set<Role> roles) {
+        this.roles.addAll(roles);
+    }
 
 
-	@Override
-	public String getUsername() {
-		return email;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return authorities;
+    }
 
-	@Override
-	public boolean isAccountNonExpired() {
 
-		return true;
-	}
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
+    @Override
+    public boolean isAccountNonExpired() {
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
+    @Override
+    public boolean isAccountNonLocked() {
 
-		return true;
-	}
+        return true;
+    }
 
-	public void addRole(Role roleUser) {
-		this.roles.add(roleUser);
+    @Override
+    public boolean isCredentialsNonExpired() {
 
-	}
+        return true;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		boolean result;
-		if (this == o) {
-			result = true;
-		} else if (!(o instanceof User)) {
-			result = false;
-		} else {
-			User other = (User) o;
-			result = Objects.equals(email, other.email);
-		}
-		return result;
+    public void addRole(Role roleUser) {
+        this.roles.add(roleUser);
 
-	}
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        boolean result;
+        if (this == o) {
+            result = true;
+        } else if (!(o instanceof User)) {
+            result = false;
+        } else {
+            User other = (User) o;
+            result = Objects.equals(email, other.email);
+        }
+        return result;
+
+    }
 
     @Override
     public int hashCode() {
-    	return Objects.hash(email);
+        return Objects.hash(email);
     }
 
     public void removeRole(Role role) {
-    	this.roles.remove(role);
-    	role.getUsers().remove(this);
+        this.roles.remove(role);
+        role.getUsers().remove(this);
     }
 }
