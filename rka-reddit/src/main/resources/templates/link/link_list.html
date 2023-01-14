@@ -1,73 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{layouts/main_layout :: head(title = 'link list')}">
-</head>
+    <title>
+        post list
+    </title></head>
 
 <body>
-    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-    <div class="container">
-		<nav th:replace="~{layouts/main_layout :: nav}"></nav>
-        <div class="row" th:if="${success}" id="displayMessage">
-            <div class="col-md-3"></div>
-            <div id="displayRegMessage" class="col-md-6 alert alert-success" role="alert" >
-                <p th:text="${redirectMessage}">Welcome to your place!</p>
-            </div>
-            <div class="col-md-3"></div>
+<div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+<div class="container">
+    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    <div class="row" th:if="${success}" id="displayMessage">
+        <div class="col-md-3"></div>
+        <div id="displayRegMessage" class="col-md-6 alert alert-success"
+             role="alert">
+            <p th:text="${redirectMessage}">Welcome to your place!</p>
         </div>
-        <!-- links -->
-        <div class="row link" th:each="link : ${links}">
-                <div class="col-1">
-                    <div>
-                        <a href="#" class="upvote" th:data-id="${link.getLinkSignature()}">
-                            <i class="fas fa-arrow-up"></i>
-                        </a>
-                    </div>
-                    <div>
-                    <span th:id="|votecount-${link.getLinkSignature()}|"
-                          class="votecount" th:text="${link.getVoteCount()}">0</span>
-                    </div>
-                    <div>
-                        <a href="#" class="downvote" th:data-id="${link.getLinkSignature()}" th:disabled="true">
-                            <i class="fas fa-arrow-down"></i>
-                        </a>
-                    </div>
-                </div>
-            <div class="col-11">
-                <p class="title">
-                    <a class="title " th:href="@{'/links/link/' + ${link.getLinkSignature()}}" th:text="${link.getTitle()}">Title Goes Here</a>
-                    <span class="domain">(<a th:href="${link.url}" th:text="${link.getHoster()}" target="_blank"></a>)</span>
-                </p>
-                <p class="description">
-                    <span class="active" th:text="${link.getDescription()}"></span>
-                </p>
-                <p class="tagline ">submitted                    
-                    <time th:title="${link.getCreationDate()}" th:datetime="${link.getCreationDate()}"
-                        class="live-timestamp" th:text="${link.getElapsedTime()}"></time> by
-                    <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}" class="author" th:text="${link.getUser().getAliasName()}">rka</a>
-                </p>
-                <p>
-                    <a th:href="@{'/links/link/' + ${link.getLinkSignature()} + '#comments'}" class="comments"
-                        th:text="|${link.getCommentCount()} comments|"><i class="fas fa-comments"></i> 0 comments</a>
-                    <a href="/jReditt/connect/facebook" class="share"><i class="fas fa-share-square"></i> share</a>
-                </p>
-            </div>
-        </div>
-        <div class="row" th:fragment="pagination">
-	        <div class="col-md-2"></div>
-		        <div class="col-md-8">
-		            <nav aria-label="Pagination">
-		                <ul class="pagination justify-content-center">
-		                    <li th:each="pageNumber : ${pageNumbers}" >		                    	
-		                        <a class="page-link" th:href="@{|/links/?page=*{pageNumber-1}|}" th:text=${pageNumber}>${pageNumber}</a>
- 	    					</li>
-		                </ul>
-		            </nav>
-		        </div>
-        	<div class="col-md-2"></div>
-    	</div>
+        <div class="col-md-3"></div>
     </div>
-    <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
-	<script th:src="@{/js/vote.js}"></script>   
+    <!-- links -->
+    <div class="row link" th:each="link : ${links}">
+        <div class="col-1">
+            <div>
+                <a href="#" class="upvote"
+                   th:data-id="${link.getLinkSignature()}">
+                    <i class="fas fa-arrow-up"></i>
+                </a>
+            </div>
+            <div>
+                    <span th:id="|votecount-${link.getLinkSignature()}|"
+                          class="votecount"
+                          th:text="${link.getVoteCount()}">0</span>
+            </div>
+            <div>
+                <a href="#" class="downvote"
+                   th:data-id="${link.getLinkSignature()}" th:disabled="true">
+                    <i class="fas fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-11">
+            <p class="title">
+                <a class="title "
+                   th:href="@{'/links/link/' + ${link.getLinkSignature()}}"
+                   th:text="${link.getTitle()}">Title Goes Here</a>
+                <span class="domain">(<a th:href="${link.url}"
+                                         th:text="${link.getHoster()}"
+                                         target="_blank"></a>)</span>
+            </p>
+            <p class="description">
+                <span class="active" th:text="${link.getDescription()}"></span>
+            </p>
+            <p class="tagline ">submitted
+                <time th:title="${link.getCreationDate()}"
+                      th:datetime="${link.getCreationDate()}"
+                      class="live-timestamp"
+                      th:text="${link.getElapsedTime()}"></time>
+                by
+                <a th:href="@{'/profile/public/' + ${link.getUser().getEmail()}}"
+                   class="author"
+                   th:text="${link.getUser().getAliasName()}">rka</a>
+            </p>
+            <p>
+                <a th:href="@{'/links/link/' + ${link.getLinkSignature()} + '#comments'}"
+                   class="comments"
+                   th:text="|${link.getCommentCount()} comments|"><i
+                        class="fas fa-comments"></i> 0 comments</a>
+                <a href="/jReditt/connect/facebook" class="share"><i
+                        class="fas fa-share-square"></i> share</a>
+            </p>
+        </div>
+    </div>
+    <div class="row" th:fragment="pagination">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <li th:each="pageNumber : ${pageNumbers}">
+                        <a class="page-link"
+                           th:href="@{|/links/?page=*{pageNumber-1}|}"
+                           th:text=${pageNumber}>${pageNumber}</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+<div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
+<script th:src="@{/js/vote.js}"></script>
 </body>
 </html>
