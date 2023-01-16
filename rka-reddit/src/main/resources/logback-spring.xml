@@ -1,81 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-		<resetJUL>true</resetJUL>
-	</contextListener>
-	<!-- To enable JMX Management -->
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+    <!-- To enable JMX Management -->
     <jmxConfigurator/>
 
-	<appender name="SAVE-TO-FILE"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_PATH}/ApplicationLog.log</file>
-		<encoder
-			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>
-				%yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m - session_id=%X{session_id} user_ip=%X{user_ip}%n
-			</Pattern>
-		</encoder>
-		<rollingPolicy
-				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- rollover daily and when the file reaches 10 MegaBytes -->
-			<fileNamePattern>${LOGS}/archived/spring-boot-logger-%d{yyyy-MM-dd}.%i.log
-			</fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy
-					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>1MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-		</rollingPolicy>
-	</appender>
+    <appender name="SAVE-TO-FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/ApplicationLog.log</file>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                %yellow(%d) | %t | %5p | %cyan(%logger{25}) | %m -
+                session_id=%X{session_id} user_ip=%X{user_ip}%n
+            </Pattern>
+        </encoder>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily and when the file reaches 10 MegaBytes -->
+            <fileNamePattern>
+                ${LOGS}/archived/spring-boot-logger-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
 
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>
-				%yellow(%d) | %cyan(%t) | %5p | %logger{25} | %m - session_id=%X{session_id} user_ip=%X{user_ip}%n
-			</pattern>
-			<charset>utf8</charset>
-		</encoder>
-	</appender>
-
-
-
-	<springProfile name="test">
-
-		<!--SHOW SQL STATMENTS-->
-		<logger name="org.hibernate.SQL" level="DEBUG" />
-
-		<!--logging of values bound to parameters of the prepared statements-->
-		<!--<logger name="org.hibernate.type" level="DEBUG" />-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %yellow(%d) | %cyan(%t) | %5p | %logger{25} | %m -
+                session_id=%X{session_id} user_ip=%X{user_ip}%n
+            </pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
 
 
-    	<logger name="org.springframework.security" level="WARN" />
-		<logger name="Hypersistence Optimizer" level="info"/>
-		<root level="INFO">
-			<appender-ref ref="CONSOLE" />
-			<appender-ref ref="SAVE-TO-FILE" />
-		</root>
-	</springProfile>
+    <springProfile name="test">
 
-	<springProfile name="dev">
-		<root level="INFO">
-			<appender-ref ref="CONSOLE" />
-			<appender-ref ref="SAVE-TO-FILE" />
-		</root>
-		<logger name="org.hibernate.SQL" level="trace"
-			additivity="false">
-			<appender-ref ref="SAVE-TO-FILE" />
-		</logger>
-	</springProfile>
+        <!--SHOW SQL STATMENTS-->
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
 
-	<springProfile name="staging">
-		<root level="INFO">
-			<appender-ref ref="CONSOLE" />
-			<appender-ref ref="SAVE-TO-FILE" />
-		</root>
-		<logger name="org.hibernate.SQL" level="trace"
-			additivity="false">
-			<appender-ref ref="SAVE-TO-FILE" />
-		</logger>
-	</springProfile>
+        <!--logging of values bound to parameters of the prepared statements-->
+        <!--<logger name="org.hibernate.type" level="TRACE"/>-->
+
+
+        <logger name="org.springframework.security" level="WARN"/>
+        <logger name="Hypersistence Optimizer" level="info"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="SAVE-TO-FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="SAVE-TO-FILE"/>
+        </root>
+        <logger name="org.hibernate.SQL" level="trace"
+                additivity="false">
+            <appender-ref ref="SAVE-TO-FILE"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="staging">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="SAVE-TO-FILE"/>
+        </root>
+        <logger name="org.hibernate.SQL" level="trace"
+                additivity="false">
+            <appender-ref ref="SAVE-TO-FILE"/>
+        </logger>
+    </springProfile>
 
 </configuration>
