@@ -1,5 +1,6 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
+import de.ffm.rka.rkareddit.domain.Tag;
 import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Getter
@@ -28,6 +30,21 @@ public class TagDTO implements Serializable {
     private String tagName;
 
     private Long tagNum;
+
+    public static TagDTO mapTagToTagDTO(Tag tag) {
+        return TagDTO.builder()
+                .tagName(tag.getTagName())
+                .tagNum(Optional.ofNullable(tag.getTagId()).orElse(0L))
+                .build();
+
+    }
+
+    public static Tag mapTagDTOtoTag(TagDTO tagDTO) {
+        return Tag.builder()
+                .tagId(tagDTO.getTagNum())
+                .tagName(tagDTO.getTagName())
+                .build();
+    }
 
     @Override
     public boolean equals(Object o) {
