@@ -53,7 +53,7 @@ public class Link extends Auditable implements Serializable {
     private int voteCount = 0;
 
     @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "link_tags",
             joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
@@ -63,7 +63,7 @@ public class Link extends Auditable implements Serializable {
     private Set<Tag> tags = new HashSet<>();
 
     @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "user_clickedLinks",
             joinColumns = @JoinColumn(name = "linkId", referencedColumnName = "linkId"),
