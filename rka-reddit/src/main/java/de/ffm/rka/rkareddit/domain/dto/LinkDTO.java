@@ -140,11 +140,16 @@ public class LinkDTO implements Serializable {
 
     public static Link getMapDtoToLink(LinkDTO linkDto) {
         nullfyUrl(linkDto);
-        return modelMapper.map(linkDto, Link.class);
+        Link link = modelMapper.map(linkDto, Link.class);
+        link.setTags(linkDto.getTags()
+                .stream()
+                .map(TagDTO::mapTagDTOtoTag)
+                .collect(Collectors.toSet()));
+        return link;
     }
 
     private static void nullfyUrl(LinkDTO link) {
-        if(!StringUtils.hasText(link.getUrl())){
+        if (!StringUtils.hasText(link.getUrl())) {
             link.setUrl(null);
         }
     }
@@ -166,6 +171,11 @@ public class LinkDTO implements Serializable {
         linkDto.setCommentDTOS(link.getComments().stream()
                 .map(CommentDTO::getCommentToCommentDto)
                 .collect(Collectors.toSet()));
+
+        linkDto.setTags(link.getTags()
+                .stream()
+                .map(TagDTO::mapTagToTagDTO)
+                .collect(Collectors.toList()));
         linkDto.setLinkSignature(createLinkSignature(link));
         return linkDto;
     }

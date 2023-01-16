@@ -59,8 +59,6 @@ public class LinkController {
      *
      * @param page contains a page-number, page-size and sorting
      */
-
-    // TODO: 10.12.2022 BUG: link anlegen und danach suchen, es wird nicht gefunden, nur die test-daten-links werden gefunden 
     @GetMapping({"/", "", "/links/", "/links"})
     public String links(@PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "creationDate") Pageable page,
                         @RequestParam(name = "searchTag", required = false, defaultValue = "") String searchTag,
@@ -92,16 +90,13 @@ public class LinkController {
      * @return either link view in success or links-overview
      */
 
-
-    // TODO: 10.12.2022 BUG; BEIM ERSTEN BENUTZEN DER FIND-METHODE STEHT IN DER SIGNATUR ANSTATT DER SIGNATUR "links"
-    // TODO: 10.12.2022 Eingabewert ist ein Parameter "suchBegriff" und keine Signatur, es braucht einen anderen Handler
     @GetMapping("/links/link/{signature}")
     public String link(Model model, @PathVariable String signature,
                        @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {
 
         final LinkDTO linkDTO = postService.findLinkWithComments(signature);
-        LOGGER.info("CREATE CLICK-HISTORY: THREAD ASYNC NAME: {}", Thread.currentThread().getName());
         Optional.ofNullable(userDetails).ifPresent(loggedUser -> {
+            LOGGER.info("CREATE CLICK-HISTORY: THREAD ASYNC NAME: {}", Thread.currentThread().getName());
             User userModel = (User) userDetails;
             postService.createClickedUserLinkHistory(userModel, linkDTO);
             model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
