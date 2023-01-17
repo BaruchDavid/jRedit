@@ -89,7 +89,6 @@ public class LinkController {
      * @param response    set status
      * @return either link view in success or links-overview
      */
-
     @GetMapping("/links/link/{signature}")
     public String link(Model model, @PathVariable String signature,
                        @AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws ServiceException {

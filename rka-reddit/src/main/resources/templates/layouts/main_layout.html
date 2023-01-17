@@ -1,117 +1,138 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="head(title)">
-<meta charset="utf-8">
+    <meta charset="utf-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1 shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
-<title th:text="${title}">Drops</title>
-<link rel="icon" type="image/icon" href="images/favicon.ico">
-<!-- Bootstrap core CSS -->
-<link rel="stylesheet" th:href="@{/libs/bootstrap/css/bootstrap.min.css}"/>
-<!-- Custom styles for this template -->
-<link rel="stylesheet" th:href="@{/css/springit.css}">
-<link rel="stylesheet" th:href="@{/css/autocomplete.css}">
-<link rel="stylesheet" th:href="@{/css/link.css}">
-<!-- Google Fonts -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald|Roboto" />
-<!-- Font Awesome (for icons) -->
-<script src="https://polyfill.io/v3/polyfill.min.js?features=fetch"></script>
-<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1 shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title th:text="${title}">Drops</title>
+    <link rel="icon" type="image/icon" href="images/favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/libs/bootstrap/css/bootstrap.min.css}"/>
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" th:href="@{/css/springit.css}">
+    <link rel="stylesheet" th:href="@{/css/autocomplete.css}">
+    <link rel="stylesheet" th:href="@{/css/link.css}">
+    <!-- Google Fonts -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Oswald|Roboto"/>
+    <!-- Font Awesome (for icons) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=fetch"></script>
+    <script defer
+            src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 
 </head>
 <body>
-	<div class="container">
-		<nav class="navbar navbar-expand-lg navbar-dark bg-spring fixed-top"
-			th:fragment="navigation">
-				<a class="navbar-brand" href="/jReditt/links"> <i class="fa fa-leaf" aria-hidden="true"></i>SkyLink</a>
-				<button class="navbar-toggler" type="button" data-toggle="collapse"
-					data-target="#navbarResponsive" aria-controls="navbarResponsive"
-					aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarResponsive">
-					<ul class="navbar-nav ml-auto">
-						<li class="nav-item active">
-							<a class="nav-link" th:href="@{/links}"> <i class="fas fa-home" aria-hidden="true"></i> Home</a>
-						</li>
-						<li class="nav-item" sec:authorize="isAuthenticated()">
-							<a class="nav-link" th:href="@{/links/link}"> <i class="fa fa-link" aria-hidden="true"></i> Submit Link</a>
-						</li>
-						<li class="nav-item" sec:authorize="isAuthenticated()">
-							<a class="nav-link" th:href="@{/profile/private}"> <i class="fa fa-user" aria-hidden="true"></i> Account</a>
-							<ul>
-								<li>edit account</li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<form method="POST" th:action="@{/logout}" sec:authorize="isAuthenticated()">
-								<button class="nav-link">
-									<i class="fa fa-sign-out-alt" aria-hidden="true"></i> Sign Out
-								</button>
-							</form>
-						</li>
-						<li class="nav-item" sec:authorize="!isAuthenticated()">
-							<a class="nav-link" th:href="@{/login}"> <i class="fa fa-sign-in-alt" aria-hidden="true"></i> Sign In</a>
-						</li>
-						<li class="nav-item" sec:authorize="!isAuthenticated()">
-							<a class="nav-link" th:href="@{/registration}"> <i class="fa fa-user-plus" aria-hidden="true"></i> Register</a>
-						</li>
-						<li class="nav-item" sec:authorize="isAuthenticated()">
-							<div class="nav-item" style="color: white"
-								th:text="${userDto.firstName}"></div>
-						</li>
-					</ul>
-				</div>
-		</nav>
-	</div>
-	<div class="jumbotron jumbotron-fluid" th:fragment="jumbotron">
-		<div th:if="${not #strings.contains(#httpServletRequest.requestURI, 'profile')}">
-			<h2 style="text-align: center;" class="display-4">SkyLink</h2>
-			<div class="fieldwrapper">
-				<input id="field_location" class="field" name="searchTerm" type="text" value="">
-				<a  class="s-btn" href='links'
-					onclick="location.href=this.href+'?searchTag='+$('#field_location').val();
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-spring fixed-top"
+         th:fragment="navigation">
+        <a class="navbar-brand" href="/jReditt/links"> <i class="fa fa-leaf"
+                                                          aria-hidden="true"></i>SkyLink</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{/links}"> <i
+                            class="fas fa-home" aria-hidden="true"></i> Home</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/links/link}"> <i
+                            class="fa fa-link" aria-hidden="true"></i> Submit
+                        Link</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/profile/private}"> <i
+                            class="fa fa-user" aria-hidden="true"></i>
+                        Account</a>
+                    <ul>
+                        <li>edit account</li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <form method="POST" th:action="@{/logout}"
+                          sec:authorize="isAuthenticated()">
+                        <button class="nav-link">
+                            <i class="fa fa-sign-out-alt"
+                               aria-hidden="true"></i> Sign Out
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}"> <i
+                            class="fa fa-sign-in-alt" aria-hidden="true"></i>
+                        Sign In</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/registration}"> <i
+                            class="fa fa-user-plus" aria-hidden="true"></i>
+                        Register</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <div class="nav-item" style="color: white"
+                         th:text="${userDto.firstName}"></div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<div class="jumbotron jumbotron-fluid" th:fragment="jumbotron">
+    <div th:if="${not #strings.contains(#httpServletRequest.requestURI, 'profile')}">
+        <h2 style="text-align: center;" class="display-4">SkyLink</h2>
+        <div class="fieldwrapper">
+            <input id="field_location" class="field" name="searchTerm"
+                   type="text" value="">
+            <a class="s-btn" href='links'
+               onclick="location.href=location.href.substring(0, location.href.indexOf('/links'))+ '/links?searchTag='+$('#field_location').val();
 					return false;">Find</a>
-			</div>
-		</div>
-		<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
-			<input type="hidden" id="cache" th:value="${cacheControl}">
-			<div id="drop-area">
-				<div th:if="${userDto.getEmail() == userContent.getEmail()}">
-					<form id="pic-form" class="my-form">
-						<input type="file" id="fileElem" accept="image/*" onchange="handleFiles(this.files)">
-						<label class="button" for="fileElem">drop picture or click here</label>
-					</form>
-				</div>
-			</div>
-			<div th:if="${#strings.contains(#httpServletRequest.requestURI, 'private/me')}">
-				<h2 title="userName" th:name="${userDto.getEmail()}" style="text-align: center;" class="display-6" th:text="${userDto.getFullName()}"></h2>
-			</div>
-			<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'private/me')}">
-				<h2 title="userName" style="text-align: center;" class="display-6" th:text="${userContent.getFullName()}"></h2>
-			</div>
-		</div>
+        </div>
     </div>
- 	<div class="container" th:fragment="content">
-		<p>This is your main content</p>
-	</div>
- 	<div id="bootstrap_func">
- 		<script th:src="@{/libs/bootstrap/js/jquery-3.4.0.min.js}"></script>
- 		<script th:src="@{/libs/bootstrap/js/jquery-ui.min.js}"></script>
- 		<script th:src="@{/js/link.js}"></script>
-		<script th:src="@{/libs/bootstrap/js/popper.min.js}"></script>
-		<script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
- 	</div>
-	<div id="img_upload">
-		<script th:src="@{/js/img.js}"></script>
-		<div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
-			<script th:src="@{/js/img_upload.js}"></script>
-		</div>
-		<link rel="stylesheet" th:href="@{/css/img_upload.css}">
-	</div>
+    <div th:if="${#strings.contains(#httpServletRequest.requestURI, 'profile')}">
+        <input type="hidden" id="cache" th:value="${cacheControl}">
+        <div id="drop-area">
+            <div th:if="${userDto.getEmail() == userContent.getEmail()}">
+                <form id="pic-form" class="my-form">
+                    <input type="file" id="fileElem" accept="image/*"
+                           onchange="handleFiles(this.files)">
+                    <label class="button" for="fileElem">drop picture or click
+                        here</label>
+                </form>
+            </div>
+        </div>
+        <div th:if="${#strings.contains(#httpServletRequest.requestURI, 'private/me')}">
+            <h2 title="userName" th:name="${userDto.getEmail()}"
+                style="text-align: center;" class="display-6"
+                th:text="${userDto.getFullName()}"></h2>
+        </div>
+        <div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'private/me')}">
+            <h2 title="userName" style="text-align: center;" class="display-6"
+                th:text="${userContent.getFullName()}"></h2>
+        </div>
+    </div>
+</div>
+<div class="container" th:fragment="content">
+    <p>This is your main content</p>
+</div>
+<div id="bootstrap_func">
+    <script th:src="@{/libs/bootstrap/js/jquery-3.4.0.min.js}"></script>
+    <script th:src="@{/libs/bootstrap/js/jquery-ui.min.js}"></script>
+    <script th:src="@{/js/link.js}"></script>
+    <script th:src="@{/libs/bootstrap/js/popper.min.js}"></script>
+    <script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
+</div>
+<div id="img_upload">
+    <script th:src="@{/js/img.js}"></script>
+    <div th:if="not ${#strings.contains(#httpServletRequest.requestURI, 'public')}">
+        <script th:src="@{/js/img_upload.js}"></script>
+    </div>
+    <link rel="stylesheet" th:href="@{/css/img_upload.css}">
+</div>
 
-	</body>
+</body>
 </html>
