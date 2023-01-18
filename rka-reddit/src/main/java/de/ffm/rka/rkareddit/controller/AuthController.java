@@ -92,7 +92,7 @@ public class AuthController {
                           @PathVariable(required = false) String email,
                           Model model) {
         final User pageContentUser = createContentUser(model, email, userPrincipal);
-        Set<LinkDTO> userLinks = Optional.ofNullable(pageContentUser.getUserLinks())
+        final Set<LinkDTO> linkDTOS = Optional.ofNullable(pageContentUser.getUserLinks())
                 .orElse(Collections.emptySet())
                 .stream()
                 .map(LinkDTO::mapFullyLinkToDto)
@@ -105,7 +105,7 @@ public class AuthController {
         }
         UserDTO contentUser = UserDTO.mapUserToUserDto(pageContentUser);
         model.addAttribute(CONTENT_USER, contentUser);
-        model.addAttribute("posts", userLinks);
+        model.addAttribute("posts", linkDTOS);
         model.addAttribute("commentCount", commentSize);
         model.addAttribute("userSince", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(contentUser.getCreationDate()));

@@ -33,7 +33,7 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
             + "FROM Link l "
             + "INNER JOIN FETCH l.tags "
             + "WHERE l.linkId =:id ")
-    Link findTagsForLink(@Param("id") long id);
+    Optional<Link> findTagsForLink(@Param("id") long id);
 
     @Query("SELECT l "
             + "FROM Link l "

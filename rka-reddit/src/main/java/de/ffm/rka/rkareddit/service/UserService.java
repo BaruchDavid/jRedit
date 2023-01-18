@@ -75,6 +75,17 @@ public class UserService {
     }
 
     /**
+     * retrieved link has due of lazy-initialization no tags
+     * here tags will be set
+     *
+     * @param userLinks with no comments
+     */
+    // TODO: SOLID Single Responsibility ist gebrochen .Diese Klasse managed nur den User, hier geht aber um die Posts
+    private Set<Link> fillLinkWithSuitableTags(Set<Link> userLinks) {
+        return postService.findSuitableTagsForLink(userLinks);
+    }
+
+    /**
      * decodes pw assign role set activation code
      * disable user before saving , send activation email register user
      *
@@ -254,8 +265,9 @@ public class UserService {
     public User getUserWithLinks(String userId) {
         User user = userRepository.fetchUserWithLinksAndComments(userId)
                 .orElseThrow(() -> UserDetailsServiceImpl.throwUserNameNotFoundException(userId));
-        Set<Link> linksWithComments = new HashSet<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
-        user.setUserLinks(linksWithComments);
+        Set<Link> links = new HashSet<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
+        this.fillLinkWithSuitableTags(links);
+        user.setUserLinks(links);
         return user;
     }
 

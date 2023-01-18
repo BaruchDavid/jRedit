@@ -40,8 +40,8 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public PostService(LinkRepository linkRepository,
-                       CommentRepository commentRepository, UserDetailsServiceImpl userDetailsService) {
+    public PostService(LinkRepository linkRepository, CommentRepository commentRepository,
+                       UserDetailsServiceImpl userDetailsService) {
         this.linkRepository = linkRepository;
         this.commentRepository = commentRepository;
         this.userDetailsService = userDetailsService;
@@ -83,7 +83,7 @@ public class PostService {
 
     public Link findLinkWithTags(final String signature) throws ServiceException {
         final long id = LinkDTO.convertEpochSecToLinkId(signature);
-        return linkRepository.findTagsForLink(id);
+        return linkRepository.findTagsForLink(id).orElseGet(() -> Link.builder().build());
     }
 
     public Optional<Set<Link>> findLinksWithCommentsByLinkIds(Set<Long> linkIds) {
@@ -163,6 +163,8 @@ public class PostService {
                 .orElse("No creation time available");
     }
 
+    // TODO: 14.01.2023 man sollte auf der Oberfläche anzeigen, von wem der Kommentar ist
+
     /**
      * @param userName who creates comment
      * @param comment  content
@@ -193,6 +195,13 @@ public class PostService {
         return userCommentsWithLink.stream()
                 .map(CommentDTO::getCommentToCommentDto)
                 .collect(Collectors.toSet());
+    }
+
+    public Set<Link> findSuitableTagsForLink(Set<Link> links) {
+        links.forEach(link -> link.setTags(linkRepository.findTagsForLink(link.getLinkId())
+                .map(Link::getTags)
+                .orElse(Collections.emptySet())));
+        return links;
     }
 
 }
