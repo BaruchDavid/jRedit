@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
+import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.repository.CommentRepository;
 import de.ffm.rka.rkareddit.repository.LinkRepository;
@@ -50,7 +51,6 @@ public class PostService {
 
     public LinkDTO findLinkWithComments(final String signature) throws ServiceException {
         final Link link = findLinkModelWithUser(signature);
-        link.setComments(this.findCommentsForLink(link.getLinkId()));
         final LinkDTO linkDTO = LinkDTO.mapFullyLinkToDto(link);
         orderCommentsOfEachLink(linkDTO);
         return linkDTO;
@@ -171,12 +171,12 @@ public class PostService {
      */
     @Transactional(readOnly = false)
     public CommentDTO saveNewComment(final String userName, CommentDTO comment) throws ServiceException {
-        comment.setUser((User) userDetailsService.loadUserByUsername(userName));
+        comment.setUserDTO(UserDTO.mapUserToUserDto((User) userDetailsService.loadUserByUsername(userName)));
         Comment cm = CommentDTO.getMapDtoToComment(comment);
         Link suitableLink = findSuitableLink(comment.getLSig());
         suitableLink.setCommentCount(suitableLink.getCommentCount() + 1);
         cm.setLink(suitableLink);
-        comment = CommentDTO.getCommentToCommentDto(commentRepository.save(cm));
+        comment = CommentDTO.mapCommentToCommentDto(commentRepository.save(cm));
         LOGGER.info("{} SAVED COMMENT FOR LINK {}", comment, comment.getLSig());
         return comment;
     }
@@ -193,7 +193,7 @@ public class PostService {
     public Set<CommentDTO> findUserComments(String username) {
         final Set<Comment> userCommentsWithLink = commentRepository.getUserComments(username);
         return userCommentsWithLink.stream()
-                .map(CommentDTO::getCommentToCommentDto)
+                .map(CommentDTO::mapCommentToCommentDto)
                 .collect(Collectors.toSet());
     }
 

@@ -1,7 +1,6 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
 import de.ffm.rka.rkareddit.domain.Comment;
-import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.comment.CommentValidationgroup;
 import de.ffm.rka.rkareddit.util.BeanUtil;
@@ -51,7 +50,7 @@ public class CommentDTO extends Auditable implements Serializable {
     @Size(message = "maximal 600 letters are allowed", max = 600, groups = CommentValidationgroup.ValidationCommentSize.class)
     private String commentText;
 
-    private User user;
+    private UserDTO userDTO;
 
     /**
      * signature for suitable link
@@ -72,13 +71,18 @@ public class CommentDTO extends Auditable implements Serializable {
         return prettyTime.format(from(creationDate.atZone(ZONE_ID).toInstant()));
     }
 
+    public UserDTO getUser() {
+        return userDTO;
+    }
+
     public static Comment getMapDtoToComment(CommentDTO commentDto) {
         return modelMapper.map(commentDto, Comment.class);
     }
 
-    public static CommentDTO getCommentToCommentDto(Comment comment) {
+    public static CommentDTO mapCommentToCommentDto(Comment comment) {
         final CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
         commentDTO.setLinkDTO(LinkDTO.mapLinkToDto(comment.getLink()));
+        commentDTO.setUserDTO(UserDTO.mapUserToUserDto(comment.getUser()));
         return commentDTO;
     }
 
