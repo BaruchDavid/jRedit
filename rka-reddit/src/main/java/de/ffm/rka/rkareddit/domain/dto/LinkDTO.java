@@ -59,7 +59,7 @@ public class LinkDTO implements Serializable {
     private String title;
 
 
-    @Size(min = 0, max = 80, message = "subtitle must be between 5 and 80 letters", groups = {SizeMarker.class})
+    @Size(max = 80, message = "subtitle must be between 5 and 80 letters", groups = {SizeMarker.class})
     private String subtitle;
 
     @Size(max = 100, message = "maximal 100 letter allowed", groups = {SizeMarker.class})
@@ -169,7 +169,7 @@ public class LinkDTO implements Serializable {
     public static LinkDTO mapFullyLinkToDto(Link link) {
         LinkDTO linkDto = mapLinkToDto(link);
         linkDto.setCommentDTOS(link.getComments().stream()
-                .map(CommentDTO::getCommentToCommentDto)
+                .map(CommentDTO::mapCommentToCommentDto)
                 .collect(Collectors.toSet()));
 
         linkDto.setTags(link.getTags()
