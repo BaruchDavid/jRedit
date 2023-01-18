@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
 import static org.junit.Assert.fail;
 import static org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class AuthControllerTest extends MvcRequestSender {
@@ -120,7 +119,7 @@ public class AuthControllerTest extends MvcRequestSender {
     public void showProfileWithCommentsOfLoggedInAsAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
                 .stream()
-                .map(CommentDTO::getCommentToCommentDto)
+                .map(CommentDTO::mapCommentToCommentDto)
                 .collect(Collectors.toSet());
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
@@ -139,7 +138,7 @@ public class AuthControllerTest extends MvcRequestSender {
     public void showProfileWithCommentsOfAsUnAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
                 .stream()
-                .map(CommentDTO::getCommentToCommentDto)
+                .map(CommentDTO::mapCommentToCommentDto)
                 .collect(Collectors.toSet());
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
@@ -159,7 +158,7 @@ public class AuthControllerTest extends MvcRequestSender {
     public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
                 .stream()
-                .map(CommentDTO::getCommentToCommentDto)
+                .map(CommentDTO::mapCommentToCommentDto)
                 .collect(Collectors.toSet());
 
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
@@ -220,7 +219,7 @@ public class AuthControllerTest extends MvcRequestSender {
         pageContentUser = userService.findUserById("dascha@gmx.de").get();
         final Set<CommentDTO> userContentComments = pageContentUser.getUserComment()
                 .stream()
-                .map(CommentDTO::getCommentToCommentDto)
+                .map(CommentDTO::mapCommentToCommentDto)
                 .collect(Collectors.toSet());
         String userSince = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                 .format(pageContentUser.getCreationDate());
@@ -267,7 +266,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     public void showPrivateProfileAsUnauthenticated() throws Exception {
         super.performGetRequest("/profile/private/kaproma@yahoo.de")
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -429,7 +428,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     @Test
     public void activateChangedEmail() throws Exception {
-       final Optional<User> user = super.userService.findUserById("kaproma@yahoo.de");
+        final Optional<User> user = super.userService.findUserById("kaproma@yahoo.de");
         user.map(userMailChanged -> {
             userMailChanged.setNewEmail("romakap@yahoo.de");
             return super.userService.save(userMailChanged);
