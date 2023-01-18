@@ -25,12 +25,6 @@ public class BasicErrorController implements ErrorController {
     private static final String USER_DTO = "userDto";
     public static final String ANONYMOUS = "anonymousUser";
 
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
-
-
     @GetMapping(value = "/error")
     public String error(@RequestParam(value = "errorDTO", required = false) ErrorDTO errorDTO, Model model,
                         HttpServletRequest req, HttpServletResponse resp) {
