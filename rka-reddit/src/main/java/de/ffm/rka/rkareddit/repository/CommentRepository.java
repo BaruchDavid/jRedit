@@ -21,4 +21,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "JOIN FETCH comment.link " +
             "WHERE comment.user.email =:mail")
     Set<Comment> getUserComments(@Param("mail") String username);
+
+
+    @Query(value = "SELECT comment " +
+            "FROM Comment comment " +
+            "JOIN FETCH comment.user " +
+            "WHERE comment.commentId =:commentId")
+    Comment findUserForComment(@Param("commentId") Long commentId);
 }
