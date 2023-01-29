@@ -82,7 +82,7 @@ public class UserService {
      */
     // TODO: SOLID Single Responsibility ist gebrochen .Diese Klasse managed nur den User, hier geht aber um die Posts
     private Set<Link> fillLinkWithSuitableTags(Set<Link> userLinks) {
-        return postService.findSuitableTagsForLink(userLinks);
+        return postService.setSuitableTagsForLink(userLinks);
     }
 
     /**
@@ -263,12 +263,22 @@ public class UserService {
      * @param userId is a user email
      */
     public User getUserWithLinks(String userId) {
-        User user = userRepository.fetchUserWithLinksAndComments(userId)
+        User user = userRepository.fetchUserWithLinks(userId)
                 .orElseThrow(() -> UserDetailsServiceImpl.throwUserNameNotFoundException(userId));
-        Set<Link> links = new HashSet<>(this.fillLinkWithSuitableComments(user.getUserLinks()));
-        this.fillLinkWithSuitableTags(links);
-        user.setUserLinks(links);
+        this.fillLinkCommentsWithTheirUsers(user.getUserLinks());
+        this.fillLinkWithSuitableTags(user.getUserLinks());
+        user.setUserComment(getUserWithComments(user.getEmail()).getUserComment());
         return user;
+    }
+
+
+    private void fillLinkCommentsWithTheirUsers(Set<Link> userLinks) {
+        userLinks.forEach(link -> {
+            link.getComments().forEach(comment -> {
+                final User user = postService.findUserForComment(comment.getCommentId()).getUser();
+                comment.setUser(user);
+            });
+        });
     }
 
     /**

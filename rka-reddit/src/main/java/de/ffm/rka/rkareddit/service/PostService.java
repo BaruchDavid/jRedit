@@ -197,11 +197,14 @@ public class PostService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<Link> findSuitableTagsForLink(Set<Link> links) {
+    public Set<Link> setSuitableTagsForLink(Set<Link> links) {
         links.forEach(link -> link.setTags(linkRepository.findTagsForLink(link.getLinkId())
                 .map(Link::getTags)
                 .orElse(Collections.emptySet())));
         return links;
     }
 
+    public Comment findUserForComment(Long commentId) {
+        return commentRepository.findUserForComment(commentId);
+    }
 }
