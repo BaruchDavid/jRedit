@@ -273,12 +273,10 @@ public class UserService {
 
 
     private void fillLinkCommentsWithTheirUsers(Set<Link> userLinks) {
-        userLinks.forEach(link -> {
-            link.getComments().forEach(comment -> {
-                final User user = postService.findUserForComment(comment.getCommentId()).getUser();
-                comment.setUser(user);
-            });
-        });
+        userLinks.forEach(link ->
+                link.getComments().forEach(comment ->
+                        comment.setUser(postService.findUserForComment(comment.getCommentId()).getUser()))
+        );
     }
 
     /**
