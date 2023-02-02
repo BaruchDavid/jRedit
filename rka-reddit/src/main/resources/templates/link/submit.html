@@ -81,7 +81,14 @@
                            placeholder="tag"
                            id="tags3">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <a th:href="@{/links}" id="cancel"
+                   class="btn btn-danger">
+                    <i class="fa fa-stop-circle"></i>
+                    Cancel
+                </a>
+                <div class="float-md-right">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
                 <table style="display:none">
                     <tbody>
                     <tr th:each="item, itemStat : *{tags}">
