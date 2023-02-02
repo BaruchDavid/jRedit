@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
@@ -258,7 +259,10 @@ public class AuthController {
 
     @GetMapping("/profile/private/me/password")
     public String changePassword(@AuthenticationPrincipal UserDetails user, Model model) {
-        setSameUserForLoginAndContent((User) user, model);
+        final User currentUser = (User) user;
+        setSameUserForLoginAndContent(currentUser, model);
+        currentUser.setActivationDeadLineDate(LocalDateTime.now());
+        userService.save(currentUser);
         return "auth/passwordChange";
     }
 
