@@ -103,7 +103,7 @@ public class LinkDTO implements Serializable {
 
     private static final int TIME_LATTERS = 13;
 
-    @JsonIgnore
+
     private String linkSignature;
 
     /**
