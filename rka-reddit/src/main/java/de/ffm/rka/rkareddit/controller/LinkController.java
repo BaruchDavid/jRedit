@@ -81,7 +81,7 @@ public class LinkController {
         model.addAttribute("pageNumbers", totalPages);
         return "link/link_list";
     }
-
+    // TODO: 30.01.2023 1. in den Profil gehen, dann Link anklicken, dann in den Profil des Bearbeiters gehen und "createdTime" vom user ist NULL
     /**
      * @param model       save data for view
      * @param signature   for linkDTO
@@ -95,7 +95,6 @@ public class LinkController {
 
         final LinkDTO linkDTO = postService.findLinkWithComments(signature);
         Optional.ofNullable(userDetails).ifPresent(loggedUser -> {
-            LOGGER.info("CREATE CLICK-HISTORY: THREAD ASYNC NAME: {}", Thread.currentThread().getName());
             User userModel = (User) userDetails;
             postService.createClickedUserLinkHistory(userModel, linkDTO);
             model.addAttribute(USER_DTO, UserDTO.mapUserToUserDto(userModel));
