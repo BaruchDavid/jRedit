@@ -143,6 +143,7 @@ public class LinkDTO implements Serializable {
         Link link = modelMapper.map(linkDto, Link.class);
         link.setTags(linkDto.getTags()
                 .stream()
+                .filter(tagDTO -> StringUtils.hasText(tagDTO.getTagName()))
                 .map(TagDTO::mapTagDTOtoTag)
                 .collect(Collectors.toSet()));
         return link;

@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,9 +99,6 @@ public class PostService {
 
         Link link = LinkDTO.getMapDtoToLink(linkDto);
         link.setUser((User) userDetailsService.loadUserByUsername(username));
-        link.setTags(link.getTags().stream()
-                .filter(tag -> StringUtils.hasText(tag.getTagName()))
-                .collect(Collectors.toSet()));
         link.getTags().forEach(tag -> tag.getLinks().add(link));
         LOGGER.debug("TRY TO SAVE LINK {}", link);
         Link newLink = linkRepository.save(link);
