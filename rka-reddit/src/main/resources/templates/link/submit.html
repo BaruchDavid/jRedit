@@ -63,7 +63,7 @@
                            style="color:#ff0000;"></small>
                 </div>
                 <label>tags</label>
-                <div class="form-group tag-form">
+                <div class="form-group tag-form" id="tagsInput">
                     <input type="text"
                            class="form-control tag-input"
                            placeholder="tag"
@@ -110,7 +110,7 @@
 </div>
 <!-- Bootstrap core JavaScript -->
 <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
-<script th:src="@{/js/tag.js}"></script>
+<script th:type="module" th:src="@{/js/tag.js}"></script>
 </body>
 
 </html>
