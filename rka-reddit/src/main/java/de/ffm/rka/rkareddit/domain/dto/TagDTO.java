@@ -42,7 +42,7 @@ public class TagDTO implements Serializable {
     public static Tag mapTagDTOtoTag(TagDTO tagDTO) {
         return Tag.builder()
                 .tagId(tagDTO.getTagNum())
-                .tagName(tagDTO.getTagName())
+                .tagName(tagDTO.getTagName().toLowerCase())
                 .build();
     }
 

@@ -22,14 +22,7 @@ public class TagController {
     public TagController(TagService tagServiceImpl) {
         this.tagService = tagServiceImpl;
     }
-
-    /**
-     * method for login and logout
-     * during logout, request parameter contains 'logout' param
-     * after session-timeout, you will be redirected to login again
-     *
-     * @return view for login / logout
-     */
+    
     @PostMapping(value = "/tag/create", consumes = MediaType.ALL_VALUE)
     @ResponseBody
     public TagVO newTag(@RequestBody String tag) {
