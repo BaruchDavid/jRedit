@@ -14,7 +14,8 @@ function fetchTag() {
             });
         },
         select: function (event, ui) {
-            $('#field_location').val(ui.item.value);
+            let submitLinkTag = event.target.id;
+            $('#' + submitLinkTag + ', #field_location').val(ui.item.value);
             return false;
         }
     });
