@@ -93,6 +93,8 @@ public class UserDTO {
 
     @NotEmpty(message = "you must enter First Name.", groups = {ValidationChangeUserProperties.class,
             ValidationUserRegistration.class})
+    @Size(min = 2, max = 10, message = "firstname must be between 2 and 10 signs", groups = {ValidationChangeUserProperties.class,
+            ValidationUserRegistration.class})
     private String firstName;
 
     @NotEmpty(message = "you must enter Second Name.", groups = {ValidationChangeUserProperties.class,
