@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator;
+package de.ffm.rka.rkareddit.domain.validator.picture;
 
 import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
 import de.ffm.rka.rkareddit.util.FileNIO;
@@ -33,7 +33,7 @@ public class PictureValidator implements Validator {
         try {
             Optional<File> newPicture = Optional.empty();
             final PictureDTO pictureDTO = (PictureDTO) target;
-            if(isExtensionValid(errors, pictureDTO.getPictureExtension())){
+            if (isExtensionValid(errors, pictureDTO.getPictureExtension())) {
                 newPicture = checkPictureContent(errors, pictureDTO);
             }
             newPicture.ifPresent(picture -> checkPictureSize(errors, picture));

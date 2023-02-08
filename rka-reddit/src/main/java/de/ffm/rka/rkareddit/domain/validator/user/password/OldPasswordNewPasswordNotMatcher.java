@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator.user;
+package de.ffm.rka.rkareddit.domain.validator.user.password;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -12,7 +12,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OldPasswordNewPasswordNotMatcher {
 
-	String message () default "Password and new password must not be equal";
-	Class<?>[] groups() default{};
-	Class<? extends Payload>[] payload() default {};
+    String message() default "Password and new password must not be equal";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }

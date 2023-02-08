@@ -2,7 +2,7 @@ package de.ffm.rka.rkareddit.domain;
 
 
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
-import de.ffm.rka.rkareddit.domain.validator.TagResolver;
+import de.ffm.rka.rkareddit.domain.validator.tag.TagResolver;
 import lombok.*;
 
 import javax.persistence.*;

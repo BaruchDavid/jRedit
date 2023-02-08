@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator.user;
+package de.ffm.rka.rkareddit.domain.validator.user.password;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -6,8 +6,8 @@ import java.lang.annotation.*;
 
 /**
  * Custom Validator for Password
- * @author RKA
  *
+ * @author RKA
  */
 @Documented
 @Constraint(validatedBy = PasswordMatchValidator.class)
@@ -15,7 +15,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordMatcher {
 
-	String message () default "Password and password confirmation do not match";
-	Class<?>[] groups() default{};
-	Class<? extends Payload>[] payload() default {}; 
+    String message() default "Password and password confirmation do not match";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }

@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator.user;
+package de.ffm.rka.rkareddit.domain.validator.captcha;
 
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 

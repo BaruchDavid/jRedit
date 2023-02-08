@@ -1,4 +1,4 @@
-package de.ffm.rka.rkareddit.domain.validator.user;
+package de.ffm.rka.rkareddit.domain.validator.user.password;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,7 +13,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CorrectPassword {
 
-	String message () default "Password is incorrect";
-	Class<?>[] groups() default{};
-	Class<? extends Payload>[] payload() default {}; 
+    String message() default "Password is incorrect";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }
