@@ -8,8 +8,14 @@ import de.ffm.rka.rkareddit.captcha.CaptchaUtil;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
-import de.ffm.rka.rkareddit.domain.validator.user.*;
+import de.ffm.rka.rkareddit.domain.validator.captcha.CaptchaCheck;
 import de.ffm.rka.rkareddit.domain.validator.user.UserValidationGroup.*;
+import de.ffm.rka.rkareddit.domain.validator.user.email.EmailNotEqualToNewEmail;
+import de.ffm.rka.rkareddit.domain.validator.user.email.IsEmailUnique;
+import de.ffm.rka.rkareddit.domain.validator.user.password.CorrectPassword;
+import de.ffm.rka.rkareddit.domain.validator.user.password.NewPasswordMatcher;
+import de.ffm.rka.rkareddit.domain.validator.user.password.OldPasswordNewPasswordNotMatcher;
+import de.ffm.rka.rkareddit.domain.validator.user.password.PasswordMatcher;
 import jdk.jfr.Description;
 import lombok.*;
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +70,7 @@ public class UserDTO {
     @JsonIgnore
     private Long userId;
 
+    @IsEmailUnique(message = "A user already exists for this email", groups = {ValidationUserRegistration.class})
     @NotEmpty(message = "mail must be entered ", groups = {ValidationUserRegistration.class})
     @Size(message = "email must be between 8 and 20 signs", min = 8, max = 20, groups = {ValidationUserRegistration.class})
     @Builder.Default
