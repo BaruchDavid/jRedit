@@ -89,8 +89,8 @@
             <input id="field_location" class="field" name="searchTerm"
                    type="text" value="">
             <a class="s-btn" href='links'
-               onclick="location.href=location.href.substring(0,
-               location.href.indexOf('/links'))+ '/links?searchTag='+encodeURIComponent($('#field_location').val());
+               onclick="location.href=location.pathname.substring(location.href.indexOf('/jReddit'), 8)
+               + '/links?searchTag='+encodeURIComponent($('#field_location').val());
 					return false;">Find</a>
         </div>
     </div>
