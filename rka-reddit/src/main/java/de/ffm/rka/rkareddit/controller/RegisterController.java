@@ -46,7 +46,9 @@ public class RegisterController {
      */
     @GetMapping(value = {REGISTRATION, REGISTRATION + "/"})
     public String registration(Model model) {
-        model.addAttribute(LOGGED_IN_USER, UserDTO.builder().build());
+        final UserDTO newUser = UserDTO.builder().build();
+        UserDTO.createCaptcha(newUser);
+        model.addAttribute(LOGGED_IN_USER, newUser);
         return "auth/register";
     }
 
@@ -59,6 +61,7 @@ public class RegisterController {
                                    HttpServletRequest req, Model model) throws ServiceException, IOException {
         LOGGER.info("TRY TO REGISTER {}", userDto);
         if (bindingResult.hasErrors()) {
+            UserDTO.createCaptcha(userDto);
             return manageValidationErrors(userDto, bindingResult, res, req, model);
         } else {
             userService.register(userDto);

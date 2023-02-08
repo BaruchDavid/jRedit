@@ -1,8 +1,10 @@
 package de.ffm.rka.rkareddit.domain.dto;
 
 
+import cn.apiclub.captcha.Captcha;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.ffm.rka.rkareddit.captcha.CaptchaUtil;
 import de.ffm.rka.rkareddit.domain.Comment;
 import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.User;
@@ -14,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import java.util.Optional;
 @EmailNotEqualToNewEmail(groups = {ValidationUserChangeEmail.class})
 @NewPasswordMatcher(groups = {ValidationUserChangePassword.class, UnauthenticatedUserRecoverPassword.class})
 @PasswordMatcher(groups = {ValidationUserRegistration.class, ValidationUserChangeEmail.class})
+@CaptchaCheck(groups = {ValidationUserRegistration.class})
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -137,6 +141,16 @@ public class UserDTO {
     private String userCreationDate = "";
 
 
+    @Transient
+    private String captcha;
+
+    @Transient
+    private String hiddenCaptcha;
+
+    @Transient
+    private String realCaptcha;
+
+
     public String getFullName() {
         String fName = Optional.ofNullable(firstName).orElse("");
         String sName = Optional.ofNullable(secondName).orElse("");
@@ -155,5 +169,13 @@ public class UserDTO {
 
     public static User mapUserDtoToUser(UserDTO user) {
         return modelMapper.map(user, User.class);
+    }
+
+    public static void createCaptcha(UserDTO user) {
+        Captcha captcha = CaptchaUtil.createCaptcha(240, 70);
+        user.setHiddenCaptcha(captcha.getAnswer());
+        user.setCaptcha("");
+        user.setRealCaptcha(CaptchaUtil.encodeCaptcha(captcha));
+
     }
 }
