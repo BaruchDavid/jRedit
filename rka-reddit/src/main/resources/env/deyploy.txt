@@ -1,0 +1,5 @@
+java -Djarmode=layertools -jar target/rka-reddit-0.0.1-SNAPSHOT.jar list
+
+docker build . --tag skylink-service
+
+docker run -it --env SERVER_SSL_KEY-STORE-PASSWORD=**** --env  SERVER_SSL_KEY-PASSWORD=**** -p 5550:5550 skylink-service:latest
