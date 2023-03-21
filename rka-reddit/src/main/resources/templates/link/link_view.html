@@ -4,88 +4,104 @@
 </head>
 <body>
 
-    
-    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-    <div class="container">
-    	<nav th:replace="~{layouts/main_layout :: nav}"></nav>
-        <div class="alert alert-success" role="alert" th:if="${success}">
-            Has been was created!
-        </div>
-		<div class="alert alert-danger" role="alert" th:if="${error_message}">
-            <p th:text="${error_message}">
-        </div>
-        <div class="row link">
-            <div class="col-1" sec:authorize="hasRole('ROLE_USER')">
-                <div>
-                    <a href="#" class="upvote" th:data-id="${linkDto.getLinkSignature()}">
-                        <i class="fas fa-arrow-up"></i>
-                    </a>
-                </div>
-                <div><span th:id="|votecount-${linkDto.getLinkSignature()}|" class="votecount" th:text="${linkDto.getVoteCount()}">?</span>
-                </div>
-                <div>
-                    <a href="#" class="downvote" th:data-id="${linkDto.getLinkSignature()}"><i class="fas fa-arrow-down"></i>
-                    </a>
-                </div>
-			</div>
-            <div class="col-11">
-                <p class="title">
-                    <a class="title " th:href="${linkDto.url}" th:text="${linkDto.title}" target="_blank">
-                    </a>
-                    <span class="domain">(<a th:href="${linkDto.url}" th:text="${linkDto.getHoster()}"></a>)</span>
-                </p>
-                <p class="description">
-                    <span class="active" th:text="${linkDto.getDescription()}"></span>
-                </p>
-                <p class="tagline ">submitted
-                    <time th:title="${linkDto.getCreationDate()}" th:datetime="${linkDto.getCreationDate()}" class="live-timestamp"
-                          th:text="${linkDto.getElapsedTime()}">1 hour(s)</time> by
-                    <a th:href="@{'/profile/public/' + ${linkDto.getUser().getEmail()}}" class="author" th:text="${linkDto.getUser().getAliasName()}">rka</a>
-                    <span class="userattrs"></span>
-                </p>
-                <p><a th:href="${linkDto.url}" th:text="${linkDto.url}" target="_blank"></a></p>
-                <p>
-                   <a href="#" class="comments" th:text="|${linkDto.commentCount} comments|"><i class="fas fa-comments"></i> 0 comments</a>
-					<a href="#" class="share"><i class="fas fa-share-square"></i> share</a>
-                </p>
-            </div>
-        </div>
 
-        <div id="comments" class="comments">
-            <div class="row header">
-                <div class="col-1">&nbsp;</div>
-                <div class="col-11 title" th:text="|all ${linkDto.getCommentCount()} comments|">
-                    all 21 comments
-                </div>
+<div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+<div class="container">
+    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    <div class="alert alert-success" role="alert" th:if="${success}">
+        Has been was created!
+    </div>
+    <div class="alert alert-danger" role="alert" th:if="${error_message}">
+        <p th:text="${error_message}">
+    </div>
+    <div class="row link">
+        <div class="col-1" sec:authorize="hasRole('ROLE_USER')">
+            <div>
+                <a href="#" class="upvote" th:data-id="${linkDto.getLinkSignature()}">
+                    <i class="fas fa-arrow-up"></i>
+                </a>
             </div>
-            <div class="row addcomment" sec:authorize="hasRole('ROLE_USER')">
-                <div class="col-1">&nbsp;</div>
-                <div class="col-11">
-					<!-- th:field="*{body}" -->					
-					<form id="frmAddComment" method="POST" th:action="@{/comments/comment}" th:object="${commentDto}" >
-                        <input type="hidden" th:field="*{lSig}"/>
-                        <div class="form-group">
-                            <textarea class="form-control" id="comment" rows="3" th:field="*{commentText}"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Comment</button>
-                    </form>
-                </div>
+            <div><span th:id="|votecount-${linkDto.getLinkSignature()}|" class="votecount"
+                       th:text="${linkDto.getVoteCount()}">?</span>
             </div>
-            <!-- single comment -->
-            <div class="row comment" th:each="comment : ${linkDto.getCommentDTOS()}">
-                <div class="col-1">&nbsp;</div>
-                <div class="col-11">
-                    <span><a href="#" th:text="${comment.getCreatedBy()}"><i class="far fa-user"></i> therealdanvega</a></span>
-                    <span th:text="${comment.getElapsedTime()}"><i class="far fa-clock"></i> 4 hours ago</span>
-                    <p class="body" th:text="${comment.getCommentText()}"></p>
-                    <a href="#" class="permalink"><i class="fas fa-link"></i> permalink</a>
-                    <a href="#" class="like"><i class="far fa-thumbs-up"></i> Like</a>
-                </div>
+            <div>
+                <a href="#" class="downvote" th:data-id="${linkDto.getLinkSignature()}"><i
+                        class="fas fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-11">
+            <p class="title">
+                <a class="title " th:href="${linkDto.url}" th:text="${linkDto.title}" target="_blank">
+                </a>
+                <span class="domain">(<a th:href="${linkDto.url}" th:text="${linkDto.getHoster()}"></a>)</span>
+            </p>
+            <p class="description">
+                <span class="active" th:text="${linkDto.getDescription()}"></span>
+            </p>
+            <p class="tagline ">submitted
+                <time th:title="${linkDto.getCreationDate()}" th:datetime="${linkDto.getCreationDate()}"
+                      class="live-timestamp"
+                      th:text="${linkDto.getElapsedTime()}">1 hour(s)
+                </time>
+                by
+                <a th:href="@{'/profile/public/' + ${linkDto.getUser().getEmail()}}" class="author"
+                   th:text="${linkDto.getUser().getAliasName()}">rka</a>
+                <span class="userattrs"></span>
+            </p>
+            <p><a th:href="${linkDto.url}" th:text="${linkDto.url}" target="_blank"></a></p>
+            <p>
+                <a href="#" class="comments" th:text="|${linkDto.commentCount} comments|"><i
+                        class="fas fa-comments"></i> 0 comments</a>
+                <a href="#" class="share"><i class="fas fa-share-square"></i> share</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="comments" class="comments">
+        <div class="row header">
+            <div class="col-1">&nbsp;</div>
+            <div class="col-11 title" th:text="|all ${linkDto.getCommentCount()} comments|">
+                all 21 comments
+            </div>
+        </div>
+        <div class="row addcomment" sec:authorize="hasRole('ROLE_USER')">
+            <div class="col-1">&nbsp;</div>
+            <div class="col-11">
+                <form id="frmAddComment" method="POST" th:action="@{/comments/comment}" th:object="${commentDto}">
+                    <input type="text" th:field="*{lSig}"/>
+                    <div class="form-group">
+                        <textarea class="form-control" id="comment" rows="3" th:field="*{commentText}"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
+            </div>
+        </div>
+        <!-- single comment -->
+        <div class="row comment" th:each="comment : ${linkDto.getCommentDTOS()}">
+            <div class="col-1">&nbsp;</div>
+            <div class="col-11">
+                <p class="tagline ">submitted
+                    <time th:title="${comment.getElapsedTime()}"
+                          th:datetime="${comment.getElapsedTime()}"
+                          class="live-timestamp"
+                          th:text="${comment.getElapsedTime()}"></time>
+                    by
+                    <a th:href="@{'/profile/public/' + ${comment.getCreatedBy()}}"
+                       class="author"
+                       th:text="${comment.getUser().getAliasName()}">rka</a>
+                </p>
+
+
+                <p class="body" th:text="${comment.getCommentText()}"></p>
+                <a href="#" class="permalink"><i class="fas fa-link"></i> permalink</a>
+                <a href="#" class="like"><i class="far fa-thumbs-up"></i> Like</a>
             </div>
         </div>
     </div>
-    <br/><br/>
-    <div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
-    <script th:src="@{/js/vote.js}"></script>
+</div>
+<br/><br/>
+<div th:replace="~{layouts/main_layout :: div#bootstrap_func}"></div>
+<script th:src="@{/js/vote.js}"></script>
 </body>
 </html>
