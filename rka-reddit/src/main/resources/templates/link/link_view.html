@@ -69,7 +69,7 @@
             <div class="col-1">&nbsp;</div>
             <div class="col-11">
                 <form id="frmAddComment" method="POST" th:action="@{/comments/comment}" th:object="${commentDto}">
-                    <input type="text" th:field="*{lSig}"/>
+                    <input type="hidden" th:field="*{lSig}"/>
                     <div class="form-group">
                         <textarea class="form-control" id="comment" rows="3" th:field="*{commentText}"></textarea>
                     </div>
