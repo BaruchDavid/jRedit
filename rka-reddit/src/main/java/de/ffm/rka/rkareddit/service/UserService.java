@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Supplier;
@@ -206,6 +208,7 @@ public class UserService {
      *
      * @param userDto hold changes to be saved
      */
+    @CachePut(value = "users")
     @Transactional(readOnly = false)
     public void changeUserDetails(UserDTO userDto) {
 
@@ -398,5 +401,9 @@ public class UserService {
                 .secondName("")
                 .build();
         return userDTOSupplier.get();
+    }
+
+    public String calculatePictureSizeInMB(int picLength) {
+        return new DecimalFormat("###.###").format((Math.round(picLength * 100.0) / 100.0) / (1024 * 1024));
     }
 }
