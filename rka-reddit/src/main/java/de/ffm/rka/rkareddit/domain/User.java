@@ -42,7 +42,6 @@ public class User extends Auditable implements UserDetails, Serializable {
     private String password;
 
     @Lob
-    @Basic(fetch = FetchType.LAZY)
     @ToString.Exclude
     private byte[] profileFoto;
 
