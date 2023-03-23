@@ -5,6 +5,7 @@ import de.ffm.rka.rkareddit.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -25,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    /*TODO: Caching einführen*/
+    @Cacheable(value = "users", key = "#email")
     @Override
     public UserDetails loadUserByUsername(String email) {
         return userRepository.findByEmailWithRoles(email)
