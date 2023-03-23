@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,11 +87,13 @@ public class ProfileMetaDataController {
         String requestedUser = Optional.ofNullable(req.getParameter("user"))
                 .orElse(StringUtils.EMPTY);
         if (!requestedUser.isEmpty()) {
-            User user = userService.getUser(requestedUser);
-            media = userService.getUserPic(requestedUser)
+            final User user = userService.getUser(requestedUser);
+            media = Optional.ofNullable(user).map(User::getProfileFoto)
                     .orElse(new byte[0]);
-            LOGGER.info("GET PICTURE-SIZE {} FOR USER {}", media.length, requestedUser);
-            headers = cacheController.setCacheHeader(user.getFotoCreationDate());
+            LOGGER.info("GET PICTURE {} MB FOR USER {}", userService.calculatePictureSizeInMB(media.length), requestedUser);
+            headers = cacheController.setCacheHeader(Optional.ofNullable(user)
+                    .map(User::getFotoCreationDate)
+                    .orElse(LocalDateTime.now()));
             responseStatus = HttpStatus.OK;
         } else {
             responseStatus = HttpStatus.BAD_REQUEST;

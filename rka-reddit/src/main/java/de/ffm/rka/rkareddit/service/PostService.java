@@ -159,8 +159,6 @@ public class PostService {
                 .orElse("No creation time available");
     }
 
-    // TODO: 14.01.2023 man sollte auf der Oberfläche anzeigen, von wem der Kommentar ist
-
     /**
      * @param userName who creates comment
      * @param comment  content
