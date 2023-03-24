@@ -87,7 +87,7 @@
                           class="live-timestamp"
                           th:text="${comment.getElapsedTime()}"></time>
                     by
-                    <a th:href="@{'/profile/public/' + ${comment.getCreatedBy()}}"
+                    <a th:href="@{'/profile/public/' + ${comment.getUser().getEmail()}}"
                        class="author"
                        th:text="${comment.getUser().getAliasName()}">rka</a>
                 </p>
