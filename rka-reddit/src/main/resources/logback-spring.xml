@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-        <resetJUL>true</resetJUL>
-    </contextListener>
-    <!-- To enable JMX Management -->
-    <jmxConfigurator/>
-
-    <variable name="LOG_PATH" value="/skylink/"></variable>
-    <variable name="LOG" value="/skylink/"></variable>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="LOG_FILE" value="/skylink/skylink.log}"/>
+    <property name="LOGS" value="/skylink/"/>
 
     <appender name="SAVE-TO-FILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/ApplicationLog.log</file>
+        <file>${LOG_FILE}</file>
         <encoder
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
