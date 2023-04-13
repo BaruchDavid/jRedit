@@ -3,9 +3,14 @@ package de.ffm.rka.rkareddit.controller.user;
 import de.ffm.rka.rkareddit.controller.MvcRequestSender;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
+import org.apache.commons.lang.StringUtils;
+import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,7 +36,7 @@ public class RegisterControllerTest extends MvcRequestSender {
     @Test
     public void registerNewInvalidUser() throws Exception {
 
-        String body = "firstName=Paul&secondName=Grom&aliasName=grünes&password=tata&confirmPassword=tata";
+        String body = "firstName=Paul&secondName=Grom&aliasName=grünes&password=tata&confirmPassword=tata&captcha=test&hiddenCaptcha=test";
         super.performPostRequest("/registration", body)
                 .andExpect(status().is(400))
                 .andExpect(view().name("auth/register"));
@@ -44,7 +49,7 @@ public class RegisterControllerTest extends MvcRequestSender {
     public void registerFailPwToShortNewUser() throws Exception {
 
         String body = "firstName=Paul&secondName=Grom&aliasName=grünes&email=Grbein@com.de" +
-                "&password=tata&confirmPassword=tata";
+                "&password=tata&confirmPassword=tata&captcha=test&hiddenCaptcha=test";
         super.performPostRequest("/registration", body)
                 .andExpect(status().is(400))
                 .andExpect(model().attributeHasFieldErrorCode("userDTO", "password", "Size"))
@@ -57,7 +62,7 @@ public class RegisterControllerTest extends MvcRequestSender {
     @Test
     public void registerFailFirstPwSecondPwAreNotMatched() throws Exception {
         String body = "firstName=Paul&secondName=Grom&aliasName=grünes&email=Grbein@com.de" +
-                "&password=tatata&confirmPassword=tutata";
+                "&password=tatata&confirmPassword=tutata&captcha=test&hiddenCaptcha=test";
         super.performPostRequest("/registration", body)
                 .andExpect(globalErrors().hasOneGlobalError("userDTO",
                         "Password and password confirmation do not match"))
@@ -67,7 +72,7 @@ public class RegisterControllerTest extends MvcRequestSender {
     @Test
     public void registerNewUserSuccess() throws Exception {
         String body = "firstName=Paul&secondName=Grbn&aliasName=grünes&email=Grbein@com.de" +
-                "&password=tatatata&confirmPassword=tatatata";
+                "&password=tatatata&confirmPassword=tatatata&captcha=test&hiddenCaptcha=test";
         super.performPostRequest("/registration", body)
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("success", true));
@@ -75,11 +80,15 @@ public class RegisterControllerTest extends MvcRequestSender {
 
     @Test
     public void showRegisterViewAsUnauthenticatedTest() throws Exception {
-        UserDTO user = UserDTO.builder().build();
-        super.performGetRequest("/registration")
+        final MvcResult mvcResult = super.performGetRequest("/registration")
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("userDto", user))
-                .andExpect(view().name("auth/register"));
+                .andExpect(view().name("auth/register"))
+                .andReturn();
+        final UserDTO userDTO = (UserDTO) mvcResult.getModelAndView().getModel().get("userDto");
+        Assertions.assertThat(userDTO.getUserId() == null);
+        Assertions.assertThat(userDTO.getEmail().isEmpty());
+        Assertions.assertThat(!userDTO.getHiddenCaptcha().isEmpty());
+        Assertions.assertThat(!userDTO.getCaptcha().isEmpty());
     }
 
     @Test
