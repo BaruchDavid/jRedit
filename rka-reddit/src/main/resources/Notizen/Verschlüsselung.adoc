@@ -1,3 +1,8 @@
+==== Ansible mit CYGWIN installieren
+
+https://phoenixnap.com/kb/install-ansible-on-windows[cygwin installation]
+
+
 ==== Ansible in WSL installieren
 
 [source]
@@ -16,7 +21,7 @@ ansible-vault encrypt skylink.key
 
 ==== Existierende Datei entschlüsseln
 
-Die Datei wird dann unlesbar.
+Die Datei wird dann lesbar.
 
 [source]
 ----
