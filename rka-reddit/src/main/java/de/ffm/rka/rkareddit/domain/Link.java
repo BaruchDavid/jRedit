@@ -140,8 +140,7 @@ public class Link extends Auditable implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(Optional.ofNullable(super.getCreationDate())
-                .map(LocalDateTime::getNano).orElse(0));
+        return Objects.hash(this.url);
     }
 
     public void addUserToLinkHistory(User userModel) {

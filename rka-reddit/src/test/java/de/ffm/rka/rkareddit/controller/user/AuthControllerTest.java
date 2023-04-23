@@ -387,7 +387,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void saveChangesOnAuthUserOK() throws Exception {
-        String body = "firstName=baruc-david&" +
+        String body = "firstName=barucdavid&" +
                 "email=kaproma@yahoo.de&" +
                 "secondName=rka.odem&" +
                 "aliasName=worker";
@@ -534,10 +534,10 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void saveChangesOnAuthUserWithValidationChangeUserGroup() throws Exception {
-        String body = "firstName=baruc-david&" +
+        String body = "firstName=barucdavid&" +
                 "email=kaproma@yahoo.de&" +
                 "secondName=rka.odem&" +
-                "aliasName=wor";
+                "aliasName=worlord";
         super.performPutRequest("/profile/private/me/update", body)
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/profile/private/me/kaproma@yahoo.de"))
