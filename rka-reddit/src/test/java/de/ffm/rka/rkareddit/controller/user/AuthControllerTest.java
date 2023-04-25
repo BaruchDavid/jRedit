@@ -540,7 +540,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 "aliasName=worlord";
         super.performPutRequest("/profile/private/me/update", body)
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile/private/me/kaproma@yahoo.de"))
+                .andExpect(redirectedUrl("/profile/private"))
                 .andExpect(flash().attributeExists("bindingError"));
     }
 

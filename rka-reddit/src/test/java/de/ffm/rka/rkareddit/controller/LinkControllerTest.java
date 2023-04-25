@@ -182,7 +182,7 @@ public class LinkControllerTest extends MvcRequestSender {
                 .andExpect(flash().attribute("success", true))
                 .andReturn();
         String signature = res.getResponse().getRedirectedUrl().split("/")[3];
-        assertEquals("12", signature.substring(13));
+        assertEquals("202", signature.substring(13));
         Link link = postService.findLinkWithTags(signature);
         assertEquals("welt.de", link.getTitle());
         assertEquals("neues subtitle", link.getSubtitle());
