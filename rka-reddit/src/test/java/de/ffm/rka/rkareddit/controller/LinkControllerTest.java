@@ -141,8 +141,8 @@ public class LinkControllerTest extends MvcRequestSender {
     @Test
     //@DisplayName"Anzeigen von einem Link für einen nicht eingelogten User")
     public void readLinkTestAsUnautheticated() throws Exception {
-        LinkDTO linkDTO = postService.findLinkWithComments("15921918064983");
-        MvcResult mvcResult = super.performGetRequest("/links/link/15921918064983")
+        LinkDTO linkDTO = postService.findLinkWithComments("159219180643341");
+        MvcResult mvcResult = super.performGetRequest("/links/link/159219180643341")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("linkDto", linkDTO))
                 .andExpect(view().name("link/link_view"))
@@ -154,7 +154,7 @@ public class LinkControllerTest extends MvcRequestSender {
                 linkCreator.getEmail(), linkDTO.getUser().getEmail());
 
         assertEquals("diser link zeigt zwei kommentare an",
-                2, linkDTO.getCommentDTOS().size());
+                4, linkDTO.getCommentDTOS().size());
     }
 
     @Test
