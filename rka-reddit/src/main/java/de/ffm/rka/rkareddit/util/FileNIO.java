@@ -30,18 +30,18 @@ public class FileNIO {
                 .orElseGet(() -> System.getProperty("java.io.tmpdir"))
                 .isEmpty()) {
             Path filePath = Paths.get(resourcePath + resourceName);
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                Files.copy(filePath, baos);
-                return Optional.of(baos);
-            }
+            return readBytesOfFile(Path.of(filePath.toUri()));
         }
         return Optional.empty();
     }
 
     public static Optional<ByteArrayOutputStream> readPictureToBytes(String resourceName) throws IOException, URISyntaxException {
 
-        URL resource = FileNIO.class.getResource("/sql/dml/data-h2.sql");
-        Path filePath = Path.of(resource.toURI());
+        URL resource = FileNIO.class.getResource(resourceName);
+        return readBytesOfFile(Path.of(resource.toURI()));
+    }
+
+    private static Optional<ByteArrayOutputStream> readBytesOfFile(Path filePath) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Files.copy(filePath, baos);
             return Optional.of(baos);

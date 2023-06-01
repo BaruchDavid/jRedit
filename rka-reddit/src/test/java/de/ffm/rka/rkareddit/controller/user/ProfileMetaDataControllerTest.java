@@ -131,8 +131,8 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     @WithUserDetails("kaproma@yahoo.de")
     public void postInValidNewPictureWithWrongExtension() throws Exception {
         final String defaultBaseDir = System.getProperty("java.io.tmpdir");
-        final String fileName = "data-h2.sql";
-        final Optional<ByteArrayOutputStream> byteArrayOutputStream = FileNIO.readPictureToBytes(fileName);
+        final String resource = "/sql/dml/data-h2.sql";
+        final Optional<ByteArrayOutputStream> byteArrayOutputStream = FileNIO.readPictureToBytes(resource);
         if(byteArrayOutputStream.isPresent()){
             MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.get().toByteArray());
             PictureDTO pictureDTO = new PictureDTO();
@@ -143,7 +143,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
                     .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
                     .andExpect(content().string("Only jpg/jpeg, png or gif picture is allowed"));
         } else {
-            fail("FILE "+ fileName + " ON PATH " + defaultBaseDir + " COULD NOT BE READ");
+            fail("FILE "+ resource + " ON PATH " + defaultBaseDir + " COULD NOT BE READ");
         }
 
     }
