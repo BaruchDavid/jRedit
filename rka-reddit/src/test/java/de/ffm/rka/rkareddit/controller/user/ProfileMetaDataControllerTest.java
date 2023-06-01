@@ -18,13 +18,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -156,10 +156,10 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void postToBigValidNewPicture() throws Exception {
-        String defaultBaseDir = System.getProperty("java.io.tmpdir");
-        Path path = Paths.get(defaultBaseDir + "1mb-TestBild.jpg");
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Files.copy(path, byteArrayOutputStream);
+        URL resource = ProfileMetaDataControllerTest.class.getResource("/bigPic.jpg");
+        Path path = Paths.get(resource.toURI());
+        ByteArrayOutputStream byteArrayOutputStream  = FileNIO.readBytesOfFile(path)
+                .orElse(null);
         MockMultipartFile firstFile = new MockMultipartFile("pic", byteArrayOutputStream.toByteArray());
         PictureDTO pictureDTO = new PictureDTO();
         pictureDTO.setFormDataWithFile(firstFile);

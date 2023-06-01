@@ -41,7 +41,7 @@ public class FileNIO {
         return readBytesOfFile(Path.of(resource.toURI()));
     }
 
-    private static Optional<ByteArrayOutputStream> readBytesOfFile(Path filePath) throws IOException {
+    public static Optional<ByteArrayOutputStream> readBytesOfFile(Path filePath) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Files.copy(filePath, baos);
             return Optional.of(baos);
