@@ -176,7 +176,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithLinksOfOtherUserAsAuthenticated() throws Exception {
-        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        pageContentUser = userService.getUserWithLinks("dascha@gmx.de");
         final Set<LinkDTO> userContentLinks = pageContentUser.getUserLinks()
                 .stream()
                 .map(LinkDTO::mapFullyLinkToDto)
@@ -196,7 +196,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     @Test
     public void showProfileWithLinksOfOtherUserAsUnAuthenticated() throws Exception {
-        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        pageContentUser = userService.getUserWithLinks("dascha@gmx.de");
         final Set<LinkDTO> userContentLinks = pageContentUser.getUserLinks()
                 .stream()
                 .map(LinkDTO::mapFullyLinkToDto)
@@ -216,7 +216,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfOtherUserAsAuthenticated() throws Exception {
-        pageContentUser = userService.findUserById("dascha@gmx.de").get();
+        pageContentUser = userService.getUserWithComments("dascha@gmx.de");
         final Set<CommentDTO> userContentComments = pageContentUser.getUserComment()
                 .stream()
                 .map(CommentDTO::mapCommentToCommentDto)
