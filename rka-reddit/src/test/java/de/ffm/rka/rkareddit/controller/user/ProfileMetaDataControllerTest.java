@@ -87,9 +87,9 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
                             .andExpect(status().isOk())
                             .andReturn();
         final String stringRes = result.getResponse().getContentAsString();
-        assertTrue(stringRes.contains("\"linkId\" : 4"));
-        assertTrue(stringRes.contains("\"linkId\" : 2"));
-        assertTrue(stringRes.contains("\"linkId\" : 3"));
+        assertTrue(stringRes.contains("\"linkId\" : 1"));
+        assertTrue(stringRes.contains("\"linkId\" : 21"));
+        assertTrue(stringRes.contains("\"linkId\" : 41"));
     }
 
 
