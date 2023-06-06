@@ -93,6 +93,7 @@ public class LinkDTO implements Serializable {
      * don't call childElementUser for de/serialize json
      */
     @JsonIgnore
+    @Builder.Default
     private List<TagDTO> tags = new ArrayList<>();
 
     /**
