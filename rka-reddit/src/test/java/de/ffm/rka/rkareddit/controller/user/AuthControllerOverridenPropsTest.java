@@ -25,7 +25,7 @@ public class AuthControllerOverridenPropsTest extends MvcRequestSender {
     @Test
     public void registerNewUserWithNonExistsEmail() throws Exception {
         String body = "firstName=Plau&secondName=Grbn&aliasName=grünes&" +
-				"email=Grbein@com.de&password=tatatata&confirmPassword=tatatata";
+				"email=Grbein@com.de&password=tatatata&confirmPassword=tatatata&captcha=test&hiddenCaptcha=test";
         super.performPostRequest("/registration",body)
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/registration"))
