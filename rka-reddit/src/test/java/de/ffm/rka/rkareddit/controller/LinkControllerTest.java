@@ -121,12 +121,12 @@ public class LinkControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void addNewLinkOnClickToUserClickedLinks() throws Exception {
-        super.performGetRequest("/links/link/16170428593248")
+        super.performGetRequest("/links/link/16170428593241")
                 .andExpect(status().isOk());
         final User userWithLinks = userService.getUserWithLinks("kaproma@yahoo.de");
         final Set<Link> userClickedLinks = userWithLinks.getUserClickedLinks();
         final Optional<Link> clickedLink = userClickedLinks.stream()
-                .filter(link -> link.getLinkId() == 8)
+                .filter(link -> link.getLinkId() == 1)
                 .findAny();
         assertTrue(clickedLink.isPresent());
     }

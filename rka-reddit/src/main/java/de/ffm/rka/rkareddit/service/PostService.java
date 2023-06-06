@@ -77,7 +77,7 @@ public class PostService {
         LOGGER.info("FIND LINK WITH SIGNATURE {}", signature);
         final long id = LinkDTO.convertEpochSecToLinkId(signature);
         return linkRepository.findLinkWithUserByLinkId(id)
-                .orElseThrow(() -> new ServiceException("link with id {} not found"));
+                .orElseThrow(() -> new ServiceException(String.format("link with id %s not found", id)));
     }
 
     public Link findLinkWithTags(final String signature) throws ServiceException {
