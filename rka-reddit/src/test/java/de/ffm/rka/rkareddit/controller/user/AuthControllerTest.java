@@ -9,7 +9,9 @@ import de.ffm.rka.rkareddit.exception.ServiceException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,8 +24,10 @@ import java.util.stream.Collectors;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
 import static org.junit.Assert.fail;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.AFTER_METHOD;
 import static org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 public class AuthControllerTest extends MvcRequestSender {
 
@@ -49,6 +53,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
 
     @SuppressWarnings("unchecked")
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     @DirtiesContext(methodMode = BEFORE_METHOD)
@@ -70,6 +75,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
     }
 
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithLinksOfLoggedInUserAsAuthenticated() throws Exception {
@@ -95,6 +101,7 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     public void showProfileWithLinksOfUserAsUnAuthenticated() throws Exception {
         final Set<LinkDTO> loggedUserLinks = pageContentUser.getUserLinks()
@@ -109,11 +116,12 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(model().attribute("posts", loggedUserLinks))
                 .andExpect(model().attribute("userDto", emptyUser))
+
                 .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 2));
     }
-
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfLoggedInAsAuthenticated() throws Exception {
@@ -134,6 +142,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("postsCount", 5));
     }
 
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     public void showProfileWithCommentsOfAsUnAuthenticated() throws Exception {
         final Set<CommentDTO> loggedUserComments = pageContentUser.getUserComment()
@@ -153,6 +162,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("postsCount", 5));
     }
 
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfUserAsAuthenticated() throws Exception {
@@ -173,6 +183,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("postsCount", 5));
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithLinksOfOtherUserAsAuthenticated() throws Exception {
@@ -194,6 +205,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("commentCount", 6));
     }
 
+    
     @Test
     public void showProfileWithLinksOfOtherUserAsUnAuthenticated() throws Exception {
         pageContentUser = userService.getUserWithLinks("dascha@gmx.de");
@@ -213,6 +225,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("commentCount", 6));
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showProfileWithCommentsOfOtherUserAsAuthenticated() throws Exception {
@@ -239,6 +252,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * cach-flag: no-cache is set, cause for content-user you will see
      * everytime actual saved picture and not cached picture
      */
+    
     @Test
     public void showPublicProfileAsUnauthenticated() throws Exception {
         User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
@@ -253,6 +267,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * show public non existing profile from grm as unauthenticated user
      */
+    
     @Test
     public void showPublicNoExistedProfileAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/profile/public/grm@gmx.de")
@@ -263,12 +278,14 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(view().name("error/basicError"));
     }
 
+    
     @Test
     public void showPrivateProfileAsUnauthenticated() throws Exception {
         super.performGetRequest("/profile/private/kaproma@yahoo.de")
                 .andExpect(status().isNotFound());
     }
 
+    
     @Test
     @WithUserDetails("grom@gmx.de")
     public void accessToDBAsWrongUser() throws Exception {
@@ -289,6 +306,7 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+    
     @Test
     public void accessWithNoAuthorizationAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/data/h2-console")
@@ -305,6 +323,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * cach-flag: no-cache is set, cause for content-user you will see
      * everytime actual saved picture and not cached picture
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showPublicProfileAsAuthenticated() throws Exception {
@@ -320,6 +339,7 @@ public class AuthControllerTest extends MvcRequestSender {
         }
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showEditProfilePage() throws Exception {
@@ -336,6 +356,7 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+    
     @Test
     public void showEditProfilePageForUnknownUserAsUnauthenticated() throws Exception {
         final MvcResult mvcResult = super.performGetRequest("/profile/private/me")
@@ -352,6 +373,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * activation looks wo this email and when no one is present, error will be
      * thrown
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showChangeEmailPage() throws Exception {
@@ -363,6 +385,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(view().name("auth/emailChange"));
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showForgotPasswordView() throws Exception {
@@ -374,6 +397,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(view().name("recover/recoverUserPwRequest"));
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showChangePasswordPage() throws Exception {
@@ -384,6 +408,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(view().name("auth/passwordChange"));
     }
 
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void saveChangesOnAuthUserOK() throws Exception {
@@ -410,6 +435,13 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("success", true));
     }
 
+
+    /**
+     * FEHLER!!!!!
+     * @throws Exception
+     */
+    //
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailOK() throws Exception {
@@ -425,7 +457,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(flash().attribute("redirectMessage", "you got email, check it out!"))
                 .andReturn();
     }
-
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     public void activateChangedEmail() throws Exception {
         final Optional<User> user = super.userService.findUserById("kaproma@yahoo.de");
@@ -444,6 +476,7 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNotOK() throws Exception {
@@ -459,6 +492,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailToSmall() throws Exception {
@@ -476,6 +510,8 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+
+    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNoEmail() throws Exception {
@@ -492,6 +528,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailToBig() throws Exception {
@@ -513,6 +550,7 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNotOKAllErrors() throws Exception {
@@ -531,6 +569,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().errorCount(3));
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void saveChangesOnAuthUserWithValidationChangeUserGroup() throws Exception {
@@ -547,6 +586,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * old pw is ok new pw is ok
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void saveAuthUserWithValidationChangeUserPasswordGroupOK() throws Exception {
@@ -557,6 +597,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(flash().attribute("success", true));
     }
 
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void saveAuthUserWithValidationChangeUserPasswordGroupFalseMethod() throws Exception {
@@ -572,6 +613,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * @author RKA passwordchange with wrong old password
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordWrongOldPassword() throws Exception {
@@ -589,6 +631,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * @author RKA passwordchange with new-password and new-password-confirmation
      * not equal
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordNewPwNotEqualNewPWConfirm() throws Exception {
@@ -605,6 +648,7 @@ public class AuthControllerTest extends MvcRequestSender {
      *
      * @throws Exception
      */
+    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changePasswordNewAndOldShouldNotBeEqual() throws Exception {
