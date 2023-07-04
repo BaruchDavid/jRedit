@@ -9,9 +9,7 @@ import de.ffm.rka.rkareddit.exception.ServiceException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MvcResult;
@@ -43,17 +41,18 @@ public class AuthControllerTest extends MvcRequestSender {
     @Before
     public void setup() {
 
+        initilizeLoggedInAndContentUsers();
+
+    }
+
+    private void initilizeLoggedInAndContentUsers() {
         if (loggedInUser == null) {
             loggedInUser = userService.findUserById("kaproma@yahoo.de").get();
             pageContentUser = userService.getUserWithLinks(loggedInUser.getEmail());
             loggedInUserDto = UserDTO.mapUserToUserDto(loggedInUser);
         }
-
     }
 
-
-    @SuppressWarnings("unchecked")
-    
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     @DirtiesContext(methodMode = BEFORE_METHOD)
@@ -255,7 +254,7 @@ public class AuthControllerTest extends MvcRequestSender {
     
     @Test
     public void showPublicProfileAsUnauthenticated() throws Exception {
-        User grom = userService.findUserById("grom@gmx.de").orElseGet(() -> new User());
+        User grom = userService.findUserById("grom@gmx.de").orElseGet(User::new);
         super.performGetRequest("/profile/public/grom@gmx.de")
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(status().isOk())
@@ -427,6 +426,8 @@ public class AuthControllerTest extends MvcRequestSender {
 
         Map<String, Object> flashAttributes = new HashMap<>();
         flashAttributes.put("success", true);
+        loggedInUser = null;
+        initilizeLoggedInAndContentUsers();
         performGetRequestWithFalshAttributes(mvcResult.getResponse().getRedirectedUrl(), flashAttributes)
                 .andExpect(view().name("auth/profileLinks"))
                 .andExpect(status().isOk())
@@ -437,7 +438,6 @@ public class AuthControllerTest extends MvcRequestSender {
 
 
     /**
-     * FEHLER!!!!!
      * @throws Exception
      */
     //
@@ -511,7 +511,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * @throws Exception
      */
 
-    @DirtiesContext(methodMode = AFTER_METHOD)
+    @DirtiesContext(methodMode = BEFORE_METHOD)
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void changeUserEmailNoEmail() throws Exception {
