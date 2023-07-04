@@ -272,7 +272,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final MvcResult mvcResult = super.performGetRequest("/profile/public/grm@gmx.de")
                 .andReturn();
         final String urlEncoded = mvcResult.getResponse().getHeader("location");
-        final ResultActions resultActions = sendRedirect(Optional.ofNullable(urlEncoded.replace("+", "")).orElse(""));
+        final ResultActions resultActions = sendRedirect(urlEncoded.replace("+", ""));
         resultActions.andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
                 .andExpect(view().name("error/basicError"));
     }
@@ -361,7 +361,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final MvcResult mvcResult = super.performGetRequest("/profile/private/me")
                 .andReturn();
         final String location = mvcResult.getResponse().getHeader("location");
-        final ResultActions result = sendRedirect(Optional.ofNullable(location.replace("+", "")).orElse(""));
+        final ResultActions result = sendRedirect(location.replace("+", ""));
         result.andExpect(view().name("auth/login"))
                 .andExpect(status().is(HttpStatus.SC_OK));
 
@@ -605,7 +605,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final MvcResult mvcResult = super.performPostRequest("/profile/private/me/password", body)
                 .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
-        final ResultActions result = sendRedirect(Optional.ofNullable(encodedUrl.replace("+", "")).orElse(""));
+        final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
         result.andExpect(status().is(HttpStatus.SC_METHOD_NOT_ALLOWED))
                 .andExpect(view().name("error/pageNotFound"));
     }
