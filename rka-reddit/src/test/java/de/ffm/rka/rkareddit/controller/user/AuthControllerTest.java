@@ -98,7 +98,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * anonymous guets can see profile links from user
      *
-     * @throws Exception
+     * @throws Exception may be thrown
      */
     @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
@@ -272,7 +272,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final MvcResult mvcResult = super.performGetRequest("/profile/public/grm@gmx.de")
                 .andReturn();
         final String urlEncoded = mvcResult.getResponse().getHeader("location");
-        final ResultActions resultActions = sendRedirect(urlEncoded.replace("+", ""));
+        final ResultActions resultActions = sendRedirect(Optional.ofNullable(urlEncoded.replace("+", "")).orElse(""));
         resultActions.andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
                 .andExpect(view().name("error/basicError"));
     }
@@ -303,7 +303,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * without authentication, you will be redirected to login for authentication
      *
-     * @throws Exception
+     * @throws Exception may be thrown 
      */
     
     @Test
@@ -353,7 +353,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * needs to be login at first, not depend about which kind of resource
      * has been requested
      *
-     * @throws Exception
+     * @throws Exception may be thrown
      */
     
     @Test
@@ -361,7 +361,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final MvcResult mvcResult = super.performGetRequest("/profile/private/me")
                 .andReturn();
         final String location = mvcResult.getResponse().getHeader("location");
-        final ResultActions result = sendRedirect(location.replace("+", ""));
+        final ResultActions result = sendRedirect(Optional.ofNullable(location.replace("+", "")).orElse(""));
         result.andExpect(view().name("auth/login"))
                 .andExpect(status().is(HttpStatus.SC_OK));
 
@@ -438,7 +438,7 @@ public class AuthControllerTest extends MvcRequestSender {
 
 
     /**
-     * @throws Exception
+     * @throws Exception may be thrown
      */
     //
     @DirtiesContext(methodMode = AFTER_METHOD)
@@ -474,7 +474,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * old and new email are equal ==> wrong password is wrong
      *
-     * @throws Exception
+     * @throws Exception may be thrown
      */
     
     @Test
@@ -508,7 +508,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * validator vor NotEmpty confirmPw invokes pw-and-confirmPw matcher
      *
-     * @throws Exception
+     * @throws Exception may be thrown
      */
 
     @DirtiesContext(methodMode = BEFORE_METHOD)
@@ -548,7 +548,7 @@ public class AuthControllerTest extends MvcRequestSender {
      * old and new email are equal ==> wrong password is wrong confirm-password and
      * password is not equal
      *
-     * @throws Exception
+     * @throws Exception may be thrown
      */
     
     @Test
@@ -605,7 +605,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final MvcResult mvcResult = super.performPostRequest("/profile/private/me/password", body)
                 .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
-        final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
+        final ResultActions result = sendRedirect(Optional.ofNullable(encodedUrl.replace("+", "")).orElse(""));
         result.andExpect(status().is(HttpStatus.SC_METHOD_NOT_ALLOWED))
                 .andExpect(view().name("error/pageNotFound"));
     }
@@ -646,7 +646,7 @@ public class AuthControllerTest extends MvcRequestSender {
     /**
      * old and new password should not be equal
      *
-     * @throws Exception
+     * @throws Exception may be thrown
      */
     
     @Test
