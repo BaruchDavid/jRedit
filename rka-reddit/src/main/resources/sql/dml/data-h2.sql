@@ -197,41 +197,41 @@ VALUES (NEXTVAL('COMMENT_SEQ'), '25 kommentar von grom', 61, 3, NOW());
 INSERT INTO Comment(comment_id, comment_text, link_id, user_id, creation_Date)
 VALUES (NEXTVAL('COMMENT_SEQ'), '26 kommentar von grom', 61, 3, NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'Java');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'Java', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'TypeScript');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'TypeScript', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'JavaScript');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'JavaScript', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'C');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'C', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'C++');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'C++', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'PHP');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'PHP', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'Phyton');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'Phyton', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'Delphi/Object Pascal');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'Delphi/Object Pascal', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'Swift');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'Swift', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'SQL');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'SQL', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'HTML-5');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'HTML-5', NOW());
 
-INSERT INTO Tag(tag_id, tag_name)
-VALUES (NEXTVAL('TAG_SEQ'), 'CSS');
+INSERT INTO Tag(tag_id, tag_name, creation_date)
+VALUES (NEXTVAL('TAG_SEQ'), 'CSS', NOW());
 
 INSERT INTO link_tags(link_id, tag_id)
 VALUES (1, 2);
