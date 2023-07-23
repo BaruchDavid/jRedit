@@ -1,4 +1,4 @@
-FROM openjdk:11.0.8 as build
+FROM openjdk:11.0.8 AS build
 WORKDIR skylink
 RUN apt-get update -y
 RUN apt-get upgrade -y

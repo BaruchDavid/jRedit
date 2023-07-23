@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layouts/main_layout :: head(title = 'Register on linkssky')}">
-    <title>Register on linkssky</title></head>
+<head th:replace="~{layouts/main_layout :: head(title = 'Register on Ocean link')}"><!-- //NOSONAR -->
+</head>
 <body>
 
 <nav th:replace="~{layouts/main_layout :: nav}"></nav>
@@ -167,7 +167,7 @@
                     <div class="input-group-addon" style="width: 2.6rem">
                         <i class="fas fa-image"></i>
                     </div>
-                    <img id="captchaPic" th:src="*{'data:realCaptcha/jpg;base64,'+ realCaptcha}"/>
+                    <img id="captchaPic" th:src="*{'data:realCaptcha/jpg;base64,'+ realCaptcha}" alt="captcha pic"/>
                 </div>
 
             </div>

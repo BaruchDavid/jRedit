@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{layouts/main_layout :: head(title = ' Login')}">
+<head th:replace="~{layouts/main_layout :: head(title = 'My posts')}"><!-- //NOSONAR -->
 </head>
 <body>
 
     <nav th:replace="~{layouts/main_layout :: nav}"></nav>
     <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
-    <!-- profile -->
-<!--     th:if="${success}" -->
     <div id="profile" class="container">
     	<div th:if="${success}" id="displayMessage" class="alert alert-success" role="alert" >
            <p th:text="${redirectMessage}">Welcome to your place!</p>

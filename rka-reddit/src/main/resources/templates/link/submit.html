@@ -89,7 +89,7 @@
                 <div class="float-md-right">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-                <table style="display:none">
+                <table aria-describedby="tags" style="display:none" ><!-- //NOSONAR -->
                     <tbody>
                     <tr th:each="item, itemStat : *{tags}">
                         <td><input
