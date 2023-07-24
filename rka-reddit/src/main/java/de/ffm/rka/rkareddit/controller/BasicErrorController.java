@@ -45,7 +45,8 @@ public class BasicErrorController implements ErrorController {
             model.addAttribute(USER_DTO, userDto);
             resp.setStatus(errorDTO.getErrorStatus());
         } catch (Exception e) {
-            LOGGER.error("EXCEPTION ON PROCESSING ERROR-HANDLER {} with orig exception {}", e.getMessage(), errorDTO.getError());
+            LOGGER.error("EXCEPTION ON PROCESSING ERROR-HANDLER {} with orig exception {}", e.getMessage(),
+                    Optional.ofNullable(errorDTO).map(ErrorDTO::getError).orElse("UNKNOWN"));
             model.addAttribute(USER_DTO, UserService.buildAnonymousUser());
             view = "error/pageNotFound";
         }

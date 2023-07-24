@@ -15,6 +15,10 @@ import java.util.Base64;
 @Slf4j
 public class CaptchaUtil {
 
+    private CaptchaUtil(){
+        //should not be instantiated
+    }
+
     public static Captcha createCaptcha(Integer width, Integer height) {
 
         return new Captcha.Builder(width, height)

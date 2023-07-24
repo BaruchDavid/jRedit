@@ -3,16 +3,13 @@ package de.ffm.rka.rkareddit.controller.user;
 import de.ffm.rka.rkareddit.controller.MvcRequestSender;
 import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
-import org.apache.commons.lang.StringUtils;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static de.ffm.rka.rkareddit.resultmatcher.GlobalResultMatcher.globalErrors;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -85,10 +82,10 @@ public class RegisterControllerTest extends MvcRequestSender {
                 .andExpect(view().name("auth/register"))
                 .andReturn();
         final UserDTO userDTO = (UserDTO) mvcResult.getModelAndView().getModel().get("userDto");
-        Assertions.assertThat(userDTO.getUserId() == null);
-        Assertions.assertThat(userDTO.getEmail().isEmpty());
-        Assertions.assertThat(!userDTO.getHiddenCaptcha().isEmpty());
-        Assertions.assertThat(!userDTO.getCaptcha().isEmpty());
+        assertThat(userDTO.getUserId()).isNull();
+        assertThat(userDTO.getEmail()).isEmpty();
+        assertThat(userDTO.getHiddenCaptcha()).isNotEmpty();
+        assertThat(userDTO.getCaptcha()).isEmpty();
     }
 
     @Test

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -106,11 +105,6 @@ public class Link extends Auditable implements Serializable {
     public void addComment(Comment comment) {
         comments.add(comment);
         comment.setLink(this);
-    }
-
-    public void removeComment(Comment comment) {
-        this.comments.add(comment);
-        comment.setLink(null);
     }
 
     public void addTag(Tag tag) {

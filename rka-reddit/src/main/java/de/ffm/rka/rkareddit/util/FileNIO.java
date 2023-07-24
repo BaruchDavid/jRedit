@@ -3,7 +3,6 @@ package de.ffm.rka.rkareddit.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -100,7 +99,7 @@ public class FileNIO {
      * @param clazz which represents path for required resource
      * @return URL with schema like 'file/C:/folder1'
      */
-    public static URL getFullQualifiedPathWithAsURL(Class clazz) {
+    public static <T> URL getFullQualifiedPathWithAsURL(Class<T> clazz) {
         return clazz.getProtectionDomain().getCodeSource().getLocation();
     }
 
