@@ -20,9 +20,12 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -190,10 +193,12 @@ public class LinkControllerTest extends MvcRequestSender {
         assertEquals("http://welt.de", link.getUrl());
 
         assertTrue(link.getTags().stream()
+                .filter(tag -> tag.getCreationDate()!=null)
                 .map(Tag::getTagName)
                 .anyMatch("java12"::equals));
 
         assertTrue(link.getTags().stream()
+                .filter(tag -> tag.getCreationDate()!=null)
                 .map(Tag::getTagName)
                 .anyMatch("java13"::equals));
 

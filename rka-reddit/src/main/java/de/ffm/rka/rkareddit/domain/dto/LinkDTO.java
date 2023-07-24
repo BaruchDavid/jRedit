@@ -139,13 +139,13 @@ public class LinkDTO implements Serializable {
         return String.valueOf(instant.toEpochMilli()) + link.getLinkId();
     }
 
-    public static Link getMapDtoToLink(LinkDTO linkDto) {
+    public static Link getMapDtoToLink(LinkDTO linkDto, String userName) {
         nullfyUrl(linkDto);
         Link link = modelMapper.map(linkDto, Link.class);
         link.setTags(linkDto.getTags()
                 .stream()
                 .filter(tagDTO -> StringUtils.hasText(tagDTO.getTagName()))
-                .map(TagDTO::mapTagDTOtoTag)
+                .map(tagDto -> TagDTO.mapTagDTOtoTag(tagDto, userName))
                 .collect(Collectors.toSet()));
         return link;
     }

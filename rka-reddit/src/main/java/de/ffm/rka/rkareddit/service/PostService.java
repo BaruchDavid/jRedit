@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +59,7 @@ public class PostService {
     @Async
     @Transactional(readOnly = false)
     public void createClickedUserLinkHistory(User user, LinkDTO linkDTO) {
-        Link link = LinkDTO.getMapDtoToLink(linkDTO);
+        Link link = LinkDTO.getMapDtoToLink(linkDTO, user.getEmail());
         link.setUsersLinksHistory(new HashSet<>(Collections.singletonList(user)));
         link = linkRepository.save(link);
         LOGGER.info("Link {} and User {} has been saved in history", link.getLinkId(), user.getEmail());
@@ -96,9 +97,9 @@ public class PostService {
      */
     @Transactional(readOnly = false)
     public LinkDTO saveLink(final String username, LinkDTO linkDto) {
-
-        Link link = LinkDTO.getMapDtoToLink(linkDto);
-        link.setUser((User) userDetailsService.loadUserByUsername(username));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Link link = LinkDTO.getMapDtoToLink(linkDto, userDetails.getUsername());
+        link.setUser((User) userDetails);
         link.getTags().forEach(tag -> tag.getLinks().add(link));
         LOGGER.debug("TRY TO SAVE LINK {}", link);
         Link newLink = linkRepository.save(link);
