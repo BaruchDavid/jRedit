@@ -4,6 +4,7 @@ package de.ffm.rka.rkareddit.domain;
 import de.ffm.rka.rkareddit.domain.audit.Auditable;
 import de.ffm.rka.rkareddit.domain.validator.tag.TagResolver;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,7 +20,7 @@ import java.util.Set;
 @TagResolver
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Tag extends Auditable implements Serializable {
 
     private static final long serialVersionUID = -1764376324929313404L;
