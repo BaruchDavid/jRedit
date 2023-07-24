@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,18 +32,32 @@ public class TagDTO implements Serializable {
 
     private Long tagNum;
 
+    private String createdBy;
+
+    private LocalDateTime creationDate;
+
+
+
     public static TagDTO mapTagToTagDTO(Tag tag) {
         return TagDTO.builder()
                 .tagName(tag.getTagName())
                 .tagNum(Optional.ofNullable(tag.getTagId()).orElse(0L))
+                .createdBy(tag.getCreatedBy())
+                .creationDate(tag.getCreationDate())
                 .build();
 
     }
 
     public static Tag mapTagDTOtoTag(TagDTO tagDTO) {
+        return mapTagDTOtoTag(tagDTO, "Unknown");
+    }
+
+    public static Tag mapTagDTOtoTag(TagDTO tagDTO, String user) {
         return Tag.builder()
                 .tagId(tagDTO.getTagNum())
                 .tagName(tagDTO.getTagName().toLowerCase())
+                .createdBy(user)
+                .creationDate(LocalDateTime.now())
                 .build();
     }
 
