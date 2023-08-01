@@ -2,9 +2,9 @@ package de.ffm.rka.rkareddit.rest.controller;
 
 import de.ffm.rka.rkareddit.exception.ServiceException;
 import de.ffm.rka.rkareddit.service.VoteService;
-import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,12 +44,12 @@ public class VoteController {
 			if (voteCount != newCount) {
 				return newCount;
 			} else {
-				res.setStatus(HttpStatus.SC_BAD_REQUEST);
+				res.setStatus(HttpStatus.BAD_REQUEST.value());
 				LOGGER.warn("VOTE LOST FOR LINK-SIG {} FROM USER {}", lSig, req.getUserPrincipal());
 				return voteCount;
 			}
 		} else {
-			res.setStatus(HttpStatus.SC_UNAUTHORIZED);
+			res.setStatus(HttpStatus.UNAUTHORIZED.value());
 			LOGGER.warn("VOTE LOST FOR LINK-SIG {} FROM USER {}", lSig, req.getUserPrincipal());
 			return voteCount;
 		}

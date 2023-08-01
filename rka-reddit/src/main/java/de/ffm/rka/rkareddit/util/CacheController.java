@@ -1,9 +1,9 @@
 package de.ffm.rka.rkareddit.util;
 
 import de.ffm.rka.rkareddit.service.TimeService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +16,7 @@ public class CacheController {
 
 
     public String setCacheHeader(String username) {
-        if(StringUtils.isEmpty(username)){
+        if(!StringUtils.hasText(username)){
             return "no-cache";
         } else {
             return "";

@@ -1,10 +1,11 @@
 package de.ffm.rka.rkareddit.interceptor;
 
 import de.ffm.rka.rkareddit.exception.UserAuthenticationLostException;
-import org.apache.commons.httpclient.HttpStatus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -97,7 +98,7 @@ public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean isClientError(int httpStatus) {
-        return httpStatus == HttpStatus.SC_BAD_REQUEST || httpStatus == HttpStatus.SC_NOT_FOUND;
+        return httpStatus == HttpStatus.BAD_REQUEST.value() || httpStatus == HttpStatus.NOT_FOUND.value();
     }
 
     private boolean notFromErrorHandler(String url) {

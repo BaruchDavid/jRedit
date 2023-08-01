@@ -6,8 +6,7 @@ import de.ffm.rka.rkareddit.domain.dto.CommentDTO;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.exception.ServiceException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -71,7 +70,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andExpect(model().attribute("userContent", loggedInUserDto))
                 .andExpect(model().attribute("userSince", userSince))
                 .andExpect(model().attribute("commentCount", 2))
-                .andExpect(model().attribute("cacheControl", StringUtils.EMPTY));
+                .andExpect(model().attribute("cacheControl", ""));
     }
 
     @DirtiesContext(methodMode = AFTER_METHOD)
@@ -273,7 +272,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andReturn();
         final String urlEncoded = mvcResult.getResponse().getHeader("location");
         final ResultActions resultActions = sendRedirect(urlEncoded.replace("+", ""));
-        resultActions.andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
+        resultActions.andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(view().name("error/basicError"));
     }
 
@@ -293,7 +292,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andReturn();
         final String redirectedUrl = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(Optional.ofNullable(redirectedUrl).orElse(""));
-        result.andExpect(status().is(HttpStatus.SC_FORBIDDEN))
+        result.andExpect(status().is(HttpStatus.FORBIDDEN.value()))
                 .andExpect(view().name("error/accessDenied"))
                 .andExpect(model().attribute("userDto", UserDTO.builder()
                         .firstName("grom")
@@ -313,7 +312,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andReturn();
         final String redirectedUrl = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(Optional.ofNullable(redirectedUrl).orElse(""));
-        result.andExpect(status().is(HttpStatus.SC_OK))
+        result.andExpect(status().is(HttpStatus.OK.value()))
                 .andExpect(view().name("auth/login"));
     }
 
@@ -363,7 +362,7 @@ public class AuthControllerTest extends MvcRequestSender {
         final String location = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(location.replace("+", ""));
         result.andExpect(view().name("auth/login"))
-                .andExpect(status().is(HttpStatus.SC_OK));
+                .andExpect(status().is(HttpStatus.OK.value()));
 
     }
 
@@ -376,7 +375,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showChangeEmailPage() throws Exception {
-        loggedInUserDto.setNewEmail(StringUtils.EMPTY);
+        loggedInUserDto.setNewEmail("");
         super.performGetRequest("/profile/private/me/update/email")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("userDto", loggedInUserDto))
@@ -388,7 +387,7 @@ public class AuthControllerTest extends MvcRequestSender {
     @Test
     @WithUserDetails("kaproma@yahoo.de")
     public void showForgotPasswordView() throws Exception {
-        loggedInUserDto.setNewEmail(StringUtils.EMPTY);
+        loggedInUserDto.setNewEmail("");
         super.performGetRequest("/profile/user/recovering")
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("userDto", UserDTO.builder().email("notLoggedIn").build()))
@@ -606,7 +605,7 @@ public class AuthControllerTest extends MvcRequestSender {
                 .andReturn();
         final String encodedUrl = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(encodedUrl.replace("+", ""));
-        result.andExpect(status().is(HttpStatus.SC_METHOD_NOT_ALLOWED))
+        result.andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value()))
                 .andExpect(view().name("error/pageNotFound"));
     }
 

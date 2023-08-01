@@ -6,7 +6,7 @@ import de.ffm.rka.rkareddit.domain.User;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.service.PostService;
-import org.apache.commons.httpclient.HttpStatus;
+
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
 import org.junit.Before;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
@@ -116,7 +117,7 @@ public class LinkControllerTest extends MvcRequestSender {
         final String location = mvcResult.getResponse().getHeader("location");
         final ResultActions result = sendRedirect(location.replace("+", ""));
         result.andExpect(view().name("error/application"))
-                .andExpect(status().is(HttpStatus.SC_NOT_FOUND));
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
 
     }

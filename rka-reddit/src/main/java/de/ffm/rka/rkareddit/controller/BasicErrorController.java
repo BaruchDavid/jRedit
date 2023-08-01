@@ -4,10 +4,11 @@ package de.ffm.rka.rkareddit.controller;
 import de.ffm.rka.rkareddit.domain.dto.ErrorDTO;
 import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.service.UserService;
-import org.apache.commons.httpclient.HttpStatus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -57,7 +58,7 @@ public class BasicErrorController implements ErrorController {
     @GetMapping("/error/registrationError")
     public String registrationError(HttpServletRequest request, HttpServletResponse resp, Exception ex) {
         LOGGER.error("SHOW REGISTRATION-ERROR-VEW {} WITH EXCEPTION {}", request.getRequestURI(), ex.getMessage());
-        resp.setStatus(HttpStatus.SC_BAD_REQUEST);
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
         return "error/registrationError";
     }
 

@@ -12,7 +12,6 @@ import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -127,7 +126,7 @@ public class AuthController {
         if (pageContentUser.getUsername().equals(authenticatedUserName)) {
             model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(authenticatedUserName));
         } else {
-            model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(StringUtils.EMPTY));
+            model.addAttribute(USER_VISIT_NO_CACHE_CONTROL, cacheController.setCacheHeader(""));
         }
 
         if (!authenticatedUserName.isEmpty()) {
@@ -269,7 +268,7 @@ public class AuthController {
     @GetMapping("/profile/private/me/update/email")
     public String userEmailUpdateView(@AuthenticationPrincipal UserDetails user, Model model) {
         UserDTO userDto = setSameUserForLoginAndContent((User) user, model);
-        userDto.setNewEmail(StringUtils.EMPTY);
+        userDto.setNewEmail("");
         return "auth/emailChange";
     }
 

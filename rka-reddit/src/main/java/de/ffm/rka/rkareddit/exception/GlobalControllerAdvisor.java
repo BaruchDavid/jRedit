@@ -6,10 +6,10 @@ import de.ffm.rka.rkareddit.domain.dto.UserDTO;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.util.HttpUtil;
 import de.ffm.rka.rkareddit.util.JsonMapper;
-import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -99,7 +99,7 @@ public class GlobalControllerAdvisor {
             case "NullPointerException":
             case "NumberFormatException":
             case "UsernameNotFoundException":
-                errorDTO.setErrorStatus(HttpStatus.SC_BAD_REQUEST);
+                errorDTO.setErrorStatus(HttpStatus.BAD_REQUEST.value());
                 errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
                 errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO + encodedErrorDtoJson);
@@ -107,27 +107,27 @@ public class GlobalControllerAdvisor {
             case "UserAuthenticationLostException":
             case "AuthenticationCredentialsNotFoundException":
             case "PreAuthenticatedCredentialsNotFoundException":
-                errorDTO.setErrorStatus(HttpStatus.SC_UNAUTHORIZED);
+                errorDTO.setErrorStatus(HttpStatus.UNAUTHORIZED.value());
                 errorDTO.setErrorView(PAGE_NOT_FOUND);
                 errorDTO.setErrorEndPoint("/error/accessDenied");
                 break;
             case "HttpRequestMethodNotSupportedException":
-                errorDTO.setErrorStatus(HttpStatus.SC_METHOD_NOT_ALLOWED);
+                errorDTO.setErrorStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
                 errorDTO.setErrorView(PAGE_NOT_FOUND);
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
                 errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO + encodedErrorDtoJson);
                 break;
             case "ServiceException":
-                errorDTO.setErrorStatus(HttpStatus.SC_NOT_FOUND);
+                errorDTO.setErrorStatus(HttpStatus.NOT_FOUND.value());
                 encodedErrorDtoJson = convertErrorDtoToJsonAndEncode(errorDTO);
                 errorDTO.setErrorEndPoint(ERROR_WITH_ERROR_DTO + encodedErrorDtoJson);
                 break;
             case "RegisterException":
-                res.setStatus(HttpStatus.SC_BAD_REQUEST);
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
                 errorDTO.setErrorEndPoint("/error/registrationError");
                 break;
             default:
-                errorDTO.setErrorStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                errorDTO.setErrorStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 errorDTO.setErrorView(DEFAULT_APPLICATION_ERROR);
                 errorDTO.setErrorEndPoint("/error");
                 break;
@@ -152,7 +152,7 @@ public class GlobalControllerAdvisor {
         if ("IllegalVoteException".equals(exceptionType)) {
             responseBody = "illegal vote!";
         }
-        res.setStatus(HttpStatus.SC_BAD_REQUEST);
+        res.setStatus(HttpStatus.BAD_REQUEST.value());
         LOGGER.error("ERROR ON {} WITH EXCEPTION {} AND RESPONSE-BODY {}", req.getRequestURI(), exception.getMessage(), responseBody);
         return new ResponseEntity<>(responseBody, new HttpHeaders(), org.springframework.http.HttpStatus.BAD_REQUEST);
     }

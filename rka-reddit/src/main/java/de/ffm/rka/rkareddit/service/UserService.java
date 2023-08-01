@@ -9,7 +9,6 @@ import de.ffm.rka.rkareddit.repository.UserRepository;
 import de.ffm.rka.rkareddit.util.BeanUtil;
 import de.ffm.rka.rkareddit.util.FileNIO;
 import de.ffm.rka.rkareddit.util.ImageManager;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -175,8 +174,8 @@ public class UserService {
         userForMailActivation.setEnabled(true);
         userForMailActivation.setConfirmPassword(userForMailActivation.getPassword());
         userForMailActivation.setEmail(isNewEmail ? userForMailActivation.getNewEmail() : userForMailActivation.getEmail());
-        userForMailActivation.setNewEmail(StringUtils.EMPTY);
-        userForMailActivation.setActivationCode(StringUtils.EMPTY);
+        userForMailActivation.setNewEmail("");
+        userForMailActivation.setActivationCode("");
         userForMailActivation.setActivationDeadLineDate(LocalDateTime.of(5000, 1, 1, 0, 0));
         return userForMailActivation;
     }

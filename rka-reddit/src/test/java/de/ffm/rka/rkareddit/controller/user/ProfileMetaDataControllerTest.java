@@ -4,7 +4,7 @@ import de.ffm.rka.rkareddit.controller.MvcRequestSender;
 import de.ffm.rka.rkareddit.domain.dto.PictureDTO;
 import de.ffm.rka.rkareddit.rest.controller.ProfileMetaDataController;
 import de.ffm.rka.rkareddit.util.FileNIO;
-import org.apache.commons.httpclient.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +140,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
             String[] oneRequestParam = new String[]{"pictureExtension","exe"};
             super.performPostByteArray("/profile/information/content/user-pic",
                     "formDataWithFile", byteArrayOutputStream.get().toByteArray(), oneRequestParam)
-                    .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
+                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                     .andExpect(content().string("Only jpg/jpeg, png or gif picture is allowed"));
         } else {
             fail("FILE "+ resource + " ON PATH " + defaultBaseDir + " COULD NOT BE READ");
@@ -166,7 +166,7 @@ public class ProfileMetaDataControllerTest extends MvcRequestSender {
         String[] oneRequestParam = new String[]{"pictureExtension","jpg"};
         super.performPostByteArray("/profile/information/content/user-pic",
                 "formDataWithFile", byteArrayOutputStream.toByteArray(), oneRequestParam)
-                .andExpect(status().is(HttpStatus.SC_BAD_REQUEST))
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(content().string("Picture size is bigger then 1MB"));
     }
 

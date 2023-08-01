@@ -18,7 +18,6 @@ import de.ffm.rka.rkareddit.domain.validator.user.password.OldPasswordNewPasswor
 import de.ffm.rka.rkareddit.domain.validator.user.password.PasswordMatcher;
 import jdk.jfr.Description;
 import lombok.*;
-import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
@@ -51,7 +50,7 @@ public class UserDTO {
         modelMapper.createTypeMap(User.class, UserDTO.class).setPostConverter(context -> {
             final UserDTO destination = context.getDestination();
             if (destination.getEmail() == null) {
-                destination.setEmail(StringUtils.EMPTY);
+                destination.setEmail("");
             }
             return destination;
         });

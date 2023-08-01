@@ -9,7 +9,6 @@ import de.ffm.rka.rkareddit.domain.validator.picture.PictureValidator;
 import de.ffm.rka.rkareddit.service.UserDetailsServiceImpl;
 import de.ffm.rka.rkareddit.service.UserService;
 import de.ffm.rka.rkareddit.util.CacheController;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -85,7 +84,7 @@ public class ProfileMetaDataController {
         byte[] media = new byte[0];
         final HttpStatus responseStatus;
         String requestedUser = Optional.ofNullable(req.getParameter("user"))
-                .orElse(StringUtils.EMPTY);
+                .orElse("");
         if (!requestedUser.isEmpty()) {
             final User user = userService.getUser(requestedUser);
             media = Optional.ofNullable(user).map(User::getProfileFoto)
