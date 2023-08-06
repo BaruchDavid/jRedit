@@ -16,19 +16,24 @@ public class CVEManager {
     private static Path pathToWrite;
     public static void main(String[] args) throws IOException {
 
-        pathToWrite = Paths.get("C:\\Skylink\\jRedit\\rka-reddit\\target\\classes\\");
+        pathToWrite = Paths.get("C:/Skylink/jRedit/rka-reddit/target/classes/");
         String content = IOUtils.toString(Objects.requireNonNull(CVEManager.class.getResourceAsStream("/10.txt")),
                 StandardCharsets.UTF_8);
         sortForCriticalCVE(content);
     }
 
     private static void sortForCriticalCVE(String content) throws IOException {
-        List<String> critical = Arrays.stream(content.split("\n"))
+        List<String> critical = getLines(content);
+
+        String criticalPath = pathToWrite.toString() + "/Critical.txt";
+        Path criticalFile = Files.write(Path.of(criticalPath), critical);
+        System.out.printf("path: " + criticalFile);
+    }
+
+    private static List<String> getLines(String content) {
+        return Arrays.stream(content.split("\n"))
                 .filter(line -> line.contains("Critical"))
                 .collect(Collectors.toList());
 
-        String criticalPath = pathToWrite.toString() + "\\Critical.txt";
-        Path criticalFile = Files.write(Path.of(criticalPath), critical);
-        System.out.printf("path: " + criticalFile);
     }
 }
