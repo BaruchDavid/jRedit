@@ -10,17 +10,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static de.ffm.rka.rkareddit.security.Role.*;
 
@@ -33,7 +33,7 @@ import static de.ffm.rka.rkareddit.security.Role.*;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-public class SecConfig extends WebSecurityConfigurerAdapter {
+public class SecConfig {
 
     @Autowired
     CacheManager cacheManager;
@@ -58,8 +58,66 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
         return new GlobalAccessDeniedHandler();
     }
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        final int oneDay = 86400;
+        http.csrf().disable()
+                .headers().frameOptions().disable()
+                .and()
+                .authorizeHttpRequests(requests -> {
+                    try {
+                        requests
+                                .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/links/")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/resources/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/profile/public")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/login*")).hasRole(ANONYMOUS.name())
+                                .requestMatchers(new AntPathRequestMatcher("/links/link/{signature}", HttpMethod.GET.toString())).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private", HttpMethod.GET.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private/me", HttpMethod.GET.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private/me/password", HttpMethod.GET.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private/me/update/email", HttpMethod.GET.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private/me/update/email", HttpMethod.PATCH.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private/me/update", HttpMethod.PUT.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/profile/private/me/password", HttpMethod.PUT.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/link/{lSig}/vote/direction/{direction}/votecount/{voteCount}", HttpMethod.GET.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/tag/deleteTag/{tagId}", HttpMethod.GET.toString())).hasRole(ADMIN.name())
+                                .requestMatchers(new AntPathRequestMatcher("/links/link", HttpMethod.POST.toString())).hasRole(ADMIN.name())
+                                .requestMatchers(new AntPathRequestMatcher("/comments/comment", HttpMethod.POST.toString())).hasRole(USER.name())
+                                .requestMatchers(new AntPathRequestMatcher("/data/h2-console/**")).hasRole(DBA.name())
+                                .and()
+                                .requiresChannel(requestRegistry -> requestRegistry.anyRequest().requiresSecure())
+                                .authorizeRequests(interceptUrlRegistry -> interceptUrlRegistry.anyRequest().permitAll())
+                                .formLogin().loginPage("/login")
+                                .usernameParameter("email")
+                                .successHandler(userSuccessfulAuthenticationHandler())
+                                .failureHandler(userFailureAuthenticationHandler())
+                                .failureUrl("/login?error")
+                                .and()
+                                .exceptionHandling().accessDeniedHandler(getAccessDeniedHandler())
+                                .and()
+                                .logout().deleteCookies("JSESSIONID")
+                                .logoutUrl("/logout")
+                                .addLogoutHandler(new LogoutHandlerImpl(cacheManager))
+                                .invalidateHttpSession(true)
+                                .clearAuthentication(true)
+                                .and()
+                                .rememberMe().key("uniqueAndSecret")
+                                .tokenValiditySeconds(oneDay)
+                                .and()
+                                .sessionManagement()
+                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                                .maximumSessions(1)
+                                .expiredUrl("/login?oneSession");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        return http.build();
+    }
 
-    @Override
+
+    /*@Override
     public void configure(HttpSecurity http) throws Exception {
         final int oneDay = 86400;
         http.csrf().disable()
@@ -116,7 +174,7 @@ public class SecConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authenticationProvider()).eraseCredentials(false);
-    }
+    }*/
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {

@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MvcResult;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

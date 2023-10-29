@@ -8,11 +8,11 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -21,10 +21,10 @@ import java.util.List;
 /**
  * purpose of this class is checking of authenticated users by using
  * annotation @AuthenticationPrincipal
- *
+ * extends HandlerInterceptorAdapter
  * @author rka
  */
-public class ApplicationHandlerInterceptor extends HandlerInterceptorAdapter {
+public class ApplicationHandlerInterceptor implements HandlerInterceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationHandlerInterceptor.class);
     public static final String PRIVATE_PROFILE_URL = "private";

@@ -6,7 +6,7 @@ import de.ffm.rka.rkareddit.domain.validator.tag.TagResolver;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;

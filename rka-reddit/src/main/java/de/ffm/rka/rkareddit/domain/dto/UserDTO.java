@@ -21,7 +21,7 @@ import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;

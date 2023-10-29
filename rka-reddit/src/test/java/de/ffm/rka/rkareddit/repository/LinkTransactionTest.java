@@ -4,6 +4,7 @@ import de.ffm.rka.rkareddit.domain.Link;
 import de.ffm.rka.rkareddit.domain.dto.LinkDTO;
 import de.ffm.rka.rkareddit.service.PostService;
 import de.ffm.rka.rkareddit.util.BeanUtil;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.stat.EntityStatistics;
 import org.hibernate.stat.Statistics;
@@ -22,8 +23,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+
 
 import static org.junit.Assert.assertEquals;
 
